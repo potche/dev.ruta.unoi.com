@@ -1,0 +1,72 @@
+UNO\EvaluacionesBundle\Entity\Personschool:
+    type: entity
+    table: PersonSchool
+    indexes:
+        fk_Person_has_School_School1_idx:
+            columns:
+                - schoolId
+        fk_Person_has_School_Person1_idx:
+            columns:
+                - personId
+        fk_Person_has_School_SchoolPeriod1_idx:
+            columns:
+                - schoolPeriodId
+        fk_Person_has_School_SchoolLevel1_idx:
+            columns:
+                - schoolLevelId
+        fk_Person_has_School_Profile1_idx:
+            columns:
+                - profileId
+    id: {  }
+    oneToOne:
+        personid:
+            targetEntity: Person
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                personId:
+                    referencedColumnName: personId
+            orphanRemoval: false
+        schoolid:
+            targetEntity: School
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                schoolId:
+                    referencedColumnName: schoolId
+            orphanRemoval: false
+        schoolperiodid:
+            targetEntity: Schoolperiod
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                schoolPeriodId:
+                    referencedColumnName: schoolPeriodId
+            orphanRemoval: false
+        schoollevelid:
+            targetEntity: Schoollevel
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                schoolLevelId:
+                    referencedColumnName: schoolLevelId
+            orphanRemoval: false
+        profileid:
+            targetEntity: Profile
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                profileId:
+                    referencedColumnName: profileId
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

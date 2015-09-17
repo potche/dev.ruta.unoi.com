@@ -1,0 +1,7 @@
+uno_evaluaciones:
+    resource: "@UNOEvaluacionesBundle/Controller/"
+    type:     annotation
+    prefix:   /
+login:
+    path:     /
+    defaults: { _controller: UNOEvaluacionesBundle:Login:index}

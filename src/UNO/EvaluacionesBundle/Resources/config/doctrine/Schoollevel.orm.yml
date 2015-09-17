@@ -1,0 +1,41 @@
+UNO\EvaluacionesBundle\Entity\Schoollevel:
+    type: entity
+    table: SchoolLevel
+    id:
+        schoollevelid:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: schoolLevelId
+            generator:
+                strategy: IDENTITY
+    fields:
+        schoollevelcode:
+            type: string
+            nullable: false
+            length: 5
+            options:
+                fixed: false
+            column: schoolLevelCode
+        schoollevel:
+            type: string
+            nullable: false
+            length: 45
+            options:
+                fixed: false
+            column: schoolLevel
+        schoollevelcompanyid:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: schoolLevelCompanyId
+        colegioNivelCicloId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: colegio_nivel_ciclo_id
+    lifecycleCallbacks: {  }

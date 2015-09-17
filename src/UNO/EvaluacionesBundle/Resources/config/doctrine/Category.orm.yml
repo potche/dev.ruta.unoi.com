@@ -1,0 +1,25 @@
+UNO\EvaluacionesBundle\Entity\Category:
+    type: entity
+    table: Category
+    uniqueConstraints:
+        category_UNIQUE:
+            columns:
+                - category
+    id:
+        categoryid:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: categoryId
+            generator:
+                strategy: IDENTITY
+    fields:
+        category:
+            type: string
+            nullable: false
+            length: 250
+            options:
+                fixed: false
+    lifecycleCallbacks: {  }

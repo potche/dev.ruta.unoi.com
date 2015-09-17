@@ -1,0 +1,46 @@
+UNO\EvaluacionesBundle\Entity\Profile:
+    type: entity
+    table: Profile
+    id:
+        profileid:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: profileId
+            generator:
+                strategy: IDENTITY
+    fields:
+        profilecode:
+            type: string
+            nullable: false
+            length: 45
+            options:
+                fixed: false
+            column: profileCode
+        profile:
+            type: string
+            nullable: false
+            length: 45
+            options:
+                fixed: false
+    manyToMany:
+        surveySurveyid:
+            targetEntity: Survey
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: profileProfileid
+            joinTable:
+                name: surveyxprofile
+                joinColumns:
+                    -
+                        name: Profile_profileId
+                        referencedColumnName: profileId
+                inverseJoinColumns:
+                    -
+                        name: Survey_surveyId
+                        referencedColumnName: surveyId
+            orderBy: null
+    lifecycleCallbacks: {  }

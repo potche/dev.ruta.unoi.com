@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="issues">
+    <option name="index">
+      <map>
+        <entry key="$PROJECT_DIR$/web/app_dev.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/web/local/mySimfony/my_symfony_project/src/cesarStore/MagazineBundle/Controller/IssueController.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/web/local/mySimfony/my_symfony_project/src/cesarStore/MagazineBundle/Entity/Issue.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/web/local/mySimfony/my_symfony_project/src/cesarStore/MagazineBundle/Form/IssueType.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
