@@ -1,0 +1,88 @@
+UNO\EvaluacionesBundle\Entity\Survey:
+    type: entity
+    table: Survey
+    uniqueConstraints:
+        idEncuesta_UNIQUE:
+            columns:
+                - surveyId
+    id:
+        surveyid:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: surveyId
+            generator:
+                strategy: IDENTITY
+    fields:
+        url:
+            type: string
+            nullable: true
+            length: 250
+            options:
+                fixed: false
+        title:
+            type: string
+            nullable: false
+            length: 250
+            options:
+                fixed: false
+                default: 'Sin título'
+        description:
+            type: string
+            nullable: true
+            length: 300
+            options:
+                fixed: false
+        active:
+            type: boolean
+            nullable: false
+            options:
+                default: '1'
+        closingdate:
+            type: datetime
+            nullable: false
+            column: closingDate
+        modifieddate:
+            type: datetime
+            nullable: false
+            column: modifiedDate
+        creationdate:
+            type: datetime
+            nullable: false
+            column: creationDate
+        createdby:
+            type: string
+            nullable: false
+            length: 250
+            options:
+                fixed: false
+            column: createdBy
+    manyToMany:
+        questionQuestionid:
+            targetEntity: Question
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: surveySurveyid
+            joinTable:
+                name: questionxsurvey
+                joinColumns:
+                    -
+                        name: Survey_surveyId
+                        referencedColumnName: surveyId
+                inverseJoinColumns:
+                    -
+                        name: Question_questionId
+                        referencedColumnName: questionId
+            orderBy: null
+        profileProfileid:
+            targetEntity: Profile
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: surveySurveyid
+            inversedBy: null
+            joinTable: null
+            orderBy: null
+    lifecycleCallbacks: {  }

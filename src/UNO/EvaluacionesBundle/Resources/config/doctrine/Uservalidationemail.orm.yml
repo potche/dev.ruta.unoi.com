@@ -1,0 +1,51 @@
+UNO\EvaluacionesBundle\Entity\Uservalidationemail:
+    type: entity
+    table: UserValidationEmail
+    indexes:
+        fk_UserValidationEmail_Person1_idx:
+            columns:
+                - personId
+    id:
+        iduservalidationemail:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: idUserValidationEmail
+            generator:
+                strategy: IDENTITY
+    fields:
+        email:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        code:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        dateregister:
+            type: datetime
+            nullable: false
+            column: dateRegister
+        data:
+            type: text
+            nullable: false
+            length: 65535
+            options:
+                fixed: false
+    manyToOne:
+        personid:
+            targetEntity: Person
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                personId:
+                    referencedColumnName: personId
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

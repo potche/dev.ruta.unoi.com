@@ -1,0 +1,48 @@
+UNO\EvaluacionesBundle\Entity\Question:
+    type: entity
+    table: Question
+    indexes:
+        fk_Pregunta_Categoria1_idx:
+            columns:
+                - Subcategory_subcategoryId
+    id:
+        questionid:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: questionId
+            generator:
+                strategy: IDENTITY
+    fields:
+        question:
+            type: string
+            nullable: false
+            length: 500
+            options:
+                fixed: false
+        required:
+            type: boolean
+            nullable: false
+    manyToOne:
+        subcategorySubcategoryid:
+            targetEntity: Subcategory
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                Subcategory_subcategoryId:
+                    referencedColumnName: subcategoryId
+            orphanRemoval: false
+    manyToMany:
+        surveySurveyid:
+            targetEntity: Survey
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: questionQuestionid
+            inversedBy: null
+            joinTable: null
+            orderBy: null
+    lifecycleCallbacks: {  }

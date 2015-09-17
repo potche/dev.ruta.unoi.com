@@ -1,0 +1,103 @@
+UNO\EvaluacionesBundle\Entity\Person:
+    type: entity
+    table: Person
+    id:
+        personid:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: personId
+            generator:
+                strategy: IDENTITY
+    fields:
+        user:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        password:
+            type: string
+            nullable: false
+            length: 64
+            options:
+                fixed: false
+        name:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        surname:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        gender:
+            type: string
+            nullable: false
+            length: 1
+            options:
+                fixed: false
+        birthday:
+            type: string
+            nullable: false
+            length: 2
+            options:
+                fixed: false
+            column: birthDay
+        birthmonth:
+            type: string
+            nullable: false
+            length: 2
+            options:
+                fixed: false
+            column: birthMonth
+        birthyear:
+            type: string
+            nullable: false
+            length: 4
+            options:
+                fixed: false
+            column: birthYear
+        email:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        languageid:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: languageId
+        languagecode:
+            type: string
+            nullable: false
+            length: 4
+            options:
+                fixed: false
+            column: languageCode
+        language:
+            type: string
+            nullable: false
+            length: 45
+            options:
+                fixed: false
+        timezone:
+            type: string
+            nullable: false
+            length: 45
+            options:
+                fixed: false
+            column: timeZone
+        admin:
+            type: boolean
+            nullable: false
+            options:
+                default: '0'
+    lifecycleCallbacks: {  }

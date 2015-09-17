@@ -1,0 +1,81 @@
+UNO\EvaluacionesBundle\Entity\Userhttpsession:
+    type: entity
+    table: UserHttpSession
+    indexes:
+        fk_UserHttpSession_Person1_idx:
+            columns:
+                - personId
+    id:
+        iduserhttpsession:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: idUserHttpSession
+            generator:
+                strategy: IDENTITY
+    fields:
+        idsession:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+            column: idSession
+        browser:
+            type: string
+            nullable: false
+            length: 25
+            options:
+                fixed: false
+        browserversion:
+            type: string
+            nullable: false
+            length: 25
+            options:
+                fixed: false
+            column: browserVersion
+        platform:
+            type: string
+            nullable: false
+            length: 25
+            options:
+                fixed: false
+        sid:
+            type: string
+            nullable: false
+            length: 65
+            options:
+                fixed: false
+        ipcliente:
+            type: string
+            nullable: false
+            length: 45
+            options:
+                fixed: false
+            column: ipCliente
+        loggedin:
+            type: boolean
+            nullable: false
+            options:
+                default: '0'
+            column: loggedIn
+        data:
+            type: text
+            nullable: false
+            length: 65535
+            options:
+                fixed: false
+    manyToOne:
+        personid:
+            targetEntity: Person
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                personId:
+                    referencedColumnName: personId
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

@@ -1,0 +1,36 @@
+UNO\EvaluacionesBundle\Entity\Schoolperiod:
+    type: entity
+    table: SchoolPeriod
+    id:
+        schoolperiodid:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: schoolPeriodId
+            generator:
+                strategy: IDENTITY
+    fields:
+        schoolperiodcode:
+            type: string
+            nullable: true
+            length: 45
+            options:
+                fixed: false
+            column: schoolPeriodCode
+        schoolperiod:
+            type: string
+            nullable: true
+            length: 45
+            options:
+                fixed: false
+            column: schoolPeriod
+        schoolperiodactive:
+            type: string
+            nullable: true
+            length: 5
+            options:
+                fixed: false
+            column: schoolPeriodActive
+    lifecycleCallbacks: {  }

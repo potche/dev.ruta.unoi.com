@@ -1,0 +1,61 @@
+UNO\EvaluacionesBundle\Entity\Answer:
+    type: entity
+    table: Answer
+    indexes:
+        fk_OptionsXQuestion_has_Person_Person1_idx:
+            columns:
+                - Person_personId
+        fk_OptionsXQuestion_has_Person_OptionsXQuestion1_idx:
+            columns:
+                - OptionXQuestion_optionId
+                - OptionXQuestion_surveyId
+                - OptionXQuestion_questionId
+    id:
+        answerid:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: answerId
+            generator:
+                strategy: IDENTITY
+    fields:
+        answer:
+            type: string
+            nullable: false
+            length: 250
+            options:
+                fixed: false
+        comment:
+            type: string
+            nullable: true
+            length: 300
+            options:
+                fixed: false
+    manyToOne:
+        optionxquestionOptionid:
+            targetEntity: Optionxquestion
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                OptionXQuestion_optionId:
+                    referencedColumnName: Option_optionId
+                OptionXQuestion_surveyId:
+                    referencedColumnName: QuestionXSurvey_Survey_surveyId
+                OptionXQuestion_questionId:
+                    referencedColumnName: QuestionXSurvey_Question_questionId
+            orphanRemoval: false
+        personPersonid:
+            targetEntity: Person
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                Person_personId:
+                    referencedColumnName: personId
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

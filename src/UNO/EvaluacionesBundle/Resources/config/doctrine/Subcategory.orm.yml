@@ -1,0 +1,36 @@
+UNO\EvaluacionesBundle\Entity\Subcategory:
+    type: entity
+    table: Subcategory
+    indexes:
+        fk_Subcategoria_Categoria1_idx:
+            columns:
+                - Category_categoryId
+    id:
+        subcategoryid:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: subcategoryId
+            generator:
+                strategy: IDENTITY
+    fields:
+        subcategory:
+            type: string
+            nullable: true
+            length: 250
+            options:
+                fixed: false
+    manyToOne:
+        categoryCategoryid:
+            targetEntity: Category
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                Category_categoryId:
+                    referencedColumnName: categoryId
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

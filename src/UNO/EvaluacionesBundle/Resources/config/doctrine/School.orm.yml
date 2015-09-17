@@ -1,0 +1,73 @@
+UNO\EvaluacionesBundle\Entity\School:
+    type: entity
+    table: School
+    id:
+        schoolid:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: schoolId
+            generator:
+                strategy: IDENTITY
+    fields:
+        schoolcode:
+            type: string
+            nullable: false
+            length: 45
+            options:
+                fixed: false
+            column: schoolCode
+        school:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+        countryid:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: countryId
+        countrycode:
+            type: string
+            nullable: false
+            length: 4
+            options:
+                fixed: false
+            column: countryCode
+        country:
+            type: string
+            nullable: false
+            length: 45
+            options:
+                fixed: false
+        languageid:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: languageId
+        languagecode:
+            type: string
+            nullable: false
+            length: 4
+            options:
+                fixed: false
+            column: languageCode
+        language:
+            type: string
+            nullable: false
+            length: 45
+            options:
+                fixed: false
+        timezone:
+            type: string
+            nullable: false
+            length: 45
+            options:
+                fixed: false
+            column: timeZone
+    lifecycleCallbacks: {  }
