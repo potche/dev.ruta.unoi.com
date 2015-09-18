@@ -3,6 +3,46 @@
   <component name="issues">
     <option name="index">
       <map>
+        <entry key="/Dummy.txt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/config/routing.yml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/UNO/EvaluacionesBundle/Controller/DefaultController.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/UNO/EvaluacionesBundle/Controller/Evaluaciones/ListarController.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/UNO/EvaluacionesBundle/Controller/Evaluaciones/ResponderController.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/UNO/EvaluacionesBundle/Controller/Login/LoginController.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/UNO/EvaluacionesBundle/Resources/views/Evaluaciones/listar.html.twig">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/UNO/EvaluacionesBundle/Resources/views/Evaluaciones/responder.html.twig">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/web/app_dev.php">
           <value>
             <set />
@@ -19,6 +59,11 @@
           </value>
         </entry>
         <entry key="$USER_HOME$/web/local/mySimfony/my_symfony_project/src/cesarStore/MagazineBundle/Form/IssueType.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="/a.dummy">
           <value>
             <set />
           </value>

@@ -1,6 +1,6 @@
 <?php
 
-namespace UNO\EvaluacionesBundle\Controller;
+namespace UNO\EvaluacionesBundle\Controller\Login;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;

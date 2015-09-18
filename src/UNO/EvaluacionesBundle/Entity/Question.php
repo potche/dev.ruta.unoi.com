@@ -13,15 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Question
 {
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="questionId", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $questionid;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="question", type="string", length=500, nullable=false)
@@ -36,6 +27,22 @@ class Question
     private $required;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="type", type="string", length=30, nullable=false)
+     */
+    private $type;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="questionId", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $questionid;
+
+    /**
      * @var \UNO\EvaluacionesBundle\Entity\Subcategory
      *
      * @ORM\ManyToOne(targetEntity="UNO\EvaluacionesBundle\Entity\Subcategory")
@@ -45,31 +52,7 @@ class Question
      */
     private $subcategorySubcategoryid;
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\ManyToMany(targetEntity="UNO\EvaluacionesBundle\Entity\Survey", mappedBy="questionQuestionid")
-     */
-    private $surveySurveyid;
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->surveySurveyid = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-
-    /**
-     * Get questionid
-     *
-     * @return integer
-     */
-    public function getQuestionid()
-    {
-        return $this->questionid;
-    }
 
     /**
      * Set question
@@ -120,6 +103,40 @@ class Question
     }
 
     /**
+     * Set type
+     *
+     * @param string $type
+     *
+     * @return Question
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * Get questionid
+     *
+     * @return integer
+     */
+    public function getQuestionid()
+    {
+        return $this->questionid;
+    }
+
+    /**
      * Set subcategorySubcategoryid
      *
      * @param \UNO\EvaluacionesBundle\Entity\Subcategory $subcategorySubcategoryid
@@ -141,39 +158,5 @@ class Question
     public function getSubcategorySubcategoryid()
     {
         return $this->subcategorySubcategoryid;
-    }
-
-    /**
-     * Add surveySurveyid
-     *
-     * @param \UNO\EvaluacionesBundle\Entity\Survey $surveySurveyid
-     *
-     * @return Question
-     */
-    public function addSurveySurveyid(\UNO\EvaluacionesBundle\Entity\Survey $surveySurveyid)
-    {
-        $this->surveySurveyid[] = $surveySurveyid;
-
-        return $this;
-    }
-
-    /**
-     * Remove surveySurveyid
-     *
-     * @param \UNO\EvaluacionesBundle\Entity\Survey $surveySurveyid
-     */
-    public function removeSurveySurveyid(\UNO\EvaluacionesBundle\Entity\Survey $surveySurveyid)
-    {
-        $this->surveySurveyid->removeElement($surveySurveyid);
-    }
-
-    /**
-     * Get surveySurveyid
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getSurveySurveyid()
-    {
-        return $this->surveySurveyid;
     }
 }

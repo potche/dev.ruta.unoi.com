@@ -13,15 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Profile
 {
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="profileId", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $profileid;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="profileCode", type="string", length=45, nullable=false)
@@ -36,38 +27,15 @@ class Profile
     private $profile;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var integer
      *
-     * @ORM\ManyToMany(targetEntity="UNO\EvaluacionesBundle\Entity\Survey", inversedBy="profileProfileid")
-     * @ORM\JoinTable(name="surveyxprofile",
-     *   joinColumns={
-     *     @ORM\JoinColumn(name="Profile_profileId", referencedColumnName="profileId")
-     *   },
-     *   inverseJoinColumns={
-     *     @ORM\JoinColumn(name="Survey_surveyId", referencedColumnName="surveyId")
-     *   }
-     * )
+     * @ORM\Column(name="profileId", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $surveySurveyid;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->surveySurveyid = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+    private $profileid;
 
 
-    /**
-     * Get profileid
-     *
-     * @return integer
-     */
-    public function getProfileid()
-    {
-        return $this->profileid;
-    }
 
     /**
      * Set profilecode
@@ -118,36 +86,12 @@ class Profile
     }
 
     /**
-     * Add surveySurveyid
+     * Get profileid
      *
-     * @param \UNO\EvaluacionesBundle\Entity\Survey $surveySurveyid
-     *
-     * @return Profile
+     * @return integer
      */
-    public function addSurveySurveyid(\UNO\EvaluacionesBundle\Entity\Survey $surveySurveyid)
+    public function getProfileid()
     {
-        $this->surveySurveyid[] = $surveySurveyid;
-
-        return $this;
-    }
-
-    /**
-     * Remove surveySurveyid
-     *
-     * @param \UNO\EvaluacionesBundle\Entity\Survey $surveySurveyid
-     */
-    public function removeSurveySurveyid(\UNO\EvaluacionesBundle\Entity\Survey $surveySurveyid)
-    {
-        $this->surveySurveyid->removeElement($surveySurveyid);
-    }
-
-    /**
-     * Get surveySurveyid
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getSurveySurveyid()
-    {
-        return $this->surveySurveyid;
+        return $this->profileid;
     }
 }

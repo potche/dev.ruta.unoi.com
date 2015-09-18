@@ -13,15 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Person
 {
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="personId", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $personid;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="user", type="string", length=255, nullable=false)
@@ -119,17 +110,16 @@ class Person
      */
     private $admin = '0';
 
-
-
     /**
-     * Get personid
+     * @var integer
      *
-     * @return integer
+     * @ORM\Column(name="personId", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    public function getPersonid()
-    {
-        return $this->personid;
-    }
+    private $personid;
+
+
 
     /**
      * Set user
@@ -465,5 +455,15 @@ class Person
     public function getAdmin()
     {
         return $this->admin;
+    }
+
+    /**
+     * Get personid
+     *
+     * @return integer
+     */
+    public function getPersonid()
+    {
+        return $this->personid;
     }
 }

@@ -5,3 +5,9 @@ uno_evaluaciones:
 login:
     path:     /
     defaults: { _controller: UNOEvaluacionesBundle:Login:index}
+responder:
+    path:   /responder
+    defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Responder:index}
+listar:
+    path:   /listar
+    defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Listar:index}

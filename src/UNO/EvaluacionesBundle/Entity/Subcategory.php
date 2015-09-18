@@ -13,6 +13,13 @@ use Doctrine\ORM\Mapping as ORM;
 class Subcategory
 {
     /**
+     * @var string
+     *
+     * @ORM\Column(name="subcategory", type="string", length=250, nullable=false)
+     */
+    private $subcategory;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="subcategoryId", type="integer")
@@ -20,13 +27,6 @@ class Subcategory
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $subcategoryid;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="subcategory", type="string", length=250, nullable=true)
-     */
-    private $subcategory;
 
     /**
      * @var \UNO\EvaluacionesBundle\Entity\Category
@@ -39,16 +39,6 @@ class Subcategory
     private $categoryCategoryid;
 
 
-
-    /**
-     * Get subcategoryid
-     *
-     * @return integer
-     */
-    public function getSubcategoryid()
-    {
-        return $this->subcategoryid;
-    }
 
     /**
      * Set subcategory
@@ -72,6 +62,16 @@ class Subcategory
     public function getSubcategory()
     {
         return $this->subcategory;
+    }
+
+    /**
+     * Get subcategoryid
+     *
+     * @return integer
+     */
+    public function getSubcategoryid()
+    {
+        return $this->subcategoryid;
     }
 
     /**

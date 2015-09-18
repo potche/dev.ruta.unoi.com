@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="UNO\EvaluacionesBundle\Entity\Userhttpsession" table="UserHttpSession">
+    <indexes>
+      <index name="fk_UserHttpSession_Person1_idx" columns="personId"/>
+    </indexes>
+    <id name="iduserhttpsession" type="integer" column="idUserHttpSession">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="idsession" type="string" column="idSession" length="255" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="browser" type="string" column="browser" length="25" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="browserversion" type="string" column="browserVersion" length="25" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="platform" type="string" column="platform" length="25" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="sid" type="string" column="sid" length="65" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="ipcliente" type="string" column="ipCliente" length="45" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="loggedin" type="boolean" column="loggedIn" nullable="false">
+      <options>
+        <option name="default">0</option>
+      </options>
+    </field>
+    <field name="data" type="text" column="data" length="65535" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <many-to-one field="personid" target-entity="Person" fetch="LAZY">
+      <join-columns>
+        <join-column name="personId" referenced-column-name="personId"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

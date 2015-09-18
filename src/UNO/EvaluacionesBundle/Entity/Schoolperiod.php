@@ -13,15 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Schoolperiod
 {
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="schoolPeriodId", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $schoolperiodid;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="schoolPeriodCode", type="string", length=45, nullable=true)
@@ -42,17 +33,16 @@ class Schoolperiod
      */
     private $schoolperiodactive;
 
-
-
     /**
-     * Get schoolperiodid
+     * @var integer
      *
-     * @return integer
+     * @ORM\Column(name="schoolPeriodId", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    public function getSchoolperiodid()
-    {
-        return $this->schoolperiodid;
-    }
+    private $schoolperiodid;
+
+
 
     /**
      * Set schoolperiodcode
@@ -124,5 +114,15 @@ class Schoolperiod
     public function getSchoolperiodactive()
     {
         return $this->schoolperiodactive;
+    }
+
+    /**
+     * Get schoolperiodid
+     *
+     * @return integer
+     */
+    public function getSchoolperiodid()
+    {
+        return $this->schoolperiodid;
     }
 }

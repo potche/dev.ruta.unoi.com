@@ -13,15 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Userhttpsession
 {
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="idUserHttpSession", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $iduserhttpsession;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="idSession", type="string", length=255, nullable=false)
@@ -78,6 +69,15 @@ class Userhttpsession
     private $data;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="idUserHttpSession", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $iduserhttpsession;
+
+    /**
      * @var \UNO\EvaluacionesBundle\Entity\Person
      *
      * @ORM\ManyToOne(targetEntity="UNO\EvaluacionesBundle\Entity\Person")
@@ -88,16 +88,6 @@ class Userhttpsession
     private $personid;
 
 
-
-    /**
-     * Get iduserhttpsession
-     *
-     * @return integer
-     */
-    public function getIduserhttpsession()
-    {
-        return $this->iduserhttpsession;
-    }
 
     /**
      * Set idsession
@@ -289,6 +279,16 @@ class Userhttpsession
     public function getData()
     {
         return $this->data;
+    }
+
+    /**
+     * Get iduserhttpsession
+     *
+     * @return integer
+     */
+    public function getIduserhttpsession()
+    {
+        return $this->iduserhttpsession;
     }
 
     /**

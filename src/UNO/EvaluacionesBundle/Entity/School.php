@@ -13,15 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 class School
 {
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="schoolId", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $schoolid;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="schoolCode", type="string", length=45, nullable=false)
@@ -84,17 +75,16 @@ class School
      */
     private $timezone;
 
-
-
     /**
-     * Get schoolid
+     * @var integer
      *
-     * @return integer
+     * @ORM\Column(name="schoolId", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    public function getSchoolid()
-    {
-        return $this->schoolid;
-    }
+    private $schoolid;
+
+
 
     /**
      * Set schoolcode
@@ -310,5 +300,15 @@ class School
     public function getTimezone()
     {
         return $this->timezone;
+    }
+
+    /**
+     * Get schoolid
+     *
+     * @return integer
+     */
+    public function getSchoolid()
+    {
+        return $this->schoolid;
     }
 }

@@ -7,20 +7,11 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Answer
  *
- * @ORM\Table(name="Answer", indexes={@ORM\Index(name="fk_OptionsXQuestion_has_Person_Person1_idx", columns={"Person_personId"}), @ORM\Index(name="fk_OptionsXQuestion_has_Person_OptionsXQuestion1_idx", columns={"OptionXQuestion_optionId", "OptionXQuestion_surveyId", "OptionXQuestion_questionId"})})
+ * @ORM\Table(name="Answer", indexes={@ORM\Index(name="fk_Answer_Person1_idx", columns={"Person_personId"}), @ORM\Index(name="fk_Answer_OptionXQuestion1_idx", columns={"OptionXQuestion_id"})})
  * @ORM\Entity
  */
 class Answer
 {
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="answerId", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $answerid;
-
     /**
      * @var string
      *
@@ -36,16 +27,13 @@ class Answer
     private $comment;
 
     /**
-     * @var \UNO\EvaluacionesBundle\Entity\Optionxquestion
+     * @var integer
      *
-     * @ORM\ManyToOne(targetEntity="UNO\EvaluacionesBundle\Entity\Optionxquestion")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="OptionXQuestion_optionId", referencedColumnName="Option_optionId"),
-     *   @ORM\JoinColumn(name="OptionXQuestion_surveyId", referencedColumnName="QuestionXSurvey_Survey_surveyId"),
-     *   @ORM\JoinColumn(name="OptionXQuestion_questionId", referencedColumnName="QuestionXSurvey_Question_questionId")
-     * })
+     * @ORM\Column(name="answerId", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $optionxquestionOptionid;
+    private $answerid;
 
     /**
      * @var \UNO\EvaluacionesBundle\Entity\Person
@@ -57,17 +45,17 @@ class Answer
      */
     private $personPersonid;
 
-
-
     /**
-     * Get answerid
+     * @var \UNO\EvaluacionesBundle\Entity\Optionxquestion
      *
-     * @return integer
+     * @ORM\ManyToOne(targetEntity="UNO\EvaluacionesBundle\Entity\Optionxquestion")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="OptionXQuestion_id", referencedColumnName="OptionXQuestion_id")
+     * })
      */
-    public function getAnswerid()
-    {
-        return $this->answerid;
-    }
+    private $optionxquestion;
+
+
 
     /**
      * Set answer
@@ -118,27 +106,13 @@ class Answer
     }
 
     /**
-     * Set optionxquestionOptionid
+     * Get answerid
      *
-     * @param \UNO\EvaluacionesBundle\Entity\Optionxquestion $optionxquestionOptionid
-     *
-     * @return Answer
+     * @return integer
      */
-    public function setOptionxquestionOptionid(\UNO\EvaluacionesBundle\Entity\Optionxquestion $optionxquestionOptionid = null)
+    public function getAnswerid()
     {
-        $this->optionxquestionOptionid = $optionxquestionOptionid;
-
-        return $this;
-    }
-
-    /**
-     * Get optionxquestionOptionid
-     *
-     * @return \UNO\EvaluacionesBundle\Entity\Optionxquestion
-     */
-    public function getOptionxquestionOptionid()
-    {
-        return $this->optionxquestionOptionid;
+        return $this->answerid;
     }
 
     /**
@@ -163,5 +137,29 @@ class Answer
     public function getPersonPersonid()
     {
         return $this->personPersonid;
+    }
+
+    /**
+     * Set optionxquestion
+     *
+     * @param \UNO\EvaluacionesBundle\Entity\Optionxquestion $optionxquestion
+     *
+     * @return Answer
+     */
+    public function setOptionxquestion(\UNO\EvaluacionesBundle\Entity\Optionxquestion $optionxquestion = null)
+    {
+        $this->optionxquestion = $optionxquestion;
+
+        return $this;
+    }
+
+    /**
+     * Get optionxquestion
+     *
+     * @return \UNO\EvaluacionesBundle\Entity\Optionxquestion
+     */
+    public function getOptionxquestion()
+    {
+        return $this->optionxquestion;
     }
 }

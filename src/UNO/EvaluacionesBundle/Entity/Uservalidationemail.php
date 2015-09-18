@@ -13,15 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Uservalidationemail
 {
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="idUserValidationEmail", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $iduservalidationemail;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255, nullable=false)
@@ -50,6 +41,15 @@ class Uservalidationemail
     private $data;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="idUserValidationEmail", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $iduservalidationemail;
+
+    /**
      * @var \UNO\EvaluacionesBundle\Entity\Person
      *
      * @ORM\ManyToOne(targetEntity="UNO\EvaluacionesBundle\Entity\Person")
@@ -60,16 +60,6 @@ class Uservalidationemail
     private $personid;
 
 
-
-    /**
-     * Get iduservalidationemail
-     *
-     * @return integer
-     */
-    public function getIduservalidationemail()
-    {
-        return $this->iduservalidationemail;
-    }
 
     /**
      * Set email
@@ -165,6 +155,16 @@ class Uservalidationemail
     public function getData()
     {
         return $this->data;
+    }
+
+    /**
+     * Get iduservalidationemail
+     *
+     * @return integer
+     */
+    public function getIduservalidationemail()
+    {
+        return $this->iduservalidationemail;
     }
 
     /**
