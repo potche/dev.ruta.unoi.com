@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="UNO\EvaluacionesBundle\Entity\Personschool" table="PersonSchool">
+    <indexes>
+      <index name="fk_Person_has_School_School1_idx" columns="schoolId"/>
+      <index name="fk_Person_has_School_Person1_idx" columns="personId"/>
+      <index name="fk_Person_has_School_SchoolPeriod1_idx" columns="schoolPeriodId"/>
+      <index name="fk_Person_has_School_SchoolLevel1_idx" columns="schoolLevelId"/>
+      <index name="fk_Person_has_School_Profile1_idx" columns="profileId"/>
+    </indexes>
+    <id name="personid" association-key="true"/>
+    <id name="profileid" association-key="true"/>
+    <id name="schoolid" association-key="true"/>
+    <id name="schoollevelid" association-key="true"/>
+    <id name="schoolperiodid" association-key="true"/>
+    <one-to-one field="schoolperiodid" target-entity="Schoolperiod" fetch="LAZY">
+      <join-columns>
+        <join-column name="schoolPeriodId" referenced-column-name="schoolPeriodId"/>
+      </join-columns>
+    </one-to-one>
+    <one-to-one field="schoollevelid" target-entity="Schoollevel" fetch="LAZY">
+      <join-columns>
+        <join-column name="schoolLevelId" referenced-column-name="schoolLevelId"/>
+      </join-columns>
+    </one-to-one>
+    <one-to-one field="schoolid" target-entity="School" fetch="LAZY">
+      <join-columns>
+        <join-column name="schoolId" referenced-column-name="schoolId"/>
+      </join-columns>
+    </one-to-one>
+    <one-to-one field="profileid" target-entity="Profile" fetch="LAZY">
+      <join-columns>
+        <join-column name="profileId" referenced-column-name="profileId"/>
+      </join-columns>
+    </one-to-one>
+    <one-to-one field="personid" target-entity="Person" fetch="LAZY">
+      <join-columns>
+        <join-column name="personId" referenced-column-name="personId"/>
+      </join-columns>
+    </one-to-one>
+  </entity>
+</doctrine-mapping>

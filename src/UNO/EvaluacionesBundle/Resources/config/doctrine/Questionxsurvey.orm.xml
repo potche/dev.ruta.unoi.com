@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="UNO\EvaluacionesBundle\Entity\Questionxsurvey" table="QuestionXSurvey">
+    <indexes>
+      <index name="fk_Encuesta_has_Pregunta_Pregunta1_idx" columns="Question_questionId"/>
+      <index name="fk_Encuesta_has_Pregunta_Encuesta1_idx" columns="Survey_surveyId"/>
+    </indexes>
+    <id name="questionxsurveyId" type="integer" column="QuestionxSurvey_id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="order" type="integer" column="order" nullable="false">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <many-to-one field="questionQuestionid" target-entity="Question" fetch="LAZY">
+      <join-columns>
+        <join-column name="Question_questionId" referenced-column-name="questionId"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="surveySurveyid" target-entity="Survey" fetch="LAZY">
+      <join-columns>
+        <join-column name="Survey_surveyId" referenced-column-name="surveyId"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

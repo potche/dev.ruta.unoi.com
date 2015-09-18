@@ -13,15 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Survey
 {
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="surveyId", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $surveyid;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="url", type="string", length=250, nullable=true)
@@ -78,46 +69,15 @@ class Survey
     private $createdby;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var integer
      *
-     * @ORM\ManyToMany(targetEntity="UNO\EvaluacionesBundle\Entity\Question", inversedBy="surveySurveyid")
-     * @ORM\JoinTable(name="questionxsurvey",
-     *   joinColumns={
-     *     @ORM\JoinColumn(name="Survey_surveyId", referencedColumnName="surveyId")
-     *   },
-     *   inverseJoinColumns={
-     *     @ORM\JoinColumn(name="Question_questionId", referencedColumnName="questionId")
-     *   }
-     * )
+     * @ORM\Column(name="surveyId", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $questionQuestionid;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\ManyToMany(targetEntity="UNO\EvaluacionesBundle\Entity\Profile", mappedBy="surveySurveyid")
-     */
-    private $profileProfileid;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->questionQuestionid = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->profileProfileid = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+    private $surveyid;
 
 
-    /**
-     * Get surveyid
-     *
-     * @return integer
-     */
-    public function getSurveyid()
-    {
-        return $this->surveyid;
-    }
 
     /**
      * Set url
@@ -312,70 +272,12 @@ class Survey
     }
 
     /**
-     * Add questionQuestionid
+     * Get surveyid
      *
-     * @param \UNO\EvaluacionesBundle\Entity\Question $questionQuestionid
-     *
-     * @return Survey
+     * @return integer
      */
-    public function addQuestionQuestionid(\UNO\EvaluacionesBundle\Entity\Question $questionQuestionid)
+    public function getSurveyid()
     {
-        $this->questionQuestionid[] = $questionQuestionid;
-
-        return $this;
-    }
-
-    /**
-     * Remove questionQuestionid
-     *
-     * @param \UNO\EvaluacionesBundle\Entity\Question $questionQuestionid
-     */
-    public function removeQuestionQuestionid(\UNO\EvaluacionesBundle\Entity\Question $questionQuestionid)
-    {
-        $this->questionQuestionid->removeElement($questionQuestionid);
-    }
-
-    /**
-     * Get questionQuestionid
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getQuestionQuestionid()
-    {
-        return $this->questionQuestionid;
-    }
-
-    /**
-     * Add profileProfileid
-     *
-     * @param \UNO\EvaluacionesBundle\Entity\Profile $profileProfileid
-     *
-     * @return Survey
-     */
-    public function addProfileProfileid(\UNO\EvaluacionesBundle\Entity\Profile $profileProfileid)
-    {
-        $this->profileProfileid[] = $profileProfileid;
-
-        return $this;
-    }
-
-    /**
-     * Remove profileProfileid
-     *
-     * @param \UNO\EvaluacionesBundle\Entity\Profile $profileProfileid
-     */
-    public function removeProfileProfileid(\UNO\EvaluacionesBundle\Entity\Profile $profileProfileid)
-    {
-        $this->profileProfileid->removeElement($profileProfileid);
-    }
-
-    /**
-     * Get profileProfileid
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getProfileProfileid()
-    {
-        return $this->profileProfileid;
+        return $this->surveyid;
     }
 }

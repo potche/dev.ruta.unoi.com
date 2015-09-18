@@ -13,6 +13,20 @@ use Doctrine\ORM\Mapping as ORM;
 class Option
 {
     /**
+     * @var string
+     *
+     * @ORM\Column(name="option", type="string", length=250, nullable=false)
+     */
+    private $option;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="type", type="string", length=30, nullable=false)
+     */
+    private $type;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="optionId", type="integer")
@@ -21,46 +35,7 @@ class Option
      */
     private $optionid;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="option", type="string", length=250, nullable=false)
-     */
-    private $option;
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\ManyToMany(targetEntity="UNO\EvaluacionesBundle\Entity\Questionxsurvey", inversedBy="optionOptionid")
-     * @ORM\JoinTable(name="optionxquestion",
-     *   joinColumns={
-     *     @ORM\JoinColumn(name="Option_optionId", referencedColumnName="optionId")
-     *   },
-     *   inverseJoinColumns={
-     *     @ORM\JoinColumn(name="QuestionXSurvey_Question_questionId", referencedColumnName="Question_questionId")
-     *   }
-     * )
-     */
-    private $questionxsurveySurveySurveyid;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->questionxsurveySurveySurveyid = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-
-    /**
-     * Get optionid
-     *
-     * @return integer
-     */
-    public function getOptionid()
-    {
-        return $this->optionid;
-    }
 
     /**
      * Set option
@@ -87,36 +62,36 @@ class Option
     }
 
     /**
-     * Add questionxsurveySurveySurveyid
+     * Set type
      *
-     * @param \UNO\EvaluacionesBundle\Entity\Questionxsurvey $questionxsurveySurveySurveyid
+     * @param string $type
      *
      * @return Option
      */
-    public function addQuestionxsurveySurveySurveyid(\UNO\EvaluacionesBundle\Entity\Questionxsurvey $questionxsurveySurveySurveyid)
+    public function setType($type)
     {
-        $this->questionxsurveySurveySurveyid[] = $questionxsurveySurveySurveyid;
+        $this->type = $type;
 
         return $this;
     }
 
     /**
-     * Remove questionxsurveySurveySurveyid
+     * Get type
      *
-     * @param \UNO\EvaluacionesBundle\Entity\Questionxsurvey $questionxsurveySurveySurveyid
+     * @return string
      */
-    public function removeQuestionxsurveySurveySurveyid(\UNO\EvaluacionesBundle\Entity\Questionxsurvey $questionxsurveySurveySurveyid)
+    public function getType()
     {
-        $this->questionxsurveySurveySurveyid->removeElement($questionxsurveySurveySurveyid);
+        return $this->type;
     }
 
     /**
-     * Get questionxsurveySurveySurveyid
+     * Get optionid
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return integer
      */
-    public function getQuestionxsurveySurveySurveyid()
+    public function getOptionid()
     {
-        return $this->questionxsurveySurveySurveyid;
+        return $this->optionid;
     }
 }

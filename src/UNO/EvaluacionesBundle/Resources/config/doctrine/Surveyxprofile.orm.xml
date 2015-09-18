@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="UNO\EvaluacionesBundle\Entity\Surveyxprofile" table="SurveyXProfile">
+    <indexes>
+      <index name="fk_Profile_has_Survey_Survey1_idx" columns="Survey_surveyId"/>
+      <index name="fk_Profile_has_Survey_Profile1_idx" columns="Profile_profileId"/>
+    </indexes>
+    <id name="surveyxprofileId" type="integer" column="SurveyxProfile_id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <many-to-one field="surveySurveyid" target-entity="Survey" fetch="LAZY">
+      <join-columns>
+        <join-column name="Survey_surveyId" referenced-column-name="surveyId"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="profileProfileid" target-entity="Profile" fetch="LAZY">
+      <join-columns>
+        <join-column name="Profile_profileId" referenced-column-name="profileId"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="UNO\EvaluacionesBundle\Entity\Uservalidationemail" table="UserValidationEmail">
+    <indexes>
+      <index name="fk_UserValidationEmail_Person1_idx" columns="personId"/>
+    </indexes>
+    <id name="iduservalidationemail" type="integer" column="idUserValidationEmail">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="email" type="string" column="email" length="255" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="code" type="integer" column="code" nullable="false">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="dateregister" type="datetime" column="dateRegister" nullable="false"/>
+    <field name="data" type="text" column="data" length="65535" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <many-to-one field="personid" target-entity="Person" fetch="LAZY">
+      <join-columns>
+        <join-column name="personId" referenced-column-name="personId"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

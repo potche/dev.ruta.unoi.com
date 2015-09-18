@@ -13,6 +13,13 @@ use Doctrine\ORM\Mapping as ORM;
 class Category
 {
     /**
+     * @var string
+     *
+     * @ORM\Column(name="category", type="string", length=250, nullable=false)
+     */
+    private $category;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="categoryId", type="integer")
@@ -21,24 +28,7 @@ class Category
      */
     private $categoryid;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="category", type="string", length=250, nullable=false)
-     */
-    private $category;
 
-
-
-    /**
-     * Get categoryid
-     *
-     * @return integer
-     */
-    public function getCategoryid()
-    {
-        return $this->categoryid;
-    }
 
     /**
      * Set category
@@ -62,5 +52,15 @@ class Category
     public function getCategory()
     {
         return $this->category;
+    }
+
+    /**
+     * Get categoryid
+     *
+     * @return integer
+     */
+    public function getCategoryid()
+    {
+        return $this->categoryid;
     }
 }

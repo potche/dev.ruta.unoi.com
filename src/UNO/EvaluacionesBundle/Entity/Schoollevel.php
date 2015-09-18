@@ -13,15 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Schoollevel
 {
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="schoolLevelId", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $schoollevelid;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="schoolLevelCode", type="string", length=5, nullable=false)
@@ -49,17 +40,16 @@ class Schoollevel
      */
     private $colegioNivelCicloId;
 
-
-
     /**
-     * Get schoollevelid
+     * @var integer
      *
-     * @return integer
+     * @ORM\Column(name="schoolLevelId", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    public function getSchoollevelid()
-    {
-        return $this->schoollevelid;
-    }
+    private $schoollevelid;
+
+
 
     /**
      * Set schoollevelcode
@@ -155,5 +145,15 @@ class Schoollevel
     public function getColegioNivelCicloId()
     {
         return $this->colegioNivelCicloId;
+    }
+
+    /**
+     * Get schoollevelid
+     *
+     * @return integer
+     */
+    public function getSchoollevelid()
+    {
+        return $this->schoollevelid;
     }
 }
