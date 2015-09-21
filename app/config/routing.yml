@@ -4,7 +4,11 @@ uno_evaluaciones:
     prefix:   /
 login:
     path:     /
-    defaults: { _controller: UNOEvaluacionesBundle:Login:index}
+    defaults: { _controller: UNOEvaluacionesBundle:Login\Login:index}
+autentication:
+    path:     /ajax/autentication
+    defaults: { _controller: UNOEvaluacionesBundle:Login\Login:autentication }
+    methods:  [POST]
 responder:
     path:   /responder
     defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Responder:index}

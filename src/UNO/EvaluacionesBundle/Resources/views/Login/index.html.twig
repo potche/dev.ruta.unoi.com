@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if IE 9]>         <html class="no-js lt-ie10"> <![endif]-->
+<!--[if gt IE 9]><!--> 
+<html class="no-js"> <!--<![endif]-->
+    <head>
+        <title>Login UNO</title>
+        
+        <meta name="description" content="ProUI is a Responsive Bootstrap Admin Template created by pixelcave and published on Themeforest.">
+        <meta name="author" content="UNO Internacional">
+        <meta name="robots" content="noindex, nofollow">
+        
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1.0">
+
+        <!-- Icons -->
+        <!-- The following icons can be replaced with your own, they are used by desktop and mobile browsers -->
+        <!-- <link rel="shortcut icon" href="{{ asset('public/assets/template/img/faviconUnoi.ico') }}">-->
+        <link rel="shortcut icon" href="{{ asset('public/assets/images/login/faviconUnoi.ico') }}" type="image/x-icon" />
+        <!--
+        <link rel="apple-touch-icon" href="{{ asset('public/assets/template/img/icon57.png') }}" sizes="57x57">
+        <link rel="apple-touch-icon" href="{{ asset('public/assets/template/img/icon72.png') }}" sizes="72x72">
+        <link rel="apple-touch-icon" href="{{ asset('public/assets/template/img/icon76.png') }}" sizes="76x76">
+        <link rel="apple-touch-icon" href="{{ asset('public/assets/template/img/icon114.png') }}" sizes="114x114">
+        <link rel="apple-touch-icon" href="{{ asset('public/assets/template/img/icon120.png') }}" sizes="120x120">
+        <link rel="apple-touch-icon" href="{{ asset('public/assets/template/img/icon144.png') }}" sizes="144x144">
+        <link rel="apple-touch-icon" href="{{ asset('public/assets/template/img/icon152.png') }}" sizes="152x152">
+        <link rel="apple-touch-icon" href="{{ asset('public/assets/template/img/icon180.png') }}" sizes="180x180">
+        -->
+        <!-- END Icons -->
+
+        <!-- Stylesheets -->
+        <!-- Bootstrap is included in its original form, unaltered -->
+        <link rel="stylesheet" href="{{ asset('public/assets/bootstrap/css/bootstrap.min.css') }}">
+
+        <!-- Related styles of various icon packs and plugins -->
+        <link rel="stylesheet" href="https://pre-staticmx.unoi.com/global/css/plugins.css">
+
+        <!-- The main stylesheet of this template. All Bootstrap overwrites are defined in here -->
+        <link rel="stylesheet" href="https://pre-staticmx.unoi.com/global/css/main.css">
+
+        <!-- Include a specific file here from css/themes/ folder to alter the default theme of the template -->
+
+        <!-- The themes stylesheet of this template (for using specific theme color in individual elements - must included last) -->
+        <link rel="stylesheet" href="https://pre-staticmx.unoi.com/global/css/themes.css">
+        <!-- END Stylesheets -->
+
+        <!-- Modernizr (browser feature detection library) & Respond.js (enables responsive CSS code on browsers that don't support it, eg IE8) -->
+        <script src="https://pre-staticmx.unoi.com/global/js/vendor/modernizr-respond.min.js"></script>
+
+        <link href="{{ asset('public/assets/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ asset('public/assets/css/login.css') }}" rel="stylesheet" type="text/css">
+
+        <style type="text/css">
+            video { 
+                position: absolute;
+                bottom: 0px;
+                right: 0px;
+                min-width: 100%;
+                min-height: 100%;
+                z-index: -100;
+                overflow: hidden;
+/*
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                min-width: 100%;
+                min-height: 100%;
+                width: auto;
+                height: auto;
+                z-index: -100;
+
+                transform: translateX(-50%) translateY(-50%);
+                */
+                /*background: url('/public/assets/images/bg/dia.png') no-repeat;*/
+                background-size: cover;
+                transition: 1s opacity;
+            }
+        </style>   
+        <!--
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+            ga('create', 'UA-43331375-12', 'auto');
+            ga('send', 'pageview');
+
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-43331375-11']);
+            _gaq.push(['_trackPageview']);
+
+            (function() {
+                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            })();
+
+            _gaq.push(['_trackEvent', 'Version Browser', '{{browser}}-{{browserVersion}}' ,'Login Visited'])
+
+        </script>
+        -->
+    </head>
+    <body>
+        <div class="loading" id="loading">
+            <button class="btn btn-lg btn-info">
+                <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
+                Cargando, por favor espere...
+            </button>
+        </div>
+
+        <video  poster="/public/assets/images/login/gaussGraph.jpg" id="bgvid" autoplay loop>
+            <!--
+            <source type="video/webm" id="webm">
+            <source type="video/mp4" id="mp4">
+            <source type="video/ogv" id="ogv">
+            -->
+        </video>
+        
+        <!-- Login Container -->
+        <div id="login-container" class="animation-hatch" style="top: 2%;">
+            <!-- Login Title -->
+            <div class="login-title text-center">
+                <h1>
+                    <!-- Title -->
+                    <a href="" class="logo">
+                        <img title="UNO-Login" alt="UNO-Login" src="{{ asset('public/assets/images/login/logoUno.png') }}" class="logo logoUno">
+                        Apps
+                    </a> 
+                    <!-- / .logo -->
+                    <p><small>Todas tus aplicaciones en un solo lugar.</small></p>
+                    <!-- END Title -->
+                </h1>
+                
+            </div>
+            <!-- END Login Title -->
+
+            <!-- Login Block -->
+            <div class="block">
+
+                <form action="" method="post" id="form-login" class="form-horizontal">
+
+                    <div class="col-md-12">
+                        <!-- Info Alert Content -->
+                        <div class="alert alert-info alert-dismissable text-justify">
+                            <h4><i class="fa fa-info-circle"></i><strong> Importante</strong></h4> Para ingresar en esta red social privada de UNOi, debes ingresar el nombre de usuario y contraseña que utilizas para tener acceso a la plataforma de pagos UNOi (el nombre de usuario es tu dirección de correo electrónico)
+                            En caso de que no realices tus pagos en línea, ingresa el nombre de usuario y contraseña que utilizas para tener acceso a la plataforma
+                            <label data-toggle="tooltip" title="" data-original-title="LMS o Learning Management System es el sistema que UNOi ha creado para apoyar a las escuelas y profesores en la gestión de sus clases, alumnos y contenidos.">
+                                <strong><u><em>LMS</em></u></strong> <i class="fa fa-info-circle"></i>
+                            </label>
+                            .
+                        </div>
+                        <!-- END Info Alert Content -->
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                <input type="text" id="login-user" name="login-user" class="form-control input-lg" placeholder="Ingresa tu usuario del LMS">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                                <input type="password" id="login-password" name="login-password" class="form-control input-lg" placeholder="Ingresa tu contraseña">
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="baseUrl" name="baseUrl" value="{{ app.request.getBaseURL() }}">
+                    
+                    <div class="form-group form-actions">
+                        
+                        <div class="col-xs-4">
+                            <!--
+                            <label class="switch switch-primary" data-toggle="tooltip" title="Remember Me?">
+                                <input type="checkbox" id="login-remember-me" name="login-remember-me" checked>
+                                <span></span>
+                            </label>
+                            -->
+                        </div>
+                        
+                        <div class="col-xs-8 text-right">
+                            <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-angle-right"></i> Ingresar</button>
+                        </div>
+                    </div>
+                </form>
+                <!-- END Login Form -->
+            </div>
+            <!-- END Login Block -->
+        </div>
+
+
+        {# defined works with variable names #}
+        {% if error is defined %}
+            <input type="hidden" id="error" name="error" value="{{error}}" readonly="readonly" />
+        {% endif %}
+
+        <!-- Modal ValidaMailM -->
+        <div id="ValidaMailM" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title"><i class="fa fa-info-circle"></i> <span class="titleM"></span></h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="jumbotron-carousel">
+                            <div class="row">
+                                <div class="col-md-8 col-sm-8 text-center">
+
+                                    <span class="bodyM"></span>
+                                </div>
+                                <div class="col-md-4 col-sm-4 text-center">
+                                    <div class="carousel slide" data-ride="carousel" id="icon-carousel">
+                                        <br/>
+                                        <!-- Carousel items -->
+                                        <div class="carousel-inner" role="listbox">
+                                            <div class="item active">
+                                                <h2 class="text-center"><span class="fa fa-envelope-o fa-3x"></span></h2>
+                                            </div>
+                                            <div class="item">
+                                                <h2 class="text-center"><span class="fa fa-envelope fa-3x"></span></h2>
+                                            </div>
+                                            <div class="item">
+                                                <h2 class="text-center"><span class="fa fa-envelope-square fa-3x"></span></h2>
+                                            </div>
+                                        </div>
+                                        <!-- End Carousel items -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END Modal ValidaMailM -->
+
+        <!-- Modal successM -->
+        <div id="successM" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header bg-success">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title"><i class="fa fa-info-circle"></i> <span class="titleSuccessM"></span></h4>
+                    </div>
+                    <div class="modal-body">
+                        <span class="bodySuccessM"></span>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" >Ok</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END Modal ValidaMailM -->
+
+        <!-- Modal redirectM -->
+        <div id="redirectM" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header bg-success">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title"><i class="fa fa-info-circle"></i> <span class="titleRedirectM"></span></h4>
+                    </div>
+                    <div class="modal-body">
+                        <span class="bodyRedirectM"></span>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="login()">Ok</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END Modal ValidaMailM -->
+
+        <!-- Modal Error -->
+        <div id="errorM" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title"><i class="fa fa-info-circle"></i> Error</h4>
+                    </div>
+                    <div class="modal-body">
+                        <h3><span class="bodyError"></span></h3>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END Modal Error -->
+
+
+        <!-- Include Jquery library from Google's CDN but if something goes wrong get Jquery from local file -->
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script>!window.jQuery && document.write(decodeURI('%3Cscript src="js/vendor/jquery-1.11.2.min.js"%3E%3C/script%3E'));</script>
+
+        <!-- Bootstrap.js, Jquery plugins and Custom JS code -->
+        <script src="https://pre-staticmx.unoi.com/global/js/vendor/bootstrap.min.js"></script>
+        <script src="https://pre-staticmx.unoi.com/global/js/plugins.js"></script>
+        <script src="https://pre-staticmx.unoi.com/global/js/app.js"></script>
+
+        <!-- Load and execute javascript code used only in this page -->
+        <script src="{{ asset('public/assets/js/login.js') }}"></script>
+        <script>
+            $(function () {
+                Login.init();
+            });
+            /*inicio video fondo
+            var d = new Date();
+            var H = d.getHours();
+            var videocontainer = document.getElementById('bgvid');
+            if(H<17 && H>8){
+                document.getElementById('webm').setAttribute('src', 'https://pre-staticmx.unoi.com/global/videos/720p_1.webm');
+                document.getElementById('mp4').setAttribute('src', 'https://pre-staticmx.unoi.com/global/videos/720p_1.mp4');
+                document.getElementById('ogv').setAttribute('src', 'https://pre-staticmx.unoi.com/global/videos/720p_1.theora.ogv');
+            }else{
+                document.getElementById('webm').setAttribute('src', 'https://pre-staticmx.unoi.com/global/videos/720p_2.webm');
+                document.getElementById('mp4').setAttribute('src', 'https://pre-staticmx.unoi.com/global/videos/720p_2.mp4');
+                document.getElementById('ogv').setAttribute('src', 'https://pre-staticmx.unoi.com/global/videos/720p_2.theora.ogv');
+            }
+
+            videocontainer.load();
+            videocontainer.play();
+            /*fin video fondo*/
+
+            {% if pagosNew is defined %}
+            if({{ pagosNew }}){
+                $('#successM').modal();
+                $('.titleSuccessM').html('Bienvenido a la Red Social de UNOi');
+                $('.bodySuccessM').html('Como medida de seguridad debe ingresar nuevamente su Usuario LMS y Contraseña.<br/><br/>En futuras ocasiones esto ya no sera necesario, haciendo el Login Automático');
+            }
+            {% endif %}
+        </script>
+        
+    </body>
+
+</html>
