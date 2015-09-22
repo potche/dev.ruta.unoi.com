@@ -13,6 +13,9 @@ use UNO\EvaluacionesBundle\Controller\LMS\LMS;
 use UNO\EvaluacionesBundle\Entity\Person;
 
 class LoginController extends Controller{
+
+    private $_person;
+
     /**
      * @Route("/")
      */
@@ -23,7 +26,6 @@ class LoginController extends Controller{
             'browser' => $dataBrowser->getBrowser(),
             'browserVersion' => $dataBrowser->getVersion()
         ));
-
     }
 
     /**
@@ -38,18 +40,30 @@ class LoginController extends Controller{
             $existsUserInDB = $this->existsUserInDB($this->user,$this->pass);
 
             if($existsUserInDB){
-                echo "<h1>$this->user, si esta en la BD</h1>";
+                echo "<h1>$this->user, si esta en la BD.<br/> Dejar pasar y asignar permisos</h1>";
             }else{
-                echo "<h1>$this->user, no esta dado de alta</h1>";
                 $LMS = new LMS();
                 $api = $LMS->getDataXUserPass($this->user,$this->pass,'http://homol.sistemauno.com/ws/uno_wsj_login.php');
-                return new Response(json_encode($api));
+                $this->_person = $this->getDatPerson($api);
+                if (is_object($this->_person)) {
+                    #si existe el usuario hay que guardarlo en la bd y validar su perfil....
+                    $this->altaUser();
+                }else{
+                    return new Response($api);
+                }
+
+
             }
         }else{
             return new response($request->getMethod());
         }
     }
 
+    /**
+     * @param $username
+     * @param $password
+     * @return bool
+     */
     private function existsUserInDB($username,$password){
         $em = $this->getDoctrine()->getManager();
         $Person = $em->getRepository('UNOEvaluacionesBundle:Person')->findOneBy(array('user' => $username, 'password' => $password));
@@ -65,6 +79,52 @@ class LoginController extends Controller{
         $dataBrowser->getBrowser();
         $dataBrowser->getVersion();
         $dataBrowser->getPlatform();
+    }
+
+    private function getDatPerson($api){
+        $dat = json_decode($api);
+        return $dat->person;
+    }
+
+    private function valAPI(){
+
+    }
+
+    private function validateEmailUser($api){
+
+    }
+
+    private function altaUser(){
+
+        print_r($this->_person->personId);
+        exit();
+        $em = $this->getDoctrine()->getManager();
+        $Person = new Person();
+        $Person->setPersonId($api->personId);
+        $Person->setUsername($api->username);
+        $Person->setNombre($api->name);
+        $Person->setApaterno($api->surname);
+        $Person->setCorreo($api->email);
+        $Person->setPassword($this->getSessionPassword());
+        $Person->setCreacion(new \DateTime());
+        $Person->setUltacceso(new \DateTime());
+        $Person->setActivo(1);
+        $Person->setIdlms($api->personaId);
+        $Person->setLanguageCode($api->languageCode);
+        $Person->setLanguage($api->language);
+        $Person->setToken($this->getSessionToken());
+        $Person->setBirthDay($api->birthDay);
+        $Person->setBirthMonth($api->birthMonth);
+        $Person->setBirthYear($api->birthYear);
+        $Person->setAdmin(0);
+
+        $em->persist($Person);
+        $em->flush();
+        if ($Person) {
+            return true;
+        }else{
+            return false;
+        }
     }
 
 }

@@ -140,6 +140,14 @@ var Login = function() {
                                     );
                                     */
                                     break;
+                                case '97':
+                                    $('#errorM').modal();
+                                    $('.bodyError').html(rs[1]);
+                                    break;
+                                case '98':
+                                    $('#errorM').modal();
+                                    $('.bodyError').html(rs[1]);
+                                    break;
                                 case '100':
                                     $('#errorM').modal();
                                     $('.bodyError').html('No se pudo autenticar exitosamente, inténtelo de nuevo');
@@ -160,7 +168,8 @@ var Login = function() {
                                     login();
                                     break;
                                 default :
-                                    alert(rs);
+                                    $('#errorM').modal();
+                                    $('.bodyError').html(rs);
                                     break
                             }
                         },

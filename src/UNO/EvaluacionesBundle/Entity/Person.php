@@ -114,8 +114,7 @@ class Person
      * @var integer
      *
      * @ORM\Column(name="personId", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     *
      */
     private $personid;
 
@@ -455,6 +454,20 @@ class Person
     public function getAdmin()
     {
         return $this->admin;
+    }
+
+    /**
+     * Set personid
+     *
+     * @param boolean $personid
+     *
+     * @return Person
+     */
+    public function setPersonId($personid)
+    {
+        $this->personid = $personid;
+
+        return $this;
     }
 
     /**

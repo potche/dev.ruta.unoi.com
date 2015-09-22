@@ -15,6 +15,7 @@ class LMS{
     /**
      * Lista de Etatus
      * 1   - ok
+     * 97  - Could not resolve host
      * 98  - Not valid JSON string
      * 99  - error de conexion
      * 100 - no existe en LMS
@@ -76,13 +77,12 @@ class LMS{
 
             $result = curl_exec( $this->_conn );
             if ($result === false) {
-                $this->_failure = 'Curl Error: ' . curl_error($this->_conn);
+                $this->_failure = '97|Curl Error: ' . curl_error($this->_conn);
             }else{
                 $this->getJSON($result);
             }
 
             $this->closeConnection();
-
             return $this->getData();
         }else{
             return $this->_failure;
@@ -94,9 +94,8 @@ class LMS{
      */
     protected function getJSON($result){
         $responseCode = curl_getinfo($this->_conn, CURLINFO_HTTP_CODE);
-
         if (!self::successfulHttpResponse($responseCode)){
-            $this->_failure = 'Error ['.$responseCode.']: ' . $result;
+            $this->_failure = 'Error ['.$responseCode.']';
         }else{
             $parsedResult = json_decode($result,true);
 
@@ -104,11 +103,11 @@ class LMS{
                 if(!$this->isValid($parsedResult)){
                     $this->_failure = '100';
                 }else{
-                    $this->_api = $parsedResult;
+                    $this->_api = $result;
                 }
             } else {
                 $error = json_last_error_msg();
-                $this->_failure = "99 ($error)";
+                $this->_failure = "98|Not valid JSON string: $error";
             }
         }
     }

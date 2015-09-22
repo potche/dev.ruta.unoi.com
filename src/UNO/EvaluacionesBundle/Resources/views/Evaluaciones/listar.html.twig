@@ -5,7 +5,7 @@
             <div class="row">
                 <!-- Main Title (hidden on small devices for the statistics to fit) -->
                 <div class="col-md-4 col-lg-6 hidden-xs hidden-sm">
-                    <h1>Bienvenido, <strong>{{ 'Firstname' }}</strong><br><small>{{ 'Colegio' }}</small></h1>
+                    <h1>Bienvenido, <strong>{{ 'Firstname' }}</strong><br></h1>
                 </div>
                 <!-- END Main Title -->
 
@@ -14,19 +14,19 @@
                     <div class="row text-center">
                         <div class="col-xs-4 col-sm-3">
                             <h2 class="animation-hatch">
-                                <strong>{{ '#' }}</strong><br>
+                                <strong>{{ stats['answered']}}</strong><br>
                                 <small><i class="fa fa-check"></i> Respondidas</small>
                             </h2>
                         </div>
                         <div class="col-xs-4 col-sm-3">
                             <h2 class="animation-hatch">
-                                <strong>{{ '#' }}</strong><br>
-                                <small><i class="fa fa-exclamation-triangle"></i> Por responder</small>
+                                <strong>{{ stats['toBeAnswered']}}</strong><br>
+                                <small><i class="fa fa-exclamation-triangle"></i> Pendientes</small>
                             </h2>
                         </div>
                         <div class="col-xs-4 col-sm-3">
                             <h2 class="animation-hatch">
-                                %<strong>{{ ' 50' }}</strong><br>
+                                %<strong>{{ stats['compliance']}}</strong><br>
                                 <small><i class="fa fa-check-circle"></i> Cumplimiento</small>
                             </h2>
                         </div>
@@ -51,9 +51,14 @@
                     </div>
                     <h3 class="widget-content text-left animation-pullDown">
                         Mis <strong>Evaluaciones</strong><br>
-                        <small>Perfil</small>
                     </h3>
+                    {% if surveyList|length == 0 %}
+                    <h3 class="widget-content text-center animation-pullDown">
+                        Actualmente no tienes evaluaciones por responder<br>
+                    </h3>
+                    {% endif %}
                 </div>
+                {% if surveyList|length > 0 %}
                 <div class="table-responsive">
                     <table class="table table-vcenter table-striped">
                         <thead>
@@ -65,19 +70,34 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td>Encuesta de prueba</td>
-                            <td class="hidden-sm hidden-xs">30 de septiembre de 2015 16:00 hrs</td>
-                            <td><a href="#" class="label label-success">Resuelta</a></td>
-                            <td class="text-center">
-                                <div class="btn-group btn-group-xs">
-                                    <a href="{{ path('responder') }}" data-toggle="tooltip" title="Responder" class="btn btn-default"><i class="fa fa-pencil"></i></a>
-                                </div>
-                            </td>
-                        </tr>
+                        {% for survey in surveyList %}
+                            <tr>
+                                <td>{{ survey['title'] }}</td>
+                                <td class="hidden-sm hidden-xs">{{ survey['closingDate'] }}</td>
+                                <td>
+                                    {% if survey['status']  == 0 %}
+                                        <span class="label label-danger">Sin Responder</span>
+                                    {% elseif  survey['status']  == 4 %}
+                                        <span class="label label-success">Resuelta</span>
+                                    {% elseif survey['status'] == 5 %}
+                                        <span class="label label-warning">Incompleta</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-xs">
+                                        {% if survey['status']  == 0 or survey['status']  == 5 %}
+                                            <a href="{{ path('responder') }}" data-toggle="tooltip" title="Responder" class="btn btn-default"><i class="fa fa-pencil"></i></a>
+                                        {% else %}
+                                            <span>No hay acciones por realizar</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
                         </tbody>
                     </table>
                 </div>
+                {% endif %}
                 <br>
             </div>
             <!-- END Widget -->
