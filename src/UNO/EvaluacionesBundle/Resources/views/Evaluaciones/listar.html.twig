@@ -5,7 +5,7 @@
             <div class="row">
                 <!-- Main Title (hidden on small devices for the statistics to fit) -->
                 <div class="col-md-4 col-lg-6 hidden-xs hidden-sm">
-                    <h1>Bienvenido, <strong>{{ 'Firstname' }}</strong><br></h1>
+                    <h1>Bienvenido, <strong>{{ app.session.get('nameS') }}</strong><br></h1>
                 </div>
                 <!-- END Main Title -->
 
@@ -86,7 +86,7 @@
                                 <td class="text-center">
                                     <div class="btn-group btn-group-xs">
                                         {% if survey['status']  == 0 or survey['status']  == 5 %}
-                                            <a href="{{ path('responder') }}" data-toggle="tooltip" title="Responder" class="btn btn-default"><i class="fa fa-pencil"></i></a>
+                                            <a href="{{ path('responder',{'id': survey['id']}) }}" data-toggle="tooltip" title="Responder" class="btn btn-default"><i class="fa fa-pencil"></i></a>
                                         {% else %}
                                             <span>No hay acciones por realizar</span>
                                         {% endif %}
