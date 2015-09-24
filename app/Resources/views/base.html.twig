@@ -12,6 +12,7 @@
     {% endblock %}
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1.0">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+
 </head>
 <body>
 <div id="page-wrapper">
@@ -56,9 +57,9 @@
                         <div class="sidebar-user-avatar">
                             <img src="https://staticmx.unoi.com/global/logos/gris_fondoblanco_sin.png" alt="avatar">
                         </div>
-                        <div class="sidebar-user-name">{{ 'username' }}</div>
+                        <div class="sidebar-user-name">{{ app.session.get('nameS') }}</div>
                         <div class="sidebar-user-links">
-                            <a href={{ path('login') }} data-toggle="tooltip" data-placement="bottom" ><i class="fa fa-ban"></i> Cerrar sesión</a>
+                            <a href={{ path('logout') }} data-toggle="tooltip" data-placement="bottom" ><i class="fa fa-ban"></i> Cerrar sesión</a>
                         </div>
                     </div>
 
@@ -117,7 +118,7 @@
                         <ul class="dropdown-menu dropdown-custom dropdown-menu-right">
                             <li class="dropdown-header text-center">Cuenta</li>
                             <li>
-                                <a href="{{ path('login') }}"><i class="fa fa-ban fa-fw pull-right"></i> Cerrar sesión</a>
+                                <a href="{{ path('logout') }}"><i class="fa fa-ban fa-fw pull-right"></i> Cerrar sesión</a>
                             </li>
                         </ul>
                     </li>

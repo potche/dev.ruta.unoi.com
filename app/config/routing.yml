@@ -5,12 +5,15 @@ uno_evaluaciones:
 login:
     path:     /
     defaults: { _controller: UNOEvaluacionesBundle:Login\Login:index}
+logout:
+    path:     /logout
+    defaults: { _controller: UNOEvaluacionesBundle:Login\Login:logout}
 autentication:
     path:     /ajax/autentication
     defaults: { _controller: UNOEvaluacionesBundle:Login\Login:autentication }
     methods:  [POST]
 responder:
-    path:   /responder
+    path:   /responder/{id}
     defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Responder:index}
 listar:
     path:   /listar

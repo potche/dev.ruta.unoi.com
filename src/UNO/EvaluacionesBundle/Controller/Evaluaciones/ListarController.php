@@ -14,65 +14,114 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ListarController extends Controller
 {
+    /**
+     * Landing endpoint que devuelve la vista con las evaluaciones de un usuario
+     *
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @throws \Doctrine\DBAL\DBALException
+     *
+     * @version 0.1.0
+     * @author jbravob julio@dsindigo.com
+     * @copyright Sistema UNO Internacional. 2015
+     */
     public function indexAction(Request $request) {
-        $surveyList = array();
-        //I'll get these information (personiD, user, name) from session variable
-        $personID = '3066990';
 
-        //Gettin' profiles
-        $em = $this->getDoctrine()->getEntityManager();
-        $connection = $em->getConnection();
+        $session = $request->getSession();
+        // Si no se tiene iniciada una sesión, se redirige al login
+        if (!$session->has('personIdS') && !$session->has('nameS')) {
 
-        $query = 'SELECT Profile.profileId FROM unoevaluaciones.Profile INNER JOIN PersonSchool ON PersonSchool.profileId = Profile.profileId INNER JOIN Person ON Person.personId = PersonSchool.personId WHERE Person.personId =:personID';
+            return $this->redirectToRoute('login');
+        }
 
-        $statement = $connection->prepare($query);
-        $statement->bindValue('personID',$personID);
-        $statement->execute();
-        $resultset = $statement->fetchAll();
+        // Tomamos el id del usuario para poder hacer las consultas necesarias
+        $personID = $session->get('personIdS');
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        // Seleccionamos los perfiles del usuario, para posteriormente traer las evaluaciones asignadas a éstos
+        $profs = $qb->select('pr.profileid')
+            ->from('UNOEvaluacionesBundle:Profile', 'pr')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool', 'ps', 'WITH', 'ps.profileid = pr.profileid')
+            ->innerJoin('UNOEvaluacionesBundle:Person', 'pe', 'WITH', 'pe.personid = ps.personid')
+            ->where('pe.personid = :personID')
+            ->setParameter('personID', $personID)
+            ->getQuery()
+            ->getResult();
+
+        // Agregamos los ids de los perfiles a una cadena para pasarlos como rango a la siguiente consulta
         $profiles = '';
-
-        foreach($resultset as $r) {
-
-            $profiles .= $r['profileId'].', ';
+        foreach($profs as $r) {
+            $profiles .= $r['profileid'].', ';
         }
         $profiles = rtrim($profiles,', ');
 
-        // Gettin' all active surveys according to user profile(s)
-        // Tried with dql but returns nothing when using IN clause -_-
+        // Tomamos todas las evaluaciones activas que le corresponden al usuario de acuerdo a sus perfiles
+        if($profiles) {
 
-        $query = 'SELECT surveyId, title, closingDate FROM unoevaluaciones.Survey INNER JOIN SurveyXProfile ON SurveyXProfile.Survey_surveyId = Survey.surveyId WHERE SurveyXProfile.Profile_profileId IN ('.$profiles.') AND active = 1 GROUP BY surveyId, title, closingDate';
+            $qb = $em->createQueryBuilder();
+            $evals = $qb->select('su.surveyid, su.title, su.closingdate')
+                ->from('UNOEvaluacionesBundle:Survey', 'su')
+                ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile', 'sxp', 'WITH', 'sxp.surveySurveyid = su.surveyid')
+                ->add('where', $qb->expr()->in('sxp.profileProfileid',$profiles))
+                ->andWhere('su.active = 1')
+                ->groupBy('su.surveyid, su.title, su.closingdate')
+                ->getQuery()
+                ->getResult();
+        }
 
-        $statement = $connection->prepare($query);
-        $statement->execute();
-        $resultset = $statement->fetchAll();
-
-        // Check log for Survey status query
-        $query = 'SELECT Action_idAction FROM Log WHERE Person_personId =:personId AND Survey_surveyId =:surveyId AND Log.Action_idAction IN (4,5) ORDER BY ABS(now() - Log.date) ASC';
-
+        // Para efectos estadísticos llevamos la cuenta de cuántas evaluaciones faltan por responder
         $countToBeAnswered = 0;
-        foreach ($resultset as $survey){
+        $surveyList = array();
 
-            $statement = $connection->prepare($query);
-            $statement->bindValue('personId',$personID);
-            $statement->bindValue('surveyId',$survey['surveyId']);
-            $statement->execute();
-            $status = $statement->fetch();
+        /*
+         * De cada encuesta preguntamos si ya está resuelta,
+         * o está pendiende de resolver. Para ello utilizamos
+         * estos códigos:
+         *
+         * 4: El usuario ya respondió la evaluación
+         * 5: El usuario dejó incompleta la evaluación
+         *
+         */
+        $qb = $em->createQueryBuilder();
+        foreach ($evals as $survey) {
 
-            if($status['Action_idAction'] == 5 || !$status) {
+            $query = $qb->select('l')
+            ->from('UNOEvaluacionesBundle:Log', 'l')
+            ->where('l.personPersonid = :personId')
+            ->andWhere('l.surveySurveyid = :surveyId')
+            ->andWhere('l.actionaction IN (4,5)')
+            ->orderBy('l.date','DESC')
+            ->setParameters(array(
+                'personId' => $personID,
+                'surveyId' => $survey['surveyid'],
+            ))
+            ->getQuery()
+            ->getResult();
 
+            if(empty($query)) {
+
+                $status = 0;
                 $countToBeAnswered++;
             }
+            else {
 
-            array_push($surveyList, array(
+                $status = $query[0]->getActionaction()->getIdaction();
+                $status == 5 ? $countToBeAnswered++ : null;
+            }
 
-                'id' => $survey['surveyId'],
+            // Agregamos al arreglo de encuestas lo necesario para mostrarlas en el dashboard
+            array_push($surveyList,array(
+                'id' => $survey['surveyid'],
                 'title' => $survey['title'],
-                'closingDate' => date_format(date_create($survey['closingDate']), 'j/M/Y \@ g:i a'),
-                'status' => (!is_null($status['Action_idAction']) ? $status['Action_idAction']: '0'),
+                'closingDate' => $survey['closingdate']->format('j/M/Y \@ g:i a'),
+                'status' => $status,
             ));
         }
 
-        $statistics = $this->fetchStats(count($resultset),$countToBeAnswered);
+        // Generamos las estadísticas que necesitamos agregar al dashboard
+        $statistics = $this->fetchStats(count($evals),$countToBeAnswered);
 
         return $this->render('@UNOEvaluaciones/Evaluaciones/listar.html.twig', array(
 
@@ -81,7 +130,22 @@ class ListarController extends Controller
         ));
     }
 
-    private function fetchStats($countSurveys, $countToBeAnswered){
+    /**
+     * Método para generar estadísticas de las evaluaciones del usuario.
+     *
+     * Devuelve un arreglo con:
+     *
+     * answered: el número de evaluaciones completadas (total - encuestasASerRespondidas)
+     * toBeAnswered: el número de evaluaciones a ser completadas
+     * compliance: el porcentaje de cumplimiento del usuario (número de encuestas respondidas * 100 / total)
+     *
+     * @param $countSurveys
+     * @param $countToBeAnswered
+     * @return array
+     *
+     * @author jbravob julio@dsindigo.com
+     */
+    private function fetchStats($countSurveys, $countToBeAnswered) {
 
         $answeredCount = $countSurveys - $countToBeAnswered;
         $compliancePercentage = ($countSurveys > 0 ? (($answeredCount * 100)/$countSurveys): 0);
