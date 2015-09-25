@@ -1,1 +1,17 @@
-Responder evaluación
+{% extends 'base.html.twig' %}
+{% block body %}
+
+
+
+    <h1>{{ survey.title survey.surveyId }}</h1>
+    {% for question in questions %}
+<h3>{{ question.question }}</h3>
+{% endfor %}
+
+    {% for data in somedata %}
+
+        <h6>{{ data.cosa1 }}</h6>
+
+    {% endfor %}
+
+{% endblock %}

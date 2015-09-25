@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="UNO\EvaluacionesBundle\Entity\Log" table="Log">
+    <indexes>
+      <index name="fk_action_idx" columns="Action_idAction"/>
+    </indexes>
+    <id name="logid" type="integer" column="logId">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="personPersonid" type="integer" column="Person_personId" nullable="false">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="surveySurveyid" type="integer" column="Survey_surveyId" nullable="false">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="date" type="datetime" column="date" nullable="false"/>
+    <many-to-one field="actionaction" target-entity="Action" fetch="LAZY">
+      <join-columns>
+        <join-column name="Action_idAction" referenced-column-name="idAction"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

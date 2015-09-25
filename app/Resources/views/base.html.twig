@@ -1,13 +1,166 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8" />
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
-    </body>
+<head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}Gauss UNOi{% endblock %}</title>
+    {% block stylesheets %}
+        <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/plugins.css">
+        <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/main.css">
+        <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/themes.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    {% endblock %}
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+
+</head>
+<body>
+<div id="page-wrapper">
+    <div class="preloader themed-background">
+        <div class="inner">
+            <h3 class="text-light visible-lt-ie9 visible-lt-ie10"><strong>Cargando..</strong></h3>
+            <div class="preloader-spinner hidden-lt-ie9 hidden-lt-ie10"></div>
+        </div>
+    </div>
+
+    <div id="page-container" class="sidebar-partial sidebar-visible-lg sidebar-no-animations">
+        <!-- Alternative Sidebar -->
+        <div id="sidebar-alt">
+            <!-- Wrapper for scrolling functionality -->
+            <div id="sidebar-alt-scroll">
+                <!-- Sidebar Content -->
+                <div class="sidebar-content">
+
+                </div>
+                <!-- END Sidebar Content -->
+            </div>
+            <!-- END Wrapper for scrolling functionality -->
+        </div>
+        <!-- END Alternative Sidebar -->
+
+        <!-- Main Sidebar -->
+        <div id="sidebar">
+            <!-- Wrapper for scrolling functionality -->
+            <div id="sidebar-scroll">
+                <!-- Sidebar Content -->
+                <div class="sidebar-content">
+                    <!-- Brand -->
+                    <img src="https://staticmx.unoi.com/global/logos/color_trans_sin.png" style=" margin-right: 30px; max-width: 50%; max-height: 60%;">
+                    <a href="{{ path('listar') }}" class="sidebar-brand">
+                                    <span class="sidebar-nav-mini-hide">
+                                        <strong>Gauss</strong> UNOi
+                                    </span>
+                    </a>
+                    <!-- END Brand -->
+                    <!-- User Info -->
+                    <div class="sidebar-section sidebar-user clearfix sidebar-nav-mini-hide">
+                        <div class="sidebar-user-avatar">
+                            <img src="https://staticmx.unoi.com/global/logos/gris_fondoblanco_sin.png" alt="avatar">
+                        </div>
+                        <div class="sidebar-user-name">{{ app.session.get('nameS') }}</div>
+                        <div class="sidebar-user-links">
+                            <a href={{ path('logout') }} data-toggle="tooltip" data-placement="bottom" ><i class="fa fa-ban"></i> Cerrar sesión</a>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Navigation -->
+                    <ul class="sidebar-nav">
+                        <li>
+                            <a href="#" class="sidebar-nav-menu"><i class="fa fa-angle-left sidebar-nav-indicator sidebar-nav-mini-hide"></i><i class="fa fa-bars fa-fw sidebar-nav-icon"></i><span class="sidebar-nav-mini-hide">Menú</span></a>
+                            <ul>
+                                <li>
+                                    <div class="alert alert-success alert-alt">
+                                        <a href="{{ path('listar') }}"><i class="fa fa-pencil"></i> Mis encuestas</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <!-- END Sidebar Navigation -->
+                </div>
+                <!-- END Sidebar Content -->
+            </div>
+            <!-- END Wrapper for scrolling functionality -->
+        </div>
+        <!-- END Main Sidebar -->
+
+        <!-- Main Container -->
+        <div id="main-container">
+            <!-- Try also inverse style -->
+            <header class="navbar navbar-default">
+                <!-- Left Header Navigation -->
+                <ul class="nav navbar-nav-custom">
+                    <!-- Main Sidebar Toggle Button -->
+                    <li>
+                        <a href="javascript:void(0)" onclick="App.sidebar('toggle-sidebar');this.blur();">
+                            <i class="fa fa-bars fa-fw"></i>
+                        </a>
+                    </li>
+                </ul>
+                <!-- END Left Header Navigation -->
+
+                <!-- Search Form
+                <form action="page_ready_search_results.html" method="post" class="navbar-form-custom" role="search">
+                    <div class="form-group">
+                        <input type="text" id="top-search" name="top-search" class="form-control" placeholder="Buscar..">
+                    </div>
+                </form>
+                END Search Form -->
+
+                <!-- Right Header Navigation -->
+                <ul class="nav navbar-nav-custom pull-right">
+
+                    <!-- User Dropdown -->
+                    <li class="dropdown">
+                        <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
+                            <img src="https://staticmx.unoi.com/global/logos/gris_fondoblanco_sin.png" alt="avatar"> <i class="fa fa-angle-down"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-custom dropdown-menu-right">
+                            <li class="dropdown-header text-center">Cuenta</li>
+                            <li>
+                                <a href="{{ path('logout') }}"><i class="fa fa-ban fa-fw pull-right"></i> Cerrar sesión</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- END User Dropdown -->
+                </ul>
+                <!-- END Right Header Navigation -->
+            </header>
+            <!-- END Header -->
+
+            <!-- Page content -->
+            <div id="page-content">
+                {% block body %}
+                    <!-- Own content from views -->
+                {% endblock %}
+            </div>
+            <!-- END Page Content -->
+
+            <!-- Footer -->
+            <footer class="clearfix">
+                <div class="pull-right">
+                    Hecho con <i class="fa fa-heart text-danger"></i> por <a href="https://mx.unoi.com" target="_blank">Sistema UNO Internacional</a>
+                </div>
+            </footer>
+            <!-- END Footer -->
+        </div>
+        <!-- END Main Container -->
+    </div>
+    <!-- END Page Container -->
+</div>
+<!-- END Page Wrapper -->
+
+<!-- Scroll to top link, initialized in js/app.js - scrollToTop() -->
+<a href="#" id="to-top"><i class="fa fa-angle-double-up"></i></a>
+
+{% block javascripts %}
+    <script src="https://staticmx.unoi.com/global/js/pages/index.js"></script>
+    <script>$(function(){ Index.init(); });</script>
+    <script src="https://staticmx.unoi.com/global/js/vendor/jquery-1.11.3.min.js"></script>
+    <script src="https://staticmx.unoi.com/global/js/vendor/bootstrap.min.js"></script>
+    <script src="https://staticmx.unoi.com/global/js/plugins.js"></script>
+    <script src="https://staticmx.unoi.com/global/js/app.js"></script>
+    <script src="https://staticmx.unoi.com/global/js/vendor/modernizr-respond.min.js"></script>
+{% endblock %}
+</body>
 </html>

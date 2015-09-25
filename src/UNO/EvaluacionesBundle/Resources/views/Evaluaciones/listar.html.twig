@@ -1,1 +1,106 @@
-listar evaluaciones
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="content-header content-header-media">
+        <div class="header-section">
+            <div class="row">
+                <!-- Main Title (hidden on small devices for the statistics to fit) -->
+                <div class="col-md-4 col-lg-6 hidden-xs hidden-sm">
+                    <h1>Bienvenido, <strong>{{ app.session.get('nameS') }}</strong><br></h1>
+                </div>
+                <!-- END Main Title -->
+
+                <!-- Top Stats -->
+                <div class="col-md-8 col-lg-6">
+                    <div class="row text-center">
+                        <div class="col-xs-4 col-sm-3">
+                            <h2 class="animation-hatch">
+                                <strong>{{ stats['answered']}}</strong><br>
+                                <small><i class="fa fa-check"></i> Respondidas</small>
+                            </h2>
+                        </div>
+                        <div class="col-xs-4 col-sm-3">
+                            <h2 class="animation-hatch">
+                                <strong>{{ stats['toBeAnswered']}}</strong><br>
+                                <small><i class="fa fa-exclamation-triangle"></i> Pendientes</small>
+                            </h2>
+                        </div>
+                        <div class="col-xs-4 col-sm-3">
+                            <h2 class="animation-hatch">
+                                %<strong>{{ stats['compliance']}}</strong><br>
+                                <small><i class="fa fa-check-circle"></i> Cumplimiento</small>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+                <!-- END Top Stats -->
+            </div>
+        </div>
+        <!-- For best results use an image with a resolution of 2560x248 pixels (You can also use a blurred image with ratio 10:1 - eg: 1000x100 pixels - it will adjust and look great!) -->
+        <img src="https://staticmx.unoi.com/global/img/placeholders/headers/dashboard_header.jpg" alt="header image" class="animation-pulseSlow">
+    </div>
+    <!-- END Dashboard Header -->
+
+    <!-- Mini Top Stats Row -->
+    <div class="row">
+        <div class="col-sm-12 col-lg-12">
+            <!-- Widget -->
+            <div class="widget widget-hover-effect1">
+                <div class="widget-simple">
+                    <div class="widget-icon pull-left themed-background-autumn animation-fadeIn">
+                        <i class="fa fa-file-text"></i>
+                    </div>
+                    <h3 class="widget-content text-left animation-pullDown">
+                        Mis <strong>Evaluaciones</strong><br>
+                    </h3>
+                    {% if surveyList|length == 0 %}
+                    <h3 class="widget-content text-center animation-pullDown">
+                        Actualmente no tienes evaluaciones por responder<br>
+                    </h3>
+                    {% endif %}
+                </div>
+                {% if surveyList|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-vcenter table-striped">
+                        <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th class="hidden-sm hidden-xs">Fecha Límite</th>
+                            <th>Estatus</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for survey in surveyList %}
+                            <tr>
+                                <td>{{ survey['title'] }}</td>
+                                <td class="hidden-sm hidden-xs">{{ survey['closingDate'] }}</td>
+                                <td>
+                                    {% if survey['status']  == 0 %}
+                                        <span class="label label-danger">Sin Responder</span>
+                                    {% elseif  survey['status']  == 4 %}
+                                        <span class="label label-success">Resuelta</span>
+                                    {% elseif survey['status'] == 5 %}
+                                        <span class="label label-warning">Incompleta</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-xs">
+                                        {% if survey['status']  == 0 or survey['status']  == 5 %}
+                                            <a href="{{ path('responder',{'id': survey['id']}) }}" data-toggle="tooltip" title="Responder" class="btn btn-default"><i class="fa fa-pencil"></i></a>
+                                        {% else %}
+                                            <span>No hay acciones por realizar</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+                <br>
+            </div>
+            <!-- END Widget -->
+        </div>
+    </div>
+{% endblock %}
