@@ -26,8 +26,8 @@
                         </div>
                         <div class="col-xs-4 col-sm-3">
                             <h2 class="animation-hatch">
-                                %<strong>{{ stats['compliance']}}</strong><br>
-                                <small><i class="fa fa-check-circle"></i> Cumplimiento</small>
+                                <strong>{{ stats['compliance']}}</strong> %<br>
+                                <small> Cumplimiento</small>
                             </h2>
                         </div>
                     </div>
@@ -46,8 +46,8 @@
             <!-- Widget -->
             <div class="widget widget-hover-effect1">
                 <div class="widget-simple">
-                    <div class="widget-icon pull-left themed-background-autumn animation-fadeIn">
-                        <i class="fa fa-file-text"></i>
+                    <div class="widget-icon pull-left themed-background animation-fadeIn">
+                        <i class="fa fa-pencil"></i>
                     </div>
                     <h3 class="widget-content text-left animation-pullDown">
                         Mis <strong>Evaluaciones</strong><br>
@@ -86,7 +86,7 @@
                                 <td class="text-center">
                                     <div class="btn-group btn-group-xs">
                                         {% if survey['status']  == 0 or survey['status']  == 5 %}
-                                            <a href="{{ path('responder',{'id': survey['id']}) }}" data-toggle="tooltip" title="Responder" class="btn btn-default"><i class="fa fa-pencil"></i></a>
+                                            <a href="{{ path('responder',{'id': survey['id']}) }}" class="label label-success"><i class="fa fa-pencil"></i> Responder</a>
                                         {% else %}
                                             <span>No hay acciones por realizar</span>
                                         {% endif %}

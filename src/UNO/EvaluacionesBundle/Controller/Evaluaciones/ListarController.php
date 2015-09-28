@@ -46,6 +46,7 @@ class ListarController extends Controller
             ->innerJoin('UNOEvaluacionesBundle:Personschool', 'ps', 'WITH', 'ps.profileid = pr.profileid')
             ->innerJoin('UNOEvaluacionesBundle:Person', 'pe', 'WITH', 'pe.personid = ps.personid')
             ->where('pe.personid = :personID')
+            ->groupBy('pr.profileid')
             ->setParameter('personID', $personID)
             ->getQuery()
             ->getResult();
@@ -56,7 +57,7 @@ class ListarController extends Controller
             $profiles .= $r['profileid'].', ';
         }
         $profiles = rtrim($profiles,', ');
-
+        
         // Tomamos todas las evaluaciones activas que le corresponden al usuario de acuerdo a sus perfiles
         if($profiles) {
 
@@ -67,6 +68,7 @@ class ListarController extends Controller
                 ->add('where', $qb->expr()->in('sxp.profileProfileid',$profiles))
                 ->andWhere('su.active = 1')
                 ->groupBy('su.surveyid, su.title, su.closingdate')
+                ->orderBy('su.title')
                 ->getQuery()
                 ->getResult();
         }
@@ -84,11 +86,13 @@ class ListarController extends Controller
          * 5: El usuario dejó incompleta la evaluación
          *
          */
-        $qb = $em->createQueryBuilder();
+
         foreach ($evals as $survey) {
 
-            $query = $qb->select('l')
+            $qb = $em->createQueryBuilder();
+            $query = $qb->select('act.idaction')
             ->from('UNOEvaluacionesBundle:Log', 'l')
+            ->innerJoin('UNOEvaluacionesBundle:Action', 'act', 'WITH', 'act.idaction = l.actionaction')
             ->where('l.personPersonid = :personId')
             ->andWhere('l.surveySurveyid = :surveyId')
             ->andWhere('l.actionaction IN (4,5)')
@@ -107,7 +111,7 @@ class ListarController extends Controller
             }
             else {
 
-                $status = $query[0]->getActionaction()->getIdaction();
+                $status = $query[0]['idaction'];
                 $status == 5 ? $countToBeAnswered++ : null;
             }
 
@@ -148,7 +152,7 @@ class ListarController extends Controller
     private function fetchStats($countSurveys, $countToBeAnswered) {
 
         $answeredCount = $countSurveys - $countToBeAnswered;
-        $compliancePercentage = ($countSurveys > 0 ? (($answeredCount * 100)/$countSurveys): 0);
+        $compliancePercentage = ($countSurveys > 0 ? number_format((($answeredCount * 100)/$countSurveys), 2, '.', ''): 0);
 
         return array(
             'answered' => $answeredCount,
