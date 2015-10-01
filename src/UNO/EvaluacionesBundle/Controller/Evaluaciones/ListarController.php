@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ListarController extends Controller
 {
+
     /**
      * Landing endpoint que devuelve la vista con las evaluaciones de un usuario
      *
@@ -29,7 +30,7 @@ class ListarController extends Controller
 
         $session = $request->getSession();
         // Si no se tiene iniciada una sesión, se redirige al login
-        if (!$session->has('personIdS') && !$session->has('nameS')) {
+        if (!$session->has('logged_in')) {
 
             return $this->redirectToRoute('login');
         }
@@ -41,31 +42,35 @@ class ListarController extends Controller
         $qb = $em->createQueryBuilder();
 
         // Seleccionamos los perfiles del usuario, para posteriormente traer las evaluaciones asignadas a éstos
-        $profs = $qb->select('pr.profileid')
-            ->from('UNOEvaluacionesBundle:Profile', 'pr')
-            ->innerJoin('UNOEvaluacionesBundle:Personschool', 'ps', 'WITH', 'ps.profileid = pr.profileid')
-            ->innerJoin('UNOEvaluacionesBundle:Person', 'pe', 'WITH', 'pe.personid = ps.personid')
-            ->where('pe.personid = :personID')
-            ->groupBy('pr.profileid')
+        $profs = $qb->select('ps.profileid', 'ps.schoollevelid')
+            ->from('UNOEvaluacionesBundle:Personschool', 'ps')
+            ->where('ps.personid = :personID')
+            ->groupBy('ps.profileid, ps.schoollevelid')
             ->setParameter('personID', $personID)
             ->getQuery()
             ->getResult();
 
-        // Agregamos los ids de los perfiles a una cadena para pasarlos como rango a la siguiente consulta
-        $profiles = '';
-        foreach($profs as $r) {
-            $profiles .= $r['profileid'].', ';
-        }
-        $profiles = rtrim($profiles,', ');
-        
+        // Agregamos los ids de los perfiles y niveles del usuario a una cadena para pasarlos como rango a la siguiente consulta
+
+        $profiles = implode(',',array_unique(array_column($profs,'profileid')));
+        $levels = implode(',',array_unique(array_column($profs,'schoollevelid')));
+
         // Tomamos todas las evaluaciones activas que le corresponden al usuario de acuerdo a sus perfiles
-        if($profiles) {
+        $evals = null;
+
+        if($profiles && $levels) {
 
             $qb = $em->createQueryBuilder();
-            $evals = $qb->select('su.surveyid, su.title, su.closingdate')
+            $evals = $qb->select('su.surveyid, su.title, su.closingdate, sxp.schoollevelid')
                 ->from('UNOEvaluacionesBundle:Survey', 'su')
                 ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile', 'sxp', 'WITH', 'sxp.surveySurveyid = su.surveyid')
-                ->add('where', $qb->expr()->in('sxp.profileProfileid',$profiles))
+                ->add('where', $qb->expr()->andx(
+                    $qb->expr()->in('sxp.profileProfileid',$profiles),
+                    $qb->expr()->orx(
+                        $qb->expr()->in('sxp.schoollevelid',$levels),
+                        $qb->expr()->eq('sxp.schoollevelid','0')
+                    )
+                ))
                 ->andWhere('su.active = 1')
                 ->groupBy('su.surveyid, su.title, su.closingdate')
                 ->orderBy('su.title')
@@ -87,41 +92,46 @@ class ListarController extends Controller
          *
          */
 
-        foreach ($evals as $survey) {
+        if($evals != null){
 
-            $qb = $em->createQueryBuilder();
-            $query = $qb->select('act.idaction')
-            ->from('UNOEvaluacionesBundle:Log', 'l')
-            ->innerJoin('UNOEvaluacionesBundle:Action', 'act', 'WITH', 'act.idaction = l.actionaction')
-            ->where('l.personPersonid = :personId')
-            ->andWhere('l.surveySurveyid = :surveyId')
-            ->andWhere('l.actionaction IN (4,5)')
-            ->orderBy('l.date','DESC')
-            ->setParameters(array(
-                'personId' => $personID,
-                'surveyId' => $survey['surveyid'],
-            ))
-            ->getQuery()
-            ->getResult();
+            foreach ($evals as $survey) {
 
-            if(empty($query)) {
+                $qb = $em->createQueryBuilder();
+                $query = $qb->select('act.idaction')
+                    ->from('UNOEvaluacionesBundle:Log', 'l')
+                    ->innerJoin('UNOEvaluacionesBundle:Action', 'act', 'WITH', 'act.idaction = l.actionaction')
+                    ->where('l.personPersonid = :personId')
+                    ->andWhere('l.surveySurveyid = :surveyId')
+                    ->andWhere('l.actionaction IN (4,5)')
+                    ->orderBy('l.date','DESC')
+                    ->setParameters(array(
+                        'personId' => $personID,
+                        'surveyId' => $survey['surveyid'],
+                    ))
+                    ->getQuery()
+                    ->getResult();
 
-                $status = 0;
-                $countToBeAnswered++;
+                if(empty($query)) {
+
+                    $status = 0;
+                    $countToBeAnswered++;
+                }
+                else {
+
+                    $status = $query[0]['idaction'];
+                    $status == 5 ? $countToBeAnswered++ : null;
+                }
+
+                // Agregamos al arreglo de encuestas lo necesario para mostrarlas en el dashboard
+                array_push($surveyList,array(
+                    'id' => $survey['surveyid'],
+                    'title' => $survey['title'],
+                    'closingDate' => $survey['closingdate']->format('j/M/Y \@ g:i a'),
+                    'status' => $status,
+                ));
             }
-            else {
-
-                $status = $query[0]['idaction'];
-                $status == 5 ? $countToBeAnswered++ : null;
-            }
-
-            // Agregamos al arreglo de encuestas lo necesario para mostrarlas en el dashboard
-            array_push($surveyList,array(
-                'id' => $survey['surveyid'],
-                'title' => $survey['title'],
-                'closingDate' => $survey['closingdate']->format('j/M/Y \@ g:i a'),
-                'status' => $status,
-            ));
+            // Tengo que agregar como variable de sesión las encuestas a las que el usuario tiene derecho responder
+            $session->set('authorized_in',base64_encode(json_encode(array_column($evals,'surveyid'))));
         }
 
         // Generamos las estadísticas que necesitamos agregar al dashboard
