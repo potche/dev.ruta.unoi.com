@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/plugins.css">
         <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/main.css">
-        <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/themes.css">
+        <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/themes/lake.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     {% endblock %}
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1.0">
@@ -45,7 +45,9 @@
                 <!-- Sidebar Content -->
                 <div class="sidebar-content">
                     <!-- Brand -->
-                    <img src="https://staticmx.unoi.com/global/logos/color_trans_sin.png" style=" margin-right: 30px; max-width: 50%; max-height: 60%;">
+                    <span class="sidebar-nav-mini-hide">
+                        <img src="{{ asset('public/assets/images/login/logoUno_sin.png') }}" style=" margin-left: 25%; margin-top: 10px; margin-bottom: 10px; max-width: 50%; max-height: 50%;">
+                    </span>
                     <a href="{{ path('listar') }}" class="sidebar-brand">
                                     <span class="sidebar-nav-mini-hide">
                                         <strong>Gauss</strong> UNOi
@@ -55,7 +57,7 @@
                     <!-- User Info -->
                     <div class="sidebar-section sidebar-user clearfix sidebar-nav-mini-hide">
                         <div class="sidebar-user-avatar">
-                            <img src="https://staticmx.unoi.com/global/logos/gris_fondoblanco_sin.png" alt="avatar">
+                            <img src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar">
                         </div>
                         <div class="sidebar-user-name">{{ app.session.get('nameS') }}</div>
                         <div class="sidebar-user-links">
@@ -113,7 +115,7 @@
                     <!-- User Dropdown -->
                     <li class="dropdown">
                         <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
-                            <img src="https://staticmx.unoi.com/global/logos/gris_fondoblanco_sin.png" alt="avatar"> <i class="fa fa-angle-down"></i>
+                            <img src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar"> <i class="fa fa-angle-down"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-custom dropdown-menu-right">
                             <li class="dropdown-header text-center">Cuenta</li>
@@ -138,8 +140,14 @@
 
             <!-- Footer -->
             <footer class="clearfix">
-                <div class="pull-right">
-                    Hecho con <i class="fa fa-heart text-danger"></i> por <a href="https://mx.unoi.com" target="_blank">Sistema UNO Internacional</a>
+                <div style="text-align: center">
+                    Hecho con <i class="fa fa-heart text-danger"></i> por
+                    <br>
+                    <a href="https://mx.unoi.com" target="_blank">Sistema UNO Internacional</a>
+                    <hr>
+                    Circuito Interior Rio Mixcoac, 274
+                    <br>Acacias, Benito Juárez
+                    <br>Distrito Federal.
                 </div>
             </footer>
             <!-- END Footer -->
@@ -155,7 +163,6 @@
 
 {% block javascripts %}
     <script src="https://staticmx.unoi.com/global/js/pages/index.js"></script>
-    <script>$(function(){ Index.init(); });</script>
     <script src="https://staticmx.unoi.com/global/js/vendor/jquery-1.11.3.min.js"></script>
     <script src="https://staticmx.unoi.com/global/js/vendor/bootstrap.min.js"></script>
     <script src="https://staticmx.unoi.com/global/js/plugins.js"></script>
