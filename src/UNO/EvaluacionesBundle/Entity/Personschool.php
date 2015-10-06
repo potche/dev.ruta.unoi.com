@@ -7,68 +7,43 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Personschool
  *
- * @ORM\Table(name="PersonSchool", indexes={@ORM\Index(name="fk_Person_has_School_School1_idx", columns={"schoolId"}), @ORM\Index(name="fk_Person_has_School_Person1_idx", columns={"personId"}), @ORM\Index(name="fk_Person_has_School_SchoolPeriod1_idx", columns={"schoolPeriodId"}), @ORM\Index(name="fk_Person_has_School_SchoolLevel1_idx", columns={"schoolLevelId"}), @ORM\Index(name="fk_Person_has_School_Profile1_idx", columns={"profileId"})})
  * @ORM\Entity
  */
 class Personschool
 {
     /**
-     * @var \UNO\EvaluacionesBundle\Entity\Schoolperiod
      *
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
-     * @ORM\OneToOne(targetEntity="UNO\EvaluacionesBundle\Entity\Schoolperiod")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="schoolPeriodId", referencedColumnName="schoolPeriodId")
-     * })
      */
     private $schoolperiodid;
 
     /**
-     * @var \UNO\EvaluacionesBundle\Entity\Schoollevel
      *
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
-     * @ORM\OneToOne(targetEntity="UNO\EvaluacionesBundle\Entity\Schoollevel")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="schoolLevelId", referencedColumnName="schoolLevelId")
-     * })
      */
     private $schoollevelid;
 
     /**
-     * @var \UNO\EvaluacionesBundle\Entity\School
      *
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
-     * @ORM\OneToOne(targetEntity="UNO\EvaluacionesBundle\Entity\School")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="schoolId", referencedColumnName="schoolId")
-     * })
      */
     private $schoolid;
 
     /**
-     * @var \UNO\EvaluacionesBundle\Entity\Profile
      *
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
-     * @ORM\OneToOne(targetEntity="UNO\EvaluacionesBundle\Entity\Profile")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="profileId", referencedColumnName="profileId")
-     * })
      */
     private $profileid;
 
     /**
-     * @var \UNO\EvaluacionesBundle\Entity\Person
      *
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
-     * @ORM\OneToOne(targetEntity="UNO\EvaluacionesBundle\Entity\Person")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="personId", referencedColumnName="personId")
-     * })
+     *
      */
     private $personid;
 
@@ -77,11 +52,11 @@ class Personschool
     /**
      * Set schoolperiodid
      *
-     * @param \UNO\EvaluacionesBundle\Entity\Schoolperiod $schoolperiodid
+     * @param integer $schoolperiodid
      *
      * @return Personschool
      */
-    public function setSchoolperiodid(\UNO\EvaluacionesBundle\Entity\Schoolperiod $schoolperiodid)
+    public function setSchoolperiodid($schoolperiodid)
     {
         $this->schoolperiodid = $schoolperiodid;
 
@@ -91,7 +66,7 @@ class Personschool
     /**
      * Get schoolperiodid
      *
-     * @return \UNO\EvaluacionesBundle\Entity\Schoolperiod
+     * @return integer
      */
     public function getSchoolperiodid()
     {
@@ -101,11 +76,11 @@ class Personschool
     /**
      * Set schoollevelid
      *
-     * @param \UNO\EvaluacionesBundle\Entity\Schoollevel $schoollevelid
+     * @param integer $schoollevelid
      *
      * @return Personschool
      */
-    public function setSchoollevelid(\UNO\EvaluacionesBundle\Entity\Schoollevel $schoollevelid)
+    public function setSchoollevelid($schoollevelid)
     {
         $this->schoollevelid = $schoollevelid;
 
@@ -115,7 +90,7 @@ class Personschool
     /**
      * Get schoollevelid
      *
-     * @return \UNO\EvaluacionesBundle\Entity\Schoollevel
+     * @return integer
      */
     public function getSchoollevelid()
     {
@@ -125,11 +100,11 @@ class Personschool
     /**
      * Set schoolid
      *
-     * @param \UNO\EvaluacionesBundle\Entity\School $schoolid
+     * @param integer $schoolid
      *
      * @return Personschool
      */
-    public function setSchoolid(\UNO\EvaluacionesBundle\Entity\School $schoolid)
+    public function setSchoolid($schoolid)
     {
         $this->schoolid = $schoolid;
 
@@ -139,7 +114,7 @@ class Personschool
     /**
      * Get schoolid
      *
-     * @return \UNO\EvaluacionesBundle\Entity\School
+     * @return integer
      */
     public function getSchoolid()
     {
@@ -149,11 +124,11 @@ class Personschool
     /**
      * Set profileid
      *
-     * @param \UNO\EvaluacionesBundle\Entity\Profile $profileid
+     * @param integer $profileid
      *
      * @return Personschool
      */
-    public function setProfileid(\UNO\EvaluacionesBundle\Entity\Profile $profileid)
+    public function setProfileid($profileid)
     {
         $this->profileid = $profileid;
 
@@ -163,7 +138,7 @@ class Personschool
     /**
      * Get profileid
      *
-     * @return \UNO\EvaluacionesBundle\Entity\Profile
+     * @return integer
      */
     public function getProfileid()
     {
@@ -173,11 +148,11 @@ class Personschool
     /**
      * Set personid
      *
-     * @param \UNO\EvaluacionesBundle\Entity\Person $personid
+     * @param integer $personid
      *
      * @return Personschool
      */
-    public function setPersonid(\UNO\EvaluacionesBundle\Entity\Person $personid)
+    public function setPersonid($personid)
     {
         $this->personid = $personid;
 
@@ -187,7 +162,7 @@ class Personschool
     /**
      * Get personid
      *
-     * @return \UNO\EvaluacionesBundle\Entity\Person
+     * @return integer
      */
     public function getPersonid()
     {

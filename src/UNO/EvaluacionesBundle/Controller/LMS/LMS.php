@@ -63,6 +63,8 @@ class LMS{
     }
 
     public function getDataXUserPass($user, $pass, $request_url = ""){
+        //$user = 'mgonzalezr';
+        //$pass = 'abc123';
         if(is_null($this->_failure)){
             $params = $this->params($user, $pass);
 

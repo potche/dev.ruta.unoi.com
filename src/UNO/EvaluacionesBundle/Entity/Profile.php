@@ -31,7 +31,7 @@ class Profile
      *
      * @ORM\Column(name="profileId", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     private $profileid;
 
@@ -83,6 +83,20 @@ class Profile
     public function getProfile()
     {
         return $this->profile;
+    }
+
+    /**
+     * Set profileid
+     *
+     * @param integer $profileid
+     *
+     * @return Profile
+     */
+    public function setProfileid($profileid)
+    {
+        $this->profileid = $profileid;
+
+        return $this;
     }
 
     /**

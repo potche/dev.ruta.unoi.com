@@ -1,10 +1,6 @@
 UNO\EvaluacionesBundle\Entity\Userhttpsession:
     type: entity
     table: UserHttpSession
-    indexes:
-        fk_UserHttpSession_Person1_idx:
-            columns:
-                - personId
     id:
         iduserhttpsession:
             type: integer
@@ -16,13 +12,6 @@ UNO\EvaluacionesBundle\Entity\Userhttpsession:
             generator:
                 strategy: IDENTITY
     fields:
-        idsession:
-            type: string
-            nullable: false
-            length: 255
-            options:
-                fixed: false
-            column: idSession
         browser:
             type: string
             nullable: false
@@ -61,21 +50,14 @@ UNO\EvaluacionesBundle\Entity\Userhttpsession:
             options:
                 default: '0'
             column: loggedIn
-        data:
-            type: text
+        startsession:
+            type: datetime
             nullable: false
-            length: 65535
-            options:
-                fixed: false
-    manyToOne:
+            column: startSession
         personid:
-            targetEntity: Person
-            cascade: {  }
-            fetch: LAZY
-            mappedBy: null
-            inversedBy: null
-            joinColumns:
-                personId:
-                    referencedColumnName: personId
-            orphanRemoval: false
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: personId
     lifecycleCallbacks: {  }

@@ -18,5 +18,10 @@
         <join-column name="Profile_profileId" referenced-column-name="profileId"/>
       </join-columns>
     </many-to-one>
+    <field name="schoollevelid" type="integer" column="schoolLevelId" nullable="false">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
   </entity>
 </doctrine-mapping>

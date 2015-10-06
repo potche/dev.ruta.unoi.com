@@ -45,7 +45,7 @@ class Schoollevel
      *
      * @ORM\Column(name="schoolLevelId", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     private $schoollevelid;
 
@@ -145,6 +145,20 @@ class Schoollevel
     public function getColegioNivelCicloId()
     {
         return $this->colegioNivelCicloId;
+    }
+
+    /**
+     * Set schoollevelid
+     *
+     * @param integer $schoollevelid
+     *
+     * @return Schoollevel
+     */
+    public function setSchoollevelid($schoollevelid)
+    {
+        $this->schoollevelid = $schoollevelid;
+
+        return $this;
     }
 
     /**

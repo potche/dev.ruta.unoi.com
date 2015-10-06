@@ -124,7 +124,7 @@ var Login = function() {
                                         ' | <a id="edit" style="cursor: pointer" onclick="changeEmail();">Cambiar</a><br/> ' +
                                         'Verifique que este sea su correo.<br/><br/>' +
                                         '<br/>' +
-                                        '<button type="button" class="btn btn-primary" onclick="enviaEmail(\''+base_path+'\',\''+mailOrig+'\');">Reenviar Email</button>'
+                                        '<button type="button" class="btn btn-primary" onclick="enviaEmail(\''+base_path+'\',\''+mailOrig+'\',\''+rs[2]+'\',\''+rs[3]+'\',\''+rs[4]+'\');">Reenviar Email</button>'
                                     );
                                     /*
                                     $('.bodyM').html(
@@ -164,8 +164,16 @@ var Login = function() {
                                     $('#errorM').modal();
                                     $('.bodyError').html('No pertenece a la Regi&oacute;n');
                                     break;
+                                case '104':
+                                    $('#errorM').modal();
+                                    $('.bodyError').html('Su cuenta no esta Activa, contacte a su Coordinador para mayor informaci&oacute;n');
+                                    break;
+                                case '105':
+                                    $('#errorM').modal();
+                                    $('.bodyError').html('Su password es incorrecto, por favor intentelo de nuevo');
+                                    break;
                                 case 'ok':
-                                    login();
+                                    login(base_path);
                                     break;
                                 default :
                                     $('#errorM').modal();
@@ -306,14 +314,14 @@ function changeEmail(){
     $('#email').replaceWith($input);
 };
 
-function enviaEmail(base_path, mailOrig){
+function enviaEmail(base_path, mailOrig, personId, code, name){
     var email = $('#email').val();
 
     if(email == ''){
         email = mailOrig;
     }
 
-    $.post( base_path+"/mail", { email: email })
+    $.post( base_path+"/forwardMail", { email: email, personId: personId, code: code, name: name })
         .done(function( data ) {
             $('#successM').modal();
             $('.titleSuccessM').html('Validaci&oacute;n de correo');
@@ -343,6 +351,6 @@ function checkCode(base_path){
         }
 };
 
-function login(){
-    window.location.replace("/redirect");
+function login(base_path){
+    window.location.replace(base_path+"/listar");
 }

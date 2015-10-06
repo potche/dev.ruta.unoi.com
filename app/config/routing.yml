@@ -12,9 +12,18 @@ autentication:
     path:     /ajax/autentication
     defaults: { _controller: UNOEvaluacionesBundle:Login\Login:autentication }
     methods:  [POST]
+forwardMail:
+    path:     /forwardMail
+    defaults: { _controller: UNOEvaluacionesBundle:Login\Login:forwardMail }
+linkCode:
+    path:     /linkCode
+    defaults: { _controller: UNOEvaluacionesBundle:Login\Alta:linkCode }
 responder:
     path:   /responder/{id}
     defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Responder:index}
 listar:
     path:   /listar
     defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Listar:index}
+test:
+    path:   /test
+    defaults: {_controller: UNOEvaluacionesBundle:Login\Login:test}

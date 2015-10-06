@@ -7,7 +7,6 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Uservalidationemail
  *
- * @ORM\Table(name="UserValidationEmail", indexes={@ORM\Index(name="fk_UserValidationEmail_Person1_idx", columns={"personId"})})
  * @ORM\Entity
  */
 class Uservalidationemail
@@ -50,12 +49,9 @@ class Uservalidationemail
     private $iduservalidationemail;
 
     /**
-     * @var \UNO\EvaluacionesBundle\Entity\Person
+     * @var integer
+     * @ORM\Column(name="personId", type="integer", nullable=false)
      *
-     * @ORM\ManyToOne(targetEntity="UNO\EvaluacionesBundle\Entity\Person")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="personId", referencedColumnName="personId")
-     * })
      */
     private $personid;
 
@@ -170,11 +166,11 @@ class Uservalidationemail
     /**
      * Set personid
      *
-     * @param \UNO\EvaluacionesBundle\Entity\Person $personid
+     * @param integer $personid
      *
      * @return Uservalidationemail
      */
-    public function setPersonid(\UNO\EvaluacionesBundle\Entity\Person $personid = null)
+    public function setPersonid($personid)
     {
         $this->personid = $personid;
 

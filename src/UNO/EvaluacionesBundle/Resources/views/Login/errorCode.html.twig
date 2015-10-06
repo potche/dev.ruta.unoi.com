@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Código Incorrecto</title>
+
+        <meta charset="utf-8">
+        <meta name="robots" content="noindex,nofollow" />
+        <meta name="viewport" content="width=device-width,maximum-scale=1,user-scalable=no,minimal-ui">
+        <link rel="shortcut icon" href="{{ asset('public/assets/images/login/faviconUnoi.ico') }}" type="image/x-icon" />
+        <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,800&amp;subset=latin,latin-ext">
+        <link href="{{ asset('public/assets/css/error.css') }}" rel="stylesheet" type="text/css" media="all" >
+        <link href="{{ asset('public/assets/bootstrap/css/bootstrap.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ asset('public/assets/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
+
+    </head>
+    <body>
+        <div class="stars"></div>
+
+        <div class="sun-moon">
+            <div class="sun"></div>
+            <div class="moon"></div>
+        </div>
+
+        <div id="js-hills" class="background hills"></div>
+        <div id="js-country" class="background country"></div>
+        <div id="js-foreground" class="background foreground"></div>
+
+        <div class="col-xs-12" style="position: absolute; top: 0; background-color: #59AAC2; z-index: 1000">
+            <div class="row">
+                <div class="col-xs-10 col-xs-offset-2">
+                    <a href="/"><img src="https://staticmx.unoi.com/global/logos/color_trans_con.png" style="width: 7%"/> </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row error-content" >
+            <div class="col-xs-12 titulo">
+                Este Link ha caducado &oacute; es incorrecto<br>
+                por favor verif&iacute;quelo. <!--&oacute; utilice el enviado en el correo m&aacute;s reciente.-->
+            </div>
+
+            <div class="col-xs-8 col-xs-offset-2 well">
+                <div style="font-size: 14px; text-align: justify;">
+                    <h4>La razón de este error puede deberse a:</h4>
+                    <p> a) El link fue escrito o copiado <strong>incorrectamente</strong></p>
+                    <p> b) El link es correcto, pero ya ha pasado el tiempo asignado para el acceso (esto por razones de seguridad)</p>
+
+                    <h4>Recomendaciones</h4>
+                    <p style="font-size: 14px;">
+                        Revisar el <strong>&uacute;ltimo correo</strong> que te enviamos y dar click en “Validar”, en caso de que regreses a esta pantalla puedes “Ir al Inicio” para recibir de nuevo un correo actualizado.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <button type="button" id="btnInicio" class="btn btn-primary" data-dismiss="modal">Ir a Inicio</button>
+            </div>
+        </div>
+
+
+<!--
+        <div class="code" style="font-size: 12em; color: #050505;">
+            <span>E</span>
+            <span>R</span>
+            <span>R</span>
+            <span>O</span>
+            <span>R</span>
+        </div>
+-->
+    <!--
+        <script type="text/javascript">
+        var mouse = { x: 0, y: 0 },
+            gyro = { x: 0, y: 0 },
+            updateGyro = false,
+            updateMouse = false,
+            customEvent = null,
+            hills = document.getElementById('js-hills'),
+            country = document.getElementById('js-country'),
+            foreground = document.getElementById('js-foreground'),
+            windowWidth = window.innerWidth,
+            isiPad = navigator.userAgent.match(/iPad/i) != null;
+
+        if (windowWidth > 1024) {
+            document.addEventListener('mousemove', function(e){
+                updateMouse = true;
+                customEvent = e;
+            }, false);
+        }
+
+        if (isiPad) {
+            window.addEventListener('deviceorientation', function(e){
+                updateGyro = true;
+                customEvent = e;
+            }, false);
+        }
+
+        setInterval(function(){
+            if (updateGyro) {
+                updateGyro = false;
+                updateOnGyroscope(customEvent);
+            }
+            if (updateMouse) {
+                updateMouse = false;
+                updateOnMouse(customEvent);
+            }
+        }, 50)
+
+        function updateOnMouse(e) {
+            mouse.x = (Math.round( 200 * (e.clientX || e.pageX) / window.innerWidth) - 100) / 100;
+            mouse.y = (Math.round( 200 * (e.clientY || e.pageY) / window.innerHeight) - 100) / 100;
+            hills.style.transform      = "translate3d(" + mouse.x * 10  + "px, " + mouse.y * 10  + "px, 0)";
+            country.style.transform    = "translate3d(" + mouse.x * -5 + "px, " + mouse.y * -5 + "px, 0)";
+            foreground.style.transform = "translate3d(" + mouse.x * -10  + "px, " + mouse.y * -10  + "px, 0)";
+        }
+
+        function updateOnGyroscope(e) {
+            gyro.x = Math.round((e.beta % 90) * 10 / 9) / 100;
+            gyro.y = Math.round((e.gamma % 90) * 10 / 9) / 100;
+            hills.style.transform      = "translate3d(" + gyro.x * 20  + "px, " + gyro.y * 20  + "px, 0)";
+            country.style.transform    = "translate3d(" + gyro.x * -10 + "px, " + gyro.y * -10 + "px, 0)";
+            foreground.style.transform = "translate3d(" + gyro.x * -20 + "px, " + gyro.y * -20 + "px, 0)";
+            hills.style.webkitTransform      = "translate3d(" + gyro.x * 20  + "px, " + gyro.y * 20  + "px, 0)";
+            country.style.webkitTransform    = "translate3d(" + gyro.x * -10 + "px, " + gyro.y * -10 + "px, 0)";
+            foreground.style.webkitTransform = "translate3d(" + gyro.x * -20 + "px, " + gyro.y * -20 + "px, 0)";
+        }
+        </script>
+    -->
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script src="{{ asset('public/assets/bootstrap/js/bootstrap.js') }}"></script>
+        <script>
+            $('#btnInicio').click(function(){
+                window.location.replace("/");
+            });
+        </script>
+    <!-- Server: 52.18.147.233 i-f0c4255d ami-6d04731a -->
+    </body>
+<!-- #TB_MON#CHSET#327bc871e8ee#AWSID#52.18.147.233#TB_MON# -->
+</html>

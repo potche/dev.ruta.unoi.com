@@ -80,7 +80,7 @@ class School
      *
      * @ORM\Column(name="schoolId", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     private $schoolid;
 
@@ -300,6 +300,20 @@ class School
     public function getTimezone()
     {
         return $this->timezone;
+    }
+
+    /**
+     * Set schoolid
+     *
+     * @param string $schoolid
+     *
+     * @return School
+     */
+    public function setSchoolid($schoolid)
+    {
+        $this->schoolid = $schoolid;
+
+        return $this;
     }
 
     /**

@@ -23,10 +23,10 @@
         <option name="fixed"/>
       </options>
     </field>
-    <many-to-one field="personid" target-entity="Person" fetch="LAZY">
-      <join-columns>
-        <join-column name="personId" referenced-column-name="personId"/>
-      </join-columns>
-    </many-to-one>
+    <field name="personid" type="integer" column="personId" nullable="false">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
   </entity>
 </doctrine-mapping>

@@ -10,7 +10,7 @@ UNO\EvaluacionesBundle\Entity\School:
             id: true
             column: schoolId
             generator:
-                strategy: IDENTITY
+                strategy: NONE
     fields:
         schoolcode:
             type: string

@@ -10,7 +10,7 @@ UNO\EvaluacionesBundle\Entity\Schoolperiod:
             id: true
             column: schoolPeriodId
             generator:
-                strategy: IDENTITY
+                strategy: NONE
     fields:
         schoolperiodcode:
             type: string
