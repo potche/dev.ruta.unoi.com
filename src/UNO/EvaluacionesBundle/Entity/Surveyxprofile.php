@@ -41,7 +41,12 @@ class Surveyxprofile
      */
     private $profileProfileid;
 
-
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="schoolLevelId", type="integer", nullable=false)
+     */
+    private $schoollevelid;
 
     /**
      * Get surveyxprofileId
@@ -99,5 +104,30 @@ class Surveyxprofile
     public function getProfileProfileid()
     {
         return $this->profileProfileid;
+    }
+
+    /**
+     * Set schoollevelid
+     *
+     * @param integer $schoollevelid
+     *
+     * @return Schoollevelid
+     */
+
+    public function setSchoollevelid($schoollevelid) {
+
+        $this->schoollevelid = $schoollevelid;
+
+        return $this;
+    }
+
+    /**
+     * Get schoollevelid
+     * @return integer
+     */
+
+    public function getSchoollevelid() {
+
+        return $this->schoollevelid;
     }
 }

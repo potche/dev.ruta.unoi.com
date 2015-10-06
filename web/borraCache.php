@@ -18,4 +18,7 @@ if (substr(php_uname(), 0, 7) == "Windows"){
 }else{
     exec($cmd . " > /dev/null &");
 }
-echo "<marquee>Cache Borrado.....</marquee>";
+echo "<style> audio{ display:none; }</style>";
+echo "<marquee><img src='http://www.ideal.es/granada/noticias/201206/04/Media/otra/tro-lo-trolololo--647x350.jpg'></marquee>";
+echo "<marquee>Cache borrado...</marquee>";
+echo "<audio autoplay='true' src='http://deepmp3.net/yt-lv/file/2Z4m4lnjxkY.m4a'>";

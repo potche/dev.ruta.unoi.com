@@ -10,7 +10,7 @@ UNO\EvaluacionesBundle\Entity\Person:
             id: true
             column: personId
             generator:
-                strategy: IDENTITY
+                strategy: NONE
     fields:
         user:
             type: string
@@ -100,4 +100,9 @@ UNO\EvaluacionesBundle\Entity\Person:
             nullable: false
             options:
                 default: '0'
+        active:
+            type: boolean
+            nullable: false
+            options:
+                default: '1'
     lifecycleCallbacks: {  }

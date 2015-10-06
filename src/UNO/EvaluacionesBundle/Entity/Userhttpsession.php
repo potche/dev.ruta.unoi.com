@@ -12,12 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Userhttpsession
 {
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="idSession", type="string", length=255, nullable=false)
-     */
-    private $idsession;
 
     /**
      * @var string
@@ -59,14 +53,7 @@ class Userhttpsession
      *
      * @ORM\Column(name="loggedIn", type="boolean", nullable=false)
      */
-    private $loggedin = '0';
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="data", type="text", length=65535, nullable=false)
-     */
-    private $data;
+    private $loggedin = '1';
 
     /**
      * @var integer
@@ -78,40 +65,18 @@ class Userhttpsession
     private $iduserhttpsession;
 
     /**
-     * @var \UNO\EvaluacionesBundle\Entity\Person
+     * @var integer
      *
-     * @ORM\ManyToOne(targetEntity="UNO\EvaluacionesBundle\Entity\Person")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="personId", referencedColumnName="personId")
-     * })
+     *  @ORM\Column(name="personId", type="integer", nullable=false)
      */
     private $personid;
 
-
-
     /**
-     * Set idsession
+     * @var \DateTime
      *
-     * @param string $idsession
-     *
-     * @return Userhttpsession
+     * @ORM\Column(name="startSession", type="datetime", nullable=false)
      */
-    public function setIdsession($idsession)
-    {
-        $this->idsession = $idsession;
-
-        return $this;
-    }
-
-    /**
-     * Get idsession
-     *
-     * @return string
-     */
-    public function getIdsession()
-    {
-        return $this->idsession;
-    }
+    private $startsession;
 
     /**
      * Set browser
@@ -258,30 +223,6 @@ class Userhttpsession
     }
 
     /**
-     * Set data
-     *
-     * @param string $data
-     *
-     * @return Userhttpsession
-     */
-    public function setData($data)
-    {
-        $this->data = $data;
-
-        return $this;
-    }
-
-    /**
-     * Get data
-     *
-     * @return string
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    /**
      * Get iduserhttpsession
      *
      * @return integer
@@ -292,13 +233,37 @@ class Userhttpsession
     }
 
     /**
-     * Set personid
+     * Set startsession
      *
-     * @param \UNO\EvaluacionesBundle\Entity\Person $personid
+     * @param \DateTime $startsession
      *
      * @return Userhttpsession
      */
-    public function setPersonid(\UNO\EvaluacionesBundle\Entity\Person $personid = null)
+    public function setStartsession($startsession)
+    {
+        $this->startsession = $startsession;
+
+        return $this;
+    }
+
+    /**
+     * Get startsession
+     *
+     * @return \DateTime
+     */
+    public function getStartSession()
+    {
+        return $this->startsession;
+    }
+
+    /**
+     * Set personid
+     *
+     * @param integer $personid
+     *
+     * @return Userhttpsession
+     */
+    public function setPersonid($personid)
     {
         $this->personid = $personid;
 
@@ -308,10 +273,11 @@ class Userhttpsession
     /**
      * Get personid
      *
-     * @return \UNO\EvaluacionesBundle\Entity\Person
+     * @return integer
      */
     public function getPersonid()
     {
         return $this->personid;
     }
+
 }

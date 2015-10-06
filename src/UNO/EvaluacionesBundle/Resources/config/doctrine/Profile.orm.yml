@@ -10,7 +10,7 @@ UNO\EvaluacionesBundle\Entity\Profile:
             id: true
             column: profileId
             generator:
-                strategy: IDENTITY
+                strategy: NONE
     fields:
         profilecode:
             type: string

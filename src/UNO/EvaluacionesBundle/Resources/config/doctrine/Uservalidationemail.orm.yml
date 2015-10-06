@@ -1,10 +1,6 @@
 UNO\EvaluacionesBundle\Entity\Uservalidationemail:
     type: entity
     table: UserValidationEmail
-    indexes:
-        fk_UserValidationEmail_Person1_idx:
-            columns:
-                - personId
     id:
         iduservalidationemail:
             type: integer
@@ -37,15 +33,10 @@ UNO\EvaluacionesBundle\Entity\Uservalidationemail:
             length: 65535
             options:
                 fixed: false
-    manyToOne:
         personid:
-            targetEntity: Person
-            cascade: {  }
-            fetch: LAZY
-            mappedBy: null
-            inversedBy: null
-            joinColumns:
-                personId:
-                    referencedColumnName: personId
-            orphanRemoval: false
+            type: integer
+            nullable: false
+            column: personId
+            options:
+                unsigned: false
     lifecycleCallbacks: {  }

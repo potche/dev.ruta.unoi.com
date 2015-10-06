@@ -10,7 +10,7 @@ UNO\EvaluacionesBundle\Entity\Schoollevel:
             id: true
             column: schoolLevelId
             generator:
-                strategy: IDENTITY
+                strategy: NONE
     fields:
         schoollevelcode:
             type: string

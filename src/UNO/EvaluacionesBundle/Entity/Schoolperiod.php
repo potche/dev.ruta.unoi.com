@@ -38,7 +38,7 @@ class Schoolperiod
      *
      * @ORM\Column(name="schoolPeriodId", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     private $schoolperiodid;
 
@@ -114,6 +114,20 @@ class Schoolperiod
     public function getSchoolperiodactive()
     {
         return $this->schoolperiodactive;
+    }
+
+    /**
+     * Set schoolperiodid
+     *
+     * @param integer $schoolperiodid
+     *
+     * @return Schoolperiod
+     */
+    public function setSchoolperiodid($schoolperiodid)
+    {
+        $this->schoolperiodid = $schoolperiodid;
+
+        return $this;
     }
 
     /**

@@ -111,11 +111,19 @@ class Person
     private $admin = '0';
 
     /**
-     * @var integer
+     * @var boolean
      *
-     * @ORM\Column(name="personId", type="integer")
-     *
+     * @ORM\Column(name="active", type="boolean", nullable=false)
      */
+    private $active = 1;
+
+    /**
+     * @var integer
+     * @ORM\personid
+     * @ORM\GeneratedValue(strategy="NONE")
+     * @ORM\Column(name="personId", type="integer")
+     */
+
     private $personid;
 
 
@@ -457,13 +465,30 @@ class Person
     }
 
     /**
-     * Set personid
+     * Set active
      *
-     * @param boolean $personid
+     * @param boolean $active
      *
-     * @return Person
+     * @return Active
      */
-    public function setPersonId($personid)
+    public function setActive($active)
+    {
+        $this->active = $active;
+
+        return $this;
+    }
+
+    /**
+     * Get active
+     *
+     * @return boolean
+     */
+    public function getActive()
+    {
+        return $this->active;
+    }
+
+    public function setPersonid($personid)
     {
         $this->personid = $personid;
 
