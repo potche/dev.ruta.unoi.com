@@ -145,7 +145,7 @@ class LMS{
      * successful HttpResponse
      */
     private static function successfulHttpResponse($code){
-        if ($code >= 200 and $code < 300){
+        if ($code >= 200 && $code < 300){
             return true;
         }
         return false;

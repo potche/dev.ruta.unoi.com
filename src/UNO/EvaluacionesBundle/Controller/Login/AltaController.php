@@ -36,11 +36,15 @@ class AltaController extends Controller{
                 $this->_code = base64_decode($request->query->get('code'));
                 $this->_email = base64_decode($request->query->get('email'));
 
-                if($this->run()){
-                    $this->logIn($request);
-                    return $this->redirect("/listar");
+                if($this->getDatAlta()){
+                    if($this->run()){
+                        $this->logIn($request);
+                        return $this->redirect("/listar");
+                    }else{
+                        return $this->redirect("/");
+                    }
                 }else{
-                    return $this->redirect("/");
+                    return $this->render('UNOEvaluacionesBundle:Login:errorCode.html.twig');
                 }
             }else{
                 return $this->redirect("/listar");
@@ -70,8 +74,6 @@ class AltaController extends Controller{
     }
 
     private function run(){
-        $this->getDatAlta();
-        //print_r($this->_datPersonDB);
         if ($this->_datPersonDB) {
             $this->_datPerson = json_decode($this->_datPersonDB->getData());
             if($this->setPerson()){
@@ -88,6 +90,12 @@ class AltaController extends Controller{
     private function getDatAlta(){
         $em = $this->getDoctrine()->getManager();
         $this->_datPersonDB = $em->getRepository('UNOEvaluacionesBundle:Uservalidationemail')->findOneBy(array('code' => $this->_code, 'email' => $this->_email));
+
+        if(empty($this->_datPersonDB)){
+            return false;
+        }else{
+            return true;
+        }
     }
 
     private function setPerson(){
