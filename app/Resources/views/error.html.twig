@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Ruta UNOi</title>
+
+        <meta charset="utf-8">
+        <meta name="robots" content="noindex,nofollow" />
+        <meta name="viewport" content="width=device-width,maximum-scale=1,user-scalable=no,minimal-ui">
+        <link rel="shortcut icon" href="{{ asset('public/assets/images/login/faviconUnoi.ico') }}" type="image/x-icon" />
+        <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,800&amp;subset=latin,latin-ext">
+        <link href="{{ asset('public/assets/css/error.css') }}" rel="stylesheet" type="text/css" media="all" >
+        <link href="{{ asset('public/assets/bootstrap/css/bootstrap.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ asset('public/assets/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
+
+    </head>
+    <body>
+        <div class="stars"></div>
+
+        <div class="sun-moon">
+            <div class="sun"></div>
+            <div class="moon"></div>
+        </div>
+
+        <div id="js-hills" class="background hills"></div>
+        <div id="js-country" class="background country"></div>
+        <div id="js-foreground" class="background foreground"></div>
+
+        <div class="col-xs-12" style="position: absolute; top: 0; background-color: #59AAC2; z-index: 1000">
+            <div class="row">
+                <div class="col-xs-10 col-xs-offset-2">
+                    <a href="/"><img src="https://staticmx.unoi.com/global/logos/gris_trans_con.png" style="width: 7%"/> </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row error-content" >
+            <div class="col-xs-12 titulo">
+                Ooops!<br>
+                Parece que hubo un error
+            </div>
+
+            <div class="col-xs-8 col-xs-offset-2 well">
+                <div style="font-size: 14px; text-align: justify;">
+                    <h4>El recurso que tratas de buscar:</h4>
+                    <p> a) El link fue escrito o copiado <strong>incorrectamente</strong></p>
+                    <p> b) El link es correcto, pero ya ha pasado el tiempo asignado para el acceso (esto por razones de seguridad)</p>
+
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                <button type="button" id="btnInicio" class="btn btn-primary" data-dismiss="modal">Ir a Inicio</button>
+            </div>
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script src="{{ asset('public/assets/bootstrap/js/bootstrap.js') }}"></script>
+        <script>
+            $('#btnInicio').click(function(){
+                window.location.replace("/");
+            });
+        </script>
+    <!-- Server: 52.18.147.233 i-f0c4255d ami-6d04731a -->
+    </body>
+<!-- #TB_MON#CHSET#327bc871e8ee#AWSID#52.18.147.233#TB_MON# -->
+</html>
