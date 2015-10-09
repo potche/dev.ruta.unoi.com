@@ -3,32 +3,40 @@
     <div class="content-header content-header-media">
         <div class="header-section">
             <div class="row">
-                <!-- Main Title (hidden on small devices for the statistics to fit) -->
-                <div class="col-md-4 col-lg-6 hidden-xs hidden-sm">
+                <div id ="welcome-title" class="col-md-4 col-lg-6 hidden-xs hidden-sm">
                     <h1>Bienvenido, <strong>{{ app.session.get('nameS') }}</strong><br></h1>
+                    <br>
+                </div>
+                <!-- Main Title (hidden on small devices for the statistics to fit) -->
+                <div id ="welcome-title-2" class="col-md-4 col-lg-6" style="text-align: center;">
+                    <h1>Bienvenido, <strong>{{ app.session.get('nameS') }}</strong><br></h1>
+                    <br>
                 </div>
                 <!-- END Main Title -->
-
                 <!-- Top Stats -->
                 <div class="col-md-8 col-lg-6">
                     <div class="row text-center">
                         <div class="col-xs-4 col-sm-3">
                             <h2 class="animation-hatch">
                                 <strong>{{ stats['answered']}}</strong><br>
-                                <small><i class="fa fa-check"></i> Respondidas</small>
+                                <i class="fa fa-check-circle"></i><br>
+                                <small class="hidden-xs">Completado</small>
                             </h2>
                         </div>
                         <div class="col-xs-4 col-sm-3">
                             <h2 class="animation-hatch">
                                 <strong>{{ stats['toBeAnswered']}}</strong><br>
-                                <small><i class="fa fa-exclamation-triangle"></i> Pendientes</small>
+                                <i class="fa fa-exclamation-circle"></i><br>
+                                <small class="hidden-xs">Pendiente</small>
                             </h2>
                         </div>
                         <div class="col-xs-4 col-sm-3">
                             <h2 class="animation-hatch">
-                                <strong>{{ stats['compliance']}}</strong> %<br>
-                                <small> Cumplimiento</small>
+                                <strong>{{ stats['compliance']}}</strong><br>
+                                <strong>%</strong><br>
+                                <small class="hidden-xs">Avance</small>
                             </h2>
+
                         </div>
                     </div>
                 </div>
@@ -64,32 +72,31 @@
                     <table class="table table-vcenter table-striped">
                         <thead>
                         <tr>
-                            <th>Título</th>
+                            <th>Evaluación </th>
                             <th class="hidden-sm hidden-xs">Fecha Límite</th>
-                            <th>Estatus</th>
                             <th class="text-center">Acciones</th>
                         </tr>
                         </thead>
                         <tbody>
                         {% for survey in surveyList %}
                             <tr>
-                                <td>{{ survey['title'] }}</td>
-                                <td class="hidden-sm hidden-xs">{{ survey['closingDate'] }}</td>
                                 <td>
                                     {% if survey['status']  == 0 %}
-                                        <span class="label label-danger">Sin Responder</span>
+                                        <i class="fa fa-exclamation-circle text-danger"></i>
                                     {% elseif  survey['status']  == 4 %}
-                                        <span class="label label-success">Resuelta</span>
+                                        <i class="fa fa-check-circle text-success"></i>
                                     {% elseif survey['status'] == 5 %}
-                                        <span class="label label-warning">Incompleta</span>
+                                        <i class="fa fa-exclamation-circle text-warning"></i>
                                     {% endif %}
+                                    <strong>{{ survey['title'] }}</strong>
                                 </td>
+                                <td class="hidden-sm hidden-xs">{{ survey['closingDate'] }}</td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-xs">
                                         {% if survey['status']  == 0 or survey['status']  == 5 %}
                                             <a href="{{ path('responder',{'id': survey['id']}) }}" class="label label-success"><i class="fa fa-pencil"></i> Responder</a>
                                         {% else %}
-                                            <span>No hay acciones por realizar</span>
+                                            <span class="label label-default"><i class="fa fa-pencil"></i> Responder</span>
                                         {% endif %}
                                     </div>
                                 </td>
@@ -104,4 +111,28 @@
             <!-- END Widget -->
         </div>
     </div>
+    <script src="{{ asset('public/assets/js/jquery-1.11.3.min.js') }}"></script>
+    <script src="{{ asset('public/assets/js/jquery-migrate-1.2.1.min.js') }}"></script>
+    <script>
+        jQuery(document).ready(function() {
+
+            manage_mobile_welcome();
+            $(window).resize(function() {
+
+                manage_mobile_welcome();
+            });
+
+            function manage_mobile_welcome() {
+
+                if ($('#welcome-title').css('display') == 'none') {
+
+                    $('#welcome-title-2').show();
+
+                } else {
+
+                    $('#welcome-title-2').hide();
+                }
+            }
+        });
+    </script>
 {% endblock %}

@@ -10,9 +10,10 @@
 <!--<![endif]-->
     <head>
         <meta charset="UTF-8" />
-        <title>{% block title %}Gauss UNOi{% endblock %}</title>
-        <link rel="shortcut icon" href="https://evaluaciones.unoi.com/public/assets/images/login/faviconUnoi.ico" type="image/x-icon" />
-
+        <title>{% block title %}Ruta UNOi{% endblock %}</title>
+        <meta name="description" content="Plataforma de autoevaluación de UNO Internacional">
+        <meta name="author" content="UNO Internacional">
+        <link rel="shortcut icon" href="{{ asset('public/assets/images/login/faviconUnoi.ico') }}" type="image/x-icon" />
         {% block stylesheets %}
             <!-- Stylesheets -->
             <!-- Bootstrap is included in its original form, unaltered -->
@@ -30,7 +31,7 @@
         <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1.0">
         <!-- Icons -->
         <!-- The following icons can be replaced with your own, they are used by desktop and mobile browsers -->
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        <link rel="icon" type="image/x-icon" href="{{ asset('public/assets/images/login/faviconUnoi.ico') }}" />
         <!-- END Icons -->
     </head>
     <body>
@@ -66,14 +67,14 @@
                         <!-- Brand -->
 
                         <a href="" class="sidebar-brand" style="height: 100px;">
-                            <img src="https://evaluaciones.unoi.com/public/assets/images/login/logoUno.png" alt="avatar" style="width: 60%; margin-left: 20%; margin-top: 5px;">
+                            <img src="{{ asset('public/assets/images/login/logoUno.png') }}" alt="avatar" style="width: 60%; margin-left: 20%; margin-top: 5px;">
                         </a>
                         <!-- END Brand -->
 
                         <!-- Sidebar Navigation -->
                         <ul class="sidebar-nav">
                             <li>
-                                <a href="{{ path('listar') }}"><i class="fa fa-list-ol sidebar-nav-icon"></i><span class="sidebar-nav-mini-hide">Mis encuestas</span></a>
+                                <a href="{{ path('listar') }}"><i class="fa fa-list-ol sidebar-nav-icon"></i><span class="sidebar-nav-mini-hide">Mis evaluaciones</span></a>
                             </li>
                         </ul>
                         <!-- END Sidebar Navigation -->
