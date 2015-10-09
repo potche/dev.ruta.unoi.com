@@ -30,31 +30,32 @@ and open the template in the editor.
         <div id="js-country" class="background country"></div>
         <div id="js-foreground" class="background foreground"></div>
 
-        <div class="col-xs-12" style="position: absolute; top: 0; background-color: #59AAC2; z-index: 1000">
+        <div class="col-xs-12" style="position: absolute; top: 0; background-color: #043E50; z-index: 1000">
             <div class="row">
                 <div class="col-xs-10 col-xs-offset-2">
-                    <a href="/"><img src="https://staticmx.unoi.com/global/logos/gris_trans_con.png" style="width: 7%"/> </a>
+                    <a href="{{ path('login') }}"><img src="{{ asset('public/assets/images/login/logoUno.png') }}" style="width: 7%; margin-top:1%; margin-bottom: 1%"/></a>
                 </div>
             </div>
         </div>
 
         <div class="row error-content" >
-            <div class="col-xs-12 titulo">
-                Ooops!<br>
-                Parece que hubo un error
+
+            <div class="col-xs-12 titulo" style="color: #FFFFFF">
+                <h1 style="font-size: 80px;">{{ "ERROR" }}</h1>
+                <h1 style="font-size: 60px;">{{ status_code }}</h1>
             </div>
 
             <div class="col-xs-8 col-xs-offset-2 well">
                 <div style="font-size: 14px; text-align: justify;">
-                    <h4>El recurso que tratas de buscar:</h4>
-                    <p> a) El link fue escrito o copiado <strong>incorrectamente</strong></p>
-                    <p> b) El link es correcto, pero ya ha pasado el tiempo asignado para el acceso (esto por razones de seguridad)</p>
-
+                    <h4>{{ "Te has perdido de la ruta, intenta lo siguiente: " }}</h4><br>
+                    <p><strong> {{ 'Verifica que has escrito correctamente el enlace al que deseas ingresar' }} </strong></p>
+                    <p><strong> {{ 'Trata de recargar esta página o ingresa nuevamente el enlace' }}</strong></p>
+                    <p><strong> {{ 'También puedes regresar a la página principal' }}</strong></p>
                 </div>
             </div>
 
             <div class="col-xs-12">
-                <button type="button" id="btnInicio" class="btn btn-primary" data-dismiss="modal">Ir a Inicio</button>
+                <button type="button" id="btnInicio" class="btn btn-primary" data-dismiss="modal">Regresar a Ruta UNOi</button>
             </div>
         </div>
 
@@ -62,7 +63,7 @@ and open the template in the editor.
         <script src="{{ asset('public/assets/bootstrap/js/bootstrap.js') }}"></script>
         <script>
             $('#btnInicio').click(function(){
-                window.location.replace("/");
+                window.location.replace("{{ path("login") }}");
             });
         </script>
     <!-- Server: 52.18.147.233 i-f0c4255d ami-6d04731a -->
