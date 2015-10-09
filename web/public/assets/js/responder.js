@@ -13,8 +13,6 @@ $(document).ready(function(){
 
 });
 
-
-
 /*
 * This function sets all inital info for the main question: question, progress bar, options,
 * */
