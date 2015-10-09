@@ -91,7 +91,7 @@ function setCurrentQuestion(question_id){
     /* **** Creating andt setting HTML elements ** */
     $(".questionButton").removeClass("active");
     $("#question_"+currentQuestionId).addClass("active");
-    $("#mainQuestion").html( currentItem.question );
+    $("#mainQuestion").html( (index+1) +".- "+ currentItem.question );
     $("#questionNumer").html( (index+1) + " de " + items.length );
 
     var allHeight=0;
@@ -132,7 +132,7 @@ function setCurrentQuestion(question_id){
         $("#mainComment").show("slow");
         //$("#test").html("questionid:"+currentAnswer.questionid+"<br>Person_Id:"+currentAnswer.Person_Id+"<br>OptionXQuestion_id:"+currentAnswer.OptionXQuestion_id+"<br>answer:"+currentAnswer.answer+"<br>comment:"+currentAnswer.comment);
     }else{
-        $("#mainComment").hide("slow");
+        //$("#mainComment").hide("slow");
         $("#mainComment").val('');
 
     }
@@ -211,4 +211,3 @@ function setProgress(progress){
         $("#sendAnswers").show();
     }
 }
-

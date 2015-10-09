@@ -4,84 +4,91 @@
 {% block body %}
 
 
-<div class="row">
-
-<div class="col-md-3">
-
-        <div class="widget">
-
-            <div class="widget-advanced widget-advanced-alt themed-background-autumn">
-
-                <div class="widget-main" style="margin-top: 0px;">
-                    <h4>Preguntas:</h4>
-                    <div class="list-group remove-margin" style="max-height: 250px; overflow: scroll;">
+    <div class="row">
 
 
-                        {% for item in items %}
-                        <a href="#" id="question_{{ item.questionid }}" class="list-group-item questionButton">
-                            <span class="pull-right">  </span>
-                            <h5 class="list-group-item-heading remove-margin"> {{ item.order }}.- {{ item.question }}</h5>
-                        </a>
-                        {% endfor %}
+        <div class="col-md-9">
+            <h1 class="widget-header text-center"><strong>{{ surveyName }}</strong></h1>
+            <hr/>
+            <!--
+            <h6 class="text-justify">Descripci&oacute;n: {{ surveyDesc }}. Puedes ver tu progreso aqu&iacute;:</h6>
 
+            <div class="progress progress-bar-info progress-bar-striped">
+                <div id="progressbar" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+                </div>
+            </div>
+            -->
+            <div class="well">
+                <h3 id="mainQuestion">¿Pregunta?</h3>
 
-                    </div>
+                <div id="mainOptions" class="btn-group btn-group-justified" data-toggle="buttons" role="group" aria-label="...">
+
+                </div>
+                <textarea id="mainComment" class="form-control" rows="3" placeholder="Aquí puedes escribir algún comentario al respecto de ésta pregunta"></textarea>
+
+                <div class="list-group remove-margin" style="text-align: center;">
+                    <button id="prevButton" type="button" class="btn btn-warning" style="float:left;">Pregunta Anterior</button>
+                    <button id="nextButton" type="button" class="btn btn-warning" style="float:right;">Siguiente Pregunta</button>
                 </div>
 
+                <br/><br/>
+
+                <div class="list-group remove-margin" style="text-align: center;">
+                    <button id="sendAnswers" type="button" class="btn btn-primary">Terminar Evaluación</button>
+                </div>
+            </div>
+
+            <div class="well">
+                <h6 class="text-justify"><i class="fa fa-info-circle"></i> {{ surveyDesc }}.</h6>
+                <h6>Puedes ver tu progreso aqu&iacute;:</h6>
+
+                <div class="progress progress-bar-info progress-bar-striped">
+                    <div id="progressbar" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+                    </div>
+                </div>
+                <span id="questionNumer" >1 de 999</span>
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+            <div class="widget">
+                <div class="widget-advanced widget-advanced-alt themed-background-autumn">
+                    <div class="widget-main" style="margin-top: 10%;">
+                        <h4>Preguntas:</h4>
+                        <div class="list-group remove-margin" style="max-height: 420px; overflow: scroll;">
+                            {% for item in items %}
+                                <a href="#" id="question_{{ item.questionid }}" class="list-group-item questionButton">
+                                    <span class="pull-right">  </span>
+                                    <h5 class="list-group-item-heading remove-margin"> {{ item.order }}.- {{ item.question }}</h5>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-</div>
 
-    <div class="col-md-9">
-        <h1 class="widget-header text-center">{{ surveyName }}</h1>
-        <h6 class="text-justify">Descripci&oacute;n: {{ surveyDesc }}. Puedes ver tu progreso aqu&iacute;:</h6>
-        <div class="progress progress-bar-info progress-bar-striped">
-        <div id="progressbar" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
-        </div>
-        </div>
-
-
-        <h3 id="mainQuestion">¿Pregunta?</h3>
-        <h5 id="questionNumer">1 de 999</h5>
-        <div id="mainOptions" class="btn-group btn-group-justified" data-toggle="buttons" role="group" aria-label="...">
-
-        </div>
-        <textarea id="mainComment" class="form-control" rows="3" placeholder="Aquí puedes escribir algún comentario al respecto de ésta pregunta"></textarea>
-
-        <div class="list-group remove-margin" style="text-align: center;">
-        <button id="prevButton" type="button" class="btn btn-warning" style="float:left;">Pregunta Anterior</button>
-
-        <button id="nextButton" type="button" class="btn btn-warning" style="float:right;">Siguiente Pregunta</button>
-        </div>
-        <hr>
-        <div class="list-group remove-margin" style="text-align: center;">
-            <button id="sendAnswers" type="button" class="btn btn-primary">Terminar Evaluación</button>
-        </div>
-
+        <form id="form" method="post">
+            <input id="answers" name="answers" type="hidden">
+        </form>
 
 
     </div>
-    <form id="form" method="post">
-        <input id="answers" name="answers" type="hidden">
-    </form>
 
+    <script src="{{ asset('public/assets/js/jquery-1.11.3.min.js') }}"></script>
+    <script src="{{ asset('public/assets/js/jquery-migrate-1.2.1.min.js') }}"></script>
+    <script>
 
-</div>
+        var items = {{ items|json_encode|raw }};
+        {#
+        var pid = '{{ personid }}';
+        var un = '{{ username }}';
+        #}
 
-        <script src="{{ asset('public/assets/js/jquery-1.11.3.min.js') }}"></script>
-        <script src="{{ asset('public/assets/js/jquery-migrate-1.2.1.min.js') }}"></script>
-        <script>
+        var answersItems = [];
 
-            var items = {{ items|json_encode|raw }};
-            {#
-            var pid = '{{ personid }}';
-            var un = '{{ username }}';
-            #}
-
-            var answersItems = [];
-
-        </script>
-        <script src="{{ asset('public/assets/js/responder.js') }}"></script>
-
+    </script>
+    <script src="{{ asset('public/assets/js/responder.js') }}"></script>
 
 {% endblock %}
