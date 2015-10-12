@@ -1,0 +1,24 @@
+UNO\EvaluacionesBundle\Entity\Privilege:
+    type: entity
+    table: Privilege
+    id:
+        optionApplicationId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: optionApplicationId
+            generator:
+                strategy: NONE
+        profileId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: profileId
+            generator:
+                strategy: NONE
+    fields:{}
+    lifecycleCallbacks: {  }

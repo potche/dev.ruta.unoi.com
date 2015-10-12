@@ -64,7 +64,7 @@ class ResponderController extends Controller
         //---------- Getting the current SURVEY
         $survey = $this->getCurrentSurvey($surveyID);
 
-         if($this->findLog($personId, $surveyID, '004' ) > 0 ){
+         if(count($this->findLog($personId, $surveyID, '004' )) > 0 ){
              return $this->render('@UNOEvaluaciones/Evaluaciones/responderError.html.twig',array(
                  'title'=>'Error',
                  'message'=>'Est encuesta ya ha sido contestada previamente',
@@ -103,9 +103,6 @@ class ResponderController extends Controller
                 'surveyDesc' => $survey->getDescription(),
             ));
         }
-
-
-
     }
 
     public function findLog($personId, $surveyId, $action){
@@ -127,8 +124,7 @@ class ResponderController extends Controller
             ->getRepository('UNOEvaluacionesBundle:Log')
             ->findBy( $criteria );
 
-
-        return count($log);
+        return $log;
     }
 
     /*

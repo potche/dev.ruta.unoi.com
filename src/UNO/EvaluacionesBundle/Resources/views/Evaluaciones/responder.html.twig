@@ -19,7 +19,11 @@
             </div>
             -->
             <div class="well">
-                <h3 id="mainQuestion">¿Pregunta?</h3>
+                <div class="alert alert-info alert-dismissable text-justify">
+                    <h6 class="text-justify"><i class="fa fa-info-circle"></i> {{ surveyDesc }}.</h6>
+                </div>
+
+                <em><h3 id="mainQuestion">¿Pregunta?</h3></em>
 
                 <div id="mainOptions" class="btn-group btn-group-justified" data-toggle="buttons" role="group" aria-label="...">
 
@@ -39,7 +43,6 @@
             </div>
 
             <div class="well">
-                <h6 class="text-justify"><i class="fa fa-info-circle"></i> {{ surveyDesc }}.</h6>
                 <h6>Puedes ver tu progreso aqu&iacute;:</h6>
 
                 <div class="progress progress-bar-info progress-bar-striped">
@@ -55,8 +58,8 @@
             <div class="widget">
                 <div class="widget-advanced widget-advanced-alt themed-background-autumn">
                     <div class="widget-main" style="margin-top: 10%;">
-                        <h4>Preguntas:</h4>
-                        <div class="list-group remove-margin" style="max-height: 420px; overflow: scroll;">
+                        <h4><b>Preguntas</b></h4>
+                        <div class="list-group remove-margin" style="max-height: 460px; overflow: scroll;">
                             {% for item in items %}
                                 <a href="#" id="question_{{ item.questionid }}" class="list-group-item questionButton">
                                     <span class="pull-right">  </span>
