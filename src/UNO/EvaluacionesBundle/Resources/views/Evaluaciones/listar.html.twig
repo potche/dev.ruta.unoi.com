@@ -96,7 +96,7 @@
                                         {% if survey['status']  == 0 or survey['status']  == 5 %}
                                             <a href="{{ path('responder',{'id': survey['id']}) }}" class="label label-success"><i class="fa fa-pencil"></i> Responder</a>
                                         {% else %}
-                                            <span class="label label-default"><i class="fa fa-pencil"></i> Responder</span>
+                                            <a href="{{ path('resumen',{'surveyId': survey['id']}) }}" class="label label-info"><i class="fa fa-list-ol"></i> Resumen</a>
                                         {% endif %}
                                     </div>
                                 </td>
