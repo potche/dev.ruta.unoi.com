@@ -40,10 +40,6 @@ class ResponderController extends Controller
 
         $session = $request->getSession();
 
-
-
-
-
         /*
          * This section checks if the user is already logged in,
          * in that case $personId gets the personIdS value from the session variable
@@ -54,13 +50,9 @@ class ResponderController extends Controller
         }else{
             $personId = $session->get('personIdS');
 
-            /*
-             * Is necessary to check if the URL ID is available for the user
-             * ( if the survey doesn't exists is teh same result )
-             * */
-            $availableSurveys = json_decode(base64_decode($session->get('authorized_in')));
-            
-            if( $availableSurveys==null || !in_array($surveyID , $availableSurveys)   ){
+
+            if(!Utils::isSurveyAuthorized($session,$surveyID)){
+
                 return $this->render('@UNOEvaluaciones/Evaluaciones/responderError.html.twig',array(
                     'title'=>'Error',
                     'message'=>'Lo sentimos, el contenido que buscas es erróneo',
@@ -72,7 +64,7 @@ class ResponderController extends Controller
         //---------- Getting the current SURVEY
         $survey = $this->getCurrentSurvey($surveyID);
 
-         if($this->findLog($personId, $surveyID, '004' ) > 0 ){
+         if(count($this->findLog($personId, $surveyID, '004' )) > 0 ){
              return $this->render('@UNOEvaluaciones/Evaluaciones/responderError.html.twig',array(
                  'title'=>'Error',
                  'message'=>'Est encuesta ya ha sido contestada previamente',
@@ -111,9 +103,6 @@ class ResponderController extends Controller
                 'surveyDesc' => $survey->getDescription(),
             ));
         }
-
-
-
     }
 
     public function findLog($personId, $surveyId, $action){
@@ -135,8 +124,7 @@ class ResponderController extends Controller
             ->getRepository('UNOEvaluacionesBundle:Log')
             ->findBy( $criteria );
 
-
-        return count($log);
+        return $log;
     }
 
     /*
