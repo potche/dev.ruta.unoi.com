@@ -27,3 +27,6 @@ listar:
 test:
     path:   /test
     defaults: {_controller: UNOEvaluacionesBundle:Login\Login:test}
+resumen:
+    path:   /resumen/{surveyId}
+    defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Resumen:index}
