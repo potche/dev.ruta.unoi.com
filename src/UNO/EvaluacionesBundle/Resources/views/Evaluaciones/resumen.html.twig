@@ -2,7 +2,17 @@
 {% block body %}
 
     {{ title }}<br>
-    {{ date }}
+    {{ date }}<br>
+
+    {% for result in results %}
+        <br>
+        {{ result['order'] }}<br>
+        {{ result['question'] }}<br>
+        {{ result['subcategory'] }}<br>
+        {{ result['answer'] }}<br>
+        {{ result['comment'] }}<br>
+    {% endfor %}
+
 
 
 {% endblock %}
