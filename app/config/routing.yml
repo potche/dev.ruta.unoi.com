@@ -8,6 +8,9 @@ login:
 logout:
     path:     /logout
     defaults: { _controller: UNOEvaluacionesBundle:Login\Login:logout}
+inicio:
+    path:     /inicio
+    defaults: { _controller: UNOEvaluacionesBundle:Evaluaciones\Inicio:index}
 autentication:
     path:     /ajax/autentication
     defaults: { _controller: UNOEvaluacionesBundle:Login\Login:autentication }
@@ -23,8 +26,8 @@ responder:
     defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Responder:index}
     requirements:
         id: \d+
-inicio:
-    path:   /inicio
+listar:
+    path:   /listar
     defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Listar:index}
 test:
     path:   /test
