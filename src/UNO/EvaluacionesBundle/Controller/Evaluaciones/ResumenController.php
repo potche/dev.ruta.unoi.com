@@ -17,9 +17,6 @@ define('ANSWERED_LOG_CODE', '4');
 
 class ResumenController extends Controller
 {
-
-
-
     /**
      *
      * Método principal del controlador responsable de la lógica para mostrar el resumen de una evaluación ya respondida
@@ -47,17 +44,49 @@ class ResumenController extends Controller
         }
 
         $personId = $session->get('personIdS');
-        
+        $details = $this->getSurveyLog($personId,$surveyId,ANSWERED_LOG_CODE);
 
-        return $this->render('@UNOEvaluaciones/Evaluaciones/resumen.html.twig', array());
+        if(empty($details)) {
+
+            return $this->render('UNOEvaluacionesBundle:Evaluaciones:responderError.html.twig', array(
+               'title' => 'Error',
+                'message' => 'Necesitas responder esta evaluación antes de ver su resúmen'
+            ));
+        }
+
+        /*
+         * ToDo: Consultar BD para obtener tabla de preguntas y respuestas.
+         * */
+
+        return $this->render('UNOEvaluacionesBundle:Evaluaciones:resumen.html.twig', array(
+            'title' => $details[0]['title'],
+            'date' => $details[0]['date']->format('j/M/Y \@ g:i a'),
+        ));
 
     }
 
-    private function getSurvey($personId, $surveyId, $action){
+    private function getSurveyLog($personId, $surveyId, $action){
 
-        /*
-         * ToDo: query para traer título, fecha y hora de respuesta.
-         */
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $eval = $qb->select('su.title', 'log.date')
+            ->from('UNOEvaluacionesBundle:Survey','su')
+            ->leftJoin('UNOEvaluacionesBundle:Log','log', 'WITH', 'su.surveyid = log.surveySurveyid')
+            ->where('log.surveySurveyid = :surveyId')
+            ->andWhere('log.personPersonid = :personId')
+            ->andWhere('log.actionaction = :logcode')
+            ->orderBy('log.date')
+            ->setMaxResults(1)
+            ->setParameters(array(
+                'personId' => $personId,
+                'surveyId' => $surveyId,
+                'logcode' => $action,
+            ))
+            ->getQuery()
+            ->getResult();
+
+        return $eval;
     }
 
 }
