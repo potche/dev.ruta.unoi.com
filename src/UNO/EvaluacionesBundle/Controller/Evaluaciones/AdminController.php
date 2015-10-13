@@ -8,8 +8,17 @@
 
 namespace UNO\EvaluacionesBundle\Controller\Evaluaciones;
 
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-class AdminController
+class AdminController extends Controller
 {
+
+    public function indexAction(Request $request){
+
+        return new Response('I\'m alive');
+
+    }
 
 }

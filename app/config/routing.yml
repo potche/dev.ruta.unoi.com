@@ -23,8 +23,8 @@ responder:
     defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Responder:index}
     requirements:
         id: \d+
-listar:
-    path:   /listar
+inicio:
+    path:   /inicio
     defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Listar:index}
 test:
     path:   /test
@@ -34,3 +34,6 @@ resumen:
     defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Resumen:index}
     requirements:
             surveyId: \d+
+evaluaciones:
+    path:   /evaluaciones
+    defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Admin:index}
