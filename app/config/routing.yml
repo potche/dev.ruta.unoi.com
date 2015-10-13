@@ -21,6 +21,8 @@ linkCode:
 responder:
     path:   /responder/{id}
     defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Responder:index}
+    requirements:
+        id: \d+
 listar:
     path:   /listar
     defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Listar:index}
@@ -30,3 +32,5 @@ test:
 resumen:
     path:   /resumen/{surveyId}
     defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Resumen:index}
+    requirements:
+            surveyId: \d+
