@@ -64,6 +64,9 @@ class ResumenController extends Controller
     }
 
     /**
+     * Método que obtiene y devuelve título de evaluación, fecha y hora en que respondió el usuario
+     *
+     *
      * @param $personId
      * @param $surveyId
      * @param $action
@@ -95,6 +98,10 @@ class ResumenController extends Controller
     }
 
     /**
+     *
+     * Método que obtiene y devuelve:
+     * orden, pregunta, categoría, respuesta, comentario de los reactivos de una evaluación
+     *
      * @param $surveyId
      * @param $personId
      * @return mixed
