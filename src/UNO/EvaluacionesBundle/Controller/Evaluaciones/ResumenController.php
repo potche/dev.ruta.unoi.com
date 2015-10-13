@@ -54,16 +54,21 @@ class ResumenController extends Controller
             ));
         }
 
-        /*
-         * ToDo: Consultar BD para obtener tabla de preguntas y respuestas.
-         * */
+        $results = $this->getSurveyResults($surveyId,$personId);
 
         return $this->render('UNOEvaluacionesBundle:Evaluaciones:resumen.html.twig', array(
             'title' => $details[0]['title'],
             'date' => $details[0]['date']->format('j/M/Y \@ g:i a'),
+            'results' => $results
         ));
-
     }
+
+    /**
+     * @param $personId
+     * @param $surveyId
+     * @param $action
+     * @return mixed
+     */
 
     private function getSurveyLog($personId, $surveyId, $action){
 
@@ -89,4 +94,35 @@ class ResumenController extends Controller
         return $eval;
     }
 
+    /**
+     * @param $surveyId
+     * @param $personId
+     * @return mixed
+     */
+
+
+    private function getSurveyResults($surveyId, $personId) {
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $results = $qb->select('qxs.order', 'qu.question', 'sub.subcategory','ans.answer','ans.comment')
+            ->from('UNOEvaluacionesBundle:Answer','ans')
+            ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','oxq', 'WITH', 'ans.optionxquestion = oxq.optionxquestionId')
+            ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','qxs', 'WITH', 'oxq.questionxsurvey = qxs.questionxsurveyId')
+            ->innerJoin('UNOEvaluacionesBundle:Question','qu', 'WITH', 'qxs.questionQuestionid = qu.questionid')
+            ->innerJoin('UNOEvaluacionesBundle:Subcategory','sub', 'WITH', 'qu.subcategorySubcategoryid = sub.subcategoryid')
+            ->where('qxs.surveySurveyid = :surveyId')
+            ->andWhere('ans.personPersonid = :personId')
+            ->orderBy('qxs.order')
+            ->setParameters(array(
+                'personId' => $personId,
+                'surveyId' => $surveyId,
+            ))
+            ->getQuery()
+            ->getResult();
+
+        return $results;
+
+    }
 }
