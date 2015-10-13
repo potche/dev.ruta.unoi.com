@@ -47,7 +47,7 @@ class ResumenController extends Controller
         }
 
         $personId = $session->get('personIdS');
-
+        
 
         return $this->render('@UNOEvaluaciones/Evaluaciones/resumen.html.twig', array());
 

@@ -1,0 +1,42 @@
+UNO\EvaluacionesBundle\Entity\Optionapplication:
+    type: entity
+    table: OptionApplication
+    id:
+        optionApplicationId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: OptionApplicationId
+            generator:
+                strategy: AUTO
+    fields:
+        nameOptionApplication:
+            type: string
+            nullable: false
+            length: 60
+            options:
+                fixed: false
+            column: nameOptionApplication
+        descOptionApplication:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false
+            column: descOptionApplication
+        ruteOptionApplication:
+            type: string
+            nullable: false
+            length: 60
+            options:
+                fixed: false
+            column: ruteOptionApplication
+        statusOptionApplication:
+            type: boolean
+            nullable: false
+            options:
+                default: '1'
+            column: statusOptionApplication
+    lifecycleCallbacks: {  }

@@ -73,9 +73,7 @@
 
                         <!-- Sidebar Navigation -->
                         <ul class="sidebar-nav">
-                            <li>
-                                <a href="{{ path('listar') }}"><i class="fa fa-list-ol sidebar-nav-icon"></i><span class="sidebar-nav-mini-hide">Mis evaluaciones</span></a>
-                            </li>
+                            <div id="privilege"></div>
                         </ul>
                         <!-- END Sidebar Navigation -->
                     </div>
@@ -115,7 +113,7 @@
                         <li class="dropdown" style="width: 100%;">
 
                             <a href="javascript:void(0)" class="dropdown-toggle pull-right" data-toggle="dropdown">
-                                {{ app.session.get('nameS') }}
+                                <span id="profile"></span>{{ app.session.get('nameS') }}
                                 <img src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar"> <i class="fa fa-angle-down"></i>
                                 <!-- <img src="https://staticmx.unoi.com/global/logos/gris_fondoblanco_sin.png" alt="avatar"> <i class="fa fa-angle-down"></i>-->
                             </a>
@@ -170,6 +168,30 @@
         <script src="https://staticmx.unoi.com/global/js/plugins.js"></script>
         <script src="https://staticmx.unoi.com/global/js/app.js"></script>
         <script src="https://staticmx.unoi.com/global/js/vendor/modernizr-respond.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                var privilegeArray = $.parseJSON('{{ app.session.get('privilegeS') | raw }}');
+                var link = '';
+                $.each(privilegeArray, function(i, item) {
+                    link += "<li>"+
+                                "<a href=" + privilegeArray[i].ruteOptionApplication + ">"+
+                                    "<i class='fa fa-list-ol sidebar-nav-icon'></i>"+
+                                    "<span class='sidebar-nav-mini-hide'>" + privilegeArray[i].nameOptionApplication + "</span>"+
+                                "</a>"+
+                            "</li>";
+                });
+                $('#privilege').html(link);
+                //-----------------------------------------------
+                var profileArray = $.parseJSON('{{ app.session.get('profileS') | raw }}');
+                var profileStr = '';
+                console.log(profileArray);
+                $.each(profileArray, function(i, item) {
+                    profileStr += profileArray[i].profile + " | ";
+                });
+
+                $('#profile').html(profileStr);
+            });
+        </script>
     {% endblock %}
     </body>
 </html>
