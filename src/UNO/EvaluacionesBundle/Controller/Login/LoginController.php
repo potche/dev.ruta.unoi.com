@@ -16,6 +16,9 @@ use UNO\EvaluacionesBundle\Controller\Login\Encrypt;
 use UNO\EvaluacionesBundle\Controller\LMS\LMS;
 use UNO\EvaluacionesBundle\Controller\LMS\FilterAPI;
 use UNO\EvaluacionesBundle\Entity\Person;
+use UNO\EvaluacionesBundle\Entity\Personschool;
+use UNO\EvaluacionesBundle\Entity\Privilege;
+use UNO\EvaluacionesBundle\Entity\Optionapplication;
 use UNO\EvaluacionesBundle\Entity\School;
 use UNO\EvaluacionesBundle\Entity\Uservalidationemail;
 use UNO\EvaluacionesBundle\Entity\Userhttpsession;
@@ -179,11 +182,45 @@ class LoginController extends Controller{
         //exit();
         $em = $this->getDoctrine()->getManager();
         $this->_personDB = $em->getRepository('UNOEvaluacionesBundle:Person')->findOneBy(array('user' => $this->_user, 'password' => $encrypt));
-        if ($this->_personDB) {
+
+        if (!empty($this->_personDB)) {
             return true;
         }else{
             return false;
         }
+    }
+
+    private function getPrivilege(){
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+        $q = $qb->select('O.nameOptionApplication, O.ruteOptionApplication')
+            ->from('UNOEvaluacionesBundle:Person', 'P')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','P1','WITH', 'P.personid = P1.personid')
+            ->innerJoin('UNOEvaluacionesBundle:Profile','P2','WITH', 'P1.profileid = P2.profileid')
+            ->innerJoin('UNOEvaluacionesBundle:Privilege','P3','WITH', 'P2.profileid = P3.profileId')
+            ->innerJoin('UNOEvaluacionesBundle:Optionapplication','O','WITH', 'O.optionApplicationId = P3.optionApplicationId')
+            ->where('P.personid = :personId')
+            ->andWhere('O.statusOptionApplication = 1')
+            ->setParameter('personId', $this->_personDB->getPersonid())
+            ->getQuery()
+            ->getResult();
+        //$p = $q->execute();
+
+        return json_encode($q);
+    }
+
+    private function getProfile(){
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+        $q = $qb->select('P2.profileid, P2.profilecode, P2.profile')
+            ->from('UNOEvaluacionesBundle:Person', 'P')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','P1','WITH', 'P.personid = P1.personid')
+            ->innerJoin('UNOEvaluacionesBundle:Profile','P2','WITH', 'P1.profileid = P2.profileid')
+            ->where('P.personid = :personId')
+            ->setParameter('personId', $this->_personDB->getPersonid())
+            ->getQuery()
+            ->getResult();
+        return json_encode($q);
     }
 
     private function logIn($request){
@@ -193,6 +230,8 @@ class LoginController extends Controller{
         $session->set('logged_in', true);
         $session->set('personIdS', $this->_personDB->getPersonid());
         $session->set('nameS', $this->_personDB->getName());
+        $session->set('privilegeS', $this->getPrivilege());
+        $session->set('profileS', $this->getProfile());
         $this->setCookie();
         return true;
     }
