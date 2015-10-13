@@ -1,18 +1,45 @@
 {% extends '::base.html.twig' %}
 {% block body %}
 
-    {{ title }}<br>
-    {{ date }}<br>
+    <div id="block-resumen" class="block">
+        <div class="block-title">
+            <div class="block-options pull-right">
+                <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
+            </div>
+            <h2>Resumen de <strong>Evaluación</strong></h2>
+        </div>
 
-    {% for result in results %}
-        <br>
-        {{ result['order'] }}<br>
-        {{ result['question'] }}<br>
-        {{ result['subcategory'] }}<br>
-        {{ result['answer'] }}<br>
-        {{ result['comment'] }}<br>
-    {% endfor %}
+        <div class="block-content">
+                <b>Título: {{ title }}</b><br>
+                <em>Respondida el {{ date }}</em>
+                <br><br>
+        </div>
+    </div>
 
+    <div id="block-tareas" class="block">
+        <div class="block-title">
+            <div class="block-options pull-right">
+                <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
+            </div>
+            <h2><strong>Tareas</strong> a realizar</h2>
+        </div>
 
+        <div class="block-content">
+            <br><br>
+        </div>
+    </div>
+
+    <div id="block-respuestas" class="block">
+        <div class="block-title">
+            <div class="block-options pull-right">
+                <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
+            </div>
+            <h2>Ver <strong>Respuestas</strong></h2>
+        </div>
+
+        <div class="block-content">
+            <br><br>
+        </div>
+    </div>
 
 {% endblock %}
