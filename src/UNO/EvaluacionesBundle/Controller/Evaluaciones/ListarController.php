@@ -76,6 +76,7 @@ class ListarController extends Controller
                 ->orderBy('su.title')
                 ->getQuery()
                 ->getResult();
+
         }
 
         // Para efectos estadísticos llevamos la cuenta de cuántas evaluaciones faltan por responder

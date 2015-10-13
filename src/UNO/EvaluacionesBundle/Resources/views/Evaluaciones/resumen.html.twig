@@ -1,44 +1,28 @@
 {% extends '::base.html.twig' %}
 {% block body %}
 
-    <div id="block-resumen" class="block">
-        <div class="block-title">
-            <div class="block-options pull-right">
-                <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
+    <div id="page-content">
+        <!-- Blocks - Grid Header -->
+        <div class="content-header">
+            <div class="header-section">
+                <h1>
+                    <i class="gi gi-show_big_thumbnails"></i>{{ title }}<br><small>Respondida el {{ date }}</small>
+                </h1>
             </div>
-            <h2>Resumen de <strong>Evaluación</strong></h2>
         </div>
+        <!-- END Blocks - Grid Header -->
 
-        <div class="block-content">
-                <b>Título: {{ title }}</b><br>
-                <em>Respondida el {{ date }}</em>
-                <br><br>
-        </div>
-    </div>
-
-    <div id="block-tareas" class="block">
-        <div class="block-title">
-            <div class="block-options pull-right">
-                <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
+        <!-- Block -->
+        <div class="block">
+            <!-- Block Title -->
+            <div class="block-title">
+                <h2><strong>Example</strong> Title</h2>
             </div>
-            <h2><strong>Tareas</strong> a realizar</h2>
-        </div>
+            <!-- END Block Title -->
 
-        <div class="block-content">
-            <br><br>
-        </div>
-    </div>
-
-    <div id="block-respuestas" class="block">
-        <div class="block-title">
-            <div class="block-options pull-right">
-                <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
-            </div>
-            <h2>Ver <strong>Respuestas</strong></h2>
-        </div>
-
-        <div class="block-content">
-            <br><br>
+            <!-- Block Content -->
+            <p>Example content..</p>
+            <!-- END Block Content -->
         </div>
     </div>
 

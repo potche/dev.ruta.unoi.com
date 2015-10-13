@@ -15,6 +15,7 @@ class Option
     /**
      * @var string
      *
+     *
      * @ORM\Column(name="option", type="string", length=250, nullable=false)
      */
     private $option;
