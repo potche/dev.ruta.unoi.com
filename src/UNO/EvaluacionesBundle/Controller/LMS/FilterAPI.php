@@ -10,6 +10,10 @@
 
 namespace UNO\EvaluacionesBundle\Controller\LMS;
 
+/**
+ * Class FilterAPI
+ * @package UNO\EvaluacionesBundle\Controller\LMS
+ */
 class FilterAPI{
 
     /**
@@ -27,20 +31,29 @@ class FilterAPI{
 
 
     static $status= 1;
+    /**
+     * @var bool
+     */
     static $ok = FALSE;
-    static $persona;
-    static $person = 'person';
-    static $schoolPeriodCode = 'schoolPeriodCode';
-    static $profile = 'profile';
-    static $school = 'school';
-    static $country = 'country';
-    static $schoolLevel = 'schoolLevel';
-
+    /**
+     * @var bool
+     */
     static $profileG = FALSE;
+    /**
+     * @var bool
+     */
     static $periodoG = FALSE;
-
+    /**
+     * @var
+     */
     private $_person;
+    /**
+     * @var
+     */
     private $_pass;
+    /**
+     * @var
+     */
     private $_user;
 
     /**
@@ -50,17 +63,30 @@ class FilterAPI{
         $this->_person = $this->getDatPerson($json);
     }
 
+    /**
+     * @param $user
+     * @param $pass
+     * @return int
+     */
     public function runFilter($user,$pass){
         $this->_pass = $pass;
         $this->_user = $user;
         return ($this->getPerson($this->_person));
     }
 
+    /**
+     * @param $api
+     * @return mixed
+     */
     private function getDatPerson($api){
         $dat = json_decode($api);
         return $dat->person;
     }
 
+    /**
+     * @param $person
+     * @return int
+     */
     private function getPerson($person){
         $Person = array();
         $schoolsArray = $this->getSchool($person->schools);
@@ -166,8 +192,9 @@ class FilterAPI{
                         }
 
                     }else {
-                        if(!$periodoStatus  && !static::$periodoG )
+                        if (!$periodoStatus && !static::$periodoG) {
                             static::$status = 102;
+                        }
                     }
                 }
             }
@@ -234,39 +261,14 @@ class FilterAPI{
                             )
                         );
                     }else{
-                        if(!$profileStatus && !static::$profileG)
+                        if(!$profileStatus && !static::$profileG){
                             static::$status = 101;
+                        }
                     }
                 }
             }
         }
         return $profileArray;
-    }
-
-    private static function creaArray($response) {
-        $p = explode(',',$response['p']);
-        if(!empty(static::$user)){
-            $username = static::$user;
-        }else{
-            $username = $response[static::$person]['user'];
-        }
-
-        static::$persona = array(
-            'username' => $username,
-            'name' => $response[static::$person]['name']
-        );
-        $schools = static::escuelas($response[static::$person]['schools']);
-
-        static::validaPerfil($schools);
-    }
-
-    private static function validaPerfil($schools) {
-        $profileArray = array();
-        foreach ($schools as $value) {
-            $profileArray[$value['profileId']] = $value[static::$profile];
-        }
-
-        static::$persona[static::$profile] = $profileArray;
     }
 
 }
