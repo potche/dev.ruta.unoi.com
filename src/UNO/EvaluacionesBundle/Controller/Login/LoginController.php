@@ -135,9 +135,9 @@ class LoginController extends Controller{
             $this->updateMailValidation($_personId, $_email);
 
             $to = $_email;
-            $to = 'potcheunam@gmail.com';
+            //$to = 'potcheunam@gmail.com';
             $url = "http://dev.evaluaciones.unoi.com/app_dev.php/linkCode?code=".base64_encode($_code)."&email=".base64_encode($_email);
-            $subject = "Validación de Email";
+            $subject = "Dev Validación de Email";
             $headers = 'MIME-Version: 1.0' . "\r\n";
             $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
             $headers .= 'From: Red UNOi <noreplymx@unoi.com>'."\r\n";
@@ -152,11 +152,11 @@ class LoginController extends Controller{
     private function sendMail() {
         $BodyMail = new BodyMail();
         $to = $this->_datPerson['email'];
-        $to = 'potcheunam@gmail.com';
+        //$to = 'potcheunam@gmail.com';
 
         $url = "http://dev.evaluaciones.unoi.com/app_dev.php/linkCode?code=".base64_encode($this->_code)."&email=".base64_encode($this->_datPerson['email']);
 
-        $subject = "Validación de Email";
+        $subject = "Dev Validación de Email";
         $headers = 'MIME-Version: 1.0' . "\r\n";
         $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
         $headers .= 'From: Evaluacione Red UNOi <noreplymx@unoi.com>'."\r\n";
