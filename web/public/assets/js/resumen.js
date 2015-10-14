@@ -3,6 +3,10 @@ var TablesDatatables = function() {
     return {
         init: function() {
 
+            /**
+             * Implementación de datatable para la tabla de respuestas
+             */
+
             App.datatables();
             $('#tbl-respuestas').DataTable({
                 pageLength: 10,

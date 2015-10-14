@@ -17,9 +17,17 @@
                 </div>
                 <h2><strong>Resumen</strong></h2>
             </div>
-
-            <div class="block-content">
-                <p>estadisticas</p>
+            <div class="row">
+                <div class="block-content">
+                    <div class="col-sm-6">
+                        <div id="pie" class="block"></div>
+                    </div>
+                </div>
+                <div class="block-content">
+                    <div class="col-sm-6">
+                        <div id="bars" class="block"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -27,7 +35,28 @@
             <div class="block-title">
                 <h2><strong>Tareas</strong> a realizar</h2>
             </div>
-            <p>Aquí irán las tareas</p>
+
+            {% for key, task in tasks %}
+                <h4 class="sub-header">{{ key }}</h4>
+                    <table id="tbl-tareas-{{ key }}" class="table table-vcenter table-condensed table-bordered">
+                        <thead>
+                        <tr>
+                            <th>
+                                {{ 'Tarea' }}
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                {% for subtask in task %}
+                    <tr>
+                        <td>
+                            {{ subtask }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                        </tbody>
+                    </table>
+            {% endfor %}
         </div>
 
         <div id="block-respuestas" class="block">
@@ -71,9 +100,14 @@
         </div>
 
     </div>
+
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
     <script src="{{ asset('public/assets/js/resumen.js') }}"></script>
+    <script src="{{ asset('public/assets/js/charts.js') }}"></script>
     <script>$(function(){ TablesDatatables.init(); });</script>
+    <script>$(function(){ Charts.init('stats_pie','stats_bars'); });</script>
 
 {% endblock %}
