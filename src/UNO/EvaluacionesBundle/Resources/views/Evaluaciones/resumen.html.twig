@@ -6,24 +6,75 @@
         <div class="content-header">
             <div class="header-section">
                 <h1>
-                    <i class="gi gi-show_big_thumbnails"></i>{{ title }}<br><small>Respondida el {{ date }}</small>
+                    <i class="fa fa-pencil"></i><b>{{ title }}</b><br><small><em>Respondida el {{ date }}</em></small>
                 </h1>
             </div>
         </div>
-        <!-- END Blocks - Grid Header -->
 
-        <!-- Block -->
-        <div class="block">
-            <!-- Block Title -->
+        <div id="block-resumen" class="block">
             <div class="block-title">
-                <h2><strong>Example</strong> Title</h2>
+                <div class="block-options pull-right">
+                    <a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
+                </div>
+                <h2><strong>Resumen</strong></h2>
             </div>
-            <!-- END Block Title -->
 
-            <!-- Block Content -->
-            <p>Example content..</p>
-            <!-- END Block Content -->
+            <div class="block-content">
+                <p>estadisticas</p>
+            </div>
         </div>
+
+        <div id = "block-tareas" class="block">
+            <div class="block-title">
+                <h2><strong>Tareas</strong> a realizar</h2>
+            </div>
+            <p>Aquí irán las tareas</p>
+        </div>
+
+        <div id="block-respuestas" class="block">
+            <div class="block-title text-center">
+                <div class="block-options pull-right">
+                    <a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
+                </div>
+                <h2>Ver mis <strong>Respuestas</strong></h2>
+            </div>
+
+            <div id="cont-respuestas" class="block-content">
+                <table id="tbl-respuestas" class="table table-vcenter table-condensed table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Orden</th>
+                        <th>Pregunta</th>
+                        <th>Respuesta</th>
+                        <th>Comentario</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for result in results %}
+                        <tr>
+                            <td class="text-center">
+                                {{ result['order'] }}
+                            </td>
+                            <td>
+                                {{ result['question'] }}
+                            </td>
+                            <td class="text-center">
+                                {{ result['answer'] }}
+                            </td>
+                            <td>
+                                {{ result['comment'] }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
+    <script src="{{ asset('public/assets/js/resumen.js') }}"></script>
+    <script>$(function(){ TablesDatatables.init(); });</script>
 
 {% endblock %}
