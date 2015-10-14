@@ -4,8 +4,8 @@
  * User: isra
  * Date: 17/09/15
  * Time: 10:28 AM
- * Class LMS
- * @package UNO\EvaluacionesBundle\Controller\LMS
+ * Class Login
+ * @package UNO\EvaluacionesBundle\Controller\Login
  */
 
 namespace UNO\EvaluacionesBundle\Controller\Login;

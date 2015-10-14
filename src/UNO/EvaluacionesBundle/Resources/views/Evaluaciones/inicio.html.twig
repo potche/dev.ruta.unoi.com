@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+
+    <!-- Buttons - Dropdowns Header -->
+    <div class="content-header">
+        <div class="header-section">
+            <h1>
+                <i class="fa fa-bookmark-o" onclick="showVideo();"></i>
+                Bienvenid@ <strong>{{ app.session.get('nameS') }}</strong>
+                <br/><small>al Sistema de Evaluaciones, aqui podras bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla...</small>
+            </h1>
+        </div>
+    </div>
+    <!-- END Buttons - Dropdowns Header -->
+
+    <!-- eCommerce Dashboard Header -->
+    <div class="content-header">
+        <ul class="nav-horizontal text-center">
+            <div id="menuInicio"></div>
+        </ul>
+    </div>
+    <!-- END eCommerce Dashboard Header -->
+
+    <!-- Form Example with Blocks in the Grid -->
+    <div class="row">
+        <div class="col-sm-6">
+            <!-- Block -->
+            <div class="block">
+                <!-- Title -->
+                <div class="block-title">
+                    <h2>News</h2>
+                </div>
+                <div class="widget-extra-full text-center">
+                    <div class="pie-chart" data-percent="75" data-size="90" data-bar-color="#e67e22">
+                        <span>75%</span>
+                    </div>
+                </div>
+            </div>
+            <!-- END Block -->
+        </div>
+        <div class="col-sm-6">
+            <!-- Video -->
+            <div class="block">
+                <!-- Title -->
+                <div class="block-title">
+                    <h2>News</h2>
+                </div>
+                <div class="widget-extra-full text-center">
+                    <div class="pie-chart" data-percent="75" data-size="90" data-bar-color="#e67e22">
+                        <span>75%</span>
+                    </div>
+                </div>
+            </div>
+            <!-- END Video -->
+        </div>
+
+    </div>
+    <!-- END Form Example with Blocks in the Grid -->
+
+
+    <!-- Modal Video -->
+    <div id="videoWellcome" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-commenting"></i> Bienvenid@ <strong>{{ app.session.get('nameS') }}</strong></h4>
+                </div>
+                <div class="modal-body">
+                    <h1>aqui podria ir un video....</h1>
+                    <!-- <iframe id="player" style="width:90%; height:235px; margin: 5% 5%" src="https://www.youtube.com/embed/LYkudoUb51E" frameborder="0" allowfullscreen></iframe> -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal Video -->
+{% endblock %}
+
+
