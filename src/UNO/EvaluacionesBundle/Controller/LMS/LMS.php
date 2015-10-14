@@ -10,6 +10,10 @@
 
 namespace UNO\EvaluacionesBundle\Controller\LMS;
 
+/**
+ * Class LMS
+ * @package UNO\EvaluacionesBundle\Controller\LMS
+ */
 class LMS{
 
     /**
@@ -52,29 +56,38 @@ class LMS{
     private $_password = null;
     
 
-    /*
+    /**
      * hay dos formas de enviar para metros al API: User y Password, IP y Token
      */
     public function __construct(){
-        if (!is_resource($this->_conn)) {
-            if (!$this->getConnection()){
-                $this->_failure = '99';
-            }
+        if (!is_resource($this->_conn) && !$this->getConnection()) {
+            $this->_failure = '99';
         }
     }
 
+    /**
+     * @param $user
+     * @param $pass
+     * @param string $request_url
+     * @return resource|string
+     * #$user = 'mgonzalezr';
+     * #$pass = 'abc123';
+     */
     public function getDataXUserPass($user, $pass, $request_url = ""){
-        #$user = 'mgonzalezr';
-        #$pass = 'abc123';
+
         if(is_null($this->_failure)){
             $params = $this->params($user, $pass);
-
-            curl_setopt($this->_conn, CURLOPT_URL, $request_url);  // URL to post to
-            curl_setopt($this->_conn, CURLOPT_RETURNTRANSFER, 1 );   // return into a variable
+            // URL to post to
+            curl_setopt($this->_conn, CURLOPT_URL, $request_url);
+            // return into a variable
+            curl_setopt($this->_conn, CURLOPT_RETURNTRANSFER, 1 );
             $headers = array('Content-type: application/json');
-            curl_setopt($this->_conn, CURLOPT_HTTPHEADER, $headers ); // custom headers
-            curl_setopt($this->_conn, CURLOPT_HEADER, false );     // return into a variable
-            curl_setopt($this->_conn, CURLOPT_POST, true);     // POST
+            // custom headers
+            curl_setopt($this->_conn, CURLOPT_HTTPHEADER, $headers );
+            // return into a variable
+            curl_setopt($this->_conn, CURLOPT_HEADER, false );
+            // POST
+            curl_setopt($this->_conn, CURLOPT_POST, true);
             $postBody = (!empty($params))? json_encode($params) : "{}";
             curl_setopt($this->_conn, CURLOPT_POSTFIELDS,  $postBody);
 
@@ -97,7 +110,7 @@ class LMS{
      */
     protected function getJSON($result){
         $responseCode = curl_getinfo($this->_conn, CURLINFO_HTTP_CODE);
-        if (!self::successfulHttpResponse($responseCode)){
+        if (!static::successfulHttpResponse($responseCode)){
             $this->_failure = 'Error ['.$responseCode.']';
         }else{
             $parsedResult = json_decode($result,true);
@@ -200,8 +213,7 @@ class LMS{
     protected function params($user, $pass){
         $this->setUser($user);
         $this->setPassword($pass);
-
-        return $params = array('user' => $this->getUser(), 'password' => $this->getPassword());
+        return array('user' => $this->getUser(), 'password' => $this->getPassword());
     }
 
     /**
