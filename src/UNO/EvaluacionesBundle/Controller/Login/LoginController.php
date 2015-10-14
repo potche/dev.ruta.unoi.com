@@ -1,4 +1,12 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: isra
+ * Date: 17/09/15
+ * Time: 10:28 AM
+ * Class Login
+ * @package UNO\EvaluacionesBundle\Controller\Login
+ */
 
 namespace UNO\EvaluacionesBundle\Controller\Login;
 
@@ -60,7 +68,7 @@ class LoginController extends Controller{
                 'browserVersion' => $dataBrowser->getVersion()
             ));
         }else{
-            return $this->redirect("/listar");
+            return $this->redirect("/inicio");
         }
     }
 
@@ -127,7 +135,7 @@ class LoginController extends Controller{
             $this->updateMailValidation($_personId, $_email);
 
             $to = $_email;
-            //$to = 'potcheunam@gmail.com';
+            $to = 'potcheunam@gmail.com';
             $url = "http://dev.evaluaciones.unoi.com/app_dev.php/linkCode?code=".base64_encode($_code)."&email=".base64_encode($_email);
             $subject = "Validación de Email";
             $headers = 'MIME-Version: 1.0' . "\r\n";
@@ -135,7 +143,6 @@ class LoginController extends Controller{
             $headers .= 'From: Red UNOi <noreplymx@unoi.com>'."\r\n";
             $headers .= 'Reply-To: NoReply <noreplymx@unoi.com>' . "\r\n";
             $headers .= 'Bcc: potcheunam@gmail.com' . "\r\n";
-            $headers .= 'Bcc: noreplymx@unoi.com' . "\r\n";
             $message = $BodyMail->run($_name, $_code, $url);
             mail($to, $subject, $message, $headers, '-f noreplymx@unoi.com');
             return new response('1');
@@ -145,7 +152,7 @@ class LoginController extends Controller{
     private function sendMail() {
         $BodyMail = new BodyMail();
         $to = $this->_datPerson['email'];
-        //$to = 'potcheunam@gmail.com';
+        $to = 'potcheunam@gmail.com';
 
         $url = "http://dev.evaluaciones.unoi.com/app_dev.php/linkCode?code=".base64_encode($this->_code)."&email=".base64_encode($this->_datPerson['email']);
 
@@ -155,7 +162,6 @@ class LoginController extends Controller{
         $headers .= 'From: Evaluacione Red UNOi <noreplymx@unoi.com>'."\r\n";
         $headers .= 'Reply-To: NoReply <noreplymx@unoi.com>' . "\r\n";
         $headers .= 'Bcc: potcheunam@gmail.com' . "\r\n";
-        $headers .= 'Bcc: noreplymx@unoi.com' . "\r\n";
         $message = $BodyMail->run($this->_datPerson['name'], $this->_code, $url);
         mail($to, $subject, $message, $headers, '-f noreplymx@unoi.com');
     }
@@ -193,7 +199,7 @@ class LoginController extends Controller{
     private function getPrivilege(){
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
-        $q = $qb->select('O.nameOptionApplication, O.ruteOptionApplication')
+        $q = $qb->select('O.nameOptionApplication, O.ruteOptionApplication, O.iconOptionApplication')
             ->from('UNOEvaluacionesBundle:Person', 'P')
             ->innerJoin('UNOEvaluacionesBundle:Personschool','P1','WITH', 'P.personid = P1.personid')
             ->innerJoin('UNOEvaluacionesBundle:Profile','P2','WITH', 'P1.profileid = P2.profileid')
@@ -202,10 +208,13 @@ class LoginController extends Controller{
             ->where('P.personid = :personId')
             ->andWhere('O.statusOptionApplication = 1')
             ->setParameter('personId', $this->_personDB->getPersonid())
+            ->groupBy('O.nameOptionApplication, O.ruteOptionApplication, O.iconOptionApplication')
+            ->orderBy('O.optionApplicationId')
             ->getQuery()
             ->getResult();
         //$p = $q->execute();
-
+        //print_r( json_encode($q) );
+        //exit();
         return json_encode($q);
     }
 

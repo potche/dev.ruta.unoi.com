@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Created by PhpStorm.
+ * User: isra
+ * Date: 17/09/15
+ * Time: 10:28 AM
+ * @package UNO\EvaluacionesBundle\Controller
+ */
 namespace UNO\EvaluacionesBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -9,6 +16,10 @@ use UNO\EvaluacionesBundle\Entity\Optionapplication;
 use UNO\EvaluacionesBundle\Entity\Privilege;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class DefaultController
+ * @package UNO\EvaluacionesBundle\Controller
+ */
 class DefaultController extends Controller
 {
     /**
@@ -34,18 +45,6 @@ class DefaultController extends Controller
         $em->persist($Privilege);
         $em->flush();
 
-
-        /*
-        $em = $this->getDoctrine()->getManager();
-        $OptionApplication = new Optionapplication();
-        $OptionApplication->setNameOptionApplication('prueba');
-        $OptionApplication->setDescOptionApplication('desc de prueba');
-        $OptionApplication->setRuteOptionApplication('/prueba');
-        //$OptionApplication->setStatusOptionApplication(1);
-
-        $em->persist($OptionApplication);
-        $em->flush();
-*/
         $em = $this->getDoctrine()->getManager();
         $UserValidationEmail = $em->getRepository('UNOEvaluacionesBundle:Optionapplication')->findOneBy(array('optionApplicationId' => 1));
         if (!empty($UserValidationEmail)) {
