@@ -6,7 +6,7 @@
         <div class="header-section">
             <h1>
                 <i class="fa fa-bookmark-o" onclick="showVideo();"></i>
-                Bienvenido <strong>{{ app.session.get('nameS') }}</strong>
+                Bienvenid@ <strong>{{ app.session.get('nameS') }}</strong>
                 <br/><small>al Sistema de Evaluaciones, aqui podras bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla...</small>
             </h1>
         </div>
@@ -62,15 +62,16 @@
     <div id="videoWellcome" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header bg-warning">
+                <div class="modal-header bg-success">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title"><i class="fa fa-info-circle"></i> Bienvenida</h4>
+                    <h4 class="modal-title"><i class="fa fa-commenting"></i> Bienvenid@ <strong>{{ app.session.get('nameS') }}</strong></h4>
                 </div>
                 <div class="modal-body">
+                    <h1>aqui podria ir un video....</h1>
                     <!-- <iframe id="player" style="width:90%; height:235px; margin: 5% 5%" src="https://www.youtube.com/embed/LYkudoUb51E" frameborder="0" allowfullscreen></iframe> -->
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Aceptar</button>
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Aceptar</button>
                 </div>
             </div>
         </div>

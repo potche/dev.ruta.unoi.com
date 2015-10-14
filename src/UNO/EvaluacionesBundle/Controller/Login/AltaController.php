@@ -39,7 +39,7 @@ class AltaController extends Controller{
                 if($this->getDatAlta()){
                     if($this->run()){
                         $this->logIn($request);
-                        return $this->redirect("/listar");
+                        return $this->redirect("/inicio");
                     }else{
                         return $this->redirect("/");
                     }
@@ -47,12 +47,46 @@ class AltaController extends Controller{
                     return $this->render('UNOEvaluacionesBundle:Login:errorCode.html.twig');
                 }
             }else{
-                return $this->redirect("/listar");
+                return $this->redirect("/inicio");
             }
 
         }else{
             return $this->render('UNOEvaluacionesBundle:Login:errorCode.html.twig');
         }
+    }
+
+    private function getPrivilege(){
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+        $q = $qb->select('O.nameOptionApplication, O.ruteOptionApplication, O.iconOptionApplication')
+            ->from('UNOEvaluacionesBundle:Person', 'P')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','P1','WITH', 'P.personid = P1.personid')
+            ->innerJoin('UNOEvaluacionesBundle:Profile','P2','WITH', 'P1.profileid = P2.profileid')
+            ->innerJoin('UNOEvaluacionesBundle:Privilege','P3','WITH', 'P2.profileid = P3.profileId')
+            ->innerJoin('UNOEvaluacionesBundle:Optionapplication','O','WITH', 'O.optionApplicationId = P3.optionApplicationId')
+            ->where('P.personid = :personId')
+            ->andWhere('O.statusOptionApplication = 1')
+            ->setParameter('personId', $this->_datPerson->personId)
+            ->groupBy('O.nameOptionApplication, O.ruteOptionApplication, O.iconOptionApplication')
+            ->getQuery()
+            ->getResult();
+        //$p = $q->execute();
+
+        return json_encode($q);
+    }
+
+    private function getProfile(){
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+        $q = $qb->select('P2.profileid, P2.profilecode, P2.profile')
+            ->from('UNOEvaluacionesBundle:Person', 'P')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','P1','WITH', 'P.personid = P1.personid')
+            ->innerJoin('UNOEvaluacionesBundle:Profile','P2','WITH', 'P1.profileid = P2.profileid')
+            ->where('P.personid = :personId')
+            ->setParameter('personId', $this->_datPerson->personId)
+            ->getQuery()
+            ->getResult();
+        return json_encode($q);
     }
 
     private function logIn($request){
@@ -62,6 +96,8 @@ class AltaController extends Controller{
         $session->set('logged_in', true);
         $session->set('personIdS', $this->_datPerson->personId);
         $session->set('nameS', $this->_datPerson->name);
+        $session->set('privilegeS', $this->getPrivilege());
+        $session->set('profileS', $this->getProfile());
         $this->setCookie();
         return true;
     }
