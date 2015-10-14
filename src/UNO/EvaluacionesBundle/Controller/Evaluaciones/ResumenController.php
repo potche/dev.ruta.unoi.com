@@ -46,6 +46,7 @@ class ResumenController extends Controller
         $personId = $session->get('personIdS');
         $details = $this->getSurveyLog($personId,$surveyId,ANSWERED_LOG_CODE);
 
+        // Validamos contra el log que ya haya respondido (manejando el escenario donde el usuario ingresa escribiendo la ruta)
         if(empty($details)) {
 
             return $this->render('UNOEvaluacionesBundle:Evaluaciones:responderError.html.twig', array(
@@ -54,7 +55,15 @@ class ResumenController extends Controller
             ));
         }
 
+        // Una vez que validamos los escenarios posibles, ejecutamos la consulta para traer las respuestas del usuario
         $results = $this->getSurveyResults($surveyId,$personId);
+
+        /**
+         * ToDo: obtener categorías y pasar arreglo a vista
+         */
+        /**
+         * ToDo: pasar estadísticas a vista
+         */
 
         return $this->render('UNOEvaluacionesBundle:Evaluaciones:resumen.html.twig', array(
             'title' => $details[0]['title'],
@@ -130,6 +139,20 @@ class ResumenController extends Controller
             ->getResult();
 
         return $results;
+    }
 
+    private function getStatsByAnswer($results){
+
+        /**
+         * ToDo: obtener estadísticas agrupadas por respuesta (para gráfica de pastel)
+         */
+
+    }
+
+    private function getStatsByCategory($results){
+
+        /**
+         * ToDo: obtener estadísticas agrupadas por categoría (para gráfica de barras)
+         */
     }
 }
