@@ -4,7 +4,6 @@ var TablesDatatables = function() {
         init: function() {
 
             App.datatables();
-
             $('#tbl-respuestas').DataTable({
                 pageLength: 10,
                 lengthMenu: [[10, 20, 30, -1], [10, 20, 30, 'Ver Todas']]

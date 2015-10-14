@@ -61,7 +61,6 @@ class ResumenController extends Controller
         /**
          * ToDo: obtener categorías y pasar arreglo a vista
          */
-
         /**
          * ToDo: pasar estadísticas a vista
          */
