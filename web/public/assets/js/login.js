@@ -352,5 +352,5 @@ function checkCode(base_path){
 };
 
 function login(base_path){
-    window.location.replace(base_path+"/listar");
+    window.location.replace(base_path+"/inicio");
 }
