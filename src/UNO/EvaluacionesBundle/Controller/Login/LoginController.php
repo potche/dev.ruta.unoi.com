@@ -124,6 +124,17 @@ class LoginController extends Controller{
         }
     }
 
+    public function successAction(Request $request){
+        $session = $request->getSession();
+        $session->start();
+        if ($session->get('logged_in') && $session->get('success')) {
+            $session->set('success', false);
+            return $this->render('UNOEvaluacionesBundle:Login:success.html.twig');
+        }else{
+            return $this->redirect("/");
+        }
+    }
+
     public function forwardMailAction(Request $request) {
         if ($request->getMethod() == 'POST') {
             $BodyMail = new BodyMail();
@@ -237,6 +248,7 @@ class LoginController extends Controller{
         $session->start();
         // set and get session attributes
         $session->set('logged_in', true);
+        $session->set('success', false);
         $session->set('personIdS', $this->_personDB->getPersonid());
         $session->set('nameS', $this->_personDB->getName());
         $session->set('privilegeS', $this->getPrivilege());
@@ -249,6 +261,7 @@ class LoginController extends Controller{
         $session = $request->getSession();
         $session->clear();
         $session->remove('logged_in');
+        $session->remove('success');
         $session->remove('personIdS');
         $session->remove('nameS');
         $session->remove('authorized_in');

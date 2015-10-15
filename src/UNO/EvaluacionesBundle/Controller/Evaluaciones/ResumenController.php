@@ -58,9 +58,10 @@ class ResumenController extends Controller
         // Una vez que validamos los escenarios posibles, ejecutamos la consulta para traer las respuestas del usuario
         $results = $this->getSurveyResults($surveyId,$personId);
 
-        /**
-         * ToDo: obtener categorías y pasar arreglo a vista
-         */
+        // Obtengo categorías de preguntas de esta evaluación
+        $categories = array_unique(array_column($results,'subcategory'));
+        $tasks = $this->getTasksByCategory($results,$categories);
+
         /**
          * ToDo: pasar estadísticas a vista
          */
@@ -68,7 +69,9 @@ class ResumenController extends Controller
         return $this->render('UNOEvaluacionesBundle:Evaluaciones:resumen.html.twig', array(
             'title' => $details[0]['title'],
             'date' => $details[0]['date']->format('j/M/Y \@ g:i a'),
-            'results' => $results
+            'results' => $results,
+            'categories' => $categories,
+            'tasks' => $tasks
         ));
     }
 
@@ -154,5 +157,22 @@ class ResumenController extends Controller
         /**
          * ToDo: obtener estadísticas agrupadas por categoría (para gráfica de barras)
          */
+    }
+
+    private function getTasksByCategory($results, $categories) {
+
+        $tasks = array();
+        foreach($categories as $cat) {
+
+            $tasks[$cat] = array();
+            foreach($results as $r) {
+
+                if(strcasecmp($cat,$r['subcategory']) == 0 && in_array(strtolower($r['answer']),array('no', 'no sé'))) {
+
+                    array_push($tasks[$cat],$r['question']);
+                }
+            }
+        }
+        return $tasks;
     }
 }

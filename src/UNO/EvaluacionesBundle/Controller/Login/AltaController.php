@@ -80,7 +80,8 @@ class AltaController extends Controller{
                 if(!empty($this->_datPersonDB)){
                     if($this->run()){
                         $this->logIn($request);
-                        return $this->redirect("/inicio");
+                        $session->set('success', true);
+                        return $this->redirect("/success");
                     }else{
                         return $this->redirect("/");
                     }
