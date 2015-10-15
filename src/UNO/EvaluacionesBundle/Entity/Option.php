@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Option
  *
- * @ORM\Table(name="Option")
+ * @ORM\Table(name="`Option`")
  * @ORM\Entity
  */
 class Option
@@ -16,7 +16,7 @@ class Option
      * @var string
      *
      *
-     * @ORM\Column(name="option", type="string", length=250, nullable=false)
+     * @ORM\Column(name="`option`", type="string", length=250, nullable=false)
      */
     private $option;
 
