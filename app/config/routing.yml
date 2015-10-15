@@ -8,6 +8,9 @@ login:
 logout:
     path:     /logout
     defaults: { _controller: UNOEvaluacionesBundle:Login\Login:logout}
+success:
+    path:     /success
+    defaults: { _controller: UNOEvaluacionesBundle:Login\Login:success}
 inicio:
     path:     /inicio
     defaults: { _controller: UNOEvaluacionesBundle:Evaluaciones\Inicio:index}

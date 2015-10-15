@@ -31,7 +31,35 @@ use UNO\EvaluacionesBundle\Entity\School;
 use UNO\EvaluacionesBundle\Entity\Uservalidationemail;
 use UNO\EvaluacionesBundle\Entity\Userhttpsession;
 
+/**
+ *
+ */
+DEFINE('logged_in', 'logged_in');
+/**
+ *
+ */
+DEFINE('login_user', 'login-user');
+/**
+ *
+ */
+DEFINE('personId', 'personId');
+/**
+ *
+ */
+DEFINE('email', 'email');
+/**
+ *
+ */
+DEFINE('PersonDB_L', 'UNOEvaluacionesBundle:Person');
+/**
+ *
+ */
+DEFINE('success', 'success');
 
+/**
+ * Class LoginController
+ * @package UNO\EvaluacionesBundle\Controller\Login
+ */
 class LoginController extends Controller{
 
     /**
@@ -48,21 +76,46 @@ class LoginController extends Controller{
      * 105 - password invalido
      */
 
+    private $_request;
+    /**
+     * @var
+     */
     private $_person;
+    /**
+     * @var
+     */
     private $_personDB;
+    /**
+     * @var
+     */
     private $_user;
+    /**
+     * @var
+     */
     private $_pass;
+    /**
+     * @var
+     */
     private $_datPerson;
+    /**
+     * @var
+     */
     private $_code;
+    /**
+     * @var
+     */
+    private $_response;
 
     /**
      * @Route("/")
+     *
+     * Muestra el formulario de Login
      */
     public function indexAction(Request $request){
         $session = $request->getSession();
         $session->start();
         $dataBrowser = new Browser();
-        if (!$session->get('logged_in')) {
+        if (!$session->get(logged_in)) {
             return $this->render('UNOEvaluacionesBundle:Login:index.html.twig', array(
                 'browser' => $dataBrowser->getBrowser(),
                 'browserVersion' => $dataBrowser->getVersion()
@@ -75,67 +128,119 @@ class LoginController extends Controller{
     /**
      * @Route("/ajax/autentication")
      * @Method("POST")
+     * inicia la Autenticacion
+     * de los datos obtenidos en le formulario
      */
     public function autenticationAction(Request $request) {
+        $this->_request = $request;
+        #se valida que la peticion sea de tipo POST
         if ($request->getMethod() == 'POST') {
-            if($request->get('login-user')){
-                $this->_user = $request->get('login-user');
+            $this->setUserPass();
+            //revisamos que el usuario este en la base de datos comparando su User y Pass
+            $this->existsUserPassInDB();
+            if(!empty($this->_personDB)){
+                //user existente
+                $this->valUserExisting();
+            }else if( !empty($this->existsUserInDB()) ){
+                $this->_response = '105';
             }else{
-                $this->_user = $this->getCookie();
+                $this->preAddUser();
             }
-
-            $this->_pass = $request->get('login-password');
-
-            if($this->existsUserPassInDB()){
-                if($this->_personDB->getActive()){
-                    if($this->logIn($request)){
-                        $this->addUserHttpSession($request);
-                        return new Response('ok');
-                    }
-                }else{
-                    return new Response('104');
-                }
-            }else{
-                if($this->existsUserInDB()){
-                    return new Response('105');
-                }else{
-                    $LMS = new LMS();
-                    $api = $LMS->getDataXUserPass($this->_user, $this->_pass, 'http://www.sistemauno.com/source/ws/uno_wsj_login.php');
-                    $this->_person = "";
-                    if ($this->isObjectAPI($api)) {
-                        //validar Permisos
-                        $FilterAPI = new FilterAPI($api);
-                        $this->_datPerson = $FilterAPI->runFilter($this->_user, $this->_pass);
-                        if (is_array($this->_datPerson)) {
-                            //si el usuario cuenta con un perfil apropiado se le pide que valide sus coreo
-                            $this->validateEmailUser();
-                            $this->sendMail();
-                            return new Response("1|" . $this->_datPerson['email'] . "|" . $this->_datPerson['personId'] . "|" . $this->_code . "|" . $this->_datPerson['name']);
-                        } else {
-                            return new Response($this->_datPerson);
-                        }
-                    } else {
-                        return new Response($api);
-                    }
-                }
-            }
+            return new response($this->_response);
         }else{
             return new response($request->getMethod());
         }
     }
 
+    /**
+     * inicializa las variables
+     * login-user
+     * login-password
+     * enviadas del formulario
+     */
+    private function setUserPass(){
+        if($this->_request->get(login_user)){
+            $this->_user = $this->_request->get(login_user);
+        }else{
+            $this->_user = $this->getCookie();
+        }
+        $this->_pass = $this->_request->get('login-password');
+    }
+
+    /**
+     * valida si el usuario esta activo
+     * si lo esta, lo logea
+     * en caso contrario envia el error
+     */
+    private function valUserExisting(){
+        if($this->_personDB->getActive()){
+            if($this->logIn()){
+                $this->addUserHttpSession();
+                $this->_response = 'ok';
+            }
+        }else{
+            $this->_response = '104';
+        }
+    }
+
+    /**
+     * prepara los datos para la alta del usuario
+     */
+    private function preAddUser(){
+        $LMS = new LMS();
+        $api = $LMS->getDataXUserPass($this->_user, $this->_pass, 'http://www.sistemauno.com/source/ws/uno_wsj_login.php');
+        $this->_person = "";
+        if ($this->isObjectAPI($api)) {
+            //validar Permisos
+            $FilterAPI = new FilterAPI($api);
+            $this->_datPerson = $FilterAPI->runFilter($this->_user, $this->_pass);
+            if (is_array($this->_datPerson)) {
+                //si el usuario cuenta con un perfil apropiado se le pide que valide sus coreo
+                $this->validateEmailUser();
+                $this->sendMail();
+                $this->_response = "1|" . $this->_datPerson[email] . "|" . $this->_datPerson[personId] . "|" . $this->_code . "|" . $this->_datPerson['name'];
+            } else {
+                $this->_response = $this->_datPerson;
+            }
+        } else {
+            $this->_response = $api;
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     * la alta del usuario fue exitosa
+     */
+    public function successAction(Request $request){
+        $session = $request->getSession();
+        $session->start();
+        if ($session->get(logged_in) && $session->get(success)) {
+            $session->set(success, false);
+            return $this->render('UNOEvaluacionesBundle:Login:success.html.twig');
+        }else{
+            return $this->redirect("/");
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     * reenvia el correo a validar
+     * pueden haber cambiado el correo
+     */
     public function forwardMailAction(Request $request) {
         if ($request->getMethod() == 'POST') {
             $BodyMail = new BodyMail();
             $_name = $request->get('name');
             $_code = $request->get('code');
-            $_email = $request->get('email');
-            $_personId = $request->get('personId');
+            $_email = $request->get(email);
+            $_personId = $request->get(personId);
 
             $this->updateMailValidation($_personId, $_email);
 
             $to = $_email;
-            //$to = 'potcheunam@gmail.com';
+            $to = 'potcheunam@gmail.com';
             $url = "http://dev.evaluaciones.unoi.com/app_dev.php/linkCode?code=".base64_encode($_code)."&email=".base64_encode($_email);
             $subject = "Dev Validación de Email";
             $headers = 'MIME-Version: 1.0' . "\r\n";
@@ -149,12 +254,15 @@ class LoginController extends Controller{
         }
     }
 
+    /**
+     * envia el correo a validar
+     */
     private function sendMail() {
         $BodyMail = new BodyMail();
-        $to = $this->_datPerson['email'];
-        //$to = 'potcheunam@gmail.com';
+        $to = $this->_datPerson[email];
+        $to = 'potcheunam@gmail.com';
 
-        $url = "http://dev.evaluaciones.unoi.com/app_dev.php/linkCode?code=".base64_encode($this->_code)."&email=".base64_encode($this->_datPerson['email']);
+        $url = "http://dev.evaluaciones.unoi.com/app_dev.php/linkCode?code=".base64_encode($this->_code)."&email=".base64_encode($this->_datPerson[email]);
 
         $subject = "Dev Validación de Email";
         $headers = 'MIME-Version: 1.0' . "\r\n";
@@ -168,39 +276,34 @@ class LoginController extends Controller{
 
     /**
      * @return bool
+     * revisamos que se encuentre el user
      */
     private function existsUserInDB(){
         $em = $this->getDoctrine()->getManager();
-        $this->_personDB = $em->getRepository('UNOEvaluacionesBundle:Person')->findOneBy(array('user' => $this->_user));
-        if ($this->_personDB) {
-            return true;
-        }else{
-            return false;
-        }
+        return $em->getRepository(PersonDB_L)->findOneBy(array('user' => $this->_user));
     }
 
     /**
      * @return bool
+     * $this->decrypt($encrypt);
+     * exit();
+     * revisa que se encuentre el user y pass
      */
     private function existsUserPassInDB(){
         $encrypt = encrypt::encrypt($this->_pass);
-        //$this->decrypt($encrypt);
-        //exit();
         $em = $this->getDoctrine()->getManager();
-        $this->_personDB = $em->getRepository('UNOEvaluacionesBundle:Person')->findOneBy(array('user' => $this->_user, 'password' => $encrypt));
-
-        if (!empty($this->_personDB)) {
-            return true;
-        }else{
-            return false;
-        }
+        $this->_personDB = $em->getRepository(PersonDB_L)->findOneBy(array('user' => $this->_user, 'password' => $encrypt));
     }
 
+    /**
+     * @return string
+     * obtiene los privilegios del usuario logeado y lo envia como json
+     */
     private function getPrivilege(){
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
         $q = $qb->select('O.nameOptionApplication, O.ruteOptionApplication, O.iconOptionApplication')
-            ->from('UNOEvaluacionesBundle:Person', 'P')
+            ->from(PersonDB_L, 'P')
             ->innerJoin('UNOEvaluacionesBundle:Personschool','P1','WITH', 'P.personid = P1.personid')
             ->innerJoin('UNOEvaluacionesBundle:Profile','P2','WITH', 'P1.profileid = P2.profileid')
             ->innerJoin('UNOEvaluacionesBundle:Privilege','P3','WITH', 'P2.profileid = P3.profileId')
@@ -212,17 +315,18 @@ class LoginController extends Controller{
             ->orderBy('O.optionApplicationId')
             ->getQuery()
             ->getResult();
-        //$p = $q->execute();
-        //print_r( json_encode($q) );
-        //exit();
         return json_encode($q);
     }
 
+    /**
+     * @return string
+     * obtiene los perfiles del usuario logeado y lo envia como json
+     */
     private function getProfile(){
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
         $q = $qb->select('P2.profileid, P2.profilecode, P2.profile')
-            ->from('UNOEvaluacionesBundle:Person', 'P')
+            ->from(PersonDB_L, 'P')
             ->innerJoin('UNOEvaluacionesBundle:Personschool','P1','WITH', 'P.personid = P1.personid')
             ->innerJoin('UNOEvaluacionesBundle:Profile','P2','WITH', 'P1.profileid = P2.profileid')
             ->where('P.personid = :personId')
@@ -232,11 +336,16 @@ class LoginController extends Controller{
         return json_encode($q);
     }
 
-    private function logIn($request){
-        $session = $request->getSession();
+    /**
+     * @return bool
+     * inicializa las variables de session e invoca a metodo setCookie
+     */
+    private function logIn(){
+        $session = $this->_request->getSession();
         $session->start();
         // set and get session attributes
-        $session->set('logged_in', true);
+        $session->set(logged_in, true);
+        $session->set(success, false);
         $session->set('personIdS', $this->_personDB->getPersonid());
         $session->set('nameS', $this->_personDB->getName());
         $session->set('privilegeS', $this->getPrivilege());
@@ -245,10 +354,16 @@ class LoginController extends Controller{
         return true;
     }
 
+    /**
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * cierra y borra las variables de session
+     */
     public function logoutAction(Request $request) {
         $session = $request->getSession();
         $session->clear();
-        $session->remove('logged_in');
+        $session->remove(logged_in);
+        $session->remove(success);
         $session->remove('personIdS');
         $session->remove('nameS');
         $session->remove('authorized_in');
@@ -258,50 +373,65 @@ class LoginController extends Controller{
         return $this->redirect('/');
     }
 
+    /**
+     * guarda la cookie del usuario
+     */
     private function setCookie() {
         $response = new Response();
-        $cookie = new Cookie('login-user', $this->_user, time() + 3600 * 24, '/', 'unoi.com', false, false);
+        $cookie = new Cookie(login_user, $this->_user, time() + 3600 * 24, '/', 'unoi.com', false, false);
         $response->headers->setCookie($cookie);
         $response->send();
     }
 
-
+    /**
+     * @return bool
+     * valida que se pase el user por post
+     * en caso contrario lo toma de la cookie
+     */
     private function getCookie() {
         $request = $this->get('request');
         $cookies = $request->cookies;
 
-        if ($cookies->has('login-user')) {
-            return $cookies->get('login-user');
+        if ($cookies->has(login_user)) {
+            return $cookies->get(login_user);
         }else{
             return false;
         }
     }
 
+    /**
+     * @param $api
+     * @return bool
+     * revisa que la variable retornda sea un objeto
+     */
     private function isObjectAPI($api){
         $dat = json_decode($api);
-        if (is_object($dat)) {
-            return true;
-        }else{
-            return false;
-        }
+        return is_object($dat);
     }
 
+    /**
+     * Guarda en la DB la informacion para validar el correo del usuario
+     */
     private function validateEmailUser(){
-        $this->deleteDuplicateCode($this->_datPerson['personId'], $this->_datPerson['email']);
+        $this->deleteDuplicateCode($this->_datPerson[personId]);
         $this->_code = rand(10000, 99999);
         $em = $this->getDoctrine()->getManager();
         $UserValidationEmail = new Uservalidationemail();
-        $UserValidationEmail->setEmail($this->_datPerson['email']);
+        $UserValidationEmail->setEmail($this->_datPerson[email]);
         $UserValidationEmail->setCode($this->_code);
         $UserValidationEmail->setDateregister(new \DateTime());
         $UserValidationEmail->setData(json_encode($this->_datPerson));
-        $UserValidationEmail->setPersonid($this->_datPerson['personId']);
+        $UserValidationEmail->setPersonid($this->_datPerson[personId]);
 
         $em->persist($UserValidationEmail);
         $em->flush();
     }
 
-    public function deleteDuplicateCode($personId, $email) {
+    /**
+     * @param $personId
+     * Borra de la tabla de validacion el registro antiguo
+     */
+    public function deleteDuplicateCode($personId) {
         $em = $this->getDoctrine()->getManager();
         $UserValidationEmail = $em->getRepository('UNOEvaluacionesBundle:Uservalidationemail')->findOneBy(array('personid' => $personId));
         if ($UserValidationEmail) {
@@ -310,21 +440,29 @@ class LoginController extends Controller{
         }
     }
 
+    /**
+     * @param $personId
+     * @param $email
+     * actualiza el correo de validacion en la BD
+     */
     private function updateMailValidation($personId, $email){
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
-        $q = $qb->update('UNOEvaluacionesBundle:Uservalidationemail', 'u')
+        $qb ->update('UNOEvaluacionesBundle:Uservalidationemail', 'u')
             ->set('u.email', $qb->expr()->literal($email))
             ->where('u.personid = ?1')
             ->setParameter(1, $personId)
-            ->getQuery();
-        $p = $q->execute();
+            ->getQuery()
+            ->execute();
     }
 
-    private function addUserHttpSession($request){
-        //inserta nueva UserHttpSession
+    /**
+     * @return bool
+     * inserta nueva UserHttpSession
+     */
+    private function addUserHttpSession(){
         $dataBrowser = new Browser();
-        $session = $request->getSession();
+        $session = $this->_request->getSession();
         $em = $this->getDoctrine()->getManager();
         try{
             $Userhttpsession = new Userhttpsession();
@@ -339,18 +477,10 @@ class LoginController extends Controller{
 
             $em->persist($Userhttpsession);
             $em->flush();
-            //$em->getConnection()->commit();
             return true;
         } catch(\Exception $e){
-            //print_r($e->getPrevious()->getCode());
-            //echo "<br/>----------";
             print_r($e->getMessage());
             return false;
         }
     }
-
-    public function testAction(){
-        return $this->render('UNOEvaluacionesBundle:Login:test.html.twig');
-    }
-
 }
