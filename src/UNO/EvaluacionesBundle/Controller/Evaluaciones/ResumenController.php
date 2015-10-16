@@ -9,6 +9,7 @@
 namespace UNO\EvaluacionesBundle\Controller\Evaluaciones;
 
 
+use Proxies\__CG__\UNO\EvaluacionesBundle\Entity\Optionxquestion;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -61,6 +62,8 @@ class ResumenController extends Controller
         // Obtengo categorías de preguntas de esta evaluación
         $categories = array_unique(array_column($results,'subcategory'));
         $tasks = $this->getTasksByCategory($results,$categories);
+        $options = $this->getAnswerOptions($surveyId);
+        $pie_stats = $this->getStatsByAnswer($results,$options);
 
         /**
          * ToDo: pasar estadísticas a vista
@@ -71,7 +74,8 @@ class ResumenController extends Controller
             'date' => $details[0]['date']->format('j/M/Y \@ g:i a'),
             'results' => $results,
             'categories' => $categories,
-            'tasks' => $tasks
+            'tasks' => $tasks,
+            'pie_stats'=> $pie_stats
         ));
     }
 
@@ -144,19 +148,68 @@ class ResumenController extends Controller
         return $results;
     }
 
-    private function getStatsByAnswer($results){
+    /**
+     * @param $surveyId
+     * @return mixed
+     */
 
-        /**
-         * ToDo: obtener estadísticas agrupadas por respuesta (para gráfica de pastel)
-         */
+    private function getAnswerOptions($surveyId) {
 
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $opts = $qb->select('opc.option as name')
+            ->from('UNOEvaluacionesBundle:Option','opc')
+            ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','oxq', 'WITH', 'opc.optionid = oxq.optionOptionid')
+            ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','qxs', 'WITH', 'oxq.questionxsurvey = qxs.questionxsurveyId')
+            ->where('qxs.surveySurveyid = :surveyId')
+            ->groupBy('opc.option')
+            ->orderBy('oxq.order')
+           ->setParameters(array(
+                'surveyId' => $surveyId
+            ))
+            ->getQuery()
+            ->getResult();
+
+        return $opts;
     }
 
-    private function getStatsByCategory($results){
+    /**
+     *
+     * Obtengo las estadísticas por respuestas, (funciona con cualquier tipo de respuesta de opción multiple)
+     *
+     * @param $results
+     * @param $options
+     * @return array
+     */
+    private function getStatsByAnswer($results, $options){
 
-        /**
-         * ToDo: obtener estadísticas agrupadas por categoría (para gráfica de barras)
-         */
+        $total = count(array_column($results,'answer'));
+        $countByAnswer = array_count_values(array_column($results,'answer'));
+        $pieStats = array();
+
+        foreach($options as $k => $val){
+
+            array_push($pieStats,array(
+                'name' => $val['name'],
+                'y' => ($total > 0 ? round((($countByAnswer[$val['name']] * 100) / $total),2) : 0)
+            ));
+        }
+        return $pieStats;
+    }
+
+    private function getStatsByCategory($categories, $options, $results){
+
+        $bar_stats = array();
+        foreach($categories as $cat) {
+            foreach($results as $r) {
+
+                if(strcasecmp($cat,$r['subcategory']) == 0 && in_array(strtolower($r['answer']),array('no', 'no sé'))) {
+
+                }
+            }
+        }
+        return $bar_stats;
     }
 
     private function getTasksByCategory($results, $categories) {

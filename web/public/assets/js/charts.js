@@ -42,7 +42,7 @@ var Charts = function() {
 
                     series: [{
                         name: 'Sí',
-                        data: [5, 3, 4, 7, 2],
+                        data: [1, 3, 4, 7, 2],
                         stack: 'good'
                     }, {
                         name: 'No',
@@ -83,20 +83,9 @@ var Charts = function() {
                     }
                 },
                 series: [{
-                    name: "Procentaje",
+                    name: "Porcentaje",
                     colorByPoint: true,
-                    data: [{
-                        name: "Si",
-                        y: 56.33
-                    }, {
-                        name: "No",
-                        y: 24.03,
-                        sliced: true,
-                        selected: true
-                    }, {
-                        name: "No Sé",
-                        y: 10.38
-                    }]
+                    data: JSON.parse(stats_pie)
                 }]
             });
         }

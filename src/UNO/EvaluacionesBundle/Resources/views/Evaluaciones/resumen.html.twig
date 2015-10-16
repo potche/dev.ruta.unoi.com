@@ -37,7 +37,7 @@
             </div>
 
             {% for key, task in tasks %}
-                <h4 class="sub-header">{{ key }}</h4>
+                <h4 class="sub-header"><b>{{ key }}</b></h4>
                     <table id="tbl-tareas-{{ key }}" class="table table-vcenter table-condensed table-bordered">
                         <thead>
                         <tr>
@@ -98,7 +98,6 @@
                 </table>
             </div>
         </div>
-
     </div>
 
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -108,6 +107,6 @@
     <script src="{{ asset('public/assets/js/resumen.js') }}"></script>
     <script src="{{ asset('public/assets/js/charts.js') }}"></script>
     <script>$(function(){ TablesDatatables.init(); });</script>
-    <script>$(function(){ Charts.init('stats_pie','stats_bars'); });</script>
+    <script>$(function(){ Charts.init('{{ pie_stats|json_encode()|raw }}','stats_bars'); });</script>
 
 {% endblock %}
