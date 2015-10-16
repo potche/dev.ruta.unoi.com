@@ -1,0 +1,43 @@
+{% extends '::base.html.twig' %}
+{% block body %}
+
+    <div id="page-content">
+        <div class="content-header">
+            <div class="header-section">
+                <h1>
+                    <i class="fa fa-line-chart"></i><b>{{ title }}</b><br><small><em>Evaluaciones</em></small>
+                </h1>
+            </div>
+        </div>
+
+        <div id="block-resumen" class="block">
+            <div class="block-title">
+                <div class="block-options pull-right">
+                    <a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
+                </div>
+                <h2><strong>Graficas</strong></h2>
+            </div>
+            <div class="row">
+                <div class="block-content">
+                    <div class="col-sm-6">
+                        <div id="pie" class="block"></div>
+                    </div>
+                </div>
+                <div class="block-content">
+                    <div class="col-sm-6">
+                        <div id="bars" class="block"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
+    <script src="{{ asset('public/assets/js/resumen.js') }}"></script>
+    <script src="{{ asset('public/assets/js/charts.js') }}"></script>
+    <script>$(function(){ TablesDatatables.init(); });</script>
+
+{% endblock %}

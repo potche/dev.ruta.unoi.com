@@ -26,6 +26,13 @@ UNO\EvaluacionesBundle\Entity\Optionapplication:
             options:
                 fixed: false
             column: descOptionApplication
+        iconOptionApplication:
+            type: string
+            nullable: true
+            length: 45
+            options:
+                fixed: false
+            column: iconOptionApplication
         ruteOptionApplication:
             type: string
             nullable: false
