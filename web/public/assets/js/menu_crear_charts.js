@@ -1,58 +1,86 @@
 var Charts = function() {
 
     return {
-        init: function (stats_bars) {
+        init: function (stats_general) {
 
-            var chart_bars = new Highcharts.Chart({
-
+            var chart_general = new Highcharts.Chart({
                 chart: {
-                    type: 'column',
-                    renderTo: 'bars'
+                    type: 'pie',
+                    renderTo: 'pie-general'
                 },
-
+                colors: ['#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9', '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1'],
                 title: {
-                    text: 'Respuestas por categorías'
+                    text: 'Avance global en evaluaciones existentes'
                 },
-
-                xAxis: {
-                    categories: ['Categoría 1', 'Categoría 2', 'Categoría 3', 'Categoría 4', 'Categoría 5']
+                subtitle: {
+                    text: 'Seleccionar una sección para ver detalle'
                 },
-
-                yAxis: {
-                    allowDecimals: false,
-                    min: 0,
-                    title: {
-                        text: 'Respuestas'
+                plotOptions: {
+                    series: {
+                        dataLabels: {
+                            enabled: true,
+                            format: '{point.name}: {point.y:.1f}%'
+                        }
                     }
                 },
 
                 tooltip: {
-                    formatter: function () {
-                        return '<b>' + this.x + '</b><br/>' +
-                            this.series.name + ': ' + this.y + '<br/>' +
-                            'Total: ' + this.point.stackTotal;
-                    }
+                    headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                    pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}%</b><br/>'
                 },
-
-                plotOptions: {
-                    column: {
-                        stacking: 'normal'
-                    }
-                },
-
                 series: [{
-                    name: 'Sí',
-                    data: [1, 3, 4, 7, 2],
-                    stack: 'good'
-                }, {
-                    name: 'No',
-                    data: [3, 4, 4, 2, 5],
-                    stack: 'bad'
-                }, {
-                    name: 'No sé',
-                    data: [2, 5, 6, 2, 1],
-                    stack: 'bad'
-                }]
+                    name: "Porcentaje",
+                    colorByPoint: true,
+                    data: [{
+                        name: "Completado",
+                        y: 56.33,
+                        drilldown: "Completado"
+                    }, {
+                        name: "Pendiente",
+                        y: 24.03,
+                        drilldown: "Pendiente"
+                    }, {
+                        name: "Sin atender",
+                        y: 10.38,
+                        drilldown: "Sin atender"
+                    }]
+                }],
+                drilldown: {
+                    series: [{
+                        name: "Completado",
+                        id: "Completado",
+                        data: [
+                            ["Lista 1", 24.13],
+                            ["Lista 2", 17.2],
+                            ["Lista 3", 8.11],
+                            ["Lista 4", 5.33],
+                            ["Lista 5", 1.06],
+                            ["Lista 6", 0.5]
+                        ]
+                    }, {
+                        name: "Pendiente",
+                        id: "Pendiente",
+                        data: [
+                            ["Lista 1", 5],
+                            ["Lista 2", 4.32],
+                            ["Lista 3", 3.68],
+                            ["Lista 4", 2.96],
+                            ["Lista 5", 2.53],
+                            ["Lista 6", 1.45]
+                        ]
+                    }, {
+                        name: "Sin atender",
+                        id: "Sin atender",
+                        data: [
+                            ["Lista 1", 5],
+                            ["Lista 2", 4.32],
+                            ["Lista 3", 3.68],
+                            ["Lista 4", 2.96],
+                            ["Lista 5", 2.53],
+                            ["Lista 6", 1.45]
+                        ]
+                    }]
+                }
             });
         }
     };
