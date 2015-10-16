@@ -58,15 +58,13 @@ class ResumenController extends Controller
 
         // Una vez que validamos los escenarios posibles, ejecutamos la consulta para traer las respuestas del usuario
         $results = $this->getSurveyResults($surveyId,$personId);
-
-        // Obtengo categorías de preguntas de esta evaluación
         $categories = array_unique(array_column($results,'subcategory'));
         $tasks = $this->getTasksByCategory($results,$categories);
         $options = $this->getAnswerOptions($surveyId);
         $pie_stats = $this->getStatsByAnswer($results,$options);
 
         /**
-         * ToDo: pasar estadísticas a vista
+         * ToDo: pasar estadística de barras a vista
          */
 
         return $this->render('UNOEvaluacionesBundle:Evaluaciones:resumen.html.twig', array(
@@ -149,6 +147,9 @@ class ResumenController extends Controller
     }
 
     /**
+     *
+     * Obtengo las opciones de las preguntas para manejar las estadísticas
+     *
      * @param $surveyId
      * @return mixed
      */
@@ -200,16 +201,9 @@ class ResumenController extends Controller
 
     private function getStatsByCategory($categories, $options, $results){
 
-        $bar_stats = array();
-        foreach($categories as $cat) {
-            foreach($results as $r) {
-
-                if(strcasecmp($cat,$r['subcategory']) == 0 && in_array(strtolower($r['answer']),array('no', 'no sé'))) {
-
-                }
-            }
-        }
-        return $bar_stats;
+        /**
+         * ToDo: implementar formato de estadisticas por categoria (barras)
+         */
     }
 
     private function getTasksByCategory($results, $categories) {

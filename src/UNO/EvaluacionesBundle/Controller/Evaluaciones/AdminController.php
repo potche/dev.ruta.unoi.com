@@ -17,7 +17,9 @@ class AdminController extends Controller
 
     public function indexAction(Request $request){
 
-        return new Response('I\'m alive');
+
+
+        return $this->render('UNOEvaluacionesBundle:Crear:menueval_admin.html.twig');
 
     }
 

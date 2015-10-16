@@ -5,7 +5,7 @@
         <div class="content-header">
             <div class="header-section">
                 <h1>
-                    <i class="fa fa-pencil"></i><b>{{ title }}</b><br><small><em>Respondida el {{ date }}</em></small>
+                    <i class="fa fa-pencil" style="color: #CCC;"></i><b>{{ title }}</b><br><small><em>Respondida el {{ date }}</em></small>
                 </h1>
             </div>
         </div>
@@ -68,7 +68,7 @@
             </div>
 
             <div id="cont-respuestas" class="block-content">
-                <table id="tbl-respuestas" class="table table-vcenter table-condensed table-bordered">
+                <table id="tbl-datatable" class="table table-vcenter table-condensed table-bordered">
                     <thead>
                     <tr>
                         <th>Orden</th>
@@ -105,7 +105,7 @@
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="http://code.highcharts.com/modules/exporting.js"></script>
     <script src="{{ asset('public/assets/js/resumen.js') }}"></script>
-    <script src="{{ asset('public/assets/js/charts.js') }}"></script>
+    <script src="{{ asset('public/assets/js/resumen_charts.js') }}"></script>
     <script>$(function(){ TablesDatatables.init(); });</script>
     <script>$(function(){ Charts.init('{{ pie_stats|json_encode()|raw }}','stats_bars'); });</script>
 

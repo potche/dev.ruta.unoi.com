@@ -1,0 +1,90 @@
+{% extends '::base.html.twig' %}
+{% block body %}
+    <div id="page-content">
+        <div class="content-header">
+            <div class="header-section">
+                <h1>
+                    <i class="fa fa-list-ul" style="color: #CCC;"></i><b>Evaluaciones</b><br><small><em>Última actualización: {{ "now"|date("j/M/Y \@ g:i a") }}</em></small>
+                </h1>
+            </div>
+        </div>
+        <div id="block-resumen" class="block">
+            <div class="block-title">
+                <div class="block-options pull-right">
+                    <a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
+                </div>
+                <h2><strong>Resumen</strong></h2>
+            </div>
+            <div class="row">
+                <div class="block-content">
+                    <div class="col-sm-12">
+                        <div id="pie-general" class="block"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="block-evals" class="block">
+            <div class="block-title text-center">
+                <h2><strong>Evaluaciones creadas</strong></h2>
+            </div>
+
+            <div id="cont-respuestas" class="block-content">
+                <table id="tbl-datatable" class="table table-vcenter table-condensed table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Evaluación</th>
+                        <th>Perfiles</th>
+                        <th>Avance global</th>
+                        <th>Creada el</th>
+                        <th>Finaliza el</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                {{ '200' }}
+                            </td>
+                            <td>
+                                {{ 'Lista de cotejo n' }}
+                            </td>
+                            <td>
+                                {{ 'Profesor de Primaria' }}
+                            </td>
+                            <td>
+                                {{ '90.5%' }}
+                            </td>
+                            <td>
+                                {{ "now"|date("j/M/Y \@ g:i a") }}
+                            </td>
+                            <td>
+                                {{ "now"|date("j/M/Y \@ g:i a") }}
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-xs">
+                                    <a href="/" class="label label-danger" style="display: block;" data-toggle="tooltip" data-placement="top" title="Hacer una evaluación no visible al usuario"><i class="fa fa-times"></i> Desactivar</a>
+                                    <br>
+                                    <a href="/" class="label label-info" style="display: block;" data-toggle="tooltip" data-placement="top" title="Puedes modificar el título y la fecha de fin de la evaluación"><i class="fa fa-pencil"></i> Modificar</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <br>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/modules/data.js"></script>
+    <script src="http://code.highcharts.com/modules/drilldown.js"></script>
+    <script src="{{ asset('public/assets/js/resumen.js') }}"></script>
+    <script src="{{ asset('public/assets/js/menu_crear_charts.js') }}"></script>
+    <script>$(function(){ TablesDatatables.init(); });</script>
+    <script>$(function(){ Charts.init(); });</script>
+
+{% endblock %}
