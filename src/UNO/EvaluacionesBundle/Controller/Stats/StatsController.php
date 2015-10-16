@@ -27,9 +27,10 @@ class StatsController extends Controller{
         $session = $request->getSession();
         $session->start();
         if ($session->get('logged_in')) {
-            $this->getSurveyResultsGrl();
+
             return $this->render('UNOEvaluacionesBundle:Stats:index.html.twig', array(
-                'title' => 'Estadisticas'
+                'title' => 'Estadisticas',
+                'dat' => $this->getResults()
             ));
         }else{
             return $this->redirect("/");
@@ -75,6 +76,36 @@ class StatsController extends Controller{
             ->getResult();
 
         print_r( $results );
+    }
+
+    private function getResults() {
+        $personId = 3066990;
+        $surveyId = 1;
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $results = $qb->select('A.answer as name')
+            ->addSelect('count(A.answer) as y')
+            ->addSelect("case when(A.answer='Sí') then 'true' else 'false' end as sliced")
+            ->addSelect("case when(A.answer='Sí') then 'true' else 'false' end as selected")
+            ->from('UNOEvaluacionesBundle:Answer','A')
+            ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','OQ', 'WITH', 'A.optionxquestion = OQ.optionxquestionId')
+            ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','QS', 'WITH', 'OQ.questionxsurvey = QS.questionxsurveyId')
+            ->innerJoin('UNOEvaluacionesBundle:Question','Q', 'WITH', 'QS.questionQuestionid = Q.questionid')
+            ->innerJoin('UNOEvaluacionesBundle:Subcategory','Sub', 'WITH', 'Q.subcategorySubcategoryid = Sub.subcategoryid')
+            ->innerJoin('UNOEvaluacionesBundle:Survey','S', 'WITH', 'QS.surveySurveyid = S.surveyid')
+            ->where('QS.surveySurveyid = :surveyId')
+            ->andWhere('A.personPersonid = :personId')
+            ->groupBy('A.answer')
+            ->orderBy( 'A.answer')
+            ->setParameters(array(
+                'personId' => $personId,
+                'surveyId' => $surveyId,
+            ))
+            ->getQuery()
+            ->getResult();
+        print_r($results);
+        return json_encode($results);
     }
 
 }

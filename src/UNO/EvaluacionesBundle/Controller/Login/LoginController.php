@@ -240,7 +240,7 @@ class LoginController extends Controller{
             $this->updateMailValidation($_personId, $_email);
 
             $to = $_email;
-            $to = 'potcheunam@gmail.com';
+            //$to = 'potcheunam@gmail.com';
             $url = "http://dev.evaluaciones.unoi.com/app_dev.php/linkCode?code=".base64_encode($_code)."&email=".base64_encode($_email);
             $subject = "Dev Validación de Email";
             $headers = 'MIME-Version: 1.0' . "\r\n";
