@@ -8,13 +8,13 @@ var TablesDatatables = function() {
              */
 
             App.datatables();
-            $('#tbl-respuestas').DataTable({
+            $('#tbl-datatable').DataTable({
                 pageLength: 10,
-                lengthMenu: [[10, 20, 30, -1], [10, 20, 30, 'Ver Todas']]
+                lengthMenu: [[10, 20, 30, -1], [10, 20, 30, 'Ver Todo']]
             });
 
             $('.dataTables_filter input').attr('placeholder', 'Buscar');
-            $('#tbl-respuestas_info').hide();
+            $('#tbl-datatable_info').hide();
         }
     };
 }();
