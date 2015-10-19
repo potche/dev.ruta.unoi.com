@@ -11,48 +11,23 @@
             </div>
         </div>
 
-        <!-- eShop Overview Block -->
-        <div class="block full">
-            <!-- eShop Overview Title -->
-            <div class="block-title">
-                <div class="block-options pull-right">
-                    <div class="btn-group btn-group-sm">
-                        <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-default dropdown-toggle" data-toggle="dropdown">Last Year <span class="caret"></span></a>
-                        <ul class="dropdown-menu dropdown-menu-right">
-                            <li class="active">
-                                <a href="javascript:void(0)">Last Year</a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)">Last Month</a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)">This Month</a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)">Today</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <h2><strong>eShop</strong> Overview</h2>
-
-            </div>
-            <!-- END eShop Overview Title -->
-        </div>
-
-
         <div id="block-resumen" class="block">
             <div class="block-title">
                 <div class="block-options pull-right">
                     <a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
                 </div>
                 <h2><strong>Graficas</strong></h2>
-                <select id="example-select" name="example-select" class="form-control" size="1">
-                    <option value="0">Por favor seleccione una escuela</option>
-                    <option value="1">Option #1</option>
-                    <option value="2">Option #2</option>
-                    <option value="3">Option #3</option>
-                </select>
+                <form id="schoolFrm" action="{{ path('estadisticas')}}" method="GET">
+                    <select id="schoolId" name="schoolId" class="form-control" size="1">
+                        <option value="0">Por favor seleccione una escuela</option>
+                        {% for school in schoolId %}
+                            <li>
+                                <option value='{{ school.schoolid|e }}' >{{ school.schoolid|e }} - {{ school.school|e }}</option>
+                            </li>
+                        {% endfor %}
+                    </select>
+
+                </form>
             </div>
 
             <div class="row">
@@ -115,9 +90,14 @@
                 series: [{
                     type: 'pie',
                     name: 'Respuesta',
-                    data: {{ dat | raw }}
+                    data: {{ jsonTotalResponse | raw }}
                 }]
             });
+        });
+
+
+        $( "#schoolId" ).change(function() {
+            $("#schoolFrm").submit();
         });
 
     </script>
