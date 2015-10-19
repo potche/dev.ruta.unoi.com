@@ -37,7 +37,7 @@ function parseInfo(privilege, profile){
                                 profileArray[i].profile+
                         "</a>";
     });
-    console.log(profileStr);
+    //console.log(profileStr);
     //var profileStrF = profileStr.replace(/ \| +$/g, '');
     $('#profile').html(profileStr);
 }

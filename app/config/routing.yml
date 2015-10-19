@@ -43,3 +43,6 @@ resumen:
 evaluaciones:
     path:   /evaluaciones
     defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Admin:index}
+estadisticas:
+    path:   /estadisticas
+    defaults: {_controller: UNOEvaluacionesBundle:Stats\Stats:index}

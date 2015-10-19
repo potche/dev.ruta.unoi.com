@@ -14,7 +14,12 @@
         <option name="fixed"/>
       </options>
     </field>
-    <field name="ruteOptionApplication" type="string" column="ruteOptionApplication" nullable="false">
+    <field name="iconOptionApplication" type="string" column="iconOptionApplication" length="45" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="ruteOptionApplication" type="string" column="ruteOptionApplication" length="60" nullable="false">
       <options>
         <option name="fixed"/>
       </options>
