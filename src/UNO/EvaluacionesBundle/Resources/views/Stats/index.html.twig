@@ -2,6 +2,7 @@
 {% block body %}
 
     <div id="page-content">
+
         <div class="content-header">
             <div class="header-section">
                 <h1>
@@ -10,13 +11,50 @@
             </div>
         </div>
 
+        <!-- eShop Overview Block -->
+        <div class="block full">
+            <!-- eShop Overview Title -->
+            <div class="block-title">
+                <div class="block-options pull-right">
+                    <div class="btn-group btn-group-sm">
+                        <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-default dropdown-toggle" data-toggle="dropdown">Last Year <span class="caret"></span></a>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li class="active">
+                                <a href="javascript:void(0)">Last Year</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)">Last Month</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)">This Month</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)">Today</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <h2><strong>eShop</strong> Overview</h2>
+
+            </div>
+            <!-- END eShop Overview Title -->
+        </div>
+
+
         <div id="block-resumen" class="block">
             <div class="block-title">
                 <div class="block-options pull-right">
                     <a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
                 </div>
                 <h2><strong>Graficas</strong></h2>
+                <select id="example-select" name="example-select" class="form-control" size="1">
+                    <option value="0">Por favor seleccione una escuela</option>
+                    <option value="1">Option #1</option>
+                    <option value="2">Option #2</option>
+                    <option value="3">Option #3</option>
+                </select>
             </div>
+
             <div class="row">
                 <div class="block-content">
                     <div class="col-sm-6">
@@ -44,8 +82,8 @@
     <script src="{{ asset('public/assets/js/Highcharts/modules/exporting.js')}}"></script>
 
     <script type="text/javascript">
+
         $(function () {
-           // console.log($.parseJSON({{ dat | raw }}));
             var chart = new Highcharts.Chart
             ({
                 chart: {
@@ -77,11 +115,10 @@
                 series: [{
                     type: 'pie',
                     name: 'Respuesta',
-                    //data: [{name:'No',y:1,sliced:false,selected:false},{name:'Sí',y:2,sliced:true,selected:true}]
-                    //data: {{ dat | raw }}
-                    data: [{name:"No",y:"1",sliced:"false",selected:false},{name:"Sí",y:2,sliced:true,selected:true}]
+                    data: {{ dat | raw }}
                 }]
             });
         });
+
     </script>
 {% endblock %}
