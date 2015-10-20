@@ -20,9 +20,12 @@ class StatsController extends Controller{
 
     private $_profile = array();
     private $_schoolId = array();
-    private $_jsonTotalResponse;
+    private $_jsonTotalResponsePie;
+    private $_jsonTotalResponseColumn;
+    private $_jsonTotalResponseDDColumn;
     private $_personId;
     private $_schoolIdFrm;
+    private $_schoolIdPerson;
     /**
      * @Route("/estadisticas")
      *
@@ -36,18 +39,25 @@ class StatsController extends Controller{
             $this->setProfile($session);
             $this->setPersonId($session);
             $this->setSchoolIdFrm($request);
-            $this->getSchoolResponse();
+            $this->setSchooIdPerson($session);
             $this->getResults();
+            #vista para Admin
             if( in_array('SuperAdmin', $this->_profile) ){
+                $this->getSchoolResponse();
                 return $this->render('UNOEvaluacionesBundle:Stats:index.html.twig', array(
                     'title' => 'Estadisticas Admin',
-                    'jsonTotalResponse' => $this->_jsonTotalResponse,
+                    'jsonTotalResponsePie' => $this->_jsonTotalResponsePie,
+                    'jsonTotalResponseColumn' => $this->_jsonTotalResponseColumn,
+                    'jsonTotalResponseDDColumn' => $this->_jsonTotalResponseDDColumn,
                     'schoolId' => $this->_schoolId
                 ));
             }else{
+                #vista para director
                 return $this->render('UNOEvaluacionesBundle:Stats:index.html.twig', array(
                     'title' => 'Estadisticas',
-                    'dat' => $this->getResults()
+                    'jsonTotalResponsePie' => $this->_jsonTotalResponsePie,
+                    'jsonTotalResponseColumn' => $this->_jsonTotalResponseColumn,
+                    'jsonTotalResponseDDColumn' => $this->_jsonTotalResponseDDColumn
                 ));
             }
 
@@ -66,6 +76,16 @@ class StatsController extends Controller{
 
     private function setPersonId($session){
         $this->_personId = $session->get('personIdS');
+    }
+
+    private function setSchooIdPerson($session){
+        $schoolIdPerson = '';
+        $_schoolIdPerson = json_decode($session->get('schoolIdS'));
+        //$_schoolIdPerson = json_decode('[{"schoolid": 1500},{"schoolid": 1501}]');
+        foreach($_schoolIdPerson as $value){
+            $schoolIdPerson .= $value->schoolid. ', ';
+        }
+        $this->_schoolIdPerson = rtrim($schoolIdPerson, ', ');
     }
 
     private function setSchoolIdFrm($request){
@@ -100,13 +120,12 @@ class StatsController extends Controller{
                                   ";
 
         $em = $this->getDoctrine()->getManager();
-        if( !in_array('SuperAdmin', $this->_profile) ){
-            $query .= "WHERE A.personPersonid = ".$this->_personId;
-
-        }else{
+        if( in_array('SuperAdmin', $this->_profile) ){
             if($this->_schoolIdFrm != 0){
                 $query .= "WHERE PS.schoolid = ".$this->_schoolIdFrm;
             }
+        }else{
+            $query .= "WHERE PS.schoolid in (".$this->_schoolIdPerson.")";
         }
         $query .= "GROUP BY A.personPersonid, PS.schoolid, S.surveyid, QS.order
                    ORDER BY A.personPersonid, PS.schoolid, S.surveyid, QS.order";
@@ -139,49 +158,86 @@ class StatsController extends Controller{
         $si = 0;
         $no = 0;
         $nose = 0;
+        $evalSiArray = array();
+        $evalNoArray = array();
+        $evalNoSeArray = array();
+
         foreach($resultsArray as $value){
             switch ($value['answer']):
                 case 'Sí':
                     $si ++;
+                    array_push($evalSiArray, $value['title']);
                     break;
                 case 'No':
                     $no ++;
+                    array_push($evalNoArray, $value['title']);
                     break;
                 default:
                     $nose ++;
+                    array_push($evalNoSeArray, $value['title']);
             endswitch;
         }
 
-        $total = $si + $no + $nose;
-        /*
-         * [{name:'No',y:1,sliced:false,selected:false},{name:'Sí',y:2,sliced:true,selected:true}]
-         */
-        $this->_jsonTotalResponse =
-                "[
-                    {
-                    name:'Sí',
-                    y:".$this->getPorcentaje($total, $si, 2).",
-                    sliced:true,
-                    selected:true
-                    },
-                    {
-                    name:'No',
-                    y:".$this->getPorcentaje($total, $no, 2).",
-                    sliced:false,
-                    selected:false
-                    },
-                    {
-                    name:'No sé',
-                    y:".$this->getPorcentaje($total, $nose, 2).",
-                    sliced:false,
-                    selected:false
-                    }
-                ]";
+        //grafica de pie
+        $this->creaJsonToRePi($si, $no, $nose);
+        //grafica de Columnas
+        $this->creaJsonColumn($si, $no, $nose);
+        $evalSi = $this->creaJsonDDColumn( $evalSiArray, "Sí" );
+        $evalNo = $this->creaJsonDDColumn( $evalNoArray, "No" );
+        $evalNoSe = $this->creaJsonDDColumn( $evalNoSeArray, "No sé" );
+
+        $this->_jsonTotalResponseDDColumn = rtrim($evalSi.$evalNo.$evalNoSe,',');
     }
 
     private function getPorcentaje($total, $parte, $redondear = 2) {
         return round($parte / $total * 100, $redondear);
 
+    }
+
+    private function creaJsonToRePi($si, $no, $nose){
+        $total = $si + $no + $nose;
+        $this->_jsonTotalResponsePie =
+            "[
+                {
+                    name:'Sí', y:".$this->getPorcentaje($total, $si, 2).", sliced:true, selected:true
+                },
+                {
+                    name:'No', y:".$this->getPorcentaje($total, $no, 2).", sliced:false, selected:false
+                },
+                {
+                    name:'No sé', y:".$this->getPorcentaje($total, $nose, 2).", sliced:false, selected:false
+                }
+            ]";
+    }
+
+    private function creaJsonColumn($si, $no, $nose){
+        $this->_jsonTotalResponseColumn =
+            "[
+                    {
+                        name:'Sí', y:$si, drilldown:'Sí'
+                    },
+                    {
+                        name:'No', y:$no, drilldown:'No'
+                    },
+                    {
+                        name:'No sé', y:$nose, drilldown:'No sé'
+                    }
+                ]";
+    }
+
+    private function creaJsonDDColumn($array, $id){
+        $evalSi = '{
+                    name: "'.$id.'",
+                    id: "'.$id.'",
+                    data: [';
+        foreach (array_count_values($array) as $key => $value) {
+            $evalSi .= "[\"$key\", $value],";
+        }
+        $evalSi = rtrim($evalSi, ',');
+        $evalSi .= ']
+                    },';
+
+        return $evalSi;
     }
 
     private function getSchoolResponse() {
