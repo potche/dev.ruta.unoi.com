@@ -23,6 +23,7 @@ class StatsController extends Controller{
     private $_jsonTotalResponsePie;
     private $_jsonTotalResponseColumn;
     private $_jsonTotalResponseDDColumn;
+    private $_jsonListUser;
     private $_personId;
     private $_schoolIdFrm;
     private $_schoolIdPerson;
@@ -41,6 +42,7 @@ class StatsController extends Controller{
             $this->setSchoolIdFrm($request);
             $this->setSchooIdPerson($session);
             $this->getResults();
+            $this->getUserResults();
             #vista para Admin
             if( in_array('SuperAdmin', $this->_profile) ){
                 $this->getSchoolResponse();
@@ -49,6 +51,7 @@ class StatsController extends Controller{
                     'jsonTotalResponsePie' => $this->_jsonTotalResponsePie,
                     'jsonTotalResponseColumn' => $this->_jsonTotalResponseColumn,
                     'jsonTotalResponseDDColumn' => $this->_jsonTotalResponseDDColumn,
+                    'jsonListUser' => $this->_jsonListUser,
                     'schoolId' => $this->_schoolId
                 ));
             }else{
@@ -57,7 +60,8 @@ class StatsController extends Controller{
                     'title' => 'Estadisticas',
                     'jsonTotalResponsePie' => $this->_jsonTotalResponsePie,
                     'jsonTotalResponseColumn' => $this->_jsonTotalResponseColumn,
-                    'jsonTotalResponseDDColumn' => $this->_jsonTotalResponseDDColumn
+                    'jsonTotalResponseDDColumn' => $this->_jsonTotalResponseDDColumn,
+                    'jsonListUser' => $this->_jsonListUser
                 ));
             }
 
@@ -94,7 +98,6 @@ class StatsController extends Controller{
         }else{
             $this->_schoolIdFrm = 0;
         }
-
     }
 
     private function getResults() {
@@ -107,7 +110,7 @@ class StatsController extends Controller{
     }
 
     private function getSurveyResults() {
-        $query = "SELECT P.personid, PS.schoolid, Sc.school, S.title, QS.order, Q.question, Sub.subcategory, A.answer, A.comment
+        $query = "SELECT P.personid, CONCAT(P.name, ' ', P.surname) as username, PS.schoolid, Sc.school, S.title, QS.order, Q.question, Sub.subcategory, A.answer, A.comment
                                   FROM UNOEvaluacionesBundle:Answer A
                                   INNER JOIN UNOEvaluacionesBundle:Optionxquestion OQ WITH A.optionxquestion = OQ.optionxquestionId
                                   INNER JOIN UNOEvaluacionesBundle:Questionxsurvey QS WITH OQ.questionxsurvey = QS.questionxsurveyId
@@ -130,28 +133,8 @@ class StatsController extends Controller{
         $query .= "GROUP BY A.personPersonid, PS.schoolid, S.surveyid, QS.order
                    ORDER BY A.personPersonid, PS.schoolid, S.surveyid, QS.order";
         $q = $em->createQuery($query);
-            //->setParameter('price', '19.99');
         $results = $q->getResult();
         return $results;
-    }
-
-    private function getSchoolId($resultsArray){
-        $schoolId = array();
-        $school = array();
-        $i = 0;
-
-        foreach($resultsArray as $value){
-            array_push($schoolId, $value['schoolid']);
-            array_push($school, $value['school']);
-        }
-        //solo los unicos
-        $schoolIdArray = array_unique($schoolId);
-        $schoolArray = array_unique($school);
-        //le da formato al array final
-        foreach($schoolIdArray as $key => $value){
-            $this->_schoolId[$i] = array('schoolId'=>$value, 'school' => $schoolArray[$key]);
-            $i++;
-        }
     }
 
     private function getTotalResponse($resultsArray){
@@ -176,6 +159,7 @@ class StatsController extends Controller{
                     $nose ++;
                     array_push($evalNoSeArray, $value['title']);
             endswitch;
+
         }
 
         //grafica de pie
@@ -191,38 +175,25 @@ class StatsController extends Controller{
 
     private function getPorcentaje($total, $parte, $redondear = 2) {
         return round($parte / $total * 100, $redondear);
-
     }
 
     private function creaJsonToRePi($si, $no, $nose){
         $total = $si + $no + $nose;
         $this->_jsonTotalResponsePie =
             "[
-                {
-                    name:'Sí', y:".$this->getPorcentaje($total, $si, 2).", sliced:true, selected:true
-                },
-                {
-                    name:'No', y:".$this->getPorcentaje($total, $no, 2).", sliced:false, selected:false
-                },
-                {
-                    name:'No sé', y:".$this->getPorcentaje($total, $nose, 2).", sliced:false, selected:false
-                }
+                {name:'Sí', y:".$this->getPorcentaje($total, $si, 2).", sliced:true, selected:true},
+                {name:'No', y:".$this->getPorcentaje($total, $no, 2).", sliced:false, selected:false},
+                {name:'No sé', y:".$this->getPorcentaje($total, $nose, 2).", sliced:false, selected:false}
             ]";
     }
 
     private function creaJsonColumn($si, $no, $nose){
         $this->_jsonTotalResponseColumn =
             "[
-                    {
-                        name:'Sí', y:$si, drilldown:'Sí'
-                    },
-                    {
-                        name:'No', y:$no, drilldown:'No'
-                    },
-                    {
-                        name:'No sé', y:$nose, drilldown:'No sé'
-                    }
-                ]";
+                {name:'Sí', y:$si, drilldown:'Sí'},
+                {name:'No', y:$no, drilldown:'No'},
+                {name:'No sé', y:$nose, drilldown:'No sé'}
+            ]";
     }
 
     private function creaJsonDDColumn($array, $id){
@@ -263,4 +234,45 @@ class StatsController extends Controller{
         return $this->_schoolId;
     }
 
+    private function getUserResults() {
+        $userResultsArray = $this->getUserEval();
+
+        if( !empty($userResultsArray) ){
+            //$this->getSchoolId($resultsArray);
+            $this->getTotalUserResponse($userResultsArray);
+        }
+    }
+
+    private function getUserEval(){
+        $query = "SELECT P.personid, CONCAT(P.name, ' ', P.surname) as username, count(distinct(S.surveyid)) as Evaluaciones
+                                  FROM UNOEvaluacionesBundle:Answer A
+                                  INNER JOIN UNOEvaluacionesBundle:Optionxquestion OQ WITH A.optionxquestion = OQ.optionxquestionId
+                                  INNER JOIN UNOEvaluacionesBundle:Questionxsurvey QS WITH OQ.questionxsurvey = QS.questionxsurveyId
+                                  INNER JOIN UNOEvaluacionesBundle:Question Q WITH QS.questionQuestionid = Q.questionid
+                                  INNER JOIN UNOEvaluacionesBundle:Subcategory Sub WITH Q.subcategorySubcategoryid = Sub.subcategoryid
+                                  INNER JOIN UNOEvaluacionesBundle:Survey S WITH QS.surveySurveyid = S.surveyid
+                                  INNER JOIN UNOEvaluacionesBundle:Personschool PS WITH A.personPersonid = PS.personid
+                                  INNER JOIN UNOEvaluacionesBundle:Person P WITH PS.personid = P.personid
+                                  INNER JOIN UNOEvaluacionesBundle:School Sc WITH PS.schoolid = Sc.schoolid
+                                  ";
+
+        $em = $this->getDoctrine()->getManager();
+        if( in_array('SuperAdmin', $this->_profile) ){
+            if($this->_schoolIdFrm != 0){
+                $query .= "WHERE PS.schoolid = ".$this->_schoolIdFrm;
+            }
+        }else{
+            $query .= "WHERE PS.schoolid in (".$this->_schoolIdPerson.")";
+        }
+        $query .= "GROUP BY A.personPersonid, PS.schoolid
+                   ORDER BY A.personPersonid, PS.schoolid";
+        $q = $em->createQuery($query);
+        $results = $q->getResult();
+        return $results;
+    }
+
+    private function getTotalUserResponse($userResultsArray){
+        $this->_jsonListUser = $userResultsArray;
+        //print_r($this->_jsonListUser);
+    }
 }
