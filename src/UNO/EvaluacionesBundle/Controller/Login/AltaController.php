@@ -138,6 +138,23 @@ class AltaController extends Controller{
     }
 
     /**
+     * @return string
+     * obtiene el Id de la escuela del usuario logeado y lo envia como json
+     */
+    private function getSchoolId(){
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+        $q = $qb->select('P.schoolid')
+            ->from('UNOEvaluacionesBundle:Personschool', 'P')
+            ->where('P.personid = :personId')
+            ->setParameter('personId', $this->_personDB->getPersonid())
+            ->groupBy('P.schoolid')
+            ->getQuery()
+            ->getResult();
+        return json_encode($q);
+    }
+
+    /**
      * @param $request
      * @return bool
      */
@@ -150,6 +167,7 @@ class AltaController extends Controller{
         $session->set('nameS', $this->_datPerson->name);
         $session->set('privilegeS', $this->getPrivilege());
         $session->set('profileS', $this->getProfile());
+        $session->set('schoolIdS', $this->getSchoolId());
         $this->setCookie();
         return true;
     }
