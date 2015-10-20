@@ -39,10 +39,6 @@ var Charts = function() {
                         name: "Pendiente",
                         y: 24.03,
                         drilldown: "Pendiente"
-                    }, {
-                        name: "Sin atender",
-                        y: 10.38,
-                        drilldown: "Sin atender"
                     }]
                 }],
                 drilldown: {
@@ -60,17 +56,6 @@ var Charts = function() {
                     }, {
                         name: "Pendiente",
                         id: "Pendiente",
-                        data: [
-                            ["Lista 1", 5],
-                            ["Lista 2", 4.32],
-                            ["Lista 3", 3.68],
-                            ["Lista 4", 2.96],
-                            ["Lista 5", 2.53],
-                            ["Lista 6", 1.45]
-                        ]
-                    }, {
-                        name: "Sin atender",
-                        id: "Sin atender",
                         data: [
                             ["Lista 1", 5],
                             ["Lista 2", 4.32],
