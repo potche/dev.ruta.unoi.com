@@ -16,14 +16,16 @@ class AdminController extends Controller
 {
     public function indexAction(Request $request){
 
-        $statsBySurvey = $this->getStatsBySurvey();
-        $surveys = $this->getSurveysWithProfiles();
+        $stats = $this->getStats();
+        $surveys = $this->getSurveysWithProfiles($stats);
 
 
-        return $this->render('UNOEvaluacionesBundle:Crear:menueval_admin.html.twig');
+        return $this->render('UNOEvaluacionesBundle:Crear:menueval_admin.html.twig', array(
+            'surveylist' => $surveys,
+        ));
     }
 
-    private function getSurveysWithProfiles(){
+    private function getSurveysWithProfiles($stats){
 
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
@@ -51,6 +53,9 @@ class AdminController extends Controller
                     $surveys[$surveyid]['title'] = $swp['title'];
                     $surveys[$surveyid]['created'] = $swp['creationdate']->format('j/M/Y \@ g:i a').' por: '.$swp['createdby'];
                     $surveys[$surveyid]['closingdate'] = $swp['closingdate']->format('j/M/Y \@ g:i a');
+                    $surveys[$surveyid]['progress'] = $stats['bySurvey'][$surveyid]['avance'];
+                    $surveys[$surveyid]['completed'] = $stats['bySurvey'][$surveyid]['respondido'];
+                    $surveys[$surveyid]['expected'] = $stats['bySurvey'][$surveyid]['esperado'];
                     array_push($surveys[$surveyid]['profiles'],$swp['profile'].' de '.$swp['schoollevel']);
                 }
                 elseif( $swp['surveyid'] == $surveyid && array_key_exists('surveyid',$surveys[$surveyid])){
@@ -62,7 +67,7 @@ class AdminController extends Controller
         return $surveys;
     }
 
-    private function getStatsBySurvey(){
+    private function getStats(){
 
         $data = array();
 
@@ -93,21 +98,45 @@ class AdminController extends Controller
             ->getQuery()
             ->getResult();
 
-        /*foreach($expectedBySurvey as $expectedElem) {
+        foreach($expectedBySurvey as $k => $expectedElem) {
 
             $avance = 0.0;
+            $esperado = 0;
+            $respondido = 0;
+
             foreach ($answeredBySurvey as $answeredElement) {
 
                 if($expectedElem['surveyid'] == $answeredElement['surveyid']) {
 
-                    $avance  = ($answeredElement['answeredNum'] * 100 ) / $expectedElem['expectedNum'];
-                    $expectedElem['avance'] = $avance;
+                    $esperado = $expectedElem['expectedNum'];
+                    $respondido = $answeredElement['answeredNum'];
+                    $avance  = ($esperado > 0 ? round(($respondido * 100 ) / $esperado,2) : 0);
                 }
             }
+            $data['bySurvey'][$expectedElem['surveyid']]['avance'] = $avance;
+            $data['bySurvey'][$expectedElem['surveyid']]['esperado'] = $esperado;
+            $data['bySurvey'][$expectedElem['surveyid']]['respondido'] = $respondido;
+        }
 
-        }*/
+        $data['general'] = array();
 
-        return $expectedBySurvey;
+        $esperadoGlobal = array_sum(array_column($expectedBySurvey,'expectedNum'));
+        $respondidoGlobal = array_sum(array_column($answeredBySurvey,'answeredNum'));
+        $avanceGlobal =  ($esperado > 0 ? round(($respondidoGlobal * 100) / $esperadoGlobal,2) : 0);
+
+        array_push($data['general'],array(
+            'name' => 'Completado',
+            'y' => $avanceGlobal,
+            'drilldown' => 'Completado'
+            ));
+
+        array_push($data['general'],array(
+            'name' => 'Pendiente',
+            'y' => 100 - $avanceGlobal,
+            'drilldown' => 'Pendiente'
+        ));
+
+        return $data;
     }
 
 }
