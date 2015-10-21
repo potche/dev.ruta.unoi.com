@@ -27,6 +27,8 @@ class StatsController extends Controller{
     private $_personId;
     private $_schoolIdFrm;
     private $_schoolIdPerson;
+
+    private $_resultsArray = array();
     /**
      * @Route("/estadisticas")
      *
@@ -101,11 +103,10 @@ class StatsController extends Controller{
     }
 
     private function getResults() {
-        $resultsArray = $this->getSurveyResults();
+        $this->_resultsArray = $this->getSurveyResults();
 
-        if( !empty($resultsArray) ){
-            //$this->getSchoolId($resultsArray);
-            $this->getTotalResponse($resultsArray);
+        if( !empty($this->_resultsArray) ){
+            $this->getTotalResponse();
         }
     }
 
@@ -137,7 +138,7 @@ class StatsController extends Controller{
         return $results;
     }
 
-    private function getTotalResponse($resultsArray){
+    private function getTotalResponse(){
         $si = 0;
         $no = 0;
         $nose = 0;
@@ -145,7 +146,7 @@ class StatsController extends Controller{
         $evalNoArray = array();
         $evalNoSeArray = array();
 
-        foreach($resultsArray as $value){
+        foreach($this->_resultsArray as $value){
             switch ($value['answer']):
                 case 'Sí':
                     $si ++;
@@ -230,21 +231,18 @@ class StatsController extends Controller{
             ->orderBy( 'PS.schoolid')
             ->getQuery()
             ->getResult();
-
-        return $this->_schoolId;
     }
 
     private function getUserResults() {
         $userResultsArray = $this->getUserEval();
 
         if( !empty($userResultsArray) ){
-            //$this->getSchoolId($resultsArray);
             $this->getTotalUserResponse($userResultsArray);
         }
     }
 
     private function getUserEval(){
-        $query = "SELECT P.personid, CONCAT(P.name, ' ', P.surname) as username, count(distinct(S.surveyid)) as Evaluaciones
+        $query = "SELECT P.personid, CONCAT(P.name, ' ', P.surname) as username, S.surveyid, S.title
                                   FROM UNOEvaluacionesBundle:Answer A
                                   INNER JOIN UNOEvaluacionesBundle:Optionxquestion OQ WITH A.optionxquestion = OQ.optionxquestionId
                                   INNER JOIN UNOEvaluacionesBundle:Questionxsurvey QS WITH OQ.questionxsurvey = QS.questionxsurveyId
@@ -264,15 +262,137 @@ class StatsController extends Controller{
         }else{
             $query .= "WHERE PS.schoolid in (".$this->_schoolIdPerson.")";
         }
-        $query .= "GROUP BY A.personPersonid, PS.schoolid
-                   ORDER BY A.personPersonid, PS.schoolid";
+        $query .= "GROUP BY A.personPersonid, PS.schoolid, S.surveyid
+                   ORDER BY A.personPersonid, PS.schoolid, S.surveyid";
         $q = $em->createQuery($query);
         $results = $q->getResult();
         return $results;
     }
 
     private function getTotalUserResponse($userResultsArray){
-        $this->_jsonListUser = $userResultsArray;
+        $a = array(
+                0 => array(
+                    'personid' => 3066990,
+                    'username' => 'Manuel González R',
+                    'surveys' => array(
+                                        0 => array(
+                                            'surveyid' => 1,
+                                            'title' => 'Encuesta de prueba',
+                                            'Sí' => 1,
+                                            'No' => 1,
+                                            'No sé' => 1
+                                            ),
+                                        1 => array(
+                                            'surveyid' => 2,
+                                            'title' => 'Lista de Cotejo del eje Digital A',
+                                            'Sí' => 12,
+                                            'No' => 5,
+                                            'No sé' => 3
+                                            )
+                                        )
+                ),
+                1 => array(
+                    'personid' => 3273688,
+                    'username' => 'Kinder 3 Grado',
+                    'surveys' => array(
+                                        0 => array(
+                                            'surveyid' => 2,
+                                            'title' => 'Lista de Cotejo del eje Digital A',
+                                            'Sí' => 14,
+                                            'No' => 3,
+                                            'No sé' => 3
+                                        )
+                                    )
+                )
+        );
+
+
+        print_r($a);
+        echo "<br/>";
+        $userList = array();
+        $user = array();
+        $b = array();
+        $i = 0;
+
+
+        $si = 0;
+        $no = 0;
+        $nose = 0;
+        foreach ($userResultsArray as $key => $value) {
+            $userList[$i] = array(
+                'personid' => $value['personid'],
+                'username' => $value['username'],
+            );
+            $i++;
+        }
+
+        $user = $this->array_unique_multi($userList, 'personid');
+        print_r($user);
+        echo "<br/>";
+        foreach ($user as $key1 => $value1) {
+            foreach ($userResultsArray as $key2 => $value2) {
+                if($value1['personid'] == $value2['personid']){
+                    array_push($b, array(
+                            'surveyid' => $value2['surveyid'],
+                            'title' => $value2['title']
+                        )
+                    );
+                    $user[$key1]['surveys'] = $b;
+/*
+                    switch ($value2['answer']):
+                        case 'Sí':
+                            $si ++;
+                            array_push($evalSiArray, $value2['title']);
+                            break;
+                        case 'No':
+                            $no ++;
+                            array_push($evalNoArray, $value2['title']);
+                            break;
+                        default:
+                            $nose ++;
+                            array_push($evalNoSeArray, $value2['title']);
+                    endswitch;
+*/
+                }else{
+                    $b = array();
+                }
+                $i++;
+            }
+
+        }
+        print_r($user);
+        exit();
+        print_r($userResultsArray);
+        $this->_jsonListUser = array_count_values($userList);
+        //exit();
+
+        //$this->_jsonListUser = $userResultsArray;
+/*
+        foreach($userResultsArray as $userList){
+            foreach($this->_resultsArray as $value){
+                if($userList['username'] == $value['username']){
+                    print_r($value['title']);
+                }
+
+            }
+
+        }
+*/
         //print_r($this->_jsonListUser);
+    }
+
+    private function array_unique_multi($array, $key){
+        for ($i = 0; $i < count($array); $i++){
+            $duplicate = null;
+            for ($j = $i+1; $j < count($array); $j++){
+                if (strcmp($array[$j][$key],$array[$j][$key]) === 0){
+                    $duplicate = $j;
+                    break;
+                }
+            }
+            if (!is_null($duplicate))
+                array_splice($array,$duplicate,1);
+        }
+        return $array;
     }
 }

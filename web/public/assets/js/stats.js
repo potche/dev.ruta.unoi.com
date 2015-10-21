@@ -96,3 +96,9 @@ function columnGrl(jsonTotalResponseColumn, jsonTotalResponseDDColumn) {
 $( "#schoolId" ).change(function() {
     $("#schoolFrm").submit();
 });
+
+function statsUser(username){
+    $('#statsUser').modal();
+    $('#bodyStatsUser').html('<h1>'+username+'</h1>');
+    //console.log(username);
+}

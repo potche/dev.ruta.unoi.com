@@ -68,12 +68,12 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for listUser in jsonListUser %}
+                                        {% for key,listUser in jsonListUser %}
                                             <tr>
                                                 <td class="text-center"><img src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar" class="img-circle"></td>
-                                                <td>{{ listUser.username|e }}</td>
+                                                <td>{{ key|e }}</td>
                                                 <td class="text-center">
-                                                    <a href="javascript:void(0)" data-toggle="tooltip" title="Evaluaciones" class="btn btn-default">{{ listUser.Evaluaciones|e }}</a>
+                                                    <a href="javascript:void(0)" onclick="statsUser('{{ key|e }}')" data-toggle="tooltip" title="Evaluaciones" class="btn btn-default">{{ listUser|e }}</a>
                                                 </td>
                                             </tr>
                                         {% endfor %}
@@ -95,6 +95,26 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Stats User -->
+    <div id="statsUser" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-hand-spock-o"></i> Estadisticas por <strong>Usuario</strong></h4>
+                </div>
+                <div class="modal-body">
+                    <span id="bodyStatsUser"></span>
+                    <!-- <iframe id="player" style="width:90%; height:235px; margin: 5% 5%" src="https://www.youtube.com/embed/LYkudoUb51E" frameborder="0" allowfullscreen></iframe> -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal Stats User -->
 
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 
