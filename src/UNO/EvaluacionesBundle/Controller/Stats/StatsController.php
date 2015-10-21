@@ -111,7 +111,7 @@ class StatsController extends Controller{
     }
 
     private function getSurveyResults() {
-        $query = "SELECT P.personid, CONCAT(P.name, ' ', P.surname) as username, PS.schoolid, Sc.school, S.title, QS.order, Q.question, Sub.subcategory, A.answer, A.comment
+        $query = "SELECT P.personid, CONCAT(P.name, ' ', P.surname) as username, PS.schoolid, Sc.school, S.surveyid, S.title, QS.order, Q.question, Sub.subcategory, A.answer, A.comment
                                   FROM UNOEvaluacionesBundle:Answer A
                                   INNER JOIN UNOEvaluacionesBundle:Optionxquestion OQ WITH A.optionxquestion = OQ.optionxquestionId
                                   INNER JOIN UNOEvaluacionesBundle:Questionxsurvey QS WITH OQ.questionxsurvey = QS.questionxsurveyId
@@ -332,27 +332,17 @@ class StatsController extends Controller{
         foreach ($user as $key1 => $value1) {
             foreach ($userResultsArray as $key2 => $value2) {
                 if($value1['personid'] == $value2['personid']){
+                    $rs = $this->resultPerson($value1['personid'], $value2['surveyid']);
                     array_push($b, array(
                             'surveyid' => $value2['surveyid'],
-                            'title' => $value2['title']
+                            'title' => $value2['title'],
+                            'si' => $rs['si'],
+                            'no' => $rs['no'],
+                            'nose' => $rs['nose']
                         )
                     );
                     $user[$key1]['surveys'] = $b;
-/*
-                    switch ($value2['answer']):
-                        case 'Sí':
-                            $si ++;
-                            array_push($evalSiArray, $value2['title']);
-                            break;
-                        case 'No':
-                            $no ++;
-                            array_push($evalNoArray, $value2['title']);
-                            break;
-                        default:
-                            $nose ++;
-                            array_push($evalNoSeArray, $value2['title']);
-                    endswitch;
-*/
+
                 }else{
                     $b = array();
                 }
@@ -364,21 +354,7 @@ class StatsController extends Controller{
         exit();
         print_r($userResultsArray);
         $this->_jsonListUser = array_count_values($userList);
-        //exit();
 
-        //$this->_jsonListUser = $userResultsArray;
-/*
-        foreach($userResultsArray as $userList){
-            foreach($this->_resultsArray as $value){
-                if($userList['username'] == $value['username']){
-                    print_r($value['title']);
-                }
-
-            }
-
-        }
-*/
-        //print_r($this->_jsonListUser);
     }
 
     private function array_unique_multi($array, $key){
@@ -395,4 +371,33 @@ class StatsController extends Controller{
         }
         return $array;
     }
+
+    private function resultPerson($personId, $surveyid){
+        $si = 0;
+        $no = 0;
+        $nose = 0;
+        $evalSiArray = array();
+        $evalNoArray = array();
+        $evalNoSeArray = array();
+
+        foreach($this->_resultsArray as $value){
+            if($personId == $value['personid'] && $surveyid == $value['surveyid'] ){
+                switch ($value['answer']):
+                    case 'Sí':
+                        $si ++;
+                        array_push($evalSiArray, $value['title']);
+                        break;
+                    case 'No':
+                        $no ++;
+                        array_push($evalNoArray, $value['title']);
+                        break;
+                    default:
+                        $nose ++;
+                        array_push($evalNoSeArray, $value['title']);
+                endswitch;
+            }
+        }
+        return array('si' => $si,'no' => $no,'nose' => $nose);
+    }
+
 }
