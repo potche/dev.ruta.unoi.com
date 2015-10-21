@@ -18,10 +18,12 @@ class AdminController extends Controller
 
         $stats = $this->getStats();
         $surveys = $this->getSurveysWithProfiles($stats);
+        $stats_general =  $stats['general'];
 
 
         return $this->render('UNOEvaluacionesBundle:Crear:menueval_admin.html.twig', array(
             'surveylist' => $surveys,
+            'stats_general' => $stats_general,
         ));
     }
 
@@ -29,7 +31,7 @@ class AdminController extends Controller
 
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
-        $surveysWithProfiles = $qb->select("su.surveyid, su.title, su.creationdate, su.createdby, su.closingdate, pr.profile, sl.schoollevel")
+        $surveysWithProfiles = $qb->select("su.surveyid, su.title, su.creationdate, su.createdby, su.active, su.closingdate, pr.profile, sl.schoollevel")
             ->from('UNOEvaluacionesBundle:Survey', 'su')
             ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile','sxp', 'WITH','su.surveyid = sxp.surveySurveyid')
             ->innerJoin('UNOEvaluacionesBundle:Profile','pr', 'WITH','pr.profileid = sxp.profileProfileid')
@@ -51,11 +53,12 @@ class AdminController extends Controller
 
                     $surveys[$surveyid]['id'] = $swp['surveyid'];
                     $surveys[$surveyid]['title'] = $swp['title'];
-                    $surveys[$surveyid]['created'] = $swp['creationdate']->format('j/M/Y \@ g:i a').' por: '.$swp['createdby'];
+                    $surveys[$surveyid]['created'] = $swp['creationdate']->format('j/M/Y').' por: '.$swp['createdby'];
                     $surveys[$surveyid]['closingdate'] = $swp['closingdate']->format('j/M/Y \@ g:i a');
                     $surveys[$surveyid]['progress'] = $stats['bySurvey'][$surveyid]['avance'];
                     $surveys[$surveyid]['completed'] = $stats['bySurvey'][$surveyid]['respondido'];
                     $surveys[$surveyid]['expected'] = $stats['bySurvey'][$surveyid]['esperado'];
+                    $surveys[$surveyid]['active'] = $swp['active'];
                     array_push($surveys[$surveyid]['profiles'],$swp['profile'].' de '.$swp['schoollevel']);
                 }
                 elseif( $swp['surveyid'] == $surveyid && array_key_exists('surveyid',$surveys[$surveyid])){
@@ -126,14 +129,12 @@ class AdminController extends Controller
 
         array_push($data['general'],array(
             'name' => 'Completado',
-            'y' => $avanceGlobal,
-            'drilldown' => 'Completado'
+            'y' => $avanceGlobal
             ));
 
         array_push($data['general'],array(
             'name' => 'Pendiente',
-            'y' => 100 - $avanceGlobal,
-            'drilldown' => 'Pendiente'
+            'y' => 100 - $avanceGlobal
         ));
 
         return $data;
