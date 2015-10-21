@@ -17,22 +17,65 @@ class AdminController extends Controller
     public function indexAction(Request $request){
 
         $statsBySurvey = $this->getStatsBySurvey();
+        $surveys = $this->getSurveysWithProfiles();
+
 
         return $this->render('UNOEvaluacionesBundle:Crear:menueval_admin.html.twig');
     }
 
-    private function getStatsBySurvey(){
+    private function getSurveysWithProfiles(){
 
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
-        $expectedBySurvey = $qb->select("su.surveyid,'' as perfiles, '' as avance, su.creationdate, su.closingdate, count(distinct p.personid) as expectedNum")
+        $surveysWithProfiles = $qb->select("su.surveyid, su.title, su.creationdate, su.createdby, su.closingdate, pr.profile, sl.schoollevel")
+            ->from('UNOEvaluacionesBundle:Survey', 'su')
+            ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile','sxp', 'WITH','su.surveyid = sxp.surveySurveyid')
+            ->innerJoin('UNOEvaluacionesBundle:Profile','pr', 'WITH','pr.profileid = sxp.profileProfileid')
+            ->innerJoin('UNOEvaluacionesBundle:Schoollevel','sl', 'WITH','sl.schoollevelid = sxp.schoollevelid')
+            ->where('sxp.surveySurveyid > 1')
+            ->getQuery()
+            ->getResult();
+
+        $surveys = array_flip(array_unique(array_column($surveysWithProfiles,'surveyid')));
+
+        foreach ($surveys as $surveyid => $survey) {
+
+            $surveys[$surveyid] = array();
+            $surveys[$surveyid]['profiles'] = array();
+
+            foreach($surveysWithProfiles as $swp) {
+
+                if($swp['surveyid'] == $surveyid && !array_key_exists('surveyid',$surveys[$surveyid])) {
+
+                    $surveys[$surveyid]['id'] = $swp['surveyid'];
+                    $surveys[$surveyid]['title'] = $swp['title'];
+                    $surveys[$surveyid]['created'] = $swp['creationdate']->format('j/M/Y \@ g:i a').' por: '.$swp['createdby'];
+                    $surveys[$surveyid]['closingdate'] = $swp['closingdate']->format('j/M/Y \@ g:i a');
+                    array_push($surveys[$surveyid]['profiles'],$swp['profile'].' de '.$swp['schoollevel']);
+                }
+                elseif( $swp['surveyid'] == $surveyid && array_key_exists('surveyid',$surveys[$surveyid])){
+
+                    array_push($surveys[$surveyid]['profiles'],$swp['profile'].' de '.$swp['schoollevel']);
+                }
+            }
+        }
+        return $surveys;
+    }
+
+    private function getStatsBySurvey(){
+
+        $data = array();
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+        $expectedBySurvey = $qb->select("su.surveyid, count(distinct p.personid) as expectedNum")
             ->from('UNOEvaluacionesBundle:Person', 'p')
             ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','p.personid = ps.personid')
             ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile','sxp', 'WITH','sxp.profileProfileid = ps.profileid AND ps.schoollevelid = sxp.schoollevelid')
             ->innerJoin('UNOEvaluacionesBundle:Survey','su','WITH','su.surveyid = sxp.surveySurveyid')
             ->where('sxp.surveySurveyid > 1')
             ->andWhere('p.admin NOT IN (1)')
-            ->groupBy('sxp.surveySurveyid, perfiles, avance, su.creationdate, su.closingdate')
+            ->groupBy('sxp.surveySurveyid')
             ->getQuery()
             ->getResult();
 
@@ -50,7 +93,7 @@ class AdminController extends Controller
             ->getQuery()
             ->getResult();
 
-        foreach($expectedBySurvey as $expectedElem) {
+        /*foreach($expectedBySurvey as $expectedElem) {
 
             $avance = 0.0;
             foreach ($answeredBySurvey as $answeredElement) {
@@ -58,15 +101,12 @@ class AdminController extends Controller
                 if($expectedElem['surveyid'] == $answeredElement['surveyid']) {
 
                     $avance  = ($answeredElement['answeredNum'] * 100 ) / $expectedElem['expectedNum'];
+                    $expectedElem['avance'] = $avance;
                 }
             }
 
-            $expectedElem['avance'] = $avance;
+        }*/
 
-            /**
-             * ToDo: Query para obtener perfiles y niveles de evaluacion
-             */
-        }
         return $expectedBySurvey;
     }
 
