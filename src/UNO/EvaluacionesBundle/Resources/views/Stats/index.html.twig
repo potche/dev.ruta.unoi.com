@@ -59,6 +59,8 @@
                                 <h1>Usuarios Evaluados</h1>
                             </div>
                             <div class="table-responsive">
+                                {{ jsonListUser | json_encode | raw }}
+
                                 <table class="table table-vcenter table-striped">
                                     <thead>
                                         <tr>
@@ -71,9 +73,9 @@
                                         {% for key,listUser in jsonListUser %}
                                             <tr>
                                                 <td class="text-center"><img src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar" class="img-circle"></td>
-                                                <td>{{ key|e }}</td>
+                                                <td>{{ listUser.username|e }}</td>
                                                 <td class="text-center">
-                                                    <a href="javascript:void(0)" onclick="statsUser('{{ key|e }}')" data-toggle="tooltip" title="Evaluaciones" class="btn btn-default">{{ listUser|e }}</a>
+                                                    <a href="javascript:void(0)" onclick="statsUser('{{ listUser.username|e }}')" data-toggle="tooltip" title="Evaluaciones" class="btn btn-default">{{ listUser.surveys|length|e }}</a>
                                                 </td>
                                             </tr>
                                         {% endfor %}

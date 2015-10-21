@@ -85,10 +85,7 @@ function columnGrl(jsonTotalResponseColumn, jsonTotalResponseDDColumn) {
                     name: 'Respuesta',
                     colorByPoint: true,
                     data: jsonTotalResponseColumn
-                }],
-        drilldown: {
-            series: [jsonTotalResponseDDColumn]
-            }
+                }]
     });
 }
 

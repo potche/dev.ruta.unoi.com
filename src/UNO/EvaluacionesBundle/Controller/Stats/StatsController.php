@@ -270,65 +270,21 @@ class StatsController extends Controller{
     }
 
     private function getTotalUserResponse($userResultsArray){
-        $a = array(
-                0 => array(
-                    'personid' => 3066990,
-                    'username' => 'Manuel González R',
-                    'surveys' => array(
-                                        0 => array(
-                                            'surveyid' => 1,
-                                            'title' => 'Encuesta de prueba',
-                                            'Sí' => 1,
-                                            'No' => 1,
-                                            'No sé' => 1
-                                            ),
-                                        1 => array(
-                                            'surveyid' => 2,
-                                            'title' => 'Lista de Cotejo del eje Digital A',
-                                            'Sí' => 12,
-                                            'No' => 5,
-                                            'No sé' => 3
-                                            )
-                                        )
-                ),
-                1 => array(
-                    'personid' => 3273688,
-                    'username' => 'Kinder 3 Grado',
-                    'surveys' => array(
-                                        0 => array(
-                                            'surveyid' => 2,
-                                            'title' => 'Lista de Cotejo del eje Digital A',
-                                            'Sí' => 14,
-                                            'No' => 3,
-                                            'No sé' => 3
-                                        )
-                                    )
-                )
-        );
-
-
-        print_r($a);
-        echo "<br/>";
         $userList = array();
-        $user = array();
         $b = array();
         $i = 0;
 
-
-        $si = 0;
-        $no = 0;
-        $nose = 0;
         foreach ($userResultsArray as $key => $value) {
             $userList[$i] = array(
                 'personid' => $value['personid'],
                 'username' => $value['username'],
+
             );
             $i++;
         }
 
         $user = $this->array_unique_multi($userList, 'personid');
-        print_r($user);
-        echo "<br/>";
+
         foreach ($user as $key1 => $value1) {
             foreach ($userResultsArray as $key2 => $value2) {
                 if($value1['personid'] == $value2['personid']){
@@ -351,9 +307,8 @@ class StatsController extends Controller{
 
         }
         print_r($user);
-        exit();
-        print_r($userResultsArray);
-        $this->_jsonListUser = array_count_values($userList);
+
+        $this->_jsonListUser = $user;
 
     }
 
