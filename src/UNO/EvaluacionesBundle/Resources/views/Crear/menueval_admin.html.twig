@@ -43,24 +43,34 @@
                     </tr>
                     </thead>
                     <tbody>
+                    {% for survey in surveylist %}
                         <tr>
-                            <td>
-                                {{ '200' }}
+                            <td class="text-center">
+                                <span class="label label-success" >{{ survey['id'] }}</span>
                             </td>
                             <td>
-                                {{ 'Lista de cotejo n' }}
+                                {{ survey['title'] }}
+
                             </td>
                             <td>
-                                {{ 'Profesor de Primaria' }}
+                                {% for profile in survey['profiles'] %}
+                                    <i class="fa fa-user"></i> {{ profile }}<br>
+                                {% endfor %}
+                            </td>
+                            <td class="text-center">
+                                {% if survey['progress'] <= 33.33 %}
+                                <span class="text-danger"><b>{{ survey['progress']~'%' }}</b></span>
+                                {% elseif survey['progress'] > 33.33 and survey['progress'] < 100 %}
+                                    <span class="text-warning"><b>{{ survey['progress']~'%' }}</b></span>
+                                {% elseif survey['progress'] == 100 %}
+                                    <span class="text-success"><b>{{ survey['progress']~'%' }}</b></span>
+                                {% endif %}
                             </td>
                             <td>
-                                {{ '90.5%' }}
+                                {{ survey['created'] }}
                             </td>
                             <td>
-                                {{ "now"|date("j/M/Y \@ g:i a") }}
-                            </td>
-                            <td>
-                                {{ "now"|date("j/M/Y \@ g:i a") }}
+                                {{ survey['closingdate'] }}
                             </td>
                             <td class="text-center">
                                 <div class="btn-group btn-group-xs">
@@ -70,6 +80,7 @@
                                 </div>
                             </td>
                         </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
             </div>
@@ -85,6 +96,6 @@
     <script src="{{ asset('public/assets/js/resumen.js') }}"></script>
     <script src="{{ asset('public/assets/js/menu_crear_charts.js') }}"></script>
     <script>$(function(){ TablesDatatables.init(); });</script>
-    <script>$(function(){ Charts.init(); });</script>
+    <script>$(function(){ Charts.init('{{ stats_general|json_encode()|raw }}'); });</script>
 
 {% endblock %}

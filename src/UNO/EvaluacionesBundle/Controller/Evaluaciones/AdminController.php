@@ -12,22 +12,55 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class AdminController extends Controller
-{
+class AdminController extends Controller {
+
+
+    /**
+     * Controlador principal que maneja la vista del administrador, y muestra la opción para crear una evaluación
+     *
+     * @param Request $request
+     * @return Response
+     * @author julio
+     * @version 0.2.0
+     */
     public function indexAction(Request $request){
 
-        $statsBySurvey = $this->getStatsBySurvey();
-        $surveys = $this->getSurveysWithProfiles();
+        /**
+         * ToDo: Manejar sesión y permitir el paso sólo si es administrador, de lo contrario invocar error.
+         */
 
+        $stats = $this->getStats();
+        $surveys = $this->getSurveysWithProfiles($stats);
 
-        return $this->render('UNOEvaluacionesBundle:Crear:menueval_admin.html.twig');
+        // Obtenemos las estadísticas generales de avance para mostrarlas en la gráfica de pastel
+        $stats_general =  $stats['general'];
+
+        return $this->render('UNOEvaluacionesBundle:Crear:menueval_admin.html.twig', array(
+            'surveylist' => $surveys,
+            'stats_general' => $stats_general,
+        ));
     }
 
-    private function getSurveysWithProfiles(){
+    /**
+     * ToDo: Método para ruta de creacion de evaluacion
+     */
 
+    /**
+     *
+     * Método que obtiene a través de una consulta a la bd las evaluaciones registradas,
+     * y agrega el nivel de avance de cada una de ellas a través del parámetro stats.
+     *
+     * @param $stats
+     * @return array
+     * @author julio
+     * @version 0.2.0
+     */
+    private function getSurveysWithProfiles($stats){
+
+        //Consulta a la bd para extraer evaluaciones con sus respectivos perfiles y niveles asociados (sin agrupar)
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
-        $surveysWithProfiles = $qb->select("su.surveyid, su.title, su.creationdate, su.createdby, su.closingdate, pr.profile, sl.schoollevel")
+        $surveysWithProfiles = $qb->select("su.surveyid, su.title, su.creationdate, su.createdby, su.active, su.closingdate, pr.profile, sl.schoollevel")
             ->from('UNOEvaluacionesBundle:Survey', 'su')
             ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile','sxp', 'WITH','su.surveyid = sxp.surveySurveyid')
             ->innerJoin('UNOEvaluacionesBundle:Profile','pr', 'WITH','pr.profileid = sxp.profileProfileid')
@@ -36,21 +69,28 @@ class AdminController extends Controller
             ->getQuery()
             ->getResult();
 
+        //Obtengo las claves de las evaluaciones, para recorrer el arreglo de las consultas y asignar campos
         $surveys = array_flip(array_unique(array_column($surveysWithProfiles,'surveyid')));
 
+        //Agrupo las evaluaciones con sus niveles y formateo los campos que se muestran en la vista
         foreach ($surveys as $surveyid => $survey) {
 
             $surveys[$surveyid] = array();
             $surveys[$surveyid]['profiles'] = array();
 
+            //Recorro el arreglo de la consulta para asignar a cada evaluacion los campos que corresponden y sus perfiles
             foreach($surveysWithProfiles as $swp) {
 
                 if($swp['surveyid'] == $surveyid && !array_key_exists('surveyid',$surveys[$surveyid])) {
 
                     $surveys[$surveyid]['id'] = $swp['surveyid'];
                     $surveys[$surveyid]['title'] = $swp['title'];
-                    $surveys[$surveyid]['created'] = $swp['creationdate']->format('j/M/Y \@ g:i a').' por: '.$swp['createdby'];
+                    $surveys[$surveyid]['created'] = $swp['creationdate']->format('j/M/Y').' por: '.$swp['createdby'];
                     $surveys[$surveyid]['closingdate'] = $swp['closingdate']->format('j/M/Y \@ g:i a');
+                    $surveys[$surveyid]['progress'] = $stats['bySurvey'][$surveyid]['avance'];
+                    $surveys[$surveyid]['completed'] = $stats['bySurvey'][$surveyid]['respondido'];
+                    $surveys[$surveyid]['expected'] = $stats['bySurvey'][$surveyid]['esperado'];
+                    $surveys[$surveyid]['active'] = $swp['active'];
                     array_push($surveys[$surveyid]['profiles'],$swp['profile'].' de '.$swp['schoollevel']);
                 }
                 elseif( $swp['surveyid'] == $surveyid && array_key_exists('surveyid',$surveys[$surveyid])){
@@ -62,11 +102,17 @@ class AdminController extends Controller
         return $surveys;
     }
 
-    private function getStatsBySurvey(){
+    /**
+     * Método para obtener las estadísticas de cumplimiento a nivel evaluación y global.
+     * @return array
+     */
+    private function getStats(){
 
         $data = array();
 
         $em = $this->getDoctrine()->getManager();
+
+        //Consulta para obtener el numero esperado de respuestas por evaluacion
         $qb = $em->createQueryBuilder();
         $expectedBySurvey = $qb->select("su.surveyid, count(distinct p.personid) as expectedNum")
             ->from('UNOEvaluacionesBundle:Person', 'p')
@@ -79,6 +125,7 @@ class AdminController extends Controller
             ->getQuery()
             ->getResult();
 
+        //Consulta para obtener el numero de respuestas actuales por evaluacion
         $qb = $em->createQueryBuilder();
         $answeredBySurvey= $qb->select("su.surveyid, count(distinct ps.personid) as answeredNum")
             ->from('UNOEvaluacionesBundle:Person', 'p')
@@ -93,21 +140,46 @@ class AdminController extends Controller
             ->getQuery()
             ->getResult();
 
-        /*foreach($expectedBySurvey as $expectedElem) {
+        //Combino los valores obtenidos y calculo el avance por cada evaluación hacia el arreglo de salida
+        foreach($expectedBySurvey as $k => $expectedElem) {
 
             $avance = 0.0;
+            $esperado = 0;
+            $respondido = 0;
+
             foreach ($answeredBySurvey as $answeredElement) {
 
                 if($expectedElem['surveyid'] == $answeredElement['surveyid']) {
 
-                    $avance  = ($answeredElement['answeredNum'] * 100 ) / $expectedElem['expectedNum'];
-                    $expectedElem['avance'] = $avance;
+                    $esperado = $expectedElem['expectedNum'];
+                    $respondido = $answeredElement['answeredNum'];
+                    $avance  = ($esperado > 0 ? round(($respondido * 100 ) / $esperado,2) : 0);
                 }
             }
+            $data['bySurvey'][$expectedElem['surveyid']]['avance'] = $avance;
+            $data['bySurvey'][$expectedElem['surveyid']]['esperado'] = $esperado;
+            $data['bySurvey'][$expectedElem['surveyid']]['respondido'] = $respondido;
+        }
 
-        }*/
+        //Calculo el nivel general de cumplimiento a partir de la suma de los valores obtenidos en las consultas
 
-        return $expectedBySurvey;
+        $data['general'] = array();
+        $esperadoGlobal = array_sum(array_column($expectedBySurvey,'expectedNum'));
+        $respondidoGlobal = array_sum(array_column($answeredBySurvey,'answeredNum'));
+        $avanceGlobal =  ($esperado > 0 ? round(($respondidoGlobal * 100) / $esperadoGlobal,2) : 0);
+
+        //Construyo el arreglo 'general' para hacer el render a la gráfica con la estructura requerida por Highcharts
+
+        array_push($data['general'],array(
+            'name' => 'Completado',
+            'y' => $avanceGlobal
+            ));
+
+        array_push($data['general'],array(
+            'name' => 'Pendiente',
+            'y' => 100 - $avanceGlobal
+        ));
+
+        return $data;
     }
-
 }
