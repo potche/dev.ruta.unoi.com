@@ -11,6 +11,7 @@ namespace UNO\EvaluacionesBundle\Controller\Evaluaciones;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class AdminController extends Controller {
 
@@ -25,9 +26,17 @@ class AdminController extends Controller {
      */
     public function indexAction(Request $request){
 
-        /**
-         * ToDo: Manejar sesión y permitir el paso sólo si es administrador, de lo contrario invocar error.
-         */
+        $session = $request->getSession();
+
+        if (!Utils::isUserLoggedIn($session)) {
+
+            return $this->redirectToRoute('login');
+        }
+
+        if(!Utils::isUserAdmin($session)){
+
+            throw new AccessDeniedHttpException('No estás autorizado para realizar esta acción');
+        }
 
         $stats = $this->getStats();
         $surveys = $this->getSurveysWithProfiles($stats);
@@ -40,10 +49,6 @@ class AdminController extends Controller {
             'stats_general' => $stats_general,
         ));
     }
-
-    /**
-     * ToDo: Método para ruta de creacion de evaluacion
-     */
 
     /**
      *

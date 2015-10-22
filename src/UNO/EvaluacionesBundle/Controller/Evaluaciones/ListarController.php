@@ -30,7 +30,7 @@ class ListarController extends Controller
 
         $session = $request->getSession();
         // Si no se tiene iniciada una sesión, se redirige al login
-        if (!$session->has('logged_in')) {
+        if (!Utils::isUserLoggedIn($session)) {
 
             return $this->redirectToRoute('login');
         }

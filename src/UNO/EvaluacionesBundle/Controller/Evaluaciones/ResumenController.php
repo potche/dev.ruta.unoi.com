@@ -13,6 +13,8 @@ use Proxies\__CG__\UNO\EvaluacionesBundle\Entity\Optionxquestion;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 define('ANSWERED_LOG_CODE', '4');
 
@@ -30,18 +32,13 @@ class ResumenController extends Controller
 
         // Validación de sesión activa
         $session = $request->getSession();
-
-        if (!$session->has('logged_in')) {
+        if (!Utils::isUserLoggedIn($session)) {
             return $this->redirectToRoute('login');
         }
 
         // Autorización de evaluación
         if(!Utils::isSurveyAuthorized($session,$surveyId)) {
-
-            return $this->render('@UNOEvaluaciones/Evaluaciones/responderError.html.twig',array(
-                'title'=>'Error',
-                'message'=>'Lo sentimos, el contenido que buscas es erróneo',
-            ));
+            throw new AccessDeniedHttpException('No estás autorizado para visualizar este contenido');
         }
 
         $personId = $session->get('personIdS');
@@ -50,10 +47,7 @@ class ResumenController extends Controller
         // Validamos contra el log que ya haya respondido (manejando el escenario donde el usuario ingresa escribiendo la ruta)
         if(empty($details)) {
 
-            return $this->render('UNOEvaluacionesBundle:Evaluaciones:responderError.html.twig', array(
-               'title' => 'Error',
-                'message' => 'Necesitas responder esta evaluación antes de ver su resúmen'
-            ));
+            throw new NotFoundHttpException('Resumen no encontrado para esta evaluación');
         }
 
         // Una vez que validamos los escenarios posibles, ejecutamos la consulta para traer las respuestas del usuario

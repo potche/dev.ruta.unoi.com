@@ -46,3 +46,10 @@ evaluaciones:
 estadisticas:
     path:   /estadisticas
     defaults: {_controller: UNOEvaluacionesBundle:Stats\Stats:index}
+crear:
+    path:   /evaluaciones/crear
+    defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Crear:index}
+save:
+    path:   /crear/save
+    defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Crear:save}
+    methods: [POST]
