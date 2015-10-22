@@ -32,4 +32,51 @@ class Utils {
         }
         return true;
     }
+
+    /**
+     *
+     * Valida que un usuario sea super-administrador del sistema
+     *
+     * @param $session
+     * @return bool
+     * @author julio
+     * @version 0.2.0
+     */
+
+    public static function isUserAdmin($session) {
+
+        $profiles = json_decode($session->get('profileS'));
+
+        foreach ($profiles as $p) {
+
+            if($p->profileid == 1){
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     *
+     * Valida que el usuario esté logueado y que tenga una sesión activa
+     *
+     * @param $session
+     * @return bool
+     * @author julio
+     * @version 0.2.0
+     *
+     */
+
+    public static function isUserLoggedIn($session) {
+
+        $loggedIn = $session->get('logged_in');
+
+        if($loggedIn != NULL && $loggedIn){
+
+            return true;
+        }
+        return false;
+    }
 }

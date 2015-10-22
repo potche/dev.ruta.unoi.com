@@ -9,11 +9,11 @@
             </div>
         </div>
         <div id="block-resumen" class="block">
-            <div class="block-title">
+            <div class="block-title themed-background">
                 <div class="block-options pull-right">
                     <a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
                 </div>
-                <h2><strong>Resumen</strong></h2>
+                <h2 style="color: #ffffff;"><strong>Resumen</strong></h2>
             </div>
             <div class="row">
                 <div class="block-content">
@@ -25,64 +25,67 @@
         </div>
 
         <div id="block-evals" class="block">
-            <div class="block-title text-center">
-                <h2><strong>Evaluaciones creadas</strong></h2>
+            <div class="block-title themed-background">
+                <h2 style="color: #ffffff;" ><strong>Evaluaciones creadas</strong></h2>
+                <div class="block-options pull-right">
+                    <a href="{{ path('crear') }}" class="label label-success animation-pulse" data-toggle="block-toggle-content"><i class="fa fa-plus-circle"></i> Crear evaluación</a>
+                </div>
             </div>
-
             <div id="cont-respuestas" class="block-content">
-                <table id="tbl-datatable" class="table table-vcenter table-condensed table-bordered">
-                    <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Evaluación</th>
-                        <th>Perfiles</th>
-                        <th>Avance global</th>
-                        <th>Creada el</th>
-                        <th>Finaliza el</th>
-                        <th class="text-center">Acciones</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for survey in surveylist %}
+                <div class="table-responsive">
+                    <table id="tbl-datatable" class="table table-vcenter table-condensed table-bordered">
+                        <thead>
                         <tr>
-                            <td class="text-center">
-                                <span class="label label-success" >{{ survey['id'] }}</span>
-                            </td>
-                            <td>
-                                {{ survey['title'] }}
-
-                            </td>
-                            <td>
-                                {% for profile in survey['profiles'] %}
-                                    <i class="fa fa-user"></i> {{ profile }}<br>
-                                {% endfor %}
-                            </td>
-                            <td class="text-center">
-                                {% if survey['progress'] <= 33.33 %}
-                                <span class="text-danger"><b>{{ survey['progress']~'%' }}</b></span>
-                                {% elseif survey['progress'] > 33.33 and survey['progress'] < 100 %}
-                                    <span class="text-warning"><b>{{ survey['progress']~'%' }}</b></span>
-                                {% elseif survey['progress'] == 100 %}
-                                    <span class="text-success"><b>{{ survey['progress']~'%' }}</b></span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {{ survey['created'] }}
-                            </td>
-                            <td>
-                                {{ survey['closingdate'] }}
-                            </td>
-                            <td class="text-center">
-                                <div class="btn-group btn-group-xs">
-                                    <a href="/" class="label label-danger" style="display: block;" data-toggle="tooltip" data-placement="top" title="Hacer una evaluación no visible al usuario"><i class="fa fa-times"></i> Desactivar</a>
-                                    <br>
-                                    <a href="/" class="label label-info" style="display: block;" data-toggle="tooltip" data-placement="top" title="Puedes modificar el título y la fecha de fin de la evaluación"><i class="fa fa-pencil"></i> Modificar</a>
-                                </div>
-                            </td>
+                            <th class="hidden-sm hidden-xs">Id</th>
+                            <th>Evaluación</th>
+                            <th>Asignada</th>
+                            <th>Avance</th>
+                            <th class="hidden-sm hidden-xs">Creada el</th>
+                            <th class="hidden-sm hidden-xs">Finaliza el</th>
+                            <th class="text-center">Acciones</th>
                         </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {% for survey in surveylist %}
+                            <tr>
+                                <td class="text-center hidden-sm hidden-xs">
+                                    <span class="label label-success" >{{ survey['id'] }}</span>
+                                </td>
+                                <td>
+                                    <b>{{ survey['title'] }}</b>
+                                </td>
+                                <td>
+                                    {% for profile in survey['profiles'] %}
+                                        <i class="fa fa-user"></i> {{ profile }}<br>
+                                    {% endfor %}
+                                </td>
+                                <td class="text-center">
+                                    {% if survey['progress'] <= 33.33 %}
+                                    <span class="text-danger"><b>{{ survey['progress']~'%' }}</b></span>
+                                    {% elseif survey['progress'] > 33.33 and survey['progress'] < 100 %}
+                                        <span class="text-warning"><b>{{ survey['progress']~'%' }}</b></span>
+                                    {% elseif survey['progress'] == 100 %}
+                                        <span class="text-success"><b>{{ survey['progress']~'%' }}</b></span>
+                                    {% endif %}
+                                </td>
+                                <td class="hidden-sm hidden-xs">
+                                    {{ survey['created'] }}
+                                </td>
+                                <td class="hidden-sm hidden-xs">
+                                    {{ survey['closingdate'] }}
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-xs">
+                                        <a href="/" class="label label-danger" style="display: block;" data-toggle="tooltip" data-placement="top" title="Hacer una evaluación no visible al usuario"><i class="fa fa-times"></i> Desactivar</a>
+                                        <br>
+                                        <a href="/" class="label label-info" style="display: block;" data-toggle="tooltip" data-placement="top" title="Puedes modificar el título y la fecha de fin de la evaluación"><i class="fa fa-pencil"></i> Modificar</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <br>
         </div>
