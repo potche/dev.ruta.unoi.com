@@ -59,7 +59,7 @@
                                 <h1>Usuarios Evaluados</h1>
                             </div>
                             <div class="table-responsive">
-                                {{ jsonListUser | json_encode | raw }}
+                                {#{{ jsonListUser | json_encode | raw }}#}
 
                                 <table class="table table-vcenter table-striped">
                                     <thead>
@@ -75,7 +75,7 @@
                                                 <td class="text-center"><img src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar" class="img-circle"></td>
                                                 <td>{{ listUser.username|e }}</td>
                                                 <td class="text-center">
-                                                    <a href="javascript:void(0)" onclick="statsUser('{{ listUser.username|e }}')" data-toggle="tooltip" title="Evaluaciones" class="btn btn-default">{{ listUser.surveys|length|e }}</a>
+                                                    <a href="javascript:void(0)" onclick="statsUser('{{ listUser.username|e }}', '{{ listUser.surveys|json_encode|e }}')" data-toggle="tooltip" title="Evaluaciones" class="btn btn-default">{{ listUser.surveys|length|e }}</a>
                                                 </td>
                                             </tr>
                                         {% endfor %}
@@ -100,7 +100,7 @@
 
     <!-- Modal Stats User -->
     <div id="statsUser" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-success">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -108,6 +108,21 @@
                 </div>
                 <div class="modal-body">
                     <span id="bodyStatsUser"></span>
+
+                    <div class="row">
+                        <div class="block-content">
+                            <div class="col-sm-6">
+                                <div id="pie" class="block">
+                                    <div id="containerPieLU" style="height: 300px; width: 350px"></div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div id="pie" class="block">
+                                    <!-- <div id="containerPieLU" style="height: 300px"></div>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <!-- <iframe id="player" style="width:90%; height:235px; margin: 5% 5%" src="https://www.youtube.com/embed/LYkudoUb51E" frameborder="0" allowfullscreen></iframe> -->
                 </div>
                 <div class="modal-footer">

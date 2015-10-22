@@ -271,14 +271,13 @@ class StatsController extends Controller{
 
     private function getTotalUserResponse($userResultsArray){
         $userList = array();
-        $b = array();
+        $tmp = array();
         $i = 0;
 
         foreach ($userResultsArray as $key => $value) {
             $userList[$i] = array(
                 'personid' => $value['personid'],
                 'username' => $value['username'],
-
             );
             $i++;
         }
@@ -289,7 +288,7 @@ class StatsController extends Controller{
             foreach ($userResultsArray as $key2 => $value2) {
                 if($value1['personid'] == $value2['personid']){
                     $rs = $this->resultPerson($value1['personid'], $value2['surveyid']);
-                    array_push($b, array(
+                    array_push($tmp, array(
                             'surveyid' => $value2['surveyid'],
                             'title' => $value2['title'],
                             'si' => $rs['si'],
@@ -297,10 +296,9 @@ class StatsController extends Controller{
                             'nose' => $rs['nose']
                         )
                     );
-                    $user[$key1]['surveys'] = $b;
-
+                    $user[$key1]['surveys'] = $tmp;
                 }else{
-                    $b = array();
+                    $tmp = array();
                 }
                 $i++;
             }
@@ -309,7 +307,6 @@ class StatsController extends Controller{
         print_r($user);
 
         $this->_jsonListUser = $user;
-
     }
 
     private function array_unique_multi($array, $key){
