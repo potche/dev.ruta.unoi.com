@@ -5,7 +5,7 @@
         <div class="content-header">
             <div class="header-section">
                 <h1>
-                    <i class="fa fa-pencil" style="color: #CCC;"></i><b>{{ title }}</b><br><small><em>Respondida el {{ date }}</em></small>
+                    <i class="fa fa-list-ol" style="color: #CCC;"></i><b>{{ title }}</b><br><small><em>Respondida el {{ date }}</em></small>
                 </h1>
             </div>
         </div>
@@ -37,23 +37,22 @@
             </div>
 
             {% for key, task in tasks %}
-                <h4 class="sub-header"><b>{{ key }}</b></h4>
                     <table id="tbl-tareas-{{ key }}" class="table table-vcenter table-condensed table-bordered">
                         <thead>
-                        <tr>
-                            <th>
-                                {{ 'Tarea' }}
-                            </th>
-                        </tr>
+                            <tr>
+                                <th>
+                                    {{ key }}
+                                </th>
+                            </tr>
                         </thead>
                         <tbody>
-                {% for subtask in task %}
-                    <tr>
-                        <td>
-                            {{ subtask }}
-                        </td>
-                    </tr>
-                {% endfor %}
+                            {% for subtask in task %}
+                                <tr>
+                                    <td>
+                                        {{ subtask }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
             {% endfor %}

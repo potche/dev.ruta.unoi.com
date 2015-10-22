@@ -1,0 +1,140 @@
+{% extends '::base.html.twig' %}
+{% block body %}
+    <div id="page-content">
+        <!-- Wizard with Validation Block -->
+        <div class="block">
+            <!-- Wizard with Validation Title -->
+            <div class="block-title">
+                <h2><strong>Crear</strong> evaluación</h2>
+            </div>
+            <!-- END Wizard with Validation Title -->
+
+            <!-- Wizard with Validation Content -->
+            <form id="advanced-wizard" action="{{ path('save') }}" method="post" class="form-horizontal form-bordered">
+                <!-- First Step -->
+                <div id="advanced-first" class="step">
+                    <!-- Step Info -->
+                    <div class="wizard-steps">
+                        <div class="row">
+                            <div class="col-xs-4 active">
+                                <span>1.Evaluación</span>
+                            </div>
+                            <div class="col-xs-4">
+                                <span>2.Perfiles</span>
+                            </div>
+                            <div class="col-xs-4">
+                                <span>3.Preguntas</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END Step Info -->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="eval[title]">Título <span class="text-danger">*</span></label>
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <input type="text" id="eval[title]" name="eval[title]" class="form-control" placeholder="Título de la nueva evaluación ..." required>
+                                <span class="input-group-addon"><i class="fa fa-info-circle"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="eval[description]">Descripción</label>
+                        <div class="col-md-6">
+                            <textarea id="eval[description]" name="eval[description]" rows="6" class="form-control" placeholder="Ingresa una descripción o instrucciones para esta evaluación ..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <!-- END First Step -->
+
+                <div id="advanced-second" class="step">
+                    <!-- Step Info -->
+                    <div class="wizard-steps">
+                        <div class="row">
+                            <div class="col-xs-4 done">
+                                <span>1.Evaluación</span>
+                            </div>
+                            <div class="col-xs-4 active">
+                                <span>2.Perfiles</span>
+                            </div>
+                            <div class="col-xs-4">
+                                <span>3.Preguntas</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END Step Info -->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="example-advanced-newsletter">Profesor</label>
+                        <div class="col-md-6">
+                            <div class="checkbox">
+                                <label for="example-advanced-newsletter">
+                                    <input type="checkbox" id="example-advanced-newsletter" name="example-advanced-newsletter">  Sign up
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- END Second Step -->
+
+                <!-- Third Step -->
+                <div id="advanced-third" class="step">
+                    <!-- Step Info -->
+                    <div class="wizard-steps">
+                        <div class="row">
+                            <div class="col-xs-4 done">
+                                <span>1.Evaluación</span>
+                            </div>
+                            <div class="col-xs-4 done">
+                                <span>2.Perfiles</span>
+                            </div>
+                            <div class="col-xs-4 active">
+                                <span>3.Preguntas</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END Step Info -->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="example-advanced-bio">Bio</label>
+                        <div class="col-md-8">
+                            <textarea id="example-advanced-bio" name="example-advanced-bio" rows="6" class="form-control" placeholder="Tell us your story.."></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="example-advanced-newsletter">Newsletter</label>
+                        <div class="col-md-6">
+                            <div class="checkbox">
+                                <label for="example-advanced-newsletter">
+                                    <input type="checkbox" id="example-advanced-newsletter" name="example-advanced-newsletter">  Sign up
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label"><a href="#modal-terms" data-toggle="modal">Terms</a> <span class="text-danger">*</span></label>
+                        <div class="col-md-6">
+                            <label class="switch switch-primary" for="val_terms">
+                                <input type="checkbox" id="val_terms" name="val_terms" value="1">
+                                <span data-toggle="tooltip" title="I agree to the terms!"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <!-- END Third Step -->
+
+                <!-- Form Buttons -->
+                <div class="form-group form-actions">
+                    <div class="col-md-8 col-md-offset-4">
+                        <input type="reset" class="btn btn-sm btn-warning" id="back2" value="Atrás">
+                        <input type="submit" class="btn btn-sm btn-primary" id="next2" value="Siguiente">
+                    </div>
+                </div>
+                <!-- END Form Buttons -->
+            </form>
+            <!-- END Wizard with Validation Content -->
+        </div>
+        <!-- END Wizard with Validation Block -->
+</div>
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://staticmx.unoi.com/global/js/pages/formsWizard.js"></script>
+    <script>$(function(){ FormsWizard.init(); });</script>
+{% endblock %}
