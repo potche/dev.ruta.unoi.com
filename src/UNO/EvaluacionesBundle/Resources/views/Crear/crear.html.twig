@@ -1,6 +1,17 @@
 {% extends '::base.html.twig' %}
 {% block body %}
-    <div id="page-content" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+    <div id="page-content">
+        <div class="content-header">
+            <div class="header-section">
+                <h1>
+                    <i class="fa fa-list-ul" style="color: #CCC;"></i><b>Crear</b> evaluación
+                </h1>
+                <br>
+                <p>
+                    <i class="fa fa-info-circle"></i> <em>Sigue estos 3 sencillos pasos para crear una nueva evaluación</em>
+                </p>
+            </div>
+        </div>
         <!-- Wizard with Validation Block -->
         <div class="block">
             <!-- Wizard with Validation Content -->
@@ -107,18 +118,19 @@
                                         </select>
                                     </div>
                                     <div class="col-sm-2">
-                                        <button id="btn_add_profile" class="btn btn-sm btn-success">
+                                        <a id="btn_add_profile" class="btn btn-sm btn-success">
                                             <i class="fa fa-plus"></i>
-                                        </button>
+                                        </a>
                                     </div>
                                     <div id="perf-niv-agregados" class="col-sm-4">
                                         <div class="block" style="text-align: center;">
                                             <div class="block-title themed-background">
                                                 <div class="block-options pull-right">
-                                                    <a href="javascript:void(0)" class="btn btn-danger btn-xs" data-toggle="block-toggle-content"><i class="fa fa-times"></i></a>
+                                                    <a id="borraPregunta" href="javascript:void(0)" class="btn btn-danger btn-xs"><i class="fa fa-times"></i></a>
                                                 </div>
                                             </div>
                                             <p>Profesor de Secundaria</p>
+
                                         </div>
                                         <div class="block" style="text-align: center;">
                                             <div class="block-title themed-background">
@@ -127,6 +139,12 @@
                                                 </div>
                                             </div>
                                             <p>Profesor de Primaria</p>
+                                            <div class="form-group" hidden>
+                                                <input type="text" id="eval[perfiles][19][]" name="eval[perfiles][p0]" class="form-control" value="19,20">
+                                            </div>
+                                            <div class="form-group" hidden>
+                                                <input type="text" id="eval[perfiles][p0]" name="eval[perfiles][p0]" class="form-control" value="19,20">
+                                            </div>
                                         </div>
                                     </div>
                                     <div id="profiles" hidden>
@@ -207,12 +225,12 @@
                     </div>
                 </div>
             </div>
-                <!-- END Third Step -->
+            <!-- END Third Step -->
 
                 <!-- Form Buttons -->
                 <div class="form-group form-actions">
                     <div class="col-lg-12" style="text-align: center">
-                        <input type="reset" class="btn btn-sm btn-primary" id="back2" value="Atrás">
+                        <input type="reset" class="btn btn-sm btn-primary" id="back2" value="Atras">
                         <input type="submit" class="btn btn-sm btn-success" id="next2" value="Siguiente">
                     </div>
                 </div>
@@ -224,6 +242,8 @@
 </div>
 
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script src="https://staticmx.unoi.com/global/js/pages/formsWizard.js"></script>
-    <script>$(function(){ FormsWizard.init(); });</script>
+    <!-- <script src="https://staticmx.unoi.com/global/js/pages/formsWizard.js"></script> -->
+    <script src="{{ asset('public/assets/js/create_wizard.js') }}"></script>
+    <script>$(function(){ CrearWizard.init(); });</script>
+
 {% endblock %}
