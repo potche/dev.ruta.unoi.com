@@ -191,9 +191,9 @@ class StatsController extends Controller{
     private function creaJsonColumn($si, $no, $nose){
         $this->_jsonTotalResponseColumn =
             "[
-                {name:'Sí', y:$si, drilldown:'Sí'},
-                {name:'No', y:$no, drilldown:'No'},
-                {name:'No sé', y:$nose, drilldown:'No sé'}
+                {name:'Sí', y:$si},
+                {name:'No', y:$no},
+                {name:'No sé', y:$nose}
             ]";
     }
 
@@ -278,6 +278,7 @@ class StatsController extends Controller{
             $userList[$i] = array(
                 'personid' => $value['personid'],
                 'username' => $value['username'],
+                'surveysAsig' => $this->getSurveyAsigUser($value['personid'])
             );
             $i++;
         }
@@ -302,6 +303,8 @@ class StatsController extends Controller{
                 }
                 $i++;
             }
+
+
 
         }
         print_r($user);
@@ -350,6 +353,23 @@ class StatsController extends Controller{
             }
         }
         return array('si' => $si,'no' => $no,'nose' => $nose);
+    }
+
+    private function getSurveyAsigUser($personId) {
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $rs =  $qb->select('count(distinct(S.surveyid)) as asig ')
+            ->from('UNOEvaluacionesBundle:Surveyxprofile','SP')
+            ->innerJoin('UNOEvaluacionesBundle:Survey','S', 'WITH', 'SP.surveySurveyid = S.surveyid')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','PS', 'WITH', 'SP.profileProfileid = PS.profileid')
+            ->innerJoin('UNOEvaluacionesBundle:Person','P', 'WITH', 'PS.personid = P.personid')
+            ->where('PS.personid = '.$personId)
+            ->getQuery()
+            ->getResult();
+
+        return $rs[0]['asig'];
     }
 
 }
