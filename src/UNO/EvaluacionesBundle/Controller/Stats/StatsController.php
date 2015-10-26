@@ -27,6 +27,8 @@ class StatsController extends Controller{
     private $_personId;
     private $_schoolIdFrm;
     private $_schoolIdPerson;
+    private $_surveyAsig;
+    private $_jsonListUserSinR = array();
 
     private $_resultsArray = array();
     /**
@@ -54,6 +56,7 @@ class StatsController extends Controller{
                     'jsonTotalResponseColumn' => $this->_jsonTotalResponseColumn,
                     'jsonTotalResponseDDColumn' => $this->_jsonTotalResponseDDColumn,
                     'jsonListUser' => $this->_jsonListUser,
+                    'jsonListUserSinR' => $this->_jsonListUserSinR,
                     'schoolId' => $this->_schoolId
                 ));
             }else{
@@ -63,7 +66,8 @@ class StatsController extends Controller{
                     'jsonTotalResponsePie' => $this->_jsonTotalResponsePie,
                     'jsonTotalResponseColumn' => $this->_jsonTotalResponseColumn,
                     'jsonTotalResponseDDColumn' => $this->_jsonTotalResponseDDColumn,
-                    'jsonListUser' => $this->_jsonListUser
+                    'jsonListUser' => $this->_jsonListUser,
+                    'jsonListUserSinR' => $this->_jsonListUserSinR
                 ));
             }
 
@@ -235,6 +239,7 @@ class StatsController extends Controller{
 
     private function getUserResults() {
         $userResultsArray = $this->getUserEval();
+        $this->_surveyAsig = $this->getSurveyAsigUser();
 
         if( !empty($userResultsArray) ){
             $this->getTotalUserResponse($userResultsArray);
@@ -272,14 +277,21 @@ class StatsController extends Controller{
     private function getTotalUserResponse($userResultsArray){
         $userList = array();
         $tmp = array();
+        $userRes = array();
         $i = 0;
 
-        foreach ($userResultsArray as $key => $value) {
-            $userList[$i] = array(
-                'personid' => $value['personid'],
-                'username' => $value['username'],
-                'surveysAsig' => $this->getSurveyAsigUser($value['personid'])
-            );
+        foreach ($userResultsArray as $keyUR => $valueUR) {
+
+            foreach ($this->_surveyAsig as $keyAS => $valueSA) {
+                if($valueUR['personid'] == $valueSA['personid']){
+                    $userList[$i] = array(
+                        'personid' => $valueUR['personid'],
+                        'username' => $valueUR['username'],
+                        'surveysAsig' => $valueSA['asig']
+                    );
+                    array_push($userRes, $valueUR['personid']);
+                }
+            }
             $i++;
         }
 
@@ -303,20 +315,22 @@ class StatsController extends Controller{
                 }
                 $i++;
             }
-
-
-
         }
-        print_r($user);
+        //print_r($user);
 
+        foreach($this->_surveyAsig as $valueS){
+            if(!in_array($valueS['personid'],array_unique($userRes))){
+                array_push($this->_jsonListUserSinR, $valueS['username']);
+            }
+        }
         $this->_jsonListUser = $user;
     }
 
     private function array_unique_multi($array, $key){
         for ($i = 0; $i < count($array); $i++){
             $duplicate = null;
-            for ($j = $i+1; $j < count($array); $j++){
-                if (strcmp($array[$j][$key],$array[$j][$key]) === 0){
+            for ($j=$i+1; $j<count($array); $j++){
+                if (strcmp($array[$i][$key],$array[$j][$key]) === 0){
                     $duplicate = $j;
                     break;
                 }
@@ -355,21 +369,34 @@ class StatsController extends Controller{
         return array('si' => $si,'no' => $no,'nose' => $nose);
     }
 
-    private function getSurveyAsigUser($personId) {
+    private function getSurveyAsigUser() {
 
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 
-        $rs =  $qb->select('count(distinct(S.surveyid)) as asig ')
-            ->from('UNOEvaluacionesBundle:Surveyxprofile','SP')
-            ->innerJoin('UNOEvaluacionesBundle:Survey','S', 'WITH', 'SP.surveySurveyid = S.surveyid')
-            ->innerJoin('UNOEvaluacionesBundle:Personschool','PS', 'WITH', 'SP.profileProfileid = PS.profileid')
-            ->innerJoin('UNOEvaluacionesBundle:Person','P', 'WITH', 'PS.personid = P.personid')
-            ->where('PS.personid = '.$personId)
-            ->getQuery()
-            ->getResult();
+        if( in_array('SuperAdmin', $this->_profile) ){
+            $rs =  $qb->select('P.personid, CONCAT(P.name, \' \', P.surname) as username, count(distinct(S.surveyid)) as asig ')
+                ->from('UNOEvaluacionesBundle:Surveyxprofile','SP')
+                ->innerJoin('UNOEvaluacionesBundle:Survey','S', 'WITH', 'SP.surveySurveyid = S.surveyid')
+                ->innerJoin('UNOEvaluacionesBundle:Personschool','PS', 'WITH', 'SP.profileProfileid = PS.profileid')
+                ->innerJoin('UNOEvaluacionesBundle:Person','P', 'WITH', 'PS.personid = P.personid')
+                ->groupBy('P.personid')
+                ->getQuery()
+                ->getResult();
+        }else{
+            $rs =  $qb->select('P.personid, CONCAT(P.name, \' \', P.surname) as username, count(distinct(S.surveyid)) as asig ')
+                ->from('UNOEvaluacionesBundle:Surveyxprofile','SP')
+                ->innerJoin('UNOEvaluacionesBundle:Survey','S', 'WITH', 'SP.surveySurveyid = S.surveyid')
+                ->innerJoin('UNOEvaluacionesBundle:Personschool','PS', 'WITH', 'SP.profileProfileid = PS.profileid')
+                ->innerJoin('UNOEvaluacionesBundle:Person','P', 'WITH', 'PS.personid = P.personid')
+                ->where('PS.schoolid IN(:schoolId) ')
+                ->setParameter('schoolId', $this->_schoolIdPerson)
+                ->groupBy('P.personid')
+                ->getQuery()
+                ->getResult();
+        }
 
-        return $rs[0]['asig'];
+        return $rs;
     }
 
 }

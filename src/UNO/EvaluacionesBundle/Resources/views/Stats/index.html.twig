@@ -52,61 +52,93 @@
 
             <div class="row">
                 <div class="block-content">
-                    <div class="col-sm-6">
-
-                        <div id="pie" class="block">
-                            <div class="well text-center">
-                                <h1>Usuarios Evaluados</h1>
+                    <div class="col-sm-12">
+                        <div  class="block">
+                            <div class="block-title">
+                                <h2><strong>Usuarios</strong> Evaluados</h2>
                             </div>
                             <div class="table-responsive">
-                                {#{{ jsonListUser | json_encode | raw }}#}
-
-                                <table class="table table-vcenter table-striped">
+                                <p>Estadisticas de usuarios que han realizado por lo menos una Evaluacion.</p>
+                                <table id="example-datatable" class="table table-vcenter table-condensed table-bordered">
                                     <thead>
-                                        <tr>
-                                            <th style="width: 150px;" class="text-center"><i class="fa fa-users"></i></th>
-                                            <th>Nombre</th>
-                                            <th style="width: 150px;" class="text-center">Progreso</th>
-                                            <th style="width: 150px;" class="text-center">Avance</th>
-                                        </tr>
+                                    <tr>
+                                        <th style="width: 150px;" class="text-center"><i class="fa fa-users"></i></th>
+                                        <th>Nombre</th>
+                                        <th style="width: 150px;" class="text-center">Progreso</th>
+                                        <th style="width: 150px;" class="text-center">Avance</th>
+                                    </tr>
                                     </thead>
                                     <tbody>
-                                        {% for key,listUser in jsonListUser %}
-                                            <tr onclick="statsUser('{{ listUser.username|e }}', '{{ ( 100 - ( (listUser.surveysAsig|e - listUser.surveys|length|e) / listUser.surveysAsig|e ) * 100) |round(2, 'floor') }}','{{ listUser.surveys|json_encode|e }}')" data-toggle="tooltip" title="Haz click para ver el detalle de {{ listUser.username|e }}">
-                                                <td class="text-center">
-                                                    <img src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar" class="img-circle">
-                                                </td>
-                                                <td>
-                                                    {{ listUser.username|e }}
-                                                    <div class="progress progress-bar-info progress-bar-striped">
-                                                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{ ( 100 - ( (listUser.surveysAsig|e - listUser.surveys|length|e) / listUser.surveysAsig|e ) * 100) |round(2, 'floor') }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ (100 - ( (listUser.surveysAsig|e - listUser.surveys|length|e) / listUser.surveysAsig|e ) * 100) |round(2, 'floor') }}%;">
-                                                        </div>
+                                    {% for key,listUser in jsonListUser %}
+                                        {% set porcen =  ( 100 - ( (listUser.surveysAsig|e - listUser.surveys|length|e) / listUser.surveysAsig|e ) * 100) |round(2, 'floor') %}
+                                        <tr onclick="statsUser('{{ listUser.username|e }}', '{{porcen}}','{{ listUser.surveys|json_encode|e }}')" data-toggle="tooltip" title="Haz click para ver el detalle de {{ listUser.username|e }}">
+                                            <td class="text-center">
+                                                <img src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar" class="img-circle">
+                                            </td>
+                                            <td>
+                                                {{ listUser.username|e }}
+                                                <div class="progress progress-bar-info progress-bar-striped">
+                                                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{porcen}}" aria-valuemin="0" aria-valuemax="100" style="width: {{porcen}}%;">
                                                     </div>
-                                                </td>
-                                                <td class="text-center">
-                                                    {{ listUser.surveys|length|e }}/{{ listUser.surveysAsig|e }}
-                                                </td>
-                                                <td class="text-center">
-                                                    {{ (100 - ( (listUser.surveysAsig|e - listUser.surveys|length|e) / listUser.surveysAsig|e ) * 100) |round(2, 'floor') }} %
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                {{ listUser.surveys|length|e }}/{{ listUser.surveysAsig|e }}
+                                            </td>
+                                            <td class="text-center">
+                                                {{porcen}} %
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
-                            <!-- END Responsive Full Content -->
-                        </div>
-
-                    </div>
-                </div>
-                <div class="block-content">
-                    <div class="col-sm-6">
-                        <div id="bars" class="block">
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="block-content">
+                    <div class="col-sm-6">
+                        <div id="bars" class="block">
+                            <div class="well text-center">
+                                {% if jsonListUserSinR is not empty %}
+                                <h1>Usuarios que aun no han resuelto alguna Evaluación</h1>
+                                <div class="table-responsive">
+                                    <table class="table table-vcenter table-striped">
+                                        <thead>
+                                        <tr>
+                                            <th style="width: 150px;" class="text-center"><i class="fa fa-users"></i></th>
+                                            <th>Nombre</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for listUserSinR in jsonListUserSinR %}
+                                            <tr>
+                                                <td class="text-center">
+                                                    <img src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar" class="img-circle">
+                                                </td>
+                                                <td style="color: red">
+                                                    {{ listUserSinR|e }}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% else %}
+                                    <h1>Felicidadez todos tus Usuarios han resuelto alguna Evaluación</h1>
+                                    <i class="fa fa-star fa-2x"></i><i class="fa fa-star fa-2x"></i><i class="fa fa-star fa-2x"></i>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
         </div>
     </div>
 
@@ -147,6 +179,29 @@
 
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 
+    <!-- Load and execute javascript code used only in this page -->
+    <script>
+        var TablesDatatables = function() {
+
+            return {
+                init: function() {
+                    /* Initialize Bootstrap Datatables Integration */
+                    App.datatables();
+
+                    /* Initialize Datatables */
+                    $('#example-datatable').dataTable({
+                        columnDefs: [ { orderable: false, targets: [ 1, 3 ] } ],
+                        pageLength: 5,
+                        lengthMenu: [[5,10,15,20,25,30, -1], [5,10,15,20,25,30, 'All']]
+                    });
+
+                    /* Add placeholder attribute to the search input */
+                    $('.dataTables_filter input').attr('placeholder', 'buscar');
+                }
+            };
+        }();
+    </script>
+    <script>$(function(){ TablesDatatables.init(); });</script>
 
     <script src="{{ asset('public/assets/js/Highcharts/highcharts.js')}}"></script>
     <script src="{{ asset('public/assets/js/Highcharts/highcharts-3d.js')}}"></script>
