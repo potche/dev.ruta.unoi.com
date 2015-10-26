@@ -84,11 +84,8 @@ var CrearWizard = function() {
 
 
             /**
-             * Cambiamos los labels de los botones al español y manejamos
-             * el caso donde es el último paso.
+             * Manejamos el evento del botón para agregar perfiles
              */
-
-            var profiles = [];
 
             $("#btn_add_profile").click(function(){
 
@@ -98,11 +95,64 @@ var CrearWizard = function() {
                 var nivtitle = $("#select-nivel option:selected").text();
 
                 if(perfil_id != '' && nivtitle != ''){
-                    profiles.push([perfil_id,perftitle,nivel_id,nivtitle]);
+
+                    var elem =
+                        '<div class="block" style="text-align: center;">' +
+                            '<div class="block-title themed-background">' +
+                                '<div class="block-options pull-right">' +
+                                    '<a href="javascript:void(0)"  id ="deleter" class="btn btn-danger btn-xs" data-toggle="block-toggle-content"><i class="fa fa-times"></i></a>' +
+                                '</div>' +
+                            '</div>' +
+                            '<p>'+perftitle+' de '+nivtitle+'</p>' +
+                            '<div class="form-group" hidden>' +
+                                '<input type="text" id="eval[perfiles]['+perfil_id+'][]" name="eval[perfiles]['+perfil_id+'][]" class="form-control" value="'+nivel_id+'">' +
+                            '</div>' +
+                        '</div>';
+
+                    $(elem).appendTo('#perf-niv-agregados');
                 }
-
-
             });
+
+            /**
+             * Manejamos el evento del botón para agregar preguntas
+             */
+
+            $("#btn_add_pregunta").click(function(){
+
+                var pregunta = $("#pregunta").val();
+                var categoria_id = $("#select-categoria").val();
+                var cattexto = $("#select-categoria option:selected").text();
+
+                if(pregunta != '' && categoria_id != ''){
+
+                    var elem =
+                        '<div class="block" >' +
+                            '<div class="block-title">' +
+                                '<div class="block-options pull-right">' +
+                                    '<a href="javascript:void(0)"  id ="deleter" class="btn btn-danger btn-xs" data-toggle="block-toggle-content"><i class="fa fa-times"></i></a>' +
+                                '</div>' +
+                            '<h4><em>'+cattexto+'</em></h4>'+
+                            '</div>' +
+                            '<p style="text-align: center;">'+pregunta+'</p>'+
+                            '<div class="form-group" hidden>' +
+                                '<input type="text" id="eval[preguntas][]" name="eval[preguntas][]" class="form-control" value="'+'['+categoria_id+']'+(pregunta)+'">' +
+                            '</div>' +
+                        '</div>';
+
+                    $(elem).appendTo('#div-preg-agregadas');
+                }
+            });
+
+            //Manejamos el evento para eliminar perfiles/niveles
+
+            $('#perf-niv-agregados, #div-preg-agregadas').on("click", ".block-title #deleter", function () {
+                $(this).closest("div .block").remove();
+            });
+
+            /**
+             * Cambiamos los labels de los botones al español y manejamos
+             * el caso donde es el último paso.
+             */
 
             function setInputLabels(){
 
@@ -118,13 +168,11 @@ var CrearWizard = function() {
                 }
             }
 
-
-
             setInputLabels();
             setFinishedLabel();
 
             /**
-             * Comportamiento de botones
+             * Comportamiento de botones anterior y siguiente
              */
 
             $("#next2").click(function(){
