@@ -136,7 +136,6 @@ function setCurrentQuestion(question_id){
         $("#mainComment").val('');
 
     }
-
 }
 
 /*
