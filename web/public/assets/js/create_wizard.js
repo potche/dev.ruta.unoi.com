@@ -1,40 +1,7 @@
 var CrearWizard = function() {
 
     return {
-        init: function() {
-
-            /* Bara de progreso*/
-            $('#progress-wizard').formwizard({focusFirstInput: true, disableUIStyles: true, inDuration: 0, outDuration: 0});
-
-            // Cambiar progreso cada que se logra un paso
-            var progressBar = $('#progress-bar-wizard');
-            progressBar
-                .css('width', '33%')
-                .attr('aria-valuenow', '33');
-
-            $("#progress-wizard").bind('step_shown', function(event, data){
-                if (data.currentStep === 'progress-first') {
-                    progressBar
-                        .css('width', '33%')
-                        .attr('aria-valuenow', '33')
-                        .removeClass('progress-bar-warning progress-bar-success')
-                        .addClass('progress-bar-danger');
-                }
-                else if (data.currentStep === 'progress-second') {
-                    progressBar
-                        .css('width', '66%')
-                        .attr('aria-valuenow', '66')
-                        .removeClass('progress-bar-danger progress-bar-success')
-                        .addClass('progress-bar-warning');
-                }
-                else if (data.currentStep === 'progress-third') {
-                    progressBar
-                        .css('width', '100%')
-                        .attr('aria-valuenow', '100')
-                        .removeClass('progress-bar-danger progress-bar-warning')
-                        .addClass('progress-bar-success');
-                }
-            });
+        init: function(questions) {
 
             /* Inicializamos el wizard para crear evaluación con validaciones */
             $('#advanced-wizard').formwizard({
@@ -82,10 +49,29 @@ var CrearWizard = function() {
                 outDuration: 0
             });
 
+            function agregaPerfil(perfil_id, nivel_id, nivtitle, perftitle) {
+
+                if(perfil_id != '' && nivel_id != '') {
+
+                    var elem = '<div class="block perfil" style="text-align: center;">' +
+                        '<div class="block-title themed-background">' +
+                        '<div class="block-options pull-right">' +
+                        '<a href="javascript:void(0)"  id ="deleter" class="btn btn-danger btn-xs" data-toggle="block-toggle-content"><i class="fa fa-times"></i></a>' +
+                        '</div>' +
+                        '</div>' +
+                        '<p>'+perftitle+' de '+nivtitle+'</p>' +
+                        '<div class="form-group" hidden>' +
+                        '<input type="text" id="eval[perfiles]['+perfil_id+'][]" name="eval[perfiles]['+perfil_id+'][]" class="form-control" value="'+nivel_id+'">' +
+                        '</div>' +
+                        '</div>';
+
+                    $(elem).appendTo('#perf-niv-agregados');
+                }
+            }
+
             /**
              * Evento para agregar todos los perfiles y niveles
              *
-             * ToDo: separar método de crear bloque para evitar redundancia de código
              */
 
             $("#btn_all_profiles").click(function(){
@@ -102,22 +88,7 @@ var CrearWizard = function() {
                         var nivel_id = $(this).val();
                         var nivtitle = $(this).text();
 
-                        if(perfil_id != '' && nivel_id != '') {
-
-                            var elem = '<div class="block perfil" style="text-align: center;">' +
-                             '<div class="block-title themed-background">' +
-                             '<div class="block-options pull-right">' +
-                             '<a href="javascript:void(0)"  id ="deleter" class="btn btn-danger btn-xs" data-toggle="block-toggle-content"><i class="fa fa-times"></i></a>' +
-                             '</div>' +
-                             '</div>' +
-                             '<p>'+perftitle+' de '+nivtitle+'</p>' +
-                             '<div class="form-group" hidden>' +
-                             '<input type="text" id="eval[perfiles]['+perfil_id+'][]" name="eval[perfiles]['+perfil_id+'][]" class="form-control" value="'+nivel_id+'">' +
-                             '</div>' +
-                             '</div>';
-
-                             $(elem).appendTo('#perf-niv-agregados');
-                        }
+                        agregaPerfil(perfil_id,nivel_id,nivtitle,perftitle);
                     });
                 });
             });
@@ -134,23 +105,7 @@ var CrearWizard = function() {
                 var nivel_id = $("#select-nivel").val();
                 var nivtitle = $("#select-nivel option:selected").text();
 
-                if(perfil_id != '' && nivtitle != ''){
-
-                    var elem =
-                        '<div class="block perfil" style="text-align: center;">' +
-                            '<div class="block-title themed-background">' +
-                                '<div class="block-options pull-right">' +
-                                    '<a href="javascript:void(0)"  id ="deleter" class="btn btn-danger btn-xs" data-toggle="block-toggle-content"><i class="fa fa-times"></i></a>' +
-                                '</div>' +
-                            '</div>' +
-                            '<p>'+perftitle+' de '+nivtitle+'</p>' +
-                            '<div class="form-group" hidden>' +
-                                '<input type="text" id="eval[perfiles]['+perfil_id+'][]" name="eval[perfiles]['+perfil_id+'][]" class="form-control" value="'+nivel_id+'">' +
-                            '</div>' +
-                        '</div>';
-
-                    $(elem).appendTo('#perf-niv-agregados');
-                }
+                agregaPerfil(perfil_id,nivel_id,nivtitle,perftitle);
             });
 
             /**
@@ -235,8 +190,8 @@ var CrearWizard = function() {
              *
              */
 
-            var preguntas = ["Pregunta de prueba"];
-            $('.input-typeahead').typeahead({ source: preguntas });
+            //var preguntas = ["Pregunta de prueba"];
+            $('.input-typeahead').typeahead({ source: questions });
 
         }
     };
