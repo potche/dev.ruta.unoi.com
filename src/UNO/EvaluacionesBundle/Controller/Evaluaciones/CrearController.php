@@ -44,7 +44,13 @@ class CrearController extends Controller {
             throw new AccessDeniedHttpException('No estás autorizado para realizar esta acción');
         }
 
-        return $this->render('UNOEvaluacionesBundle:Crear:crear.html.twig');
+
+        return $this->render('UNOEvaluacionesBundle:Crear:crear.html.twig',array(
+            'categories' => $this->getCategories(),
+            'questions' => array_column($this->getQuestions(),'question'),
+            'profiles' => $this->getProfiles(),
+            'levels' => $this->getLevels(),
+        ));
     }
 
     /**
@@ -75,20 +81,61 @@ class CrearController extends Controller {
 
     private function getCategories(){
 
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $subcats = $qb->select('sub.subcategoryid, sub.subcategory')
+            ->from('UNOEvaluacionesBundle:Subcategory','sub')
+            ->orderBy('sub.subcategory')
+            ->getQuery()
+            ->getResult();
+
+        return $subcats;
+
     }
 
     private function getQuestions(){
 
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $questions = $qb->select('q.question')
+            ->from('UNOEvaluacionesBundle:Question','q')
+            ->orderBy('q.question')
+            ->getQuery()
+            ->getResult();
+
+        return $questions;
 
     }
 
     private function getLevels(){
 
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $levels = $qb->select('lev.schoollevelid, lev.schoollevel')
+            ->from('UNOEvaluacionesBundle:Schoollevel','lev')
+            ->orderBy('lev.schoollevel')
+            ->getQuery()
+            ->getResult();
+
+        return $levels;
     }
 
     private function getProfiles(){
 
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
 
+        $profiles = $qb->select('pr.profileid, pr.profile')
+            ->from('UNOEvaluacionesBundle:Profile','pr')
+            ->where('pr.profileid > 1')
+            ->orderBy('pr.profile')
+            ->getQuery()
+            ->getResult();
+
+        return $profiles;
     }
 
 }

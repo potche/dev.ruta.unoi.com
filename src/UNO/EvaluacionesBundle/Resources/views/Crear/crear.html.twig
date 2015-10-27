@@ -111,17 +111,17 @@
                                     <div id = "div-perfiles" class="col-sm-3">
                                         <select aria-hidden="true" tabindex="-1" id="select-perfil" name="select-perfil" class="select-select2 select2-hidden-accessible" style="width: 100%;" data-placeholder="Selecciona un perfil...">
                                             <option></option><!-- Required for data-placeholder attribute to work with Select2 plugin -->
-                                            <option value="Profe">Profesor</option>
-                                            <option value="Dir">Director</option>
-                                            <option value="Admin">Administrador</option>
+                                            {% for profile in profiles %}
+                                                <option value="{{ profile.profileid }}">{{ profile.profile }}</option>
+                                            {% endfor %}
                                         </select>
                                     </div>
                                     <div id = "div-niveles" class="col-sm-3">
                                         <select aria-hidden="true" tabindex="-1" id="select-nivel" name="select-nivel" class="select-select2 select2-hidden-accessible" style="width: 100%;" data-placeholder="Selecciona un nivel...">
                                             <option></option><!-- Required for data-placeholder attribute to work with Select2 plugin -->
-                                            <option value="16">Preescolar</option>
-                                            <option value="17">Primaria</option>
-                                            <option value="18">Secundaria</option>
+                                            {% for level in levels %}
+                                                <option value="{{ level.schoollevelid }}">{{ level.schoollevel }}</option>
+                                            {% endfor %}
                                         </select>
                                     </div>
                                     <div class="col-sm-2">
@@ -131,6 +131,9 @@
                                     </div>
                                     <div id="perf-niv-agregados" class="col-sm-4"></div>
                                 </div>
+                            </div>
+                            <div class="row">
+                                <br>
                             </div>
                     </div>
                 </div>
@@ -170,11 +173,9 @@
                             <div id = "div-categoria" class="col-sm-2">
                                 <select aria-hidden="true" tabindex="-1" id="select-categoria" name="select-categoria" class="select-select2 select2-hidden-accessible" style="width: 100%;" data-placeholder="Categoría..">
                                     <option></option><!-- Required for data-placeholder attribute to work with Select2 plugin -->
-                                    <option value="0">Digital</option>
-                                    <option value="1">DDPA</option>
-                                    <option value="2">Lexium</option>
-                                    <option value="3">Avalia</option>
-                                    <option value="4">TOEFL</option>
+                                    {% for cat in categories %}
+                                        <option value="{{ cat.subcategoryid }}">{{ cat.subcategory }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                             <div class="col-sm-2">
@@ -187,6 +188,9 @@
                             </div>
                         </div>
                     </div>
+                        <div class="row">
+                            <br>
+                        </div>
                 </div>
             </div>
             <!-- END Third Step -->
@@ -209,7 +213,7 @@
     <script src="{{ asset('public/assets/js/create_wizard.js') }}"></script>
     <script src="{{ asset('public/assets/js/uiDraggable.js') }}"></script>
     <script>$(function(){ UiDraggable.init(); });</script>
-    <script>$(function(){ CrearWizard.init(); });</script>
+    <script>$(function(){ CrearWizard.init({{ questions|json_encode()|raw }}); });</script>
 
 
 {% endblock %}
