@@ -147,7 +147,7 @@ class AltaController extends Controller{
         $q = $qb->select('P.schoolid')
             ->from('UNOEvaluacionesBundle:Personschool', 'P')
             ->where('P.personid = :personId')
-            ->setParameter('personId', $this->_personDB->getPersonid())
+            ->setParameter('personId', $this->_datPerson->personId)
             ->groupBy('P.schoolid')
             ->getQuery()
             ->getResult();
