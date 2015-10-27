@@ -99,6 +99,13 @@
                                 </div>
                             </div>
                             <div class="row">
+                                <div class="col-sm-4">
+                                    <a id="btn_all_profiles" class="btn btn-sm btn-success">
+                                        <i class="fa fa-plus"></i> Agregar a todos
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <br>
                                 <div class="block-content">
                                     <div id = "div-perfiles" class="col-sm-3">
@@ -199,12 +206,10 @@
 </div>
 
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script src="http://code.jquery.com/ui/1.8.21/jquery-ui.min.js"></script>
     <script src="{{ asset('public/assets/js/create_wizard.js') }}"></script>
     <script src="{{ asset('public/assets/js/uiDraggable.js') }}"></script>
-    <script src="{{ asset('public/assets/js/jquery.ui.touch-punch.min.js') }}"></script>
-    <script>$(function(){ CrearWizard.init(); });</script>
     <script>$(function(){ UiDraggable.init(); });</script>
+    <script>$(function(){ CrearWizard.init(); });</script>
 
 
 {% endblock %}
