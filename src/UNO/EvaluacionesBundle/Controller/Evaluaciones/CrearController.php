@@ -44,11 +44,7 @@ class CrearController extends Controller {
             throw new AccessDeniedHttpException('No estás autorizado para realizar esta acción');
         }
 
-
-
-
         return $this->render('UNOEvaluacionesBundle:Crear:crear.html.twig');
-
     }
 
     /**

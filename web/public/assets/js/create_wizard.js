@@ -82,6 +82,46 @@ var CrearWizard = function() {
                 outDuration: 0
             });
 
+            /**
+             * Evento para agregar todos los perfiles y niveles
+             *
+             * ToDo: separar método de crear bloque para evitar redundancia de código
+             */
+
+            $("#btn_all_profiles").click(function(){
+
+                $('.perfil').remove();
+
+                $("#select-perfil option").each(function()
+                {
+                    var perfil_id = $(this).val();
+                    var perftitle = $(this).text();
+
+                    $("#select-nivel option").each(function()
+                    {
+                        var nivel_id = $(this).val();
+                        var nivtitle = $(this).text();
+
+                        if(perfil_id != '' && nivel_id != '') {
+
+                            var elem = '<div class="block perfil" style="text-align: center;">' +
+                             '<div class="block-title themed-background">' +
+                             '<div class="block-options pull-right">' +
+                             '<a href="javascript:void(0)"  id ="deleter" class="btn btn-danger btn-xs" data-toggle="block-toggle-content"><i class="fa fa-times"></i></a>' +
+                             '</div>' +
+                             '</div>' +
+                             '<p>'+perftitle+' de '+nivtitle+'</p>' +
+                             '<div class="form-group" hidden>' +
+                             '<input type="text" id="eval[perfiles]['+perfil_id+'][]" name="eval[perfiles]['+perfil_id+'][]" class="form-control" value="'+nivel_id+'">' +
+                             '</div>' +
+                             '</div>';
+
+                             $(elem).appendTo('#perf-niv-agregados');
+                        }
+                    });
+                });
+            });
+
 
             /**
              * Manejamos el evento del botón para agregar perfiles
@@ -97,7 +137,7 @@ var CrearWizard = function() {
                 if(perfil_id != '' && nivtitle != ''){
 
                     var elem =
-                        '<div class="block" style="text-align: center;">' +
+                        '<div class="block perfil" style="text-align: center;">' +
                             '<div class="block-title themed-background">' +
                                 '<div class="block-options pull-right">' +
                                     '<a href="javascript:void(0)"  id ="deleter" class="btn btn-danger btn-xs" data-toggle="block-toggle-content"><i class="fa fa-times"></i></a>' +
@@ -126,7 +166,7 @@ var CrearWizard = function() {
                 if(pregunta != '' && categoria_id != ''){
 
                     var elem =
-                        '<div class="block" >' +
+                        '<div class="block pregunta">' +
                             '<div class="block-title">' +
                                 '<div class="block-options pull-right">' +
                                     '<a href="javascript:void(0)"  id ="deleter" class="btn btn-danger btn-xs" data-toggle="block-toggle-content"><i class="fa fa-times"></i></a>' +
@@ -135,7 +175,7 @@ var CrearWizard = function() {
                             '</div>' +
                             '<p style="text-align: center;">'+pregunta+'</p>'+
                             '<div class="form-group" hidden>' +
-                                '<input type="text" id="eval[preguntas][]" name="eval[preguntas][]" class="form-control" value="'+'['+categoria_id+']'+(pregunta)+'">' +
+                                '<input type="text" id="eval[preguntas][]" name="eval[preguntas][]" class="form-control" value="'+categoria_id+'::'+(pregunta)+'">' +
                             '</div>' +
                         '</div>';
 
@@ -143,10 +183,15 @@ var CrearWizard = function() {
                 }
             });
 
+
             //Manejamos el evento para eliminar perfiles/niveles
 
-            $('#perf-niv-agregados, #div-preg-agregadas').on("click", ".block-title #deleter", function () {
-                $(this).closest("div .block").remove();
+            $('#perf-niv-agregados').on("click", ".block-title #deleter", function () {
+                $(this).closest("div .perfil").remove();
+            });
+
+            $('#div-preg-agregadas').on("click", ".block-title #deleter", function () {
+                $(this).closest("div .pregunta").remove();
             });
 
             /**
@@ -185,7 +230,13 @@ var CrearWizard = function() {
                 setFinishedLabel();
             });
 
+            /**
+             * Cargamos las preguntas para el autocompletado
+             *
+             */
 
+            var preguntas = ["Pregunta de prueba"];
+            $('.input-typeahead').typeahead({ source: preguntas });
 
         }
     };
