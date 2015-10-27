@@ -139,6 +139,7 @@ class StatsController extends Controller{
                    ORDER BY A.personPersonid, PS.schoolid, S.surveyid, QS.order";
         $q = $em->createQuery($query);
         $results = $q->getResult();
+
         return $results;
     }
 
@@ -307,6 +308,7 @@ class StatsController extends Controller{
                             'si' => $rs['si'],
                             'no' => $rs['no'],
                             'nose' => $rs['nose']
+                            //'eval' => $this->getEvalPerson($value1['personid'], $value2['surveyid'])
                         )
                     );
                     $user[$key1]['surveys'] = $tmp;
@@ -316,7 +318,7 @@ class StatsController extends Controller{
                 $i++;
             }
         }
-        //print_r($user);
+        print_r($user);
 
         foreach($this->_surveyAsig as $valueS){
             if(!in_array($valueS['personid'],array_unique($userRes))){
@@ -367,6 +369,17 @@ class StatsController extends Controller{
             }
         }
         return array('si' => $si,'no' => $no,'nose' => $nose);
+    }
+
+    private function getEvalPerson($personId, $surveyid){
+
+        $evalPersonArray = array();
+        foreach($this->_resultsArray as $value){
+            if($personId == $value['personid'] && $surveyid == $value['surveyid'] ){
+                array_push($evalPersonArray, array('order' => $value['order'], 'question' => $value['question'], 'answer' => $value['answer']));
+            }
+        }
+        return $evalPersonArray;
     }
 
     private function getSurveyAsigUser() {
