@@ -264,6 +264,8 @@ class StatsController extends Controller{
         if( in_array('SuperAdmin', $this->_profile) ){
             if($this->_schoolIdFrm != 0){
                 $query .= "WHERE PS.schoolid = ".$this->_schoolIdFrm;
+            }else{
+                $query .= "WHERE PS.schoolid = 1253";
             }
         }else{
             $query .= "WHERE PS.schoolid in (".$this->_schoolIdPerson.")";
@@ -291,10 +293,13 @@ class StatsController extends Controller{
                         'surveysAsig' => $valueSA['asig']
                     );
                     array_push($userRes, $valueUR['personid']);
+                    $i++;
                 }
             }
-            $i++;
+
         }
+
+        //print_r($userList);
 
         $user = $this->array_unique_multi($userList, 'personid');
 
@@ -307,8 +312,8 @@ class StatsController extends Controller{
                             'title' => $value2['title'],
                             'si' => $rs['si'],
                             'no' => $rs['no'],
-                            'nose' => $rs['nose']
-                            //'eval' => $this->getEvalPerson($value1['personid'], $value2['surveyid'])
+                            'nose' => $rs['nose'],
+                            'eval' => $this->getEvalPerson($value1['personid'], $value2['surveyid'])
                         )
                     );
                     $user[$key1]['surveys'] = $tmp;
@@ -318,7 +323,7 @@ class StatsController extends Controller{
                 $i++;
             }
         }
-        print_r($user);
+        //print_r($user);
 
         foreach($this->_surveyAsig as $valueS){
             if(!in_array($valueS['personid'],array_unique($userRes))){
@@ -329,9 +334,13 @@ class StatsController extends Controller{
     }
 
     private function array_unique_multi($array, $key){
+        //print_r($array);
+
+
         for ($i = 0; $i < count($array); $i++){
             $duplicate = null;
             for ($j=$i+1; $j<count($array); $j++){
+                echo "<br/>".$array[$j][$key];
                 if (strcmp($array[$i][$key],$array[$j][$key]) === 0){
                     $duplicate = $j;
                     break;
@@ -376,10 +385,12 @@ class StatsController extends Controller{
         $evalPersonArray = array();
         foreach($this->_resultsArray as $value){
             if($personId == $value['personid'] && $surveyid == $value['surveyid'] ){
-                array_push($evalPersonArray, array('order' => $value['order'], 'question' => $value['question'], 'answer' => $value['answer']));
+                //$question = str_replace("'", "\\u0027",$value['question']);
+                $question = htmlspecialchars($value['question'], ENT_QUOTES);
+                array_push($evalPersonArray, array('order' => $value['order'], 'question' => $question, 'answer' => $value['answer']));
             }
         }
-        return $evalPersonArray;
+        return ($evalPersonArray);
     }
 
     private function getSurveyAsigUser() {
