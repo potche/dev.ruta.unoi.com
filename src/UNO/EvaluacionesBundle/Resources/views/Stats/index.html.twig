@@ -54,7 +54,6 @@
                 <div class="block-content">
                     <div class="col-sm-12">
                         <div  class="block">
-{{ jsonListUser | json_encode |e| raw}}
                             <div class="block-title">
                                 <h2><strong>Usuarios</strong> Evaluados</h2>
                             </div>
@@ -281,10 +280,11 @@
         $(function () {
             pieGrl({{ jsonTotalResponsePie | raw }});
             columnGrl({{ jsonTotalResponseColumn | raw }}, {{ jsonTotalResponseDDColumn | raw }});
-/*
-            var a = jQuery.parseJSON('{{ jsonListUser | json_encode | raw | escape}}'.replace(/'/g, "\\'"));
-            console.log(a);
-*/
+
+            var a = {{ jsonListUser | json_encode | raw }};
+
+            console.log(a[0]['surveys'][0]['eval']);
+
         });
 
     </script>

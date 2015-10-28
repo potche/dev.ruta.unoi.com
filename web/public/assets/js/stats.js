@@ -201,8 +201,7 @@ $( "#schoolId" ).change(function() {
 
 function statsUser(username, avance, jsonListUser){
     console.log(jsonListUser);
-    var listUser = JSON.parse(jsonListUser);
-    console.log(listUser);
+    var listUser =jsonListUser;
     var list = "";
     var si = 0;
     var no = 0;
