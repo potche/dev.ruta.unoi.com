@@ -331,6 +331,7 @@ class LoginController extends Controller{
             ->innerJoin('UNOEvaluacionesBundle:Profile','P2','WITH', 'P1.profileid = P2.profileid')
             ->where('P.personid = :personId')
             ->setParameter('personId', $this->_personDB->getPersonid())
+            ->groupBy('P2.profileid')
             ->getQuery()
             ->getResult();
         return json_encode($q);
