@@ -31,6 +31,10 @@ var CrearWizard = function() {
                         'eval[description]': {
                             minlength: 2,
                             maxlength: 500
+                        },
+                        'closingdate':{
+                            required: true,
+                            date: true
                         }
                     },
                     messages: {
@@ -42,6 +46,10 @@ var CrearWizard = function() {
                         'eval[description]': {
                             minlength: 'Ingresa al menos dos caracteres para la descripción',
                             maxlength: 'La descripción no puede ser mayor a 500 caracteres'
+                        },
+                        'closingdate':{
+                            required: 'Por favor, ingresa una fecha de cierre para esta evaluación',
+                            date: "Debes seleccionar una fecha del calendario o ingresar una fecha correctamente"
                         }
                     }
                 },
@@ -49,7 +57,40 @@ var CrearWizard = function() {
                 outDuration: 0
             });
 
+            /**
+             * Validar que la fecha ingresada sea un día mayor al de hoy
+             */
+
+            jQuery.validator.addMethod("dateAfter", function(value, element, params) {
+
+                if (!/Invalid|NaN/.test(new Date(value))) {
+
+                    return (new Date(value) > params);
+                }
+                return (isNaN(value) && isNaN(params) || (Number(value) > Number(params)));
+
+            },'La fecha de cierre no puede ser antes de hoy.');
+
+            $("#closingdate").rules('add', { dateAfter: new Date() });
+
+            /**
+             *
+             * ToDo: Validar que los perfiles no estén vacios ni repetidos
+             *
+             */
+
+            /**
+             *
+             * ToDo: Validar que las preguntas no tengan caracteres especiales ("",::,)
+             *
+             */
+
+
             function agregaPerfil(perfil_id, nivel_id, nivtitle, perftitle) {
+
+                var id = 'eval[perfiles]['+perfil_id+']['+nivel_id+']';
+                var found = $( ".perfil" ).find( id );
+                console.log(found != '');
 
                 if(perfil_id != '' && nivel_id != '') {
 
@@ -176,6 +217,7 @@ var CrearWizard = function() {
              */
 
             $("#next2").click(function(){
+
                 setInputLabels();
                 setFinishedLabel();
             });
