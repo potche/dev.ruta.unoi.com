@@ -9,7 +9,6 @@
 namespace UNO\EvaluacionesBundle\Controller\Evaluaciones;
 
 
-use Proxies\__CG__\UNO\EvaluacionesBundle\Entity\Optionxquestion;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
