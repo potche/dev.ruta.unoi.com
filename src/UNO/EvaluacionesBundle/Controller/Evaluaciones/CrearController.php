@@ -69,6 +69,9 @@ class CrearController extends Controller {
             throw new InternalErrorException('Ha ocurrido un error al procesar esta petición');
         }
 
+        var_dump($_POST['eval']);
+        exit();
+
         /**
          * ToDo: implementar lógica para almacenar evaluación a partir de la petición
          */
