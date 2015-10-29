@@ -26,7 +26,6 @@ class AdminController extends Controller {
      */
     public function indexAction(Request $request){
 
-
         $session = $request->getSession();
 
         if (!Utils::isUserLoggedIn($session)) {
@@ -188,4 +187,7 @@ class AdminController extends Controller {
 
         return $data;
     }
+
+
+
 }

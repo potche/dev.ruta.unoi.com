@@ -75,38 +75,39 @@ var CrearWizard = function() {
 
             /**
              *
-             * ToDo: Validar que los perfiles no estén vacios ni repetidos
+             * ToDo: Validar que los perfiles no estén vacios
              *
              */
 
+            
             /**
              *
-             * ToDo: Validar que las preguntas no tengan caracteres especiales ("",::,)
+             * ToDo: Validar que las preguntas no tengan caracteres especiales ("",::,) y no estén vacías
              *
              */
-
 
             function agregaPerfil(perfil_id, nivel_id, nivtitle, perftitle) {
 
-                var id = 'eval[perfiles]['+perfil_id+']['+nivel_id+']';
-                var found = $( ".perfil" ).find( id );
-                console.log(found != '');
-
                 if(perfil_id != '' && nivel_id != '') {
 
-                    var elem = '<div class="block perfil" style="text-align: center;">' +
-                        '<div class="block-title themed-background">' +
-                        '<div class="block-options pull-right">' +
-                        '<a href="javascript:void(0)"  id ="deleter" class="btn btn-danger btn-xs" data-toggle="block-toggle-content"><i class="fa fa-times"></i></a>' +
-                        '</div>' +
-                        '</div>' +
-                        '<p>'+perftitle+' de '+nivtitle+'</p>' +
-                        '<div class="form-group" hidden>' +
-                        '<input type="text" id="eval[perfiles]['+perfil_id+'][]" name="eval[perfiles]['+perfil_id+'][]" class="form-control" value="'+nivel_id+'">' +
-                        '</div>' +
-                        '</div>';
+                    var dynamicId = 'perfil_'+perfil_id+'_'+nivel_id;
 
-                    $(elem).appendTo('#perf-niv-agregados');
+                    if ($("#" + dynamicId).length == 0){
+
+                        var elem = '<div id ="perfil_'+perfil_id+'_'+nivel_id+'" class="block perfil" style="text-align: center;">' +
+                            '<div class="block-title themed-background">' +
+                            '<div class="block-options pull-right">' +
+                            '<a href="javascript:void(0)"  id ="deleter" class="btn btn-danger btn-xs" data-toggle="block-toggle-content"><i class="fa fa-times"></i></a>' +
+                            '</div>' +
+                            '</div>' +
+                            '<p>'+perftitle+' de '+nivtitle+'</p>' +
+                            '<div class="form-group" hidden>' +
+                            '<input type="text" id="eval[perfiles]['+perfil_id+'][]" name="eval[perfiles]['+perfil_id+'][]" class="form-control" value="'+nivel_id+'">' +
+                            '</div>' +
+                            '</div>';
+
+                        $(elem).appendTo('#perf-niv-agregados');
+                    }
                 }
             }
 
@@ -147,6 +148,7 @@ var CrearWizard = function() {
                 var nivtitle = $("#select-nivel option:selected").text();
 
                 agregaPerfil(perfil_id,nivel_id,nivtitle,perftitle);
+
             });
 
             /**
@@ -203,7 +205,7 @@ var CrearWizard = function() {
 
             function setFinishedLabel(){
 
-                if($('#advanced-third').is(':visible')){
+                if($('#advanced-third').is(':visible')) {
 
                     $("#next2").attr('value','Finalizar');
                 }
@@ -216,13 +218,8 @@ var CrearWizard = function() {
              * Comportamiento de botones anterior y siguiente
              */
 
-            $("#next2").click(function(){
 
-                setInputLabels();
-                setFinishedLabel();
-            });
-
-            $("#back2").click(function(){
+            $("#back2, #next2").click(function(){
                 setInputLabels();
                 setFinishedLabel();
             });
