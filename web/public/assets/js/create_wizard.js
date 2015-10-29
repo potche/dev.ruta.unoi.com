@@ -10,6 +10,7 @@ var CrearWizard = function() {
                 validationOptions: {
                     errorClass: 'help-block animation-slideDown',
                     errorElement: 'span',
+                    ignore: '',
                     errorPlacement: function(error, e) {
                         e.parents('.form-group > div').append(error);
                     },
@@ -35,21 +36,33 @@ var CrearWizard = function() {
                         'closingdate':{
                             required: true,
                             date: true
+                        },
+                        'count_profiles':{
+                            min: 1
+                        },
+                        'count_questions':{
+                            min: 1
                         }
                     },
                     messages: {
                         'eval[title]': {
-                            required: 'Por favor, ingresa un título para la evaluación',
-                            minlength: 'Ingresa al menos dos caracteres para el título',
-                            maxlength: 'El título no puede ser mayor a 250 caracteres'
+                            required: '<i class="fa fa-warning"></i> Por favor, ingresa un título para la evaluación',
+                            minlength: '<i class="fa fa-warning"></i> Ingresa al menos dos caracteres para el título',
+                            maxlength: '<i class="fa fa-warning"></i> El título no puede ser mayor a 250 caracteres'
                         },
                         'eval[description]': {
-                            minlength: 'Ingresa al menos dos caracteres para la descripción',
-                            maxlength: 'La descripción no puede ser mayor a 500 caracteres'
+                            minlength: '<i class="fa fa-warning"></i> Ingresa al menos dos caracteres para la descripción',
+                            maxlength: '<i class="fa fa-warning"></i> La descripción no puede ser mayor a 500 caracteres'
                         },
                         'closingdate':{
-                            required: 'Por favor, ingresa una fecha de cierre para esta evaluación',
-                            date: "Debes seleccionar una fecha del calendario o ingresar una fecha correctamente"
+                            required: '<i class="fa fa-warning"></i> Por favor, ingresa una fecha de cierre para esta evaluación',
+                            date: '<i class="fa fa-warning"></i> Debes seleccionar una fecha del calendario o ingresar una fecha correctamente'
+                        },
+                        'count_profiles':{
+                            min: '<i class="fa fa-warning"></i> Elige al menos un perfil con nivel, posteriormente haz click en Siguiente'
+                        },
+                        'count_questions':{
+                            min: '<i class="fa fa-warning"></i> Agrega al menos una pregunta con categoría, cuando hayas terminado haz click en Finalizar'
                         }
                     }
                 },
@@ -69,17 +82,11 @@ var CrearWizard = function() {
                 }
                 return (isNaN(value) && isNaN(params) || (Number(value) > Number(params)));
 
-            },'La fecha de cierre no puede ser antes de hoy.');
+            },'<i class="fa fa-warning"></i> La fecha de cierre no puede ser antes de hoy.');
 
             $("#closingdate").rules('add', { dateAfter: new Date() });
 
-            /**
-             *
-             * ToDo: Validar que los perfiles no estén vacios
-             *
-             */
 
-            
             /**
              *
              * ToDo: Validar que las preguntas no tengan caracteres especiales ("",::,) y no estén vacías
@@ -87,6 +94,8 @@ var CrearWizard = function() {
              */
 
             function agregaPerfil(perfil_id, nivel_id, nivtitle, perftitle) {
+
+                var count = parseInt($("#count_profiles").val());
 
                 if(perfil_id != '' && nivel_id != '') {
 
@@ -107,6 +116,7 @@ var CrearWizard = function() {
                             '</div>';
 
                         $(elem).appendTo('#perf-niv-agregados');
+                        $("#count_profiles").val(count+1);
                     }
                 }
             }
@@ -119,6 +129,7 @@ var CrearWizard = function() {
             $("#btn_all_profiles").click(function(){
 
                 $('.perfil').remove();
+                $('#count_profiles').val(0);
 
                 $("#select-perfil option").each(function()
                 {
@@ -157,6 +168,8 @@ var CrearWizard = function() {
 
             $("#btn_add_pregunta").click(function(){
 
+                var countPreg = parseInt($("#count_questions").val());
+
                 var pregunta = $("#pregunta").val();
                 var categoria_id = $("#select-categoria").val();
                 var cattexto = $("#select-categoria option:selected").text();
@@ -178,18 +191,24 @@ var CrearWizard = function() {
                         '</div>';
 
                     $(elem).appendTo('#div-preg-agregadas');
+                    $("#count_questions").val(countPreg+1);
                 }
             });
 
 
             //Manejamos el evento para eliminar perfiles/niveles
 
-            $('#perf-niv-agregados').on("click", ".block-title #deleter", function () {
+            $('#perf-niv-agregados').on("click", ".block-title #deleter", function() {
+
                 $(this).closest("div .perfil").remove();
+                var count = $("#count_profiles").val();
+                $("#count_profiles").val(parseInt(count)-1);
             });
 
-            $('#div-preg-agregadas').on("click", ".block-title #deleter", function () {
+            $('#div-preg-agregadas').on("click", ".block-title #deleter", function() {
                 $(this).closest("div .pregunta").remove();
+                var countPreg = $("#count_questions").val();
+                $("#count_questions").val(parseInt(countPreg)-1);
             });
 
             /**
