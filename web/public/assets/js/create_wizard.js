@@ -3,7 +3,8 @@ var CrearWizard = function() {
     return {
         init: function(questions) {
 
-            /* Inicializamos el wizard para crear evaluación con validaciones */
+            // Inicializamos el wizard para crear evaluación con validaciones
+
             $('#advanced-wizard').formwizard({
                 disableUIStyles: true,
                 validationEnabled: true,
@@ -46,32 +47,33 @@ var CrearWizard = function() {
                     },
                     messages: {
                         'eval[title]': {
-                            required: '<i class="fa fa-warning"></i> Por favor, ingresa un título para la evaluación',
-                            minlength: '<i class="fa fa-warning"></i> Ingresa al menos dos caracteres para el título',
-                            maxlength: '<i class="fa fa-warning"></i> El título no puede ser mayor a 250 caracteres'
+                            required: '<i class="fa fa-times"></i> Por favor, ingresa un título para la evaluación',
+                            minlength: '<i class="fa fa-times"></i> Ingresa al menos dos caracteres para el título',
+                            maxlength: '<i class="fa fa-times"></i> El título no puede ser mayor a 250 caracteres'
                         },
                         'eval[description]': {
-                            minlength: '<i class="fa fa-warning"></i> Ingresa al menos dos caracteres para la descripción',
-                            maxlength: '<i class="fa fa-warning"></i> La descripción no puede ser mayor a 500 caracteres'
+                            minlength: '<i class="fa fa-times"></i> Ingresa al menos dos caracteres para la descripción',
+                            maxlength: '<i class="fa fa-times"></i> La descripción no puede ser mayor a 500 caracteres'
                         },
                         'closingdate':{
-                            required: '<i class="fa fa-warning"></i> Por favor, ingresa una fecha de cierre para esta evaluación',
-                            date: '<i class="fa fa-warning"></i> Debes seleccionar una fecha del calendario o ingresar una fecha correctamente'
+                            required: '<i class="fa fa-times"></i> Selecciona una fecha de cierre para esta evaluación',
+                            date: '<i class="fa fa-times"></i> Selecciona una fecha del calendario o ingresa una fecha válida'
                         },
                         'count_profiles':{
-                            min: '<i class="fa fa-warning"></i> Elige al menos un perfil con nivel, posteriormente haz click en Siguiente'
+                            min: '<i class="fa fa-times"></i> Elige al menos un perfil con nivel, posteriormente haz click en Siguiente'
                         },
                         'count_questions':{
-                            min: '<i class="fa fa-warning"></i> Agrega al menos una pregunta con categoría, cuando hayas terminado haz click en Finalizar'
+                            min: '<i class="fa fa-times"></i> Agrega al menos una pregunta con su categoría y al terminar haz click en Finalizar'
                         }
                     }
                 },
                 inDuration: 0,
                 outDuration: 0
             });
+            // Finaliza init wizard
 
             /**
-             * Validar que la fecha ingresada sea un día mayor al de hoy
+             * Se valida que la fecha ingresada sea un día mayor al de hoy
              */
 
             jQuery.validator.addMethod("dateAfter", function(value, element, params) {
@@ -82,18 +84,23 @@ var CrearWizard = function() {
                 }
                 return (isNaN(value) && isNaN(params) || (Number(value) > Number(params)));
 
-            },'<i class="fa fa-warning"></i> La fecha de cierre no puede ser antes de hoy.');
+            },'<i class="fa fa-times"></i> La fecha de cierre no puede ser antes de hoy.');
 
             $("#closingdate").rules('add', { dateAfter: new Date() });
 
 
+
             /**
              *
-             * ToDo: Validar que las preguntas no tengan caracteres especiales ("",::,) y no estén vacías
+             * Función para agregar perfil con nivel
              *
+             * @param perfil_id
+             * @param nivel_id
+             * @param nivtitle
+             * @param perftitle
              */
 
-            function agregaPerfil(perfil_id, nivel_id, nivtitle, perftitle) {
+           function agregaPerfil(perfil_id, nivel_id, nivtitle, perftitle) {
 
                 var count = parseInt($("#count_profiles").val());
 
@@ -103,17 +110,19 @@ var CrearWizard = function() {
 
                     if ($("#" + dynamicId).length == 0){
 
-                        var elem = '<div id ="perfil_'+perfil_id+'_'+nivel_id+'" class="block perfil" style="text-align: center;">' +
+                        var elem =
+
+                            '<div class="col-sm-3"><div id ="perfil_'+perfil_id+'_'+nivel_id+'" class="block perfil" style="text-align: center;">' +
                             '<div class="block-title themed-background">' +
                             '<div class="block-options pull-right">' +
                             '<a href="javascript:void(0)"  id ="deleter" class="btn btn-danger btn-xs" data-toggle="block-toggle-content"><i class="fa fa-times"></i></a>' +
                             '</div>' +
                             '</div>' +
-                            '<p>'+perftitle+' de '+nivtitle+'</p>' +
-                            '<div class="form-group" hidden>' +
+                            '<b>'+perftitle+'</b><br><em>'+nivtitle+'</em>' +
+                            '<div class="row"><br></div><div class="form-group" hidden>' +
                             '<input type="text" id="eval[perfiles]['+perfil_id+'][]" name="eval[perfiles]['+perfil_id+'][]" class="form-control" value="'+nivel_id+'">' +
                             '</div>' +
-                            '</div>';
+                            '</div></div>';
 
                         $(elem).appendTo('#perf-niv-agregados');
                         $("#count_profiles").val(count+1);
@@ -148,7 +157,7 @@ var CrearWizard = function() {
 
 
             /**
-             * Manejamos el evento del botón para agregar perfiles
+             * Evento del botón para agregar perfiles
              */
 
             $("#btn_add_profile").click(function(){
@@ -162,6 +171,19 @@ var CrearWizard = function() {
 
             });
 
+
+            /**
+             * Función que limpia de caracteres escapables las preguntas de una evaluación
+             *
+             * @param question
+             * @returns {void|string|XML}
+             */
+
+            function wipeQuestion(question) {
+
+               return question.replace(/[`~@#%^&*_|+=:'"<>\{\}\[\]\\\/]/gi, '');
+            }
+
             /**
              * Manejamos el evento del botón para agregar preguntas
              */
@@ -170,14 +192,14 @@ var CrearWizard = function() {
 
                 var countPreg = parseInt($("#count_questions").val());
 
-                var pregunta = $("#pregunta").val();
+                var pregunta = wipeQuestion($("#pregunta").val());
                 var categoria_id = $("#select-categoria").val();
                 var cattexto = $("#select-categoria option:selected").text();
 
                 if(pregunta != '' && categoria_id != ''){
 
                     var elem =
-                        '<div class="block pregunta">' +
+                        '<div class="col-sm-12"><div class="block pregunta">' +
                             '<div class="block-title">' +
                                 '<div class="block-options pull-right">' +
                                     '<a href="javascript:void(0)"  id ="deleter" class="btn btn-danger btn-xs" data-toggle="block-toggle-content"><i class="fa fa-times"></i></a>' +
@@ -186,17 +208,16 @@ var CrearWizard = function() {
                             '</div>' +
                             '<p style="text-align: center;">'+pregunta+'</p>'+
                             '<div class="form-group" hidden>' +
-                                '<input type="text" id="eval[preguntas][]" name="eval[preguntas][]" class="form-control" value="'+categoria_id+'::'+(pregunta)+'">' +
+                                '<input type="text" id="eval[preguntas][]" name="eval[preguntas][]" class="form-control" value="'+categoria_id+'::'+pregunta+'">' +
                             '</div>' +
-                        '</div>';
+                        '</div></div>';
 
                     $(elem).appendTo('#div-preg-agregadas');
                     $("#count_questions").val(countPreg+1);
                 }
             });
-
-
-            //Manejamos el evento para eliminar perfiles/niveles
+            
+            //Evento para eliminar perfiles/niveles
 
             $('#perf-niv-agregados').on("click", ".block-title #deleter", function() {
 
@@ -204,6 +225,8 @@ var CrearWizard = function() {
                 var count = $("#count_profiles").val();
                 $("#count_profiles").val(parseInt(count)-1);
             });
+
+            //Evento para eliminar preguntas que ya han sido agregadas
 
             $('#div-preg-agregadas').on("click", ".block-title #deleter", function() {
                 $(this).closest("div .pregunta").remove();
