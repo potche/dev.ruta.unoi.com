@@ -199,8 +199,12 @@ $( "#schoolId" ).change(function() {
 
 
 
-function statsUser(username, avance, jsonListUser){
-    console.log(jsonListUser);
+function statsUser(personid, username, avance){
+
+    console.log(personid);
+    console.log(username);
+    console.log(avance);
+    /*
     var listUser =jsonListUser;
     var list = "";
     var si = 0;
@@ -226,6 +230,7 @@ function statsUser(username, avance, jsonListUser){
 
     $('#statsUser').modal();
     $('#bodyStatsUser').html(divList);
+    */
 }
 
 function abc(rs){
