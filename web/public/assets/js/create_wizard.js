@@ -76,6 +76,8 @@ var CrearWizard = function() {
              * Se valida que la fecha ingresada sea un día mayor al de hoy
              */
 
+            var profilesPreview = '';
+
             jQuery.validator.addMethod("dateAfter", function(value, element, params) {
 
                 if (!/Invalid|NaN/.test(new Date(value))) {
@@ -126,6 +128,7 @@ var CrearWizard = function() {
 
                         $(elem).appendTo('#perf-niv-agregados');
                         $("#count_profiles").val(count+1);
+                        profilesPreview = profilesPreview+perftitle+' de '+nivtitle+'<br>';
                     }
                 }
             }
@@ -204,9 +207,9 @@ var CrearWizard = function() {
                                 '<div class="block-options pull-right">' +
                                     '<a href="javascript:void(0)"  id ="deleter" class="btn btn-danger btn-xs" data-toggle="block-toggle-content"><i class="fa fa-times"></i></a>' +
                                 '</div>' +
-                            '<h4><em>'+cattexto+'</em></h4>'+
+                            '<h4><em id ="cattexto" >'+cattexto+'</em></h4>'+
                             '</div>' +
-                            '<p style="text-align: center;">'+pregunta+'</p>'+
+                            '<p id="pregtexto" style="text-align: center;">'+pregunta+'</p>'+
                             '<div class="form-group" hidden>' +
                                 '<input type="text" id="eval[preguntas][]" name="eval[preguntas][]" class="form-control" value="'+categoria_id+'::'+pregunta+'">' +
                             '</div>' +
@@ -214,9 +217,10 @@ var CrearWizard = function() {
 
                     $(elem).appendTo('#div-preg-agregadas');
                     $("#count_questions").val(countPreg+1);
+
                 }
             });
-            
+
             //Evento para eliminar perfiles/niveles
 
             $('#perf-niv-agregados').on("click", ".block-title #deleter", function() {
@@ -250,11 +254,54 @@ var CrearWizard = function() {
                 if($('#advanced-third').is(':visible')) {
 
                     $("#next2").attr('value','Finalizar');
+
                 }
             }
 
             setInputLabels();
             setFinishedLabel();
+
+            /**
+             * Esta funcion simplifica el encabezado cuando se agregan todos los perfiles para mostrarlo en el modal
+             * @returns {string}
+             */
+            function parseProfilesforModal(){
+
+                return (($('#select-perfil option').size()-1) *
+                ($('#select-nivel option').size()-1) ==
+                $('#count_profiles').val()) ?
+                    'Todos los perfiles y niveles' :
+                    profilesPreview;
+            }
+
+            function parseQuestionsforModal() {
+
+                var count = 0;
+                var pregs = '';
+                $('.pregunta').each(function(){
+
+                    pregs =
+                        pregs+
+                        '<tr><td class="text-left"><b>'+
+                        (++count)+'.- '+
+                        $(this).find('#cattexto').text()+
+                        ': </b><em>'+
+                        $(this).find('#pregtexto').text()+
+                        '</em></td></tr>';
+                });
+
+                return pregs;
+            }
+
+
+            function loadModalInfo(){
+
+                $('#title').html($('#eval\\[title\\]').val());
+                $('#closedate').html($('#closingdate').val());
+                $('#profiles').html(parseProfilesforModal());
+                $('#questions').html(parseQuestionsforModal());
+
+            }
 
             /**
              * Comportamiento de botones anterior y siguiente
@@ -264,7 +311,15 @@ var CrearWizard = function() {
             $("#back2, #next2").click(function(){
                 setInputLabels();
                 setFinishedLabel();
+                event.preventDefault();
+
+                if ($("#next2").attr('value') == 'Finalizar'){
+
+                    loadModalInfo();
+                }
             });
+
+
 
             /**
              * Cargamos las preguntas para el autocompletado
@@ -273,6 +328,14 @@ var CrearWizard = function() {
 
             //var preguntas = ["Pregunta de prueba"];
             $('.input-typeahead').typeahead({ source: questions });
+
+            /**
+             * Manejo de confirmación
+             */
+            $('#confirmar').click(function(){
+
+                $('#advanced-wizard').submit();
+            });
 
         }
     };
