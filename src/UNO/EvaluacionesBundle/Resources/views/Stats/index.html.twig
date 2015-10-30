@@ -18,15 +18,16 @@
                 </div>
                 <h2><strong>Graficas</strong></h2>
                 {% if schoolId is defined %}
-                <form id="schoolFrm" action="{{ path('estadisticas')}}" method="GET">
-                    <select id="schoolId" name="schoolId" class="form-control" size="1">
-                        <option value="0">Por favor seleccione una escuela</option>
-                        {% for school in schoolId %}
-                            <li>
-                                <option value='{{ school.schoolid|e }}' >{{ school.schoolid|e }} - {{ school.school|e }}</option>
-                            </li>
-                        {% endfor %}
-                    </select>
+                <form id="schoolFrm" action="{{ path('estadisticas')}}" method="POST">
+                    <label class="col-md-4 control-label" for="schooId-typeahead">Filtro por Escuela</label>
+                    <div class="col-md-6">
+                        <input type="text" id="schooId-typeahead" name="schooId-typeahead" class="form-control input-typeaheadSchool" autocomplete="off" placeholder="Busca Escuelas..">
+                    </div>
+                    <div class="form-group form-actions">
+                        <div class="col-md-8 col-md-offset-4">
+                            <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-angle-right"></i> Buscar</button>
+                        </div>
+                    </div>
                 </form>
                 {% endif %}
             </div>
@@ -71,7 +72,7 @@
                                     </thead>
                                     <tbody>
                                     {% for list in userList %}
-                                        <tr onclick="statsUser()" data-toggle="tooltip" title="Haz click para ver el detalle de {{ list.username|e }}">
+                                        <tr onclick="statsUser('{{ list.personId|e }}','{{ list.username|e }}',{{ list.avance }})" data-toggle="tooltip" title="Haz click para ver el detalle de {{ list.username|e }}">
                                             <td class="text-center">
                                                 <img src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar" class="img-circle">
                                             </td>
@@ -225,7 +226,14 @@
 
             //console.log(a[0]['surveys'][0]['eval']);
 
+            {% if schoolId is defined %}
+            // Initialize Typeahead - Example with countries
+            var exampleTypeheadData = [{{ schoolId | raw}}];
+            $('.input-typeaheadSchool').typeahead({ source: exampleTypeheadData });
+            {% endif %}
         });
 
     </script>
 {% endblock %}
+
+
