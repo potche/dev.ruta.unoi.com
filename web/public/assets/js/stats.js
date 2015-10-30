@@ -197,27 +197,43 @@ $( "#schoolId" ).change(function() {
     $("#schoolFrm").submit();
 });
 
+var personIdGlobal = '';
 
+function statsUser(personid, username, avance, eval){
+    $('#surveyUser').html( '' );
 
-function statsUser(personid, username, avance){
+    personIdGlobal = personid;
 
-    console.log(personid);
-    console.log(username);
-    console.log(avance);
-    /*
-    var listUser =jsonListUser;
+    var siG = 0;
+    var noG = 0;
+    var noseG = 0;
     var list = "";
-    var si = 0;
-    var no = 0;
-    var nose = 0;
-    $.each(listUser, function(i, item) {
-        list += "<option value='"+listUser[i].si+"|"+listUser[i].no+"|"+listUser[i].nose+"'>"+listUser[i].title+"</option>"
-        si += listUser[i].si;
-        no += listUser[i].no;
-        nose += listUser[i].nose;
+
+    $.each(eval, function(i, item) {
+        var si = 0;
+        var no = 0;
+        var nose = 0;
+        $.each(item, function(j, item2) {
+            switch(j){
+                case 'Sí':
+                    siG += parseInt(item2);
+                    si += parseInt(item2);
+                    break;
+                case 'No':
+                    noG += parseInt(item2);
+                    no += parseInt(item2);
+                    break;
+                case 'No sé':
+                    noseG += parseInt(item2);
+                    nose += parseInt(item2);
+                    break;
+            }
+        });
+        list += "<option value='"+si+":"+no+":"+nose+":"+i+"'>"+i+"</option>";
     });
 
-    createGraph(si, no, nose);
+    createGraph(siG, noG, noseG);
+
 
     var progress = '<h1>avance: <h3>'+avance+'%</h3></h1>' +
                     '<div class="progress progress-bar-info progress-bar-striped">'+
@@ -226,16 +242,25 @@ function statsUser(personid, username, avance){
                     '</div>'
                     ;
 
-    var divList = "<div class='row'><div class='col-sm-6'><h1>"+username+"</h1></div><div class='col-sm-4 col-sm-offset-2'>"+progress+"</div></div><h5>Evaluaciones Realizadas:</h5><div class='well'><select id='evaluacioLU' class='form-control' size='1' onchange='(abc(this.value))'><option value='"+si+"|"+no+"|"+nose+"'>Global</option>"+list+"</select></div>";
+    var divList = "<div class='row'><div class='col-sm-6'><h1>"+username+"</h1></div><div class='col-sm-4 col-sm-offset-2'>"+progress+"</div></div><h5>Selecciona alguna Evaluación para ver su <b>detalle</b>:</h5><div class='well'><select id='evaluacioLU' class='form-control' size='1' onchange='(abc(this.value))'><option value='"+siG+":"+noG+":"+noseG+":0'>Global</option>"+list+"</select></div>";
 
     $('#statsUser').modal();
     $('#bodyStatsUser').html(divList);
-    */
+
 }
 
 function abc(rs){
-    var arr = rs.split('|');
+    var arr = rs.split(':');
     createGraph(arr[0],arr[1],arr[2]);
+    if(arr[3] != 0){
+        $.post( "ajax/stats", { title: arr[3], personId: personIdGlobal })
+            .done(function( data ) {
+                $('#surveyUser').html( data );
+            });
+    }else{
+        $('#surveyUser').html( '' );
+    }
+
 }
 
 function createGraph(si, no, nose){
