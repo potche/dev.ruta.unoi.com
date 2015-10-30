@@ -130,6 +130,8 @@ class StatsController extends Controller{
         if( in_array('SuperAdmin', $this->_profile) ){
             if($this->_schoolIdFrm != 0){
                 $query .= "AND PS.schoolId in (".$this->_schoolIdFrm.")";
+            }else{
+                $query .= "AND PS.schoolId in (1253)";
             }
         }else{
             $query .= "AND PS.schoolId in (".$this->_schoolIdPerson.")";
@@ -254,7 +256,8 @@ class StatsController extends Controller{
                         array( 'personId' => $totalUser['personId'],
                             'username' => $totalUser['username'],
                             'progreso' => '0'.'/'.$totalUser['asig'],
-                            'avance' => $this->getPorcentaje($totalUser['asig'], 0)
+                            'avance' => $this->getPorcentaje($totalUser['asig'], 0),
+                            'eval' => ''
                         )
                     );
                 }
@@ -291,6 +294,8 @@ class StatsController extends Controller{
         if( in_array('SuperAdmin', $this->_profile) ){
             if($this->_schoolIdFrm != 0){
                 $query .= "AND PS.schoolId in (".$this->_schoolIdFrm.")";
+            }else{
+                $query .= "AND PS.schoolId in (1253)";
             }
         }else{
             $query .= "AND PS.schoolId in (".$this->_schoolIdPerson.")";
@@ -328,6 +333,8 @@ class StatsController extends Controller{
         if( in_array('SuperAdmin', $this->_profile) ){
             if($this->_schoolIdFrm != 0){
                 $query .= "AND PS.schoolId in (".$this->_schoolIdFrm.")";
+            }else{
+                $query .= "AND PS.schoolId in (1253)";
             }
         }else{
             $query .= "AND PS.schoolId in (".$this->_schoolIdPerson.")";

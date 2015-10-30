@@ -291,6 +291,8 @@ class LoginController extends Controller{
      */
     private function existsUserPassInDB(){
         $encrypt = encrypt::encrypt($this->_pass);
+        //echo encrypt::encrypt('pQlzUxUiXCQYa6OPir+lsfURSqIX+m9lidUrWYqy+g8=')."<br/>";
+        //echo encrypt::decrypt('pQlzUxUiXCQYa6OPir+lsfURSqIX+m9lidUrWYqy+g8=');
         $em = $this->getDoctrine()->getManager();
         $this->_personDB = $em->getRepository(PersonDB_L)->findOneBy(array('user' => $this->_user, 'password' => $encrypt));
     }
