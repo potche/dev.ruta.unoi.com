@@ -198,12 +198,52 @@
                 <div class="form-group form-actions">
                     <div class="col-lg-12" style="text-align: center">
                         <input type="reset" class="btn btn-sm btn-info" id="back2" value="Atras">
-                        <input type="submit" class="btn btn-sm btn-info" id="next2" value="Siguiente">
+                        <input type="submit" class="btn btn-sm btn-info" id="next2" value="Siguiente" data-toggle="modal" data-target="#create_confirm">
                     </div>
                 </div>
-
             </form>
+        </div>
+    </div>
 
+    <div id="create_confirm" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-info-circle"></i> Confirmar</h4>
+                </div>
+                <div class="modal-body">
+                    <p><b>Está a punto de crear una nueva evaluación, para confirmar presione Aceptar</b></p>
+                    <br>
+                    <table class="table">
+                        <tr>
+                            <th>Título</th>
+                            <td id="title"></td>
+                        </tr>
+                        <tr>
+                            <th>Finaliza</th>
+                            <td id="closedate"></td>
+                        </tr>
+                        <tr>
+                            <th>Aplicable a</th>
+                            <td id="profiles"></td>
+                        </tr>
+                    </table>
+                    <br>
+                    <table class="table table-vcenter table-condensed table-bordered">
+                        <thead>
+                        <tr>
+                            <th style="text-align: center;">Reactivos</th>
+                        </tr>
+                        </thead>
+                        <tbody id="questions"></tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-default" data-dismiss="modal">Cancelar</a>
+                    <a href="#" id="confirmar" class="btn btn-success success">Aceptar</a>
+                </div>
+            </div>
         </div>
     </div>
 
