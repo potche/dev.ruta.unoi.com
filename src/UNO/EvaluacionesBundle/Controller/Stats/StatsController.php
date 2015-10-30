@@ -20,19 +20,13 @@ class StatsController extends Controller{
 
     private $_profile = array();
     private $_schoolId = array();
-    private $_jsonTotalResponsePie;
-    private $_jsonTotalResponseColumn;
-    private $_jsonTotalResponseDDColumn;
-    private $_jsonListUser;
     private $_personId;
     private $_schoolIdFrm;
     private $_schoolIdPerson;
-    private $_surveyAsig;
-    private $_jsonListUserSinR = array();
 
-    private $_resultsArray = array();
     private $_surveyResultsGral = array();
-
+    private $_jsonTotalResponsePie;
+    private $_jsonTotalResponseColumn;
     private $_userList = array();
 
     /**
@@ -99,8 +93,10 @@ class StatsController extends Controller{
     }
 
     private function setSchoolIdFrm($request){
-        if(!empty($request->query->get('schoolId'))){
-            $this->_schoolIdFrm = $request->query->get('schoolId');
+        $idPost = $request->request->get('schooId-typeahead');
+        if(!empty($idPost)){
+            $id = explode('-',$idPost);
+            $this->_schoolIdFrm = $id[0];
         }else{
             $this->_schoolIdFrm = 0;
         }
@@ -112,11 +108,6 @@ class StatsController extends Controller{
         $this->getTotalResponse();
         //obtencion de los usuario
         $this->creaListUser();
-        //$this->_surveyAsig = $this->getSurveyAsigUser();
-
-        if( !empty($userResultsArray) ){
-            $this->getTotalUserResponse($userResultsArray);
-        }
     }
 
     private function getSurveyResultsGral() {
@@ -139,8 +130,6 @@ class StatsController extends Controller{
         if( in_array('SuperAdmin', $this->_profile) ){
             if($this->_schoolIdFrm != 0){
                 $query .= "AND PS.schoolId in (".$this->_schoolIdFrm.")";
-            }else{
-                $query .= "AND PS.schoolId in (1253)";
             }
         }else{
             $query .= "AND PS.schoolId in (".$this->_schoolIdPerson.")";
@@ -155,8 +144,6 @@ class StatsController extends Controller{
         //$statement->bindValue('id', 123);
         $statement->execute();
         $this->_surveyResultsGral = $statement->fetchAll();
-
-        //return $results;
     }
 
     private function getTotalResponse(){
@@ -187,15 +174,6 @@ class StatsController extends Controller{
         $this->creaJsonToRePi($si, $no, $nose);
         //grafica de Columnas
         $this->creaJsonColumn($si, $no, $nose);
-        //print_r($this->_surveyResultsGral);
-        //print_r(array_count_values($this->_surveyResultsGral['personId']));
-        /*
-        $evalSi = $this->creaJsonDDColumn( $evalSiArray, "Sí" );
-        $evalNo = $this->creaJsonDDColumn( $evalNoArray, "No" );
-        $evalNoSe = $this->creaJsonDDColumn( $evalNoSeArray, "No sé" );
-
-        $this->_jsonTotalResponseDDColumn = rtrim($evalSi.$evalNo.$evalNoSe,',');
-        */
     }
 
     private function getPorcentaje($total, $parte, $redondear = 2) {
@@ -221,27 +199,12 @@ class StatsController extends Controller{
             ]";
     }
 
-    private function creaJsonDDColumn($array, $id){
-        $evalSi = '{
-                    name: "'.$id.'",
-                    id: "'.$id.'",
-                    data: [';
-        foreach (array_count_values($array) as $key => $value) {
-            $evalSi .= "[\"$key\", $value],";
-        }
-        $evalSi = rtrim($evalSi, ',');
-        $evalSi .= ']
-                    },';
-
-        return $evalSi;
-    }
-
     private function getSchoolResponse() {
 
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 
-        $this->_schoolId = $qb->select('PS.schoolid','Sc.school')
+        $_schoolId = $qb->select("CONCAT(PS.schoolid,'-',Sc.school) as school")
             ->from('UNOEvaluacionesBundle:Answer','A')
             ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','OQ', 'WITH', 'A.optionxquestion = OQ.optionxquestionId')
             ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','QS', 'WITH', 'OQ.questionxsurvey = QS.questionxsurveyId')
@@ -255,6 +218,13 @@ class StatsController extends Controller{
             ->orderBy( 'PS.schoolid')
             ->getQuery()
             ->getResult();
+
+        $jsonSchoolId = '';
+        foreach($_schoolId as $value){
+            $jsonSchoolId .= '"'.$value['school'].'",';
+        }
+        $jsonSchoolId = trim($jsonSchoolId, ',');
+        $this->_schoolId = $jsonSchoolId;
     }
 
     private function creaListUser(){
@@ -263,17 +233,35 @@ class StatsController extends Controller{
 
         $userList = array();
         foreach ( $_surveyAsigUser as $totalUser ) {
-            foreach ($_userEval as $userEval){
-                if($totalUser['personId'] == $userEval['personId']){
-                    array_push( $userList, array( 'personId' => $userEval['personId'], 'username' => $userEval['username'], 'progreso' => $userEval['realizadas'].'/'.$totalUser['asig'], 'avance' => $this->getPorcentaje($totalUser['asig'], $userEval['realizadas'])) );
-                }else{
-                    array_push( $userList, array( 'personId' => $totalUser['personId'], 'username' => $totalUser['username'], 'progreso' => '0'.'/'.$totalUser['asig'], 'avance' => $this->getPorcentaje($totalUser['asig'], 0)) );
+            $a=false;
+            for ($i=0; $i<count($_userEval); $i++){
+                if($totalUser['personId'] == $_userEval[$i]['personId']){
+                    $this->evalUser($totalUser['personId']);
+                    array_push( $userList,
+                        array(
+                        'personId' => $_userEval[$i]['personId'],
+                        'username' => $_userEval[$i]['username'],
+                        'progreso' => $_userEval[$i]['realizadas'].'/'.$totalUser['asig'],
+                        'avance' => $this->getPorcentaje($totalUser['asig'], $_userEval[$i]['realizadas']),
+                        'eval' => $this->evalUser($totalUser['personId'])
+                        )
+                    );
+                    $a = true;
+                    break;
+                }
+                if( ($i == count($_userEval)-1) && !$a){
+                    array_push( $userList,
+                        array( 'personId' => $totalUser['personId'],
+                            'username' => $totalUser['username'],
+                            'progreso' => '0'.'/'.$totalUser['asig'],
+                            'avance' => $this->getPorcentaje($totalUser['asig'], 0)
+                        )
+                    );
                 }
             }
         }
-
+        //print_r($userList);
         $this->_userList = $userList;
-
     }
 
     private function getUserEval(){
@@ -303,14 +291,13 @@ class StatsController extends Controller{
         if( in_array('SuperAdmin', $this->_profile) ){
             if($this->_schoolIdFrm != 0){
                 $query .= "AND PS.schoolId in (".$this->_schoolIdFrm.")";
-            }else{
-                $query .= "AND PS.schoolId in (1253)";
             }
         }else{
             $query .= "AND PS.schoolId in (".$this->_schoolIdPerson.")";
         }
 
         $query .= " GROUP BY P.personId
+                    ORDER by P.personId
                     ;";
 
         $em = $this->getDoctrine()->getManager();
@@ -341,14 +328,13 @@ class StatsController extends Controller{
         if( in_array('SuperAdmin', $this->_profile) ){
             if($this->_schoolIdFrm != 0){
                 $query .= "AND PS.schoolId in (".$this->_schoolIdFrm.")";
-            }else{
-                $query .= "AND PS.schoolId in (1253)";
             }
         }else{
             $query .= "AND PS.schoolId in (".$this->_schoolIdPerson.")";
         }
 
         $query .= " GROUP BY P.personId
+                    ORDER by P.personId
                     ;";
 
         $em = $this->getDoctrine()->getManager();
@@ -361,60 +347,27 @@ class StatsController extends Controller{
         return ($_surveyAsigUser);
     }
 
-    private function getTotalUserResponse($userResultsArray){
-        $userList = array();
-        $tmp = array();
-        $userRes = array();
-        $i = 0;
+    private function evalUser($personId){
 
-        foreach ($userResultsArray as $keyUR => $valueUR) {
+        $titleEval = array();
+        foreach($this->_surveyResultsGral as $value){
+            if($value['personId'] == $personId){
+                array_push($titleEval, $value['title']);
+            }
+        }
 
-            foreach ($this->_surveyAsig as $keyAS => $valueSA) {
-                if($valueUR['personid'] == $valueSA['personid']){
-                    $userList[$i] = array(
-                        'personid' => $valueUR['personid'],
-                        'username' => $valueUR['username'],
-                        'surveysAsig' => $valueSA['asig']
-                    );
-                    array_push($userRes, $valueUR['personid']);
-                    $i++;
+        $titleEval = array_unique($titleEval);
+        $evalArray = array();
+        foreach($this->_surveyResultsGral as $value){
+            foreach($titleEval as $valueT) {
+                if ($value['personId'] == $personId && $value['title'] == $valueT) {
+                    $evalArray[$valueT][$value['answer']] = $value['countAnswer'];
+                    
                 }
             }
-
         }
 
-        //print_r($userList);
-
-        $user = $this->array_unique_multi($userList, 'personid');
-
-        foreach ($user as $key1 => $value1) {
-            foreach ($userResultsArray as $key2 => $value2) {
-                if($value1['personid'] == $value2['personid']){
-                    $rs = $this->resultPerson($value1['personid'], $value2['surveyid']);
-                    array_push($tmp, array(
-                            'surveyid' => $value2['surveyid'],
-                            'title' => $value2['title'],
-                            'si' => $rs['si'],
-                            'no' => $rs['no'],
-                            'nose' => $rs['nose'],
-                            'eval' => $this->getEvalPerson($value1['personid'], $value2['surveyid'])
-                        )
-                    );
-                    $user[$key1]['surveys'] = $tmp;
-                }else{
-                    $tmp = array();
-                }
-                $i++;
-            }
-        }
-        //print_r($user);
-
-        foreach($this->_surveyAsig as $valueS){
-            if(!in_array($valueS['personid'],array_unique($userRes))){
-                array_push($this->_jsonListUserSinR, $valueS['username']);
-            }
-        }
-        $this->_jsonListUser = $user;
+        return($evalArray);
     }
 
     private function array_unique_multi($array, $key){
@@ -435,47 +388,18 @@ class StatsController extends Controller{
         return $array;
     }
 
-    private function resultPerson($personId, $surveyid){
-        $si = 0;
-        $no = 0;
-        $nose = 0;
-        $evalSiArray = array();
-        $evalNoArray = array();
-        $evalNoSeArray = array();
-
-        foreach($this->_resultsArray as $value){
-            if($personId == $value['personid'] && $surveyid == $value['surveyid'] ){
-                switch ($value['answer']):
-                    case 'Sí':
-                        $si ++;
-                        array_push($evalSiArray, $value['title']);
-                        break;
-                    case 'No':
-                        $no ++;
-                        array_push($evalNoArray, $value['title']);
-                        break;
-                    default:
-                        $nose ++;
-                        array_push($evalNoSeArray, $value['title']);
-                endswitch;
-            }
+    private function creaJsonDDColumn($array, $id){
+        $evalSi = '{
+                    name: "'.$id.'",
+                    id: "'.$id.'",
+                    data: [';
+        foreach (array_count_values($array) as $key => $value) {
+            $evalSi .= "[\"$key\", $value],";
         }
-        return array('si' => $si,'no' => $no,'nose' => $nose);
+        $evalSi = rtrim($evalSi, ',');
+        $evalSi .= ']
+                    },';
+
+        return $evalSi;
     }
-
-    private function getEvalPerson($personId, $surveyid){
-
-        $evalPersonArray = array();
-        foreach($this->_resultsArray as $value){
-            if($personId == $value['personid'] && $surveyid == $value['surveyid'] ){
-                //$question = str_replace("'", "\\u0027",$value['question']);
-                $question = htmlspecialchars($value['question'], ENT_QUOTES);
-                array_push($evalPersonArray, array('order' => $value['order'], 'question' => $question, 'answer' => $value['answer']));
-            }
-        }
-        return ($evalPersonArray);
-    }
-
-
-
 }
