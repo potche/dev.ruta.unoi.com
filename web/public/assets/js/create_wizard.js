@@ -34,7 +34,7 @@ var CrearWizard = function() {
                             minlength: 2,
                             maxlength: 500
                         },
-                        'closingdate':{
+                        'eval[closingdate]':{
                             required: true,
                             date: true
                         },
@@ -55,7 +55,7 @@ var CrearWizard = function() {
                             minlength: '<i class="fa fa-times"></i> Ingresa al menos dos caracteres para la descripción',
                             maxlength: '<i class="fa fa-times"></i> La descripción no puede ser mayor a 500 caracteres'
                         },
-                        'closingdate':{
+                        'eval[closingdate]':{
                             required: '<i class="fa fa-times"></i> Selecciona una fecha de cierre para esta evaluación',
                             date: '<i class="fa fa-times"></i> Selecciona una fecha del calendario o ingresa una fecha válida'
                         },
@@ -88,9 +88,7 @@ var CrearWizard = function() {
 
             },'<i class="fa fa-times"></i> La fecha de cierre no puede ser antes de hoy.');
 
-            $("#closingdate").rules('add', { dateAfter: new Date() });
-
-
+            $('#eval\\[closingdate\\]').rules('add', { dateAfter: new Date() });
 
             /**
              *
@@ -297,7 +295,7 @@ var CrearWizard = function() {
             function loadModalInfo(){
 
                 $('#title').html($('#eval\\[title\\]').val());
-                $('#closedate').html($('#closingdate').val());
+                $('#closedate').html($('#eval\\[closingdate\\]').val());
                 $('#profiles').html(parseProfilesforModal());
                 $('#questions').html(parseQuestionsforModal());
 
