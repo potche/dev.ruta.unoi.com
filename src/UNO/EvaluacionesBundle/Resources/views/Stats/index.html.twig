@@ -35,9 +35,8 @@
             <div class="row">
                 <div class="block-content">
                     <div class="col-sm-6">
-
                         <div id="pie" class="block">
-                            <div id="container" style="height: 400px"></div>
+                            <div id="container"></div>
                         </div>
 
                     </div>
@@ -45,7 +44,7 @@
                 <div class="block-content">
                     <div class="col-sm-6">
                         <div id="bars" class="block">
-                            <div id="containerColumn" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+                            <div id="containerColumn"></div>
                         </div>
                     </div>
                 </div>
@@ -134,17 +133,22 @@
                 </div>
                 <div class="modal-body">
                     <span id="bodyStatsUser"></span>
+                    <div class="block">
+                        <div class="row">
+                            <div class="block-content ">
 
-                    <div class="row text-center ">
-                        <div class="block-content text-center">
-                            <div class="col-sm-12 col-md-6 col-lg-6">
-                                <div id="pie" class="block">
-                                    <div id="containerPieLU" style="width:350px;"></div>
+                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                    <div class="block">
+                                        <div id="containerPieLU" ></div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-sm-12 col-md-6 col-lg-6">
-                                <div id="pie" class="block text-center">
-                                    <div id="containerColumnLU" class="text-center" style="width: 350px"></div>
+
+                            <div class="block-content ">
+                                <div class="col-sm-12  col-md-6 col-lg-6">
+                                    <div class="block">
+                                        <div id="containerColumnLU"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -209,6 +213,8 @@
             $('.input-typeaheadSchool').typeahead({ source: exampleTypeheadData });
             {% endif %}
         });
+
+
 
     </script>
 {% endblock %}
