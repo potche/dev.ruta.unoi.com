@@ -40,31 +40,32 @@ class StatsController extends Controller{
         $session->start();
         if ($session->get('logged_in')) {
             $this->setProfile($session);
-            $this->setPersonId($session);
-            $this->setSchoolIdFrm($request);
-            $this->setSchooIdPerson($session);
-            $this->getResults();
-            //$this->getUserResults();
-            #vista para Admin
-            if( in_array('SuperAdmin', $this->_profile) ){
-                $this->getSchoolResponse();
-                return $this->render('UNOEvaluacionesBundle:Stats:index.html.twig', array(
-                    'title' => 'Estadisticas Admin',
-                    'jsonTotalResponsePie' => $this->_jsonTotalResponsePie,
-                    'jsonTotalResponseColumn' => $this->_jsonTotalResponseColumn,
-                    'userList' => $this->_userList,
-                    'schoolId' => $this->_schoolId
-                ));
-            }else{
-                #vista para director
-                return $this->render('UNOEvaluacionesBundle:Stats:index.html.twig', array(
-                    'title' => 'Estadisticas',
-                    'jsonTotalResponsePie' => $this->_jsonTotalResponsePie,
-                    'jsonTotalResponseColumn' => $this->_jsonTotalResponseColumn,
-                    'userList' => $this->_userList,
-                ));
-            }
-
+            if (array_intersect(array('SuperAdmin','Director'), $this->_profile)) {
+                $this->setPersonId($session);
+                $this->setSchoolIdFrm($request);
+                $this->setSchooIdPerson($session);
+                $this->getResults();
+                //$this->getUserResults();
+                #vista para Admin
+                if (in_array('SuperAdmin', $this->_profile)) {
+                    $this->getSchoolResponse();
+                    return $this->render('UNOEvaluacionesBundle:Stats:index.html.twig', array(
+                        'title' => 'Estadisticas Admin',
+                        'jsonTotalResponsePie' => $this->_jsonTotalResponsePie,
+                        'jsonTotalResponseColumn' => $this->_jsonTotalResponseColumn,
+                        'userList' => $this->_userList,
+                        'schoolId' => $this->_schoolId
+                    ));
+                } else {
+                    #vista para director
+                    return $this->render('UNOEvaluacionesBundle:Stats:index.html.twig', array(
+                        'title' => 'Estadisticas',
+                        'jsonTotalResponsePie' => $this->_jsonTotalResponsePie,
+                        'jsonTotalResponseColumn' => $this->_jsonTotalResponseColumn,
+                        'userList' => $this->_userList,
+                    ));
+                }
+            }return $this->redirect("/inicio");
         }else{
             return $this->redirect("/");
         }

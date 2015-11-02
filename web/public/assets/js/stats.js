@@ -2,7 +2,7 @@
  * Created by isra on 20/10/15.
  */
 function pieGrl(jsonTotalResponsePie) {
-    var chart = new Highcharts.Chart({
+    var chartGrl = new Highcharts.Chart({
         chart: {
             type: 'pie',
             renderTo: 'container',
@@ -90,25 +90,13 @@ function columnGrl(jsonTotalResponseColumn, jsonTotalResponseDDColumn) {
 }
 
 //---------------------------------------
+var chart;
 
 function pieGrlLU(jsonTotalResponseLUPie) {
-    var chart = new Highcharts.Chart({
+    chart = new Highcharts.Chart({
         chart: {
             type: 'pie',
             renderTo: 'containerPieLU',
-            margin: [0, 0, 0, 0],
-            spacingTop: 0,
-            spacingBottom: 0,
-            spacingLeft: 0,
-            spacingRight: 0,
-            plotOptions: {
-                pie: {
-                    size:'100%',
-                    dataLabels: {
-                        enabled: false
-                    }
-                }
-            },
             options3d: {
                 enabled: true,
                 alpha: 45,
@@ -141,12 +129,14 @@ function pieGrlLU(jsonTotalResponseLUPie) {
             data: jsonTotalResponseLUPie
         }]
     });
+
 }
 
 //---------------------------------------------
+var chartColoumn;
 function columnGrlLU(jsonTotalResponseLUColumn) {
     // Create the chart
-    var chartColoumn = new Highcharts.Chart({
+    chartColoumn = new Highcharts.Chart({
         chart: {
             type: 'column',
             renderTo: 'containerColumnLU'
@@ -247,6 +237,8 @@ function statsUser(personid, username, avance, eval){
     $('#statsUser').modal();
     $('#bodyStatsUser').html(divList);
 
+    chart.reflow();
+    chartColoumn.reflow();
 }
 
 function abc(rs){

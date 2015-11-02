@@ -291,8 +291,6 @@ class LoginController extends Controller{
      */
     private function existsUserPassInDB(){
         $encrypt = encrypt::encrypt($this->_pass);
-        //echo encrypt::encrypt('pQlzUxUiXCQYa6OPir+lsfURSqIX+m9lidUrWYqy+g8=')."<br/>";
-        //echo encrypt::decrypt('pQlzUxUiXCQYa6OPir+lsfURSqIX+m9lidUrWYqy+g8=');
         $em = $this->getDoctrine()->getManager();
         $this->_personDB = $em->getRepository(PersonDB_L)->findOneBy(array('user' => $this->_user, 'password' => $encrypt));
     }
@@ -503,5 +501,35 @@ class LoginController extends Controller{
             print_r($e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * @Route("/getPass/{personId}")
+     *
+     * Muestra el formulario de Login
+     */
+    public function passUserAction(Request $request, $personId){
+        $session = $request->getSession();
+        $session->start();
+        if ($session->get('logged_in')) {
+            if (in_array('SuperAdmin', $this->setProfile($session))) {
+                $em = $this->getDoctrine()->getManager();
+                $Person = $em->getRepository('UNOEvaluacionesBundle:Person')->findOneBy(array('personid' => $personId));
+                if (!empty($Person)) {
+                    return new Response(encrypt::decrypt($Person->getPassword()));
+                }
+            }else{
+                throw $this->createNotFoundException('Not Found');
+            }
+        }
+    }
+
+    private function setProfile($session){
+        $_profile = array();
+        $profileJson = json_decode($session->get('profileS'));
+        foreach($profileJson as $value){
+            array_push($_profile, $value->profile);
+        }
+        return $_profile;
     }
 }
