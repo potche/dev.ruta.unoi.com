@@ -12,6 +12,12 @@ namespace UNO\EvaluacionesBundle\Controller\Evaluaciones;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\CssSelector\Exception\InternalErrorException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Constraints\DateTime;
+use UNO\EvaluacionesBundle\Entity\Answer;
+use UNO\EvaluacionesBundle\Entity\Question;
+use UNO\EvaluacionesBundle\Entity\Questionxsurvey;
+use UNO\EvaluacionesBundle\Entity\Survey;
 
 class CrearController extends Controller {
 
@@ -64,19 +70,82 @@ class CrearController extends Controller {
 
     public function saveAction(Request $request){
 
-        if(!isset($_POST['eval'])) {
+        $session = $request->getSession();
+        $eval = $request->request->get('eval');
+
+        if (!Utils::isUserLoggedIn($session)) {
+
+            return $this->redirectToRoute('login');
+        }
+
+        if(!Utils::isUserAdmin($session)){
+
+            throw new AccessDeniedHttpException('No estás autorizado para realizar esta acción');
+        }
+
+        if(!$eval) {
 
             throw new InternalErrorException('Ha ocurrido un error al procesar esta petición');
         }
 
-        var_dump($_POST['eval']);
-        exit();
+        $em = $this->getDoctrine()->getManager();
 
+        $survey = new Survey();
+        $survey->setActive(true);
+        $survey->setClosingdate(new \DateTime($eval['closingdate'].' 23:59'));
+        $survey->setCreatedby($session->get('nameS'));
+        $survey->setCreationdate(new \DateTime());
+        $survey->setModifieddate(new \DateTime());
+        $survey->setTitle($eval['title']);
+        $survey->setDescription($eval['description']);
+
+
+        /*$em->persist($survey);
+        $em->flush();*/
+
+        //if($survey->getSurveyid() != null){
+
+            foreach ($eval['preguntas'] as $i => $pregunta) {
+
+                $q_form = explode('::',$pregunta);
+
+                // Primero busco si existe la pregunta para no tener datos redundantes
+                $q = $this->getDoctrine()
+                    ->getRepository('UNOEvaluacionesBundle:Question')
+                    ->findBy(array(
+                    'question' => $q_form[1]
+                    ));
+
+                if(!$q[0]){
+
+                    $q = new Question();
+                    $q->setQuestion($q_form[1]);
+                    $q->setRequired(true);
+                    $q->setSubcategorySubcategoryid($this->getDoctrine()
+                        ->getRepository('UNOEvaluacionesBundle:Subcategory')
+                        ->find($q_form[0]));
+                    $q->setType('M');
+
+                    /*$em->persist($q);
+                    $em->flush();*/
+                }
+                else{
+
+                    $q[0]->setSubcategorySubcategoryid($this->getDoctrine()
+                        ->getRepository('UNOEvaluacionesBundle:Subcategory')
+                        ->find($q_form[0]));
+
+                    $em->flush();
+                }
+            }
+        //}
+        
         /**
          * ToDo: implementar lógica para almacenar evaluación a partir de la petición
          */
 
-        return $this->redirectToRoute('evaluaciones');
+        return new Response('Insertada');
+        //return $this->redirectToRoute('evaluaciones');
     }
 
     private function getCategories(){
