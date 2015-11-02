@@ -8,7 +8,7 @@
     <id name="optionxquestionId" type="integer" column="OptionXQuestion_id">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="order" type="integer" column="order" nullable="false">
+    <field name="order" type="integer" column="`order`" nullable="false">
       <options>
         <option name="unsigned"/>
       </options>
