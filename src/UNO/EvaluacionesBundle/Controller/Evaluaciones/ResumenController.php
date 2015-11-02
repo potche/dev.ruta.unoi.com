@@ -55,6 +55,7 @@ class ResumenController extends Controller
         $tasks = $this->getTasksByCategory($results,$categories);
         $options = $this->getAnswerOptions($surveyId);
         $pie_stats = $this->getStatsByAnswer($results,$options);
+        $bars_stats = $this->getStatsByCategory($categories, $options, $results);
 
         /**
          * ToDo: pasar estadística de barras a vista
@@ -66,7 +67,8 @@ class ResumenController extends Controller
             'results' => $results,
             'categories' => $categories,
             'tasks' => $tasks,
-            'pie_stats'=> $pie_stats
+            'pie_stats'=> $pie_stats,
+            'bars_stats' => $bars_stats
         ));
     }
 
@@ -193,10 +195,39 @@ class ResumenController extends Controller
     }
 
     private function getStatsByCategory($categories, $options, $results){
-
         /**
          * ToDo: implementar formato de estadisticas por categoria (barras)
          */
+        $siStr = '';
+        $noStr = '';
+        $noseStr = '';
+        foreach($categories as $valCat){
+            $si = 0;
+            $no = 0;
+            $nose = 0;
+            foreach($results as $valRes){
+                if($valCat == $valRes['subcategory']) {
+                    switch ($valRes['answer']):
+                        case 'Sí':
+                            $si ++;
+                            break;
+                        case 'No':
+                            $no ++;
+                            break;
+                        default:
+                            $nose ++;
+                    endswitch;
+                }
+            }
+            $siStr .= $si.',';
+            $noStr .= $no.',';
+            $noseStr .= $nose.',';
+        }
+
+        return '["'.implode('","',$categories).'"]|'.
+        '[{"name": "Sí", "data": ['.trim($siStr,",").'], "stack": "good"},'.
+        '{"name": "No", "data": ['.trim($noStr,",").'], "stack": "bad"},'.
+        '{"name": "No sé", "data": ['.trim($noseStr,",").'], "stack": "bad"}]';
     }
 
     private function getTasksByCategory($results, $categories) {
