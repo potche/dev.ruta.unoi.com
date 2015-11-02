@@ -8,16 +8,16 @@
 
 namespace UNO\EvaluacionesBundle\Controller\Evaluaciones;
 
-
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\CssSelector\Exception\InternalErrorException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Constraints\DateTime;
 use UNO\EvaluacionesBundle\Entity\Answer;
+use UNO\EvaluacionesBundle\Entity\Optionxquestion;
 use UNO\EvaluacionesBundle\Entity\Question;
 use UNO\EvaluacionesBundle\Entity\Questionxsurvey;
 use UNO\EvaluacionesBundle\Entity\Survey;
+use UNO\EvaluacionesBundle\Entity\Surveyxprofile;
 
 class CrearController extends Controller {
 
@@ -85,67 +85,38 @@ class CrearController extends Controller {
 
         if(!$eval) {
 
-            throw new InternalErrorException('Ha ocurrido un error al procesar esta petición');
+            throw new InternalErrorException('No se han obtenido los datos de la evaluación a crear');
         }
 
         $em = $this->getDoctrine()->getManager();
+        $em->getConnection()->beginTransaction();
 
-        $survey = new Survey();
-        $survey->setActive(true);
-        $survey->setClosingdate(new \DateTime($eval['closingdate'].' 23:59'));
-        $survey->setCreatedby($session->get('nameS'));
-        $survey->setCreationdate(new \DateTime());
-        $survey->setModifieddate(new \DateTime());
-        $survey->setTitle($eval['title']);
-        $survey->setDescription($eval['description']);
+        try{
 
+            $survey = $this->persistSurvey($eval,$session->get('nameS'),$em);
 
-        /*$em->persist($survey);
-        $em->flush();*/
-
-        //if($survey->getSurveyid() != null){
+            $opts = $this->getDoctrine()
+                ->getRepository('UNOEvaluacionesBundle:Option')
+                ->findAll();
 
             foreach ($eval['preguntas'] as $i => $pregunta) {
 
-                $q_form = explode('::',$pregunta);
-
-                // Primero busco si existe la pregunta para no tener datos redundantes
-                $q = $this->getDoctrine()
-                    ->getRepository('UNOEvaluacionesBundle:Question')
-                    ->findBy(array(
-                    'question' => $q_form[1]
-                    ));
-
-                if(!$q[0]){
-
-                    $q = new Question();
-                    $q->setQuestion($q_form[1]);
-                    $q->setRequired(true);
-                    $q->setSubcategorySubcategoryid($this->getDoctrine()
-                        ->getRepository('UNOEvaluacionesBundle:Subcategory')
-                        ->find($q_form[0]));
-                    $q->setType('M');
-
-                    /*$em->persist($q);
-                    $em->flush();*/
-                }
-                else{
-
-                    $q[0]->setSubcategorySubcategoryid($this->getDoctrine()
-                        ->getRepository('UNOEvaluacionesBundle:Subcategory')
-                        ->find($q_form[0]));
-
-                    $em->flush();
-                }
+                $q = $this->persistQuestion($pregunta,$em);
+                $qxs = $this->persistQuestionInSurvey($i,$q,$survey, $em);
+                $this->persistQuestionOptions($qxs, $opts, $em);
             }
-        //}
-        
-        /**
-         * ToDo: implementar lógica para almacenar evaluación a partir de la petición
-         */
 
-        return new Response('Insertada');
-        //return $this->redirectToRoute('evaluaciones');
+            $this->persistSurveyProfiles($eval['perfiles'], $survey, $em);
+
+            $em->getConnection()->commit();
+
+        } catch (\Exception $ex){
+
+            $em->getConnection()->rollback();
+            throw new InternalErrorException('Error al insertar');
+        }
+
+        return $this->redirectToRoute('evaluaciones');
     }
 
     private function getCategories(){
@@ -160,7 +131,6 @@ class CrearController extends Controller {
             ->getResult();
 
         return $subcats;
-
     }
 
     private function getQuestions(){
@@ -207,4 +177,138 @@ class CrearController extends Controller {
         return $profiles;
     }
 
+    private function persistSurvey($eval, $createdBy, $em ){
+
+        $survey = new Survey();
+        $survey->setActive(true);
+        $survey->setClosingdate(new \DateTime($eval['closingdate'].' 23:59'));
+        $survey->setCreatedby($createdBy);
+        $survey->setCreationdate(new \DateTime());
+        $survey->setModifieddate(new \DateTime());
+        $survey->setTitle($eval['title']);
+        $survey->setDescription($eval['description']);
+
+        $em->persist($survey);
+        $em->flush();
+
+        echo 'SURVEY<br>';
+
+//        if(!$survey->getSurveyid()){
+//
+//            throw new InternalErrorException('La evaluación no se ha podido almacenar en la base de datos');
+//        }
+
+        return $survey;
+    }
+
+    private function persistQuestion ($questionData, $em) {
+
+        $q_form = explode('::',$questionData);
+
+        // Primero busco si existe la pregunta para no tener datos redundantes
+        $q = $this->getDoctrine()
+            ->getRepository('UNOEvaluacionesBundle:Question')
+            ->findOneBy(array(
+                'question' => $q_form[1]
+            ));
+
+        if(!$q){
+
+            $q = new Question();
+            $q->setQuestion($q_form[1]);
+            $q->setRequired(true);
+            $q->setSubcategorySubcategoryid($this->getDoctrine()
+                ->getRepository('UNOEvaluacionesBundle:Subcategory')
+                ->find($q_form[0]));
+            $q->setType('M');
+
+            $em->persist($q);
+            $em->flush();
+        }
+        else{
+            $q->setSubcategorySubcategoryid($this->getDoctrine()
+                ->getRepository('UNOEvaluacionesBundle:Subcategory')
+                ->find($q_form[0]));
+
+            $em->flush();
+        }
+
+//        if(!$q[0]->getQuestionid()){
+//
+//            throw new InternalErrorException('No ha sido posible almacenar los reactivos de la evaluación');
+//        }
+
+        echo 'question<br>';
+
+        return $q;
+    }
+
+    private function persistQuestionInSurvey($index, $q, $s, $em){
+
+        $qxs = new Questionxsurvey();
+        $qxs->setOrder(1+$index);
+        $qxs->setQuestionQuestionid($q);
+        $qxs->setSurveySurveyid($s);
+
+        $em->persist($qxs);
+        $em->flush();
+
+//        if(!$qxs->getQuestionxsurveyId()){
+//
+//            throw new InternalErrorException('No ha sido posible asignar los reactivos a la evaluación');
+//        }
+
+        echo 'questionxsurvey<br>';
+
+        return $qxs;
+    }
+
+    private function persistQuestionOptions($qxs, $opts, $em) {
+
+        foreach($opts as $index => $opt) {
+
+            $oxq = new Optionxquestion();
+            $oxq->setOrder(1+$index);
+            $oxq->setOptionOptionid($opt);
+            $oxq->setQuestionxsurvey($qxs);
+
+            $em->persist($oxq);
+            $em->flush();
+
+//            if(!$oxq->getOptionxquestionId()) {
+//
+//                throw new InternalErrorException('No ha sido posible asignar los reactivos a la evaluación');
+//            }
+            echo 'optionxquestion<br>';
+        }
+
+
+        //return true;
+    }
+
+    private function persistSurveyProfiles($profiles, $survey, $em){
+
+        foreach($profiles as $perf => $p) {
+
+            foreach ($p as $nivel) {
+
+                $sxp = new Surveyxprofile();
+                $sxp->setSurveySurveyid($survey);
+                $sxp->setProfileProfileid($this->getDoctrine()
+                    ->getRepository('UNOEvaluacionesBundle:Profile')
+                    ->find($perf)
+                );
+                $sxp->setSchoollevelid($nivel);
+                $em->persist($sxp);
+                $em->flush();
+
+//                if(!$sxp->getSurveyxprofileId()){
+//
+//                    throw new InternalErrorException('Error al asignar los perfiles a la evaluación');
+//                }
+                echo 'surveyxprofiles<br>';
+            }
+        }
+        //return true;
+    }
 }
