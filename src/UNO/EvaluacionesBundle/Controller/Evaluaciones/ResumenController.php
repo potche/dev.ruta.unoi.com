@@ -188,7 +188,7 @@ class ResumenController extends Controller
 
             array_push($pieStats,array(
                 'name' => $val['name'],
-                'y' => ($total > 0 ? round((($countByAnswer[$val['name']] * 100) / $total),2) : 0)
+                'y' => ($total > 0 && array_key_exists($val['name'],$countByAnswer) ? round((($countByAnswer[$val['name']] * 100) / $total),2) : 0)
             ));
         }
         return $pieStats;
