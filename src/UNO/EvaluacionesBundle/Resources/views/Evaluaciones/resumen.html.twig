@@ -106,6 +106,6 @@
     <script src="{{ asset('public/assets/js/resumen.js') }}"></script>
     <script src="{{ asset('public/assets/js/resumen_charts.js') }}"></script>
     <script>$(function(){ TablesDatatables.init(); });</script>
-    <script>$(function(){ Charts.init('{{ pie_stats|json_encode()|raw }}','stats_bars'); });</script>
+    <script>$(function(){ Charts.init('{{ pie_stats|json_encode()|raw }}','{{ bars_stats | raw }}'); });</script>
 
 {% endblock %}
