@@ -19,12 +19,12 @@
                 <h2><strong>Graficas</strong></h2>
                 {% if schoolId is defined %}
                 <form id="schoolFrm" action="{{ path('estadisticas')}}" method="POST">
-                    <label class="col-md-2 control-label" for="schooId-typeahead">Filtro por Escuela</label>
-                    <div class="col-md-8">
+                    <label class="col-md-12 control-label" for="schooId-typeahead">Filtro por Escuela</label>
+                    <div class="col-md-12">
                         <input type="text" id="schooId-typeahead" name="schooId-typeahead" class="form-control input-typeaheadSchool" autocomplete="off" placeholder="Busca Escuelas..">
                     </div>
                     <div class="form-group form-actions">
-                        <div class="col-md-2">
+                        <div class="col-md-12">
                             <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-angle-right"></i> Buscar</button>
                         </div>
                     </div>
