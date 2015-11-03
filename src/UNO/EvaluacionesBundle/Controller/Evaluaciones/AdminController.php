@@ -171,7 +171,7 @@ class AdminController extends Controller {
         $data['general'] = array();
         $esperadoGlobal = array_sum(array_column($expectedBySurvey,'expectedNum'));
         $respondidoGlobal = array_sum(array_column($answeredBySurvey,'answeredNum'));
-        $avanceGlobal =  ($esperado > 0 ? round(($respondidoGlobal * 100) / $esperadoGlobal,2) : 0);
+        $avanceGlobal =  ($esperadoGlobal > 0 ? round(($respondidoGlobal * 100) / $esperadoGlobal,2) : 0);
 
         //Construyo el arreglo 'general' para hacer el render a la gráfica con la estructura requerida por Highcharts
 

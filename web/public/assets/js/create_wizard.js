@@ -112,7 +112,7 @@ var CrearWizard = function() {
 
                         var elem =
 
-                            '<div class="col-sm-3"><div id ="perfil_'+perfil_id+'_'+nivel_id+'" class="block perfil" style="text-align: center;">' +
+                            '<div class="col-sm-3 perfil"><div id ="perfil_'+perfil_id+'_'+nivel_id+'" class="block" style="text-align: center;">' +
                             '<div class="block-title themed-background">' +
                             '<div class="block-options pull-right">' +
                             '<a href="javascript:void(0)"  id ="deleter" class="btn btn-danger btn-xs" data-toggle="block-toggle-content"><i class="fa fa-times"></i></a>' +
@@ -200,7 +200,7 @@ var CrearWizard = function() {
                 if(pregunta != '' && categoria_id != ''){
 
                     var elem =
-                        '<div class="col-sm-12"><div class="block pregunta">' +
+                        '<div class="col-sm-12 pregunta"><div class="block">' +
                             '<div class="block-title">' +
                                 '<div class="block-options pull-right">' +
                                     '<a href="javascript:void(0)"  id ="deleter" class="btn btn-danger btn-xs" data-toggle="block-toggle-content"><i class="fa fa-times"></i></a>' +
@@ -252,7 +252,6 @@ var CrearWizard = function() {
                 if($('#advanced-third').is(':visible')) {
 
                     $("#next2").attr('value','Finalizar');
-
                 }
             }
 

@@ -11,7 +11,6 @@ namespace UNO\EvaluacionesBundle\Controller\Evaluaciones;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\CssSelector\Exception\InternalErrorException;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use UNO\EvaluacionesBundle\Entity\Answer;
 use UNO\EvaluacionesBundle\Entity\Optionxquestion;
 use UNO\EvaluacionesBundle\Entity\Question;
@@ -50,7 +49,6 @@ class CrearController extends Controller {
             throw new AccessDeniedHttpException('No estás autorizado para realizar esta acción');
         }
 
-
         return $this->render('UNOEvaluacionesBundle:Crear:crear.html.twig',array(
             'categories' => $this->getCategories(),
             'questions' => array_column($this->getQuestions(),'question'),
@@ -59,13 +57,15 @@ class CrearController extends Controller {
         ));
     }
 
+
     /**
+     *
+     * Método para almacenar nueva evaluación en BD
+     *
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws AccessDeniedHttpException
      * @throws InternalErrorException
-     *
-     * Método invocado para almacenar una nueva evaluación en la bd
-     *
      */
 
     public function saveAction(Request $request){
@@ -113,11 +113,18 @@ class CrearController extends Controller {
         } catch (\Exception $ex){
 
             $em->getConnection()->rollback();
-            throw new InternalErrorException('Error al insertar');
+            throw new InternalErrorException('Error al agregar la evaluación a la BD, intente nuevamente');
         }
 
         return $this->redirectToRoute('evaluaciones');
     }
+
+    /**
+     *
+     * Método para obtener categorías de la BD
+     *
+     * @return mixed
+     */
 
     private function getCategories(){
 
@@ -133,6 +140,13 @@ class CrearController extends Controller {
         return $subcats;
     }
 
+    /**
+     *
+     * Método para obtener preguntas de la BD
+     *
+     * @return mixed
+     */
+
     private function getQuestions(){
 
         $em = $this->getDoctrine()->getManager();
@@ -145,8 +159,13 @@ class CrearController extends Controller {
             ->getResult();
 
         return $questions;
-
     }
+
+    /**
+     *
+     * Método para obtener niveles de la BD
+     * @return mixed
+     */
 
     private function getLevels(){
 
@@ -161,6 +180,12 @@ class CrearController extends Controller {
 
         return $levels;
     }
+
+    /**
+     *
+     * Método para obtener perfiles de la BD
+     * @return mixed
+     */
 
     private function getProfiles(){
 
@@ -177,6 +202,16 @@ class CrearController extends Controller {
         return $profiles;
     }
 
+    /**
+     *
+     * Método para insertar una evaluación a la BD
+     *
+     * @param $eval
+     * @param $createdBy
+     * @param $em
+     * @return Survey
+     */
+
     private function persistSurvey($eval, $createdBy, $em ){
 
         $survey = new Survey();
@@ -191,15 +226,17 @@ class CrearController extends Controller {
         $em->persist($survey);
         $em->flush();
 
-        echo 'SURVEY<br>';
-
-//        if(!$survey->getSurveyid()){
-//
-//            throw new InternalErrorException('La evaluación no se ha podido almacenar en la base de datos');
-//        }
-
         return $survey;
     }
+
+    /**
+     *
+     * Método para insertar una pregunta a la BD
+     *
+     * @param $questionData
+     * @param $em
+     * @return Question
+     */
 
     private function persistQuestion ($questionData, $em) {
 
@@ -232,16 +269,19 @@ class CrearController extends Controller {
 
             $em->flush();
         }
-
-//        if(!$q[0]->getQuestionid()){
-//
-//            throw new InternalErrorException('No ha sido posible almacenar los reactivos de la evaluación');
-//        }
-
-        echo 'question<br>';
-
         return $q;
     }
+
+    /**
+     *
+     * Método para relacionar una pregunta a la evaluación en la BD
+     *
+     * @param $index
+     * @param $q
+     * @param $s
+     * @param $em
+     * @return Questionxsurvey
+     */
 
     private function persistQuestionInSurvey($index, $q, $s, $em){
 
@@ -253,15 +293,17 @@ class CrearController extends Controller {
         $em->persist($qxs);
         $em->flush();
 
-//        if(!$qxs->getQuestionxsurveyId()){
-//
-//            throw new InternalErrorException('No ha sido posible asignar los reactivos a la evaluación');
-//        }
-
-        echo 'questionxsurvey<br>';
-
         return $qxs;
     }
+
+    /**
+     *
+     * Método para agregar opciones a las preguntas
+     *
+     * @param $qxs
+     * @param $opts
+     * @param $em
+     */
 
     private function persistQuestionOptions($qxs, $opts, $em) {
 
@@ -274,17 +316,17 @@ class CrearController extends Controller {
 
             $em->persist($oxq);
             $em->flush();
-
-//            if(!$oxq->getOptionxquestionId()) {
-//
-//                throw new InternalErrorException('No ha sido posible asignar los reactivos a la evaluación');
-//            }
-            echo 'optionxquestion<br>';
         }
-
-
-        //return true;
     }
+
+    /**
+     *
+     * Metodo para relacionar la evaluación con los perfiles y niveles
+     *
+     * @param $profiles
+     * @param $survey
+     * @param $em
+     */
 
     private function persistSurveyProfiles($profiles, $survey, $em){
 
@@ -301,14 +343,7 @@ class CrearController extends Controller {
                 $sxp->setSchoollevelid($nivel);
                 $em->persist($sxp);
                 $em->flush();
-
-//                if(!$sxp->getSurveyxprofileId()){
-//
-//                    throw new InternalErrorException('Error al asignar los perfiles a la evaluación');
-//                }
-                echo 'surveyxprofiles<br>';
             }
         }
-        //return true;
     }
 }
