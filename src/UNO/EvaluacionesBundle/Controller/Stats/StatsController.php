@@ -1,11 +1,13 @@
 <?php
-
 /**
  * Created by PhpStorm.
  * User: isra
  * Date: 16/10/15
- * Time: 10:17 AM
+ * Time: 10:28 AM
+ * Class Login
+ * @package UNO\EvaluacionesBundle\Controller\Login
  */
+
 
 namespace UNO\EvaluacionesBundle\Controller\Stats;
 
@@ -16,6 +18,10 @@ use Symfony\Component\HttpFoundation\Response;
 use UNO\EvaluacionesBundle\Entity\Personschool;
 use UNO\EvaluacionesBundle\Entity\Optionxquestion;
 
+/**
+ * Class StatsController
+ * @package UNO\EvaluacionesBundle\Controller\Stats
+ */
 class StatsController extends Controller{
 
     private $_profile = array();
@@ -45,7 +51,6 @@ class StatsController extends Controller{
                 $this->setSchoolIdFrm($request);
                 $this->setSchooIdPerson($session);
                 $this->getResults();
-                //$this->getUserResults();
                 #vista para Admin
                 if (in_array('SuperAdmin', $this->_profile)) {
                     $this->getSchoolResponse();
@@ -71,6 +76,11 @@ class StatsController extends Controller{
         }
     }
 
+    /**
+     * @param $session
+     *
+     * inicializa el atributo $this->_profile con los perfiles del usuario de session
+     */
     private function setProfile($session){
         $profileJson = json_decode($session->get('profileS'));
 
@@ -79,20 +89,34 @@ class StatsController extends Controller{
         }
     }
 
+    /**
+     * @param $session
+     *
+     * inicializa el atributo $this->_personId con el id del usuario de session
+     */
     private function setPersonId($session){
         $this->_personId = $session->get('personIdS');
     }
 
+    /**
+     * @param $session
+     *
+     * filtra la escuela que puede ver el usuario
+     */
     private function setSchooIdPerson($session){
         $schoolIdPerson = '';
         $_schoolIdPerson = json_decode($session->get('schoolIdS'));
-        //$_schoolIdPerson = json_decode('[{"schoolid": 1500},{"schoolid": 1501}]');
         foreach($_schoolIdPerson as $value){
             $schoolIdPerson .= $value->schoolid. ', ';
         }
         $this->_schoolIdPerson = rtrim($schoolIdPerson, ', ');
     }
 
+    /**
+     * @param $request
+     *
+     * cacha el colegio filtrado y enviado por metdo post (Admin)
+     */
     private function setSchoolIdFrm($request){
         $idPost = $request->request->get('schooId-typeahead');
         if(!empty($idPost)){
@@ -103,6 +127,9 @@ class StatsController extends Controller{
         }
     }
 
+    /**
+     * este metodo invoca a otros metodos con el fin de separar las acciones
+     */
     private function getResults() {
         //obtencion de los datos generales para las estadisticas
         $this->getSurveyResultsGral();
@@ -111,6 +138,9 @@ class StatsController extends Controller{
         $this->creaListUser();
     }
 
+    /**
+     * obtiene toda la informacion de las evaluaciones realizadas por colegio o general
+     */
     private function getSurveyResultsGral() {
         $query = "SELECT P.personId, CONCAT(P.name, ' ', P.surname) as username, PS.schoolId, S.surveyId, S.title, count(A.answer) countAnswer, A.answer
                     FROM
@@ -142,11 +172,13 @@ class StatsController extends Controller{
         $em = $this->getDoctrine()->getManager();
         $connection = $em->getConnection();
         $statement = $connection->prepare($query);
-        //$statement->bindValue('id', 123);
         $statement->execute();
         $this->_surveyResultsGral = $statement->fetchAll();
     }
 
+    /**
+     *calcula el nuemero de respuestas por si, no y no se
+     */
     private function getTotalResponse(){
         $si = 0;
         $no = 0;
@@ -154,9 +186,12 @@ class StatsController extends Controller{
         $evalSiArray = array();
         $evalNoArray = array();
         $evalNoSeArray = array();
-        //print_r($this->_surveyResultsGral);
         foreach($this->_surveyResultsGral as $value){
             switch ($value['answer']):
+                default:
+                    $nose += $value['countAnswer'];
+                    array_push($evalNoSeArray, $value['title']);
+                    break;
                 case 'Sí':
                     $si += $value['countAnswer'];
                     array_push($evalSiArray, $value['title']);
@@ -165,9 +200,6 @@ class StatsController extends Controller{
                     $no += $value['countAnswer'];
                     array_push($evalNoArray, $value['title']);
                     break;
-                default:
-                    $nose += $value['countAnswer'];
-                    array_push($evalNoSeArray, $value['title']);
             endswitch;
         }
 
@@ -177,10 +209,25 @@ class StatsController extends Controller{
         $this->creaJsonColumn($si, $no, $nose);
     }
 
+    /**
+     * @param $total
+     * @param $parte
+     * @param int $redondear
+     * @return float
+     *
+     * Calcula el porcentaje
+     */
     private function getPorcentaje($total, $parte, $redondear = 2) {
         return round($parte / $total * 100, $redondear);
     }
 
+    /**
+     * @param $si
+     * @param $no
+     * @param $nose
+     *
+     * Crea el Json para la grafica de pie
+     */
     private function creaJsonToRePi($si, $no, $nose){
         $total = $si + $no + $nose;
         if($total != 0){
@@ -196,6 +243,13 @@ class StatsController extends Controller{
 
     }
 
+    /**
+     * @param $si
+     * @param $no
+     * @param $nose
+     *
+     * Crea el Json para la grafica de Columna
+     */
     private function creaJsonColumn($si, $no, $nose){
         $this->_jsonTotalResponseColumn =
             "[
@@ -205,6 +259,10 @@ class StatsController extends Controller{
             ]";
     }
 
+    /**
+     * obtiene una lista con loas escuelas para poder filtrar (unicamente para Admin)
+     * la almacena en el atributo $this->_schoolId
+     */
     private function getSchoolResponse() {
 
         $em = $this->getDoctrine()->getManager();
@@ -233,6 +291,9 @@ class StatsController extends Controller{
         $this->_schoolId = $jsonSchoolId;
     }
 
+    /**
+     *Crea la lista de usuario con su progreso, avance y evaluaciones relizadas
+     */
     private function creaListUser(){
         $_userEval = $this->getUserEval();
         $_surveyAsigUser = $this->getSurveyAsigUser();
@@ -267,10 +328,13 @@ class StatsController extends Controller{
                 }
             }
         }
-        //print_r($userList);
         $this->_userList = $userList;
     }
 
+    /**
+     * obtiene el numero de evaluaciones que ha realizado cada usuario
+     * @return mixed
+     */
     private function getUserEval(){
         $query = "SELECT
                         P.personId,
@@ -316,6 +380,10 @@ class StatsController extends Controller{
         return ($_userEval);
     }
 
+    /**
+     * obtiene el numero de evaluaciones que tiene asignado cada usuario
+     * @return mixed
+     */
     private function getSurveyAsigUser() {
 
         $query = "SELECT
@@ -347,13 +415,18 @@ class StatsController extends Controller{
         $em = $this->getDoctrine()->getManager();
         $connection = $em->getConnection();
         $statement = $connection->prepare($query);
-        //$statement->bindValue('id', 123);
         $statement->execute();
         $_surveyAsigUser = $statement->fetchAll();
 
         return ($_surveyAsigUser);
     }
 
+    /**
+     * obtiene las evaluaciones que realizo el usuario
+     *
+     * @param $personId
+     * @return array
+     */
     private function evalUser($personId){
 
         $titleEval = array();
@@ -376,9 +449,13 @@ class StatsController extends Controller{
         return($evalArray);
     }
 
+    /**
+     * array_unique para un array multiple
+     * @param $array
+     * @param $key
+     * @return mixed
+     */
     private function array_unique_multi($array, $key){
-        //print_r($array);
-
 
         for ($i = 0; $i < count($array); $i++){
             $duplicate = null;
@@ -388,24 +465,11 @@ class StatsController extends Controller{
                     break;
                 }
             }
-            if (!is_null($duplicate))
+            if (!is_null($duplicate)){
                 array_splice($array,$duplicate,1);
+            }
         }
         return $array;
     }
 
-    private function creaJsonDDColumn($array, $id){
-        $evalSi = '{
-                    name: "'.$id.'",
-                    id: "'.$id.'",
-                    data: [';
-        foreach (array_count_values($array) as $key => $value) {
-            $evalSi .= "[\"$key\", $value],";
-        }
-        $evalSi = rtrim($evalSi, ',');
-        $evalSi .= ']
-                    },';
-
-        return $evalSi;
-    }
 }

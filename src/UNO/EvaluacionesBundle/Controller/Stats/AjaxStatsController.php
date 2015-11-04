@@ -21,7 +21,7 @@ class AjaxStatsController extends Controller{
     /**
      * @Route("/ajax/stats")
      *
-     *
+     * obtiene y crea la tabla con el detalle de la evaluacion
      */
     public function indexAction(Request $request){
 
@@ -38,6 +38,13 @@ class AjaxStatsController extends Controller{
         }
     }
 
+    /**
+     * @param $personId
+     * @param $title
+     * @return mixed
+     *
+     * obtiene la evaluacion selecciona
+     */
     private function getSurveyResponse($personId, $title) {
 
         $em = $this->getDoctrine()->getManager();
@@ -57,6 +64,13 @@ class AjaxStatsController extends Controller{
         return ($_surveyResponse);
     }
 
+    /**
+     * @param $survey
+     * @param $title
+     * @return string
+     *
+     * crea una tabla con la informacion obtenida en el metodo getSurveyResponse()
+     */
     private function creaTable($survey,$title){
         $table ='
         <div class="row">
