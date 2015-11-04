@@ -1,6 +1,14 @@
 {% extends '::base.html.twig' %}
 {% block body %}
 
+    <style>
+        .fa-eye:hover {
+            color: #328287;
+        }
+        .fa-eye {
+            color: #46B7BF;
+        }
+    </style>
     <div id="page-content">
 
         <div class="content-header">
@@ -11,34 +19,40 @@
             </div>
         </div>
 
+        {% if schoolId is defined %}
+            <div class="block">
+                <div class="block-title">
+                    <h2>Filtro por <strong>Escuela</strong></h2>
+                </div>
+                <div class="row">
+                    <div class="block-content">
+                        <div class="col-sm-12">
+                            <form id="schoolFrm" action="{{ path('estadisticas')}}" method="POST">
+                                <input type="text" id="schooId-typeahead" name="schooId-typeahead" class="form-control input-typeaheadSchool" autocomplete="off" placeholder="Busca Escuelas..">
+                                <div class="form-group form-actions">
+                                    <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-angle-right"></i> Buscar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
         <div id="block-resumen" class="block">
             <div class="block-title">
                 <div class="block-options pull-right">
                     <a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
                 </div>
-                <h2><strong>Graficas</strong></h2>
-                {% if schoolId is defined %}
-                <form id="schoolFrm" action="{{ path('estadisticas')}}" method="POST">
-                    <label class="col-md-12 control-label" for="schooId-typeahead">Filtro por Escuela</label>
-                    <div class="col-md-12">
-                        <input type="text" id="schooId-typeahead" name="schooId-typeahead" class="form-control input-typeaheadSchool" autocomplete="off" placeholder="Busca Escuelas..">
-                    </div>
-                    <div class="form-group form-actions">
-                        <div class="col-md-12">
-                            <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-angle-right"></i> Buscar</button>
-                        </div>
-                    </div>
-                </form>
-                {% endif %}
+                <h2>Graficas de <strong>Avance</strong></h2>
             </div>
-
+            {% if jsonTotalResponsePie is not empty %}
             <div class="row">
                 <div class="block-content">
                     <div class="col-sm-6">
                         <div id="pie" class="block">
                             <div id="container"></div>
                         </div>
-
                     </div>
                 </div>
                 <div class="block-content">
@@ -49,17 +63,24 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
+        </div>
+
+
+        <div id="block-resumenT" class="block">
+            <div class="block-title">
+                <div class="block-options pull-right">
+                    <a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
+                </div>
+                <h2>Tabla de <strong>Avance</strong></h2>
+            </div>
 
             <div class="row">
                 <div class="block-content">
                     <div class="col-sm-12">
-                        <div  class="block">
-                            <div class="block-title">
-                                <h2><strong>Usuarios</strong> Evaluados</h2>
-                            </div>
-                            <div class="table-responsive">
-                                <p>Estadisticas de usuarios que han realizado por lo menos una Evaluacion.</p>
-                                {% if userList is defined %}
+                        <div class="table-responsive">
+                            <p>Estadisticas de usuarios que han realizado por lo menos una Evaluacion. <em>Da <b>click</b> sobre un usuario para ver su detalle</em></p>
+                            {% if userList is defined %}
                                 <table id="userList-datatable" class="table table-vcenter table-condensed table-bordered">
                                     <thead>
                                     <tr>
@@ -67,6 +88,7 @@
                                         <th>Nombre</th>
                                         <th style="width: 150px;" class="text-center">Progreso</th>
                                         <th style="width: 150px;" class="text-center">Avance</th>
+                                        <th class="text-center">Detalle</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -74,52 +96,35 @@
                                         {% if list.avance != 0 %}
                                         <tr onclick="statsUser('{{ list.personId|e }}','{{ list.username|e }}',{{ list.avance }},{{ list.eval | json_encode() }})" data-toggle="tooltip" title="Haz click para ver el detalle de {{ list.username|e }}" style="cursor: pointer">
                                         {% else %}
-                                        <tr>
+                                            <tr>
                                         {% endif %}
-                                            <td class="text-center">
-                                                <img src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar" class="img-circle">
-                                            </td>
-                                            <td>
-                                                {{ list.username|e }}
-                                                <div class="progress progress-bar-info progress-bar-striped">
-                                                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{list.avance}}" aria-valuemin="0" aria-valuemax="100" style="width: {{list.avance}}%;">
-                                                    </div>
+                                        <td class="text-center">
+                                            <img src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar" class="img-circle">
+                                        </td>
+                                        <td>
+                                            {{ list.username|e }}
+                                            <div class="progress progress-bar-info progress-bar-striped">
+                                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{list.avance}}" aria-valuemin="0" aria-valuemax="100" style="width: {{list.avance}}%;">
                                                 </div>
-                                            </td>
-                                            <td class="text-center" {% if list.avance == 0 %} style="color: red;" {% endif %}>
-                                                {{ list.progreso|e }}
-                                            </td>
-                                            <td class="text-center" {% if list.avance == 0 %} style="color: red;" {% endif %}>
-                                                {{ list.avance }} %
-                                            </td>
+                                            </div>
+                                        </td>
+                                        <td class="text-center" {% if list.avance == 0 %} style="color: red;" {% endif %}>
+                                            {{ list.progreso|e }}
+                                        </td>
+                                        <td class="text-center" {% if list.avance == 0 %} style="color: red;" {% endif %}>
+                                            {{ list.avance }} %
+                                        </td>
+                                        <td class="text-center"><i class="fa fa-eye fa-2x" {% if list.avance == 0 %} style="color: gray;" {% endif %}></i></td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>
                                 </table>
-                                {% endif %}
-                            </div>
+                            {% endif %}
+                            <br/>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="block-content">
-                    <div class="col-sm-6">
-                        <div id="bars" class="block">
-
-                        </div>
-                    </div>
-                </div>
-                <div class="block-content">
-                    <div class="col-sm-6">
-                        <div id="bars" class="block">
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 
@@ -133,7 +138,14 @@
                 </div>
                 <div class="modal-body">
                     <span id="bodyStatsUser"></span>
-                    <div class="block">
+
+                    <div id="block-resumenG" class="block">
+                        <div class="block-title">
+                            <div class="block-options pull-right">
+                                <a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
+                            </div>
+                            <h2>Graficas de <strong>Avance</strong></h2>
+                        </div>
                         <div class="row">
                             <div class="block-content ">
 
@@ -143,7 +155,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="block-content ">
                                 <div class="col-sm-12  col-md-6 col-lg-6">
                                     <div class="block">
@@ -166,32 +177,9 @@
     </div>
     <!-- END Modal Stats User -->
 
+
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <!-- Load and execute javascript code used only in this page -->
-    <script>
-        var TablesDatatables = function() {
-
-            return {
-                init: function() {
-                    /* Initialize Bootstrap Datatables Integration */
-                    App.datatables();
-
-                    /* Initialize Datatables */
-                    $('#userList-datatable').dataTable({
-                        columnDefs: [ { orderable: false, targets: [ 1, 3 ] } ],
-                        pageLength: 5,
-                        lengthMenu: [[5,10,15,20,25,30, -1], [5,10,15,20,25,30, 'All']]
-                    });
-
-                    /* Add placeholder attribute to the search input */
-                    $('.dataTables_filter input').attr('placeholder', 'buscar');
-
-                }
-            };
-        }();
-    </script>
-    <script>$(function(){ TablesDatatables.init(); });</script>
-
     <script src="{{ asset('public/assets/js/Highcharts/highcharts.js')}}"></script>
     <script src="{{ asset('public/assets/js/Highcharts/highcharts-3d.js')}}"></script>
     <script src="{{ asset('public/assets/js/Highcharts/modules/exporting.js')}}"></script>
@@ -200,18 +188,20 @@
     <script type="text/javascript">
 
         $(function () {
+
+            {% if jsonTotalResponsePie is not empty %}
             pieGrl({{ jsonTotalResponsePie | raw }});
             columnGrl({{ jsonTotalResponseColumn | raw }});
-
-            //var a = {#{{ jsonListUser | json_encode | raw }}#};
-
-            //console.log(a[0]['surveys'][0]['eval']);
+            {% endif %}
 
             {% if schoolId is defined %}
             // Initialize Typeahead - Example with countries
             var exampleTypeheadData = [{{ schoolId | raw}}];
             $('.input-typeaheadSchool').typeahead({ source: exampleTypeheadData });
             {% endif %}
+
+            TablesDatatables.init();
+
         });
 
 
