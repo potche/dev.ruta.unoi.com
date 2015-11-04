@@ -261,3 +261,25 @@ function createGraph(si, no, nose){
     pieGrlLU(jsonTotalResponseLUPie);
     columnGrlLU(jsonTotalResponseLUColumn);
 }
+
+
+var TablesDatatables = function() {
+
+    return {
+        init: function() {
+            /* Initialize Bootstrap Datatables Integration */
+            App.datatables();
+
+            /* Initialize Datatables */
+            $('#userList-datatable').dataTable({
+                columnDefs: [ { orderable: false, targets: [ 0, 4 ] } ],
+                pageLength: 4,
+                lengthMenu: [[5,10,15,20,25,30, -1], [5,10,15,20,25,30, 'All']]
+            });
+
+            /* Add placeholder attribute to the search input */
+            $('.dataTables_filter input').attr('placeholder', 'buscar');
+
+        }
+    };
+}();

@@ -131,8 +131,6 @@ class StatsController extends Controller{
         if( in_array('SuperAdmin', $this->_profile) ){
             if($this->_schoolIdFrm != 0){
                 $query .= "AND PS.schoolId in (".$this->_schoolIdFrm.")";
-            }else{
-                $query .= "AND PS.schoolId in (1253)";
             }
         }else{
             $query .= "AND PS.schoolId in (".$this->_schoolIdPerson.")";
@@ -185,12 +183,17 @@ class StatsController extends Controller{
 
     private function creaJsonToRePi($si, $no, $nose){
         $total = $si + $no + $nose;
-        $this->_jsonTotalResponsePie =
-            "[
+        if($total != 0){
+            $this->_jsonTotalResponsePie =
+                "[
                 {name:'Sí', y:".$this->getPorcentaje($total, $si, 2).", sliced:true, selected:true},
                 {name:'No', y:".$this->getPorcentaje($total, $no, 2).", sliced:false, selected:false},
                 {name:'No sé', y:".$this->getPorcentaje($total, $nose, 2).", sliced:false, selected:false}
             ]";
+        }else{
+            $this->_jsonTotalResponsePie = '';
+        }
+
     }
 
     private function creaJsonColumn($si, $no, $nose){
@@ -207,7 +210,7 @@ class StatsController extends Controller{
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 
-        $_schoolId = $qb->select("CONCAT(PS.schoolid,'-',Sc.school) as school")
+        $_schoolId = $qb->select("CONCAT(trim(PS.schoolid),'-',trim(Sc.school)) as school")
             ->from('UNOEvaluacionesBundle:Answer','A')
             ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','OQ', 'WITH', 'A.optionxquestion = OQ.optionxquestionId')
             ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','QS', 'WITH', 'OQ.questionxsurvey = QS.questionxsurveyId')
@@ -295,8 +298,6 @@ class StatsController extends Controller{
         if( in_array('SuperAdmin', $this->_profile) ){
             if($this->_schoolIdFrm != 0){
                 $query .= "AND PS.schoolId in (".$this->_schoolIdFrm.")";
-            }else{
-                $query .= "AND PS.schoolId in (1253)";
             }
         }else{
             $query .= "AND PS.schoolId in (".$this->_schoolIdPerson.")";
@@ -324,7 +325,7 @@ class StatsController extends Controller{
                     FROM
                         SurveyXProfile SP
                             INNER JOIN
-                        PersonSchool PS ON SP.Profile_profileId = PS.profileId
+                        PersonSchool PS ON SP.Profile_profileId = PS.profileId AND SP.schoolLevelId = PS.schoolLevelId
                             INNER JOIN
                         Person P ON PS.personId = P.personId
                     WHERE
@@ -334,8 +335,6 @@ class StatsController extends Controller{
         if( in_array('SuperAdmin', $this->_profile) ){
             if($this->_schoolIdFrm != 0){
                 $query .= "AND PS.schoolId in (".$this->_schoolIdFrm.")";
-            }else{
-                $query .= "AND PS.schoolId in (1253)";
             }
         }else{
             $query .= "AND PS.schoolId in (".$this->_schoolIdPerson.")";
@@ -370,7 +369,6 @@ class StatsController extends Controller{
             foreach($titleEval as $valueT) {
                 if ($value['personId'] == $personId && $value['title'] == $valueT) {
                     $evalArray[$valueT][$value['answer']] = $value['countAnswer'];
-                    
                 }
             }
         }
