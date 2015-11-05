@@ -57,3 +57,7 @@ save:
     path:   /evaluaciones/crear/save
     defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Crear:save}
     methods: [POST]
+salvarResp:
+    path:   /responder/salvar
+    defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Responder:guardar}
+    methods:  [POST]
