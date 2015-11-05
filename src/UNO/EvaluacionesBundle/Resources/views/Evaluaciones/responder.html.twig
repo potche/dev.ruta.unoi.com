@@ -1,57 +1,52 @@
 {% extends 'base.html.twig' %}
-
-
 {% block body %}
-
-
     <div class="row">
-
-
         <div class="col-md-9">
-            <h1 class="widget-header text-center"><strong>{{ surveyName }}</strong></h1>
+            <h1 class="widget-header text-center"><strong>{{ surveyData.title }}</strong></h1>
             <hr/>
-            <!--
-            <h6 class="text-justify">Descripci&oacute;n: {{ surveyDesc }}. Puedes ver tu progreso aqu&iacute;:</h6>
-
-            <div class="progress progress-bar-info progress-bar-striped">
-                <div id="progressbar" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
-                </div>
-            </div>
-            -->
             <div class="well">
                 <div class="alert alert-info alert-dismissable text-justify">
-                    <h6 class="text-justify"><i class="fa fa-info-circle"></i> {{ surveyDesc }}.</h6>
+                    <h6 class="text-justify"><i class="fa fa-info-circle"></i> {{ surveyData.description }}.</h6>
                 </div>
-
-                <em><h3 id="mainQuestion">¿Pregunta?</h3></em>
-
-                <div id="mainOptions" class="btn-group btn-group-justified" data-toggle="buttons" role="group" aria-label="...">
-
+                <!-- Aquí empiezan las preguntas -->
+                <div id="questions">
+                    {% set x = 1 %}
+                    {% for item in surveyData.questions %}
+                        <div id="questionId_{{ x  }}" data-questionId="{{ item.questionid }}"  style="display: none;">
+                            <em><h3 id="mainQuestion">{{ item.order }}.- {{ item.question }}</h3></em>
+                            <div id="mainOptions" class="btn-group btn-group-justified" data-toggle="buttons" role="group" aria-label="...">
+                                {% for opt in item.options %}
+                                    <div class="btn-group" role="group">
+                                        <button id="option_{{ opt.optionxquestionId }}" type="button" data-x="{{ x }}" data-selected="false" class="btn btn-info optionbtn" value="{{ opt.option }}">{{ opt.option }}</button>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <textarea id="mainComment_{{ x }}" class="form-control" rows="3" placeholder="Aquí puedes escribir algún comentario al respecto de ésta pregunta"></textarea>
+                        </div>
+                        {% set x = x + 1 %}
+                    {% endfor %}
                 </div>
-                <textarea id="mainComment" class="form-control" rows="3" placeholder="Aquí puedes escribir algún comentario al respecto de ésta pregunta"></textarea>
+                <!-- Aquí terminan las preguntas -->
 
                 <div class="list-group remove-margin" style="text-align: center;">
                     <button id="prevButton" type="button" class="btn btn-warning" style="float:left;">Pregunta Anterior</button>
                     <button id="nextButton" type="button" class="btn btn-warning" style="float:right;">Siguiente Pregunta</button>
                 </div>
-
                 <br/><br/>
-
                 <div class="list-group remove-margin" style="text-align: center;">
-                    <button id="sendAnswers" type="button" class="btn btn-primary">Terminar Evaluación</button>
+                    <button id="sendAnswers" type="button" class="btn btn-primary" style="display: none;" data-toggle="modal" data-target="#create_confirm">Terminar Evaluación</button>
                 </div>
             </div>
 
             <div class="well">
                 <h6>Puedes ver tu progreso aqu&iacute;:</h6>
-
-                <div class="progress progress-bar-info progress-bar-striped active">
-                    <div id="progressbar" class="progress-bar progress-bar-success progress-bar-wizard" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+                <div class="progress progress-bar-info progress-bar-striped">
+                    <div id="progressbar" class="progress-bar progress-bar-success" role="progressbar"
+                         aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
                     </div>
                 </div>
-                <span id="questionNumer" >1 de 999</span>
+                <span id="questionNumber" >1 de {{ (x-1) }}</span>
             </div>
-
         </div>
 
         <div class="col-md-3">
@@ -60,40 +55,48 @@
                     <div class="widget-main" style="margin-top: 10%;">
                         <h4><b>Preguntas</b></h4>
                         <div class="list-group remove-margin" style="max-height: 460px; overflow: scroll;">
-                            {% for item in items %}
-                                <a href="#" id="question_{{ item.questionid }}" class="list-group-item questionButton">
+                            {% set x = 1 %}
+                            {% for item in surveyData.questions %}
+                                <a href="#" id="question_{{ x }}" class="list-group-item questionButton">
                                     <span class="pull-right">  </span>
                                     <h5 class="list-group-item-heading remove-margin"> {{ item.order }}.- {{ item.question }}</h5>
                                 </a>
+                                {% set x = x + 1 %}
                             {% endfor %}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <form id="form" method="post">
-            <input id="answers" name="answers" type="hidden">
-        </form>
-
-
+    <div id="create_confirm" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-info-circle"></i> Enviar Respuestas</h4>
+                </div>
+                <div class="modal-body">
+                    <p><b>Está a punto de enviar sus respuestas, para confirmar presione Aceptar</b></p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-default" data-dismiss="modal">Cancelar</a>
+                    <a href="#" id="confirmar" class="btn btn-success success">Aceptar</a>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="{{ asset('public/assets/js/jquery-1.11.3.min.js') }}"></script>
     <script src="{{ asset('public/assets/js/jquery-migrate-1.2.1.min.js') }}"></script>
     <script>
-
-        var items = {{ items|json_encode|raw }};
-
-        console.log(items);
-        {#
-        var pid = '{{ personid }}';
-        var un = '{{ username }}';
-        #}
-
-        var answersItems = [];
-
+        var activeQuestion = 1;
+        var answered = 0;
+        var survId = {{ surveyData.surveyid }};
+        var totalQ = {{ x - 1 }};
+        var urlSave = "{{ url('salvarResp') }}";
+        var urlRedirect = "{{ url('listar') }}";
     </script>
     <script src="{{ asset('public/assets/js/responder.js') }}"></script>
-
 {% endblock %}
