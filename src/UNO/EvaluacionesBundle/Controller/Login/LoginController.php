@@ -31,29 +31,11 @@ use UNO\EvaluacionesBundle\Entity\School;
 use UNO\EvaluacionesBundle\Entity\Uservalidationemail;
 use UNO\EvaluacionesBundle\Entity\Userhttpsession;
 
-/**
- *
- */
 DEFINE('logged_in', 'logged_in');
-/**
- *
- */
 DEFINE('login_user', 'login-user');
-/**
- *
- */
 DEFINE('personId', 'personId');
-/**
- *
- */
 DEFINE('email', 'email');
-/**
- *
- */
 DEFINE('PersonDB_L', 'UNOEvaluacionesBundle:Person');
-/**
- *
- */
 DEFINE('success', 'success');
 
 /**
@@ -240,7 +222,6 @@ class LoginController extends Controller{
             $this->updateMailValidation($_personId, $_email);
 
             $to = $_email;
-            //$to = 'potcheunam@gmail.com';
             $url = "http://dev.evaluaciones.unoi.com/app_dev.php/linkCode?code=".base64_encode($_code)."&email=".base64_encode($_email);
             $subject = "Dev Validación de Email";
             $headers = 'MIME-Version: 1.0' . "\r\n";

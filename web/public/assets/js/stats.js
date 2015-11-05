@@ -237,6 +237,11 @@ function statsUser(personid, username, avance, eval){
     $('#statsUser').modal();
     $('#bodyStatsUser').html(divList);
 
+    reflowChart();
+}
+
+function reflowChart(){
+    console.log('reflowChart');
     chart.reflow();
     chartColoumn.reflow();
 }

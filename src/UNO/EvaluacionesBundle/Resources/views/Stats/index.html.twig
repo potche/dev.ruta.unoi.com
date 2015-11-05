@@ -63,6 +63,29 @@
                     </div>
                 </div>
             </div>
+            {% else %}
+            <div class="row">
+                <div class="block-content">
+                    <div class="col-sm-12 text-center">
+                        <div class="block">
+                            <h1>No han realizado ninguna Evaluación !!!</h1>
+                            <div class="carousel slide" data-ride="carousel">
+                                <div class="carousel-inner" role="listbox">
+                                    <div class="item active">
+                                        <h2 class="text-center"><span class="fa fa-bed fa-2x"></span></h2>
+                                    </div>
+                                    <div class="item">
+                                        <h2 class="text-center"><span class="fa fa-thumbs-down fa-2x"></span></h2>
+                                    </div>
+                                    <div class="item">
+                                        <h2 class="text-center"><span class="fa fa-hourglass-end fa-2x"></span></h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {% endif %}
         </div>
 
@@ -141,9 +164,6 @@
 
                     <div id="block-resumenG" class="block">
                         <div class="block-title">
-                            <div class="block-options pull-right">
-                                <a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
-                            </div>
                             <h2>Graficas de <strong>Avance</strong></h2>
                         </div>
                         <div class="row">
@@ -186,26 +206,25 @@
     <script src="{{ asset('public/assets/js/Highcharts/modules/drilldown.js')}}"></script>
     <script src="{{ asset('public/assets/js/stats.js')}}"></script>
     <script type="text/javascript">
-
         $(function () {
 
             {% if jsonTotalResponsePie is not empty %}
+            //genera las graficas de informacion general
             pieGrl({{ jsonTotalResponsePie | raw }});
             columnGrl({{ jsonTotalResponseColumn | raw }});
             {% endif %}
 
             {% if schoolId is defined %}
             // Initialize Typeahead - Example with countries
+            // para el json de las escuelas
             var exampleTypeheadData = [{{ schoolId | raw}}];
             $('.input-typeaheadSchool').typeahead({ source: exampleTypeheadData });
             {% endif %}
 
+            //tabla con filtros y ordenamiento
             TablesDatatables.init();
 
         });
-
-
-
     </script>
 {% endblock %}
 
