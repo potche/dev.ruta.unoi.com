@@ -316,8 +316,6 @@ var CrearWizard = function() {
                 }
             });
 
-
-
             /**
              * Cargamos las preguntas para el autocompletado
              *
