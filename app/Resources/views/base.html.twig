@@ -33,17 +33,40 @@
         <!-- The following icons can be replaced with your own, they are used by desktop and mobile browsers -->
         <link rel="icon" type="image/x-icon" href="{{ asset('public/assets/images/login/faviconUnoi.ico') }}" />
         <!-- END Icons -->
+
+        <style>
+            /*loading page*/
+            .loading{
+                top: 1px;
+                margin: 0 auto;
+                position: absolute;
+                z-index: 1000;
+                width: 100%;
+                text-align: center;
+                position: absolute;
+                display: block;
+
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.55);
+                z-index: 9999;
+                color: white;
+            }
+        </style>
     </head>
     <body class="page-loading">
+
     <div id="page-wrapper">
-        <div class="preloader themed-background">
-            <div class="inner">
-                <h3 class="text-light visible-lt-ie9 visible-lt-ie10"><strong>Cargando..</strong></h3>
-                <div class="preloader-spinner hidden-lt-ie9 hidden-lt-ie10"></div>
-            </div>
-        </div>
 
         <div id="page-container" class="header-fixed-top sidebar-mini sidebar-visible-lg-mini sidebar-no-animations ">
+            <div class="loading" id="loading">
+                <button class="btn btn-lg btn-info">
+                    <i class="fa fa-refresh fa-spin"></i>
+                    Cargando, por favor espere...
+                </button>
+            </div>
             <!-- Alternative Sidebar -->
             <div id="sidebar">
                 <!-- Wrapper for scrolling functionality -->
@@ -173,8 +196,14 @@
         <script src="https://staticmx.unoi.com/global/js/plugins.js"></script>
         <script src="https://staticmx.unoi.com/global/js/app.js"></script>
         <script src="https://staticmx.unoi.com/global/js/vendor/modernizr-respond.min.js"></script>
+
         <script src="{{ asset('public/assets/js/base.js')}}"></script>
         <script>
+            //-- Load and execute javascript code used only in this page
+            $(window).load(function() {
+                $('#loading').slideUp("fast");
+            });
+
             //--- obtiene los Json de session
             $(document).ready(function() {
                 parseInfo('{{ app.session.get('privilegeS') | raw }}', '{{ app.session.get('profileS') | raw }}')

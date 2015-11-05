@@ -19,6 +19,7 @@ $(document).ready(function(){
 * This function sets all inital info for the main question: question, progress bar, options,
 * */
 function setMain(){
+    console.log(items[0].questionid);
     setCurrentQuestion(items[0].questionid);
     setProgress(0);
 
@@ -49,7 +50,9 @@ function setMain(){
 
     $("#sendAnswers").click(function () {
         var allAnswers = JSON.stringify(answersItems);
+        console.log( allAnswers );
         $("#answers").attr('value',allAnswers);
+
         $("#form").submit();
     });
     $("#sendAnswers").hide();
@@ -149,6 +152,7 @@ function optionClick(buttonid){
         if(answersItems.length==1){
             answersItems = [];
         }else {
+            console.log(answersItems.splice(index, 1));
             answersItems.splice(index, 1);
         }
         $(".optionbtn").removeClass("active");
@@ -171,6 +175,7 @@ function optionClick(buttonid){
 * */
 function updateComment(){
     var currentAnswer = $.grep(answersItems, function(e){ return e.questionid == currentItem.questionid; })[0];
+    console.log(currentAnswer);
     currentAnswer.comment = $("#mainComment").val();
 }
 
@@ -184,7 +189,7 @@ function newAnswer(buttonId){
         'comment': $("#mainComment").val(),
         'OptionXQuestion_id':buttonId.replace("option_","")
     };
-
+    console.log(newAnswer);
     return newAnswer;
 }
 

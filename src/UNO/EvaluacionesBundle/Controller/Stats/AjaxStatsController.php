@@ -21,7 +21,7 @@ class AjaxStatsController extends Controller{
     /**
      * @Route("/ajax/stats")
      *
-     *
+     * obtiene y crea la tabla con el detalle de la evaluacion
      */
     public function indexAction(Request $request){
 
@@ -38,6 +38,13 @@ class AjaxStatsController extends Controller{
         }
     }
 
+    /**
+     * @param $personId
+     * @param $title
+     * @return mixed
+     *
+     * obtiene la evaluacion selecciona
+     */
     private function getSurveyResponse($personId, $title) {
 
         $em = $this->getDoctrine()->getManager();
@@ -57,24 +64,31 @@ class AjaxStatsController extends Controller{
         return ($_surveyResponse);
     }
 
+    /**
+     * @param $survey
+     * @param $title
+     * @return string
+     *
+     * crea una tabla con la informacion obtenida en el metodo getSurveyResponse()
+     */
     private function creaTable($survey,$title){
         $table ='
-        <div class="row text-center ">
-            <div class="block-content text-center">
+        <div class="row">
+            <div class="block-content">
                 <div class="col-sm-12 col-md-12 col-lg-12">
                     <div class="block">
                         <div class="block-title">
                             <h2>Evaluación <strong>'.$title.'</strong></h2>
                         </div>
                         <div class="table-responsive">
-                            <p>Detalle de la Evaluación.</p>
-                            <table id="userEva-datatable" class="table table-vcenter table-condensed table-bordered">
+                            <p><em>Detalle de la Evaluación.</em></p>
+                            <table id="userEva-datatable" class="table table-vcenter table-condensed table-bordered text-center">
                                 <thead>
                                     <tr>
                                         <th class="text-center">Orden</th>
-                                        <th class="text-center">Preunta</th>
+                                        <th class="text-center">Pregunta</th>
                                         <th class="text-center">Respuesta</th>
-                                        <th class="text-center">Comemntario</th>
+                                        <th class="text-center">Comentario</th>
                                     </tr>
                                 </thead>
                                 <tbody>';

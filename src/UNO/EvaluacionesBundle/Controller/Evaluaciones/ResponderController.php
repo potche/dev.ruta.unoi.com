@@ -136,6 +136,8 @@ class ResponderController extends Controller
 
         $answersItems = json_decode( $request->request->get('answers'),true );
 
+        print_r($answersItems);
+        exit();
         foreach( $answersItems as $answerItem ){
 
             $newAnswer = new Answer();
