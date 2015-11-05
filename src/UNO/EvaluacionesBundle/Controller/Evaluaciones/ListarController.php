@@ -83,44 +83,43 @@ class ListarController extends Controller
         $countToBeAnswered = 0;
         $surveyList = array();
 
-        /*
-         * De cada encuesta preguntamos si ya está resuelta,
-         * o está pendiende de resolver. Para ello utilizamos
-         * estos códigos:
-         *
-         * 4: El usuario ya respondió la evaluación
-         * 5: El usuario dejó incompleta la evaluación
-         *
-         */
+        // Consulta para hallar qué evaluaciones tienen un estatus de terminadas, se compararán con las primeras obtenidas
+
+        $qb = $em->createQueryBuilder();
+        $answered = $qb->select('su.surveyid')
+            ->from('UNOEvaluacionesBundle:Survey', 'su')
+            ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile', 'sxp', 'WITH', 'sxp.surveySurveyid = su.surveyid')
+            ->innerJoin('UNOEvaluacionesBundle:Log', 'l', 'WITH','l.surveySurveyid = su.surveyid')
+            ->add('where', $qb->expr()->andx(
+                $qb->expr()->in('sxp.profileProfileid',$profiles),
+                $qb->expr()->in('sxp.schoollevelid',$levels)
+            ))
+            ->andWhere('su.active = 1')
+            ->andWhere('l.personPersonid = :personId')
+            ->andWhere('l.actionaction = 4')
+            ->groupBy('su.surveyid')
+            ->setParameters(array(
+                'personId' => $personID
+            ))
+            ->getQuery()
+            ->getResult();
+
+        $answered_surveys = array_column($answered,'surveyid');
+
+        //Asigno estatus de evaluaciones con base en la consulta previa
 
         if($evals != null){
 
             foreach ($evals as $survey) {
 
-                $qb = $em->createQueryBuilder();
-                $query = $qb->select('act.idaction')
-                    ->from('UNOEvaluacionesBundle:Log', 'l')
-                    ->innerJoin('UNOEvaluacionesBundle:Action', 'act', 'WITH', 'act.idaction = l.actionaction')
-                    ->where('l.personPersonid = :personId')
-                    ->andWhere('l.surveySurveyid = :surveyId')
-                    ->andWhere('l.actionaction IN (4,5)')
-                    ->orderBy('l.date','DESC')
-                    ->setParameters(array(
-                        'personId' => $personID,
-                        'surveyId' => $survey['surveyid'],
-                    ))
-                    ->getQuery()
-                    ->getResult();
+                if(!in_array($survey['surveyid'],$answered_surveys)) {
 
-                if(empty($query)) {
-
-                    $status = 0;
+                    $status = 5;
                     $countToBeAnswered++;
-                }
-                else {
 
-                    $status = $query[0]['idaction'];
-                    $status == 5 ? $countToBeAnswered++ : null;
+                } else {
+
+                    $status = 4;
                 }
 
                 // Agregamos al arreglo de encuestas lo necesario para mostrarlas en el dashboard
