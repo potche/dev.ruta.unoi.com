@@ -5,6 +5,9 @@
 function setProgress(progress){
     $("#progressbar").animate({width: progress+'%'});
     $("#progressbar").attr("aria-valuenow",progress);
+
+    console.log(progress);
+
     if(progress==100){
         $("#sendAnswers").show();
     }
@@ -28,16 +31,26 @@ function hideQuest(id){
  * @param buttonid
  */
 function optionClick(buttonid){
+
+    var contestada = false;
     $("button[data-x='"+activeQuestion+"']").each(function(){
-        $(this).attr('data-selected', 'false')
+        if ($(this).attr('data-selected') === 'true'){
+            contestada= true;
+        }
+        $(this).attr('data-selected', 'false');
         $(this).removeClass("active");
     });
+
+    if (!contestada){
+        answered++;
+    }
+
+
     $('#'+buttonid+"[data-x='"+activeQuestion+"']").attr('data-selected', 'true');
     $('#'+buttonid+"[data-x='"+activeQuestion+"']").addClass("active");
     $("#question_"+activeQuestion).addClass("active");
     $("#question_"+activeQuestion+" span").first().html('<i class="fa fa-check"></i>');
     $("#mainComment").show("slow");
-    answered++;
     var totalProgress = (answered / totalQ)*100;
     setProgress( totalProgress );
 }
@@ -128,6 +141,7 @@ $(document).ready(function() {
     setProgress(0);
     setCurrentQ(1);
     $("#prevButton").click(function(){
+
         if (activeQuestion > 1 ){
             setCurrentQ( activeQuestion - 1 );
         }
