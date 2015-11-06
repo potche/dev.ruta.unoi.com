@@ -11,6 +11,7 @@ namespace UNO\EvaluacionesBundle\Controller\Evaluaciones;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use UNO\EvaluacionesBundle\Entity\Answer;
 use UNO\EvaluacionesBundle\Entity\Log;
 
@@ -20,82 +21,89 @@ class ResponderController extends Controller
     public function indexAction(Request $request, $id){
         $surveyID = $id;
         $session = $request->getSession();
-        /*
-         * This section checks if the user is already logged in,
-         * in that case $personId gets the personIdS value from the session variable
-         * otherwise is redirected to the Login
-         * */
-        if ( !$session->has('logged_in') ) {
+
+        if(!Utils::isUserLoggedIn($session)){
+
             return $this->redirectToRoute('login');
-        }else{
-            $personId = $session->get('personIdS');
-            if(!Utils::isSurveyAuthorized($session,$surveyID)){
-                return $this->render('@UNOEvaluaciones/Evaluaciones/responderError.html.twig',array(
-                    'title'=>'Error',
-                    'message'=>'Lo sentimos, el contenido que buscas es erróneo',
-                ));
-            }else{
-                $_survey = $this->getQuestions($surveyID);
-                $surveyJson = $this->creaJson($_survey);
-                return $this->render('@UNOEvaluaciones/Evaluaciones/responder.html.twig', array(
-                    'surveyData' => json_decode($surveyJson, true)
-                ));
-            }
         }
+
+        if(!Utils::isSurveyAuthorized($session,$surveyID)){
+
+            throw new AccessDeniedHttpException('No estás autorizado para ver este contenido');
+        }
+
+        $personId = $session->get('personIdS');
+        $questions = $this->getQuestions($surveyID,$personId);
+        $_survey = $this->getCurrentSurvey($surveyID);
+        $surveyJson = $this->creaJson($_survey, $questions);
+
+        return $this->render('@UNOEvaluaciones/Evaluaciones/responder.html.twig', array(
+            'surveyData' => json_decode($surveyJson, true)
+        ));
     }
 
-    private function getQuestions($surveyId){
+    private function getQuestions($surveyId, $personId){
+
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
-
-        $_survey = $qb->select("S.surveyid, S.title, S.description, Q.questionid, QS.order, Q.question, Sub.subcategoryid, Sub.subcategory, OQ.optionxquestionId, O.optionid, O.option")
-            ->from('UNOEvaluacionesBundle:Survey','S')
-            ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','QS', 'WITH', 'S.surveyid = QS.surveySurveyid')
-            ->innerJoin('UNOEvaluacionesBundle:Question','Q', 'WITH', 'QS.questionQuestionid = Q.questionid')
-            ->innerJoin('UNOEvaluacionesBundle:Subcategory','Sub', 'WITH', 'Q.subcategorySubcategoryid = Sub.subcategoryid')
-            ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','OQ', 'WITH', 'QS.questionxsurveyId = OQ.questionxsurvey')
-            ->innerJoin('UNOEvaluacionesBundle:Option','O', 'WITH', 'OQ.optionOptionid = O.optionid')
-            ->where('S.surveyid = :surveyId')
-            ->setParameter('surveyId', $surveyId)
-            ->orderBy('Q.questionid, QS.order, O.optionid')
+        $_survey = $qb->select("qxs.order, q.questionid, q.question, oxq.optionxquestionId, o.option, COALESCE(a.answer,' ') as ans")
+            ->from('UNOEvaluacionesBundle:Question','q')
+            ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','qxs','WITH','qxs.questionQuestionid = q.questionid AND qxs.surveySurveyid = :surveyId')
+            ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','oxq', 'WITH', 'qxs.questionxsurveyId = oxq.questionxsurvey')
+            ->leftJoin('UNOEvaluacionesBundle:Option','o', 'WITH', 'oxq.optionOptionid = o.optionid')
+            ->leftJoin('UNOEvaluacionesBundle:Answer','a','WITH','oxq.optionxquestionId = a.optionxquestion AND a.personPersonid = :personId')
+            ->groupBy('qxs.order, q.questionid, q.question, oxq.optionxquestionId')
+            ->orderBy('qxs.order')
+            ->setParameter('surveyId',$surveyId)
+            ->setParameter('personId',$personId)
             ->getQuery()
             ->getResult();
 
-        return $_survey;
+        $questions = array();
+        foreach($_survey as $q) {
+
+            if(!array_key_exists($q['questionid'],$questions)){
+
+                $questions[$q['questionid']] = array(
+                    'questionid' => $q['questionid'],
+                    'order' => $q['order'],
+                    'question' => $q['question'],
+                    'options' => array(),
+                    'answer' => ''
+                );
+            }
+
+            array_push($questions[$q['questionid']]['options'],array(
+                'option' => $q['option'],
+                'optionxquestionId' => $q['optionxquestionId']
+            ));
+
+            if($q['ans'] != ' ') {
+
+                $questions[$q['questionid']]['answer'] = $q['ans'];
+            }
+        }
+        return $questions;
     }
 
-    private function creaJson($_survey){
-        $surveyJson = array(
-            'surveyid' => $_survey[0]['surveyid'],
-            'title' => $_survey[0]['title'],
-            'description' => $_survey[0]['description']
+    private function creaJson($_survey,$questions) {
+
+        $qsToAnswer = array();
+        foreach($questions as $q){
+
+            if($q['answer'] == '') {
+                array_push($qsToAnswer,$q);
+            }
+        }
+
+        $json_pack = array(
+            'surveyid' => $_survey->getSurveyid(),
+            'title' => $_survey->getTitle(),
+            'description' => $_survey->getDescription(),
+            'questions' => $qsToAnswer
         );
 
-        $question = array();
-
-        foreach(array_unique(array_column($_survey,'questionid','order')) as $valQue){
-            $i = 0;
-            foreach($_survey as $valSur){
-                if($valQue == $valSur['questionid']){
-                    $options['questionid'] = $valSur['questionid'];
-                    $options['order'] = $valSur['order'];
-                    $options['question'] = $valSur['question'];
-                    $options['subcategoryid'] = $valSur['subcategoryid'];
-                    $options['subcategory'] = $valSur['subcategory'];
-
-                    $options['options'][$i] = array(
-                        "optionid" => $valSur['optionid'],
-                        "option" => $valSur['option'],
-                        "optionxquestionId" => $valSur['optionxquestionId']
-                    );
-                    $i++;
-                }
-            }
-            array_push($question,$options);
-        }
-        $surveyJson['questions'] = $question ;
-        //print_r($surveyJson);
-        return json_encode($surveyJson);
+        return json_encode($json_pack);
     }
 
     private function getOptionXQuestion($id){
