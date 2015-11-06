@@ -72,11 +72,11 @@ class ListarController extends Controller
                     )
                 ))
                 ->andWhere('su.active = 1')
+                ->andWhere('su.closingdate >= CURRENT_DATE()')
                 ->groupBy('su.surveyid, su.title, su.closingdate')
                 ->orderBy('su.title')
                 ->getQuery()
                 ->getResult();
-
         }
 
         // Para efectos estadísticos llevamos la cuenta de cuántas evaluaciones faltan por responder

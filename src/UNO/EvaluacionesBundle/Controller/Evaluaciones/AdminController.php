@@ -9,6 +9,7 @@
 namespace UNO\EvaluacionesBundle\Controller\Evaluaciones;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\CssSelector\Exception\InternalErrorException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -188,6 +189,33 @@ class AdminController extends Controller {
         return $data;
     }
 
+    public function setSurveyStatusAction(Request $request) {
 
+        $surveyId = $request->request->get('surveyid');
+        $status = $request->request->get('surveyStatus');
+
+        if (!$surveyId || !$status) {
+
+            $response = json_encode(array('message' => 'Petición malformada'));
+            return new Response($response, 500, array(
+                'Content-Type' => 'application/json'
+            ));
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $survey = $this->getDoctrine()
+            ->getRepository('UNOEvaluacionesBundle:Survey')
+            ->findOneBy(array(
+                'surveyid' => $surveyId
+            ));
+
+        $survey->setActive($status === 'true');
+        $em->flush();
+
+        $response = json_encode(array('message' => 'Se ha actualizado con exito'));
+        return new Response($response, 200, array(
+            'Content-Type' => 'application/json'
+        ));
+    }
 
 }

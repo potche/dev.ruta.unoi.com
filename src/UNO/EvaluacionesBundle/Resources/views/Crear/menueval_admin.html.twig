@@ -49,7 +49,11 @@
                         {% for survey in surveylist %}
                             <tr>
                                 <td class="text-center hidden-sm hidden-xs">
-                                    <span class="label label-success" >{{ survey['id'] }}</span>
+                                    {% if survey['active'] %}
+                                        <span class="label label-success" >{{ survey['id'] }}</span>
+                                    {% else %}
+                                        <span class="label label-danger" >{{ survey['id'] }}</span>
+                                    {% endif %}
                                 </td>
                                 <td>
                                     <b>{{ survey['title'] }}</b>
@@ -76,9 +80,11 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-xs">
-                                        <a href="/" class="label label-danger" style="display: block;" data-toggle="tooltip" data-placement="top" title="Hacer una evaluación no visible al usuario"><i class="fa fa-times"></i> Desactivar</a>
-                                        <br>
-                                        <a href="/" class="label label-info" style="display: block;" data-toggle="tooltip" data-placement="top" title="Puedes modificar el título y la fecha de fin de la evaluación"><i class="fa fa-pencil"></i> Modificar</a>
+                                        {% if survey['active'] %}
+                                        <a href="#" id="{{ survey['id'] }}" class="disable-survey label label-danger " style="display: block;" data-toggle="modal" data-target="#disable_confirm" data-placement="top"><i class="fa fa-times"></i> Inactivar</a>
+                                        {% else %}
+                                        <a href="#" id="{{ survey['id'] }}" class="enable-survey label label-success " style="display: block;" data-toggle="modal" data-target="#disable_confirm" data-placement="top"><i class="fa fa-check"></i> Activar</a>
+                                        {% endif %}
                                     </div>
                                 </td>
                             </tr>
@@ -91,6 +97,24 @@
         </div>
     </div>
 
+    <div id="disable_confirm" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-info-circle"></i> Cambiar estatus de evaluación</h4>
+                </div>
+                <div class="modal-body">
+                    <p><b>Para confirmar el cambio de estatus de esta evaluación, presiona Aceptar</b></p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-default" data-dismiss="modal">Cancelar</a>
+                    <a href="#" id="confInactivar" class="btn btn-success success">Aceptar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
     <script src="http://code.highcharts.com/highcharts.js"></script>
@@ -98,7 +122,9 @@
     <script src="http://code.highcharts.com/modules/drilldown.js"></script>
     <script src="{{ asset('public/assets/js/resumen.js') }}"></script>
     <script src="{{ asset('public/assets/js/menu_crear_charts.js') }}"></script>
+    <script src="{{ asset('public/assets/js/surveystatus.js') }}"></script>
     <script>$(function(){ TablesDatatables.init(); });</script>
     <script>$(function(){ Charts.init('{{ stats_general|json_encode()|raw }}'); });</script>
+    <script>$(function(){ SurveyStatus.init('{{ url('ajaxSurveyStatus') }}','{{ url('evaluaciones') }}'); });</script>
 
 {% endblock %}
