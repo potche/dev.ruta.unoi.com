@@ -1,74 +1,86 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <div class="row">
-        <div class="col-md-9">
-            <h1 class="widget-header text-center"><strong>{{ surveyData.title }}</strong></h1>
-            <hr/>
-            <div class="well">
-                <div class="alert alert-info alert-dismissable text-justify">
-                    <h6 class="text-justify"><i class="fa fa-info-circle"></i> {{ surveyData.description }}.</h6>
-                </div>
-                <!-- Aquí empiezan las preguntas -->
-                <div id="questions">
-                    {% set x = 1 %}
-                    {% for item in surveyData.questions %}
-                        <div id="questionId_{{ x  }}" data-questionId="{{ item.questionid }}"  style="display: none;">
-                            <em><h3 id="mainQuestion">{{ item.order }}.- {{ item.question }}</h3></em>
-                            <div id="mainOptions" class="btn-group btn-group-justified" data-toggle="buttons" role="group" aria-label="...">
-                                {% for opt in item.options %}
-                                    <div class="btn-group" role="group">
-                                        <button id="option_{{ opt.optionxquestionId }}" type="button" data-x="{{ x }}" data-selected="false" class="btn btn-info optionbtn" value="{{ opt.option }}">{{ opt.option }}</button>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                            <textarea id="mainComment_{{ x }}" class="form-control" rows="3" placeholder="Aquí puedes escribir algún comentario al respecto de ésta pregunta"></textarea>
-                        </div>
-                        {% set x = x + 1 %}
-                    {% endfor %}
-                </div>
-                <!-- Aquí terminan las preguntas -->
-
-                <div class="list-group remove-margin" style="text-align: center;">
-                    <button id="prevButton" type="button" class="btn btn-warning" style="float:left;">Pregunta Anterior</button>
-                    <button id="nextButton" type="button" class="btn btn-warning" style="float:right;">Siguiente Pregunta</button>
-                </div>
-                <br/><br/>
-                <div class="list-group remove-margin" style="text-align: center;">
-                    <button id="sendAnswers" type="button" class="btn btn-primary" style="display: none;" data-toggle="modal" data-target="#create_confirm">Terminar Evaluación</button>
-                </div>
-            </div>
-
-            <div class="well">
-                <h6>Puedes ver tu progreso aqu&iacute;:</h6>
-                <div class="progress progress-bar-info progress-bar-striped">
-                    <div id="progressbar" class="progress-bar progress-bar-success" role="progressbar"
-                         aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
-                    </div>
-                </div>
-                <span id="questionNumber" >1 de {{ (x-1) }}</span>
+    <div id="page-content">
+        <div class="content-header">
+            <div class="header-section">
+                <h1 style="text-align: left;">
+                    <b>{{ surveyData.title }}</b>
+                </h1>
+                <br>
+                <p style="text-align: left;">
+                    <i class="fa fa-info-circle text-info"></i><b class="text-info">{{ " Instrucciones: " }}</b>{{ surveyData.description }}
+                </p>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-9">
+                <div class="well">
+                    <!-- Aquí empiezan las preguntas -->
+                    <div id="questions">
+                        {% set x = 1 %}
+                        {% for item in surveyData.questions %}
+                            <div id="questionId_{{ x  }}" data-questionId="{{ item.questionid }}"  style="display: none;">
+                                <h3 id="mainQuestion"><em>{{ item.order }}.- {{ item.question }}</em></h3>
+                                <textarea id="mainComment_{{ x }}" class="form-control" rows="4" placeholder="Aquí puedes escribir algún comentario al respecto de ésta pregunta"></textarea>
+                                <br>
+                                <div id="mainOptions" class="btn-group btn-group-justified" data-toggle="buttons" role="group" aria-label="...">
+                                    {% for opt in item.options %}
+                                        <div class="btn-group" role="group">
+                                            <button id="option_{{ opt.optionxquestionId }}" type="button" data-x="{{ x }}" data-selected="false" class="btn btn-info optionbtn" value="{{ opt.option }}">{{ opt.option }}</button>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <br>
+                            </div>
+                            {% set x = x + 1 %}
+                        {% endfor %}
+                    </div>
+                    <!-- Aquí terminan las preguntas -->
 
-        <div class="col-md-3">
-            <div class="widget">
-                <div class="widget-advanced widget-advanced-alt themed-background-autumn">
-                    <div class="widget-main" style="margin-top: 10%;">
-                        <h4><b>Preguntas</b></h4>
-                        <div class="list-group remove-margin" style="max-height: 460px; overflow: scroll;">
-                            {% set x = 1 %}
-                            {% for item in surveyData.questions %}
-                                <a href="#" id="question_{{ x }}" class="list-group-item questionButton">
-                                    <span class="pull-right">  </span>
-                                    <h5 class="list-group-item-heading remove-margin"> {{ item.order }}.- {{ item.question }}</h5>
-                                </a>
-                                {% set x = x + 1 %}
-                            {% endfor %}
-                        </div>
+                    <div class="list-group remove-margin" style="text-align: center;">
+                        <button id="prevButton" type="button" class="btn btn-primary" style="float:left;"><i class="fa fa-chevron-left"></i> </button>
+                        <button id="nextButton" type="button" class="btn btn-primary" style="float:right;"><i class="fa fa-chevron-right"></i> </button>
+                    </div>
+                    <br/><br/>
+                    <div class="list-group remove-margin" style="text-align: center;">
+                        <button id="sendAnswers" type="button" class="btn btn-primary" style="display: none;" data-toggle="modal" data-target="#create_confirm">Terminar Evaluación</button>
                     </div>
                 </div>
+
+                <div class="well">
+                    <h6>Puedes ver tu progreso aqu&iacute;:</h6>
+                    <div class="progress progress-bar-info progress-bar-striped">
+                        <div id="progressbar" class="progress-bar progress-bar-success" role="progressbar"
+                             aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+                        </div>
+                    </div>
+                    <span id="questionNumber" >1 de {{ (x-1) }}</span>
+                </div>
+            </div>
+            <div class="col-md-3">
+
+                    <div class="widget">
+                        <div class="widget-advanced widget-advanced-alt themed-background-autumn">
+                            <div class="widget-main">
+                                <h4><b>Preguntas</b></h4>
+                                <div class="list-group remove-margin" style="max-height: 460px; overflow: scroll;">
+                                    {% set x = 1 %}
+                                    {% for item in surveyData.questions %}
+                                        <a href="#" id="question_{{ x }}" class="list-group-item questionButton">
+                                            <span class="pull-right">  </span>
+                                            <h5 class="list-group-item-heading remove-margin"> {{ item.order }}.- {{ item.question }}</h5>
+                                        </a>
+                                        {% set x = x + 1 %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
             </div>
         </div>
     </div>
+
 
     <div id="create_confirm" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
         <div class="modal-dialog">
