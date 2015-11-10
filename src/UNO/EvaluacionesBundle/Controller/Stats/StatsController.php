@@ -31,9 +31,10 @@ class StatsController extends Controller{
     private $_schoolIdPerson;
 
     private $_surveyResultsGral = array();
-    private $_jsonTotalResponsePie;
-    private $_jsonTotalResponseColumn;
+    private $_jsonTotalResponsePie = '';
+    private $_jsonTotalResponseColumn = '';
     private $_userList = array();
+    private $_nameSchool = 'General';
 
     /**
      * @Route("/estadisticas")
@@ -55,7 +56,7 @@ class StatsController extends Controller{
                 if (in_array('SuperAdmin', $this->_profile)) {
                     $this->getSchoolResponse();
                     return $this->render('UNOEvaluacionesBundle:Stats:index.html.twig', array(
-                        'title' => 'Estadisticas Admin',
+                        'nameSchool' => $this->_nameSchool,
                         'jsonTotalResponsePie' => $this->_jsonTotalResponsePie,
                         'jsonTotalResponseColumn' => $this->_jsonTotalResponseColumn,
                         'userList' => $this->_userList,
@@ -64,7 +65,7 @@ class StatsController extends Controller{
                 } else {
                     #vista para director
                     return $this->render('UNOEvaluacionesBundle:Stats:index.html.twig', array(
-                        'title' => 'Estadisticas',
+                        'nameSchool' => $this->_nameSchool,
                         'jsonTotalResponsePie' => $this->_jsonTotalResponsePie,
                         'jsonTotalResponseColumn' => $this->_jsonTotalResponseColumn,
                         'userList' => $this->_userList,
@@ -106,9 +107,13 @@ class StatsController extends Controller{
     private function setSchooIdPerson($session){
         $schoolIdPerson = '';
         $_schoolIdPerson = json_decode($session->get('schoolIdS'));
-        foreach($_schoolIdPerson as $value){
-            $schoolIdPerson .= $value->schoolid. ', ';
+        if (!in_array('SuperAdmin', $this->_profile)) {
+            foreach($_schoolIdPerson as $value){
+                $schoolIdPerson .= $value->schoolid. ', ';
+                $this->_nameSchool = $value->school;
+            }
         }
+
         $this->_schoolIdPerson = rtrim($schoolIdPerson, ', ');
     }
 
@@ -118,24 +123,29 @@ class StatsController extends Controller{
      * cacha el colegio filtrado y enviado por metdo post (Admin)
      */
     private function setSchoolIdFrm($request){
-        $idPost = $request->request->get('schooId-typeahead');
+        $idPost = $request->request->get('schooIdFrm');
         if(!empty($idPost)){
             $id = explode('-',$idPost);
             $this->_schoolIdFrm = $id[0];
+            $this->_nameSchool = $id[1];
         }else{
             $this->_schoolIdFrm = 0;
+            $this->_nameSchool = 'General';
         }
     }
 
     /**
      * este metodo invoca a otros metodos con el fin de separar las acciones
      */
-    private function getResults() {
+    private function getResults()
+    {
         //obtencion de los datos generales para las estadisticas
         $this->getSurveyResultsGral();
-        $this->getTotalResponse();
-        //obtencion de los usuario
-        $this->creaListUser();
+        if (!empty($this->_surveyResultsGral)) {
+            $this->getTotalResponse();
+            //obtencion de los usuario
+            $this->creaListUser();
+        }
     }
 
     /**

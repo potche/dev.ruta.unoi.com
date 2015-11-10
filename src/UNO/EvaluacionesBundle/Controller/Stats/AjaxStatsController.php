@@ -82,7 +82,7 @@ class AjaxStatsController extends Controller{
                         </div>
                         <div class="table-responsive">
                             <p><em>Detalle de la Evaluación.</em></p>
-                            <table id="userEva-datatable" class="table table-vcenter table-condensed table-bordered text-center">
+                            <table id="example-datatable" class="table table-vcenter table-condensed table-bordered">
                                 <thead>
                                     <tr>
                                         <th class="text-center">Orden</th>
