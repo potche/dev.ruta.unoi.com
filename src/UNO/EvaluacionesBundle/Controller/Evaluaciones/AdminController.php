@@ -91,20 +91,28 @@ class AdminController extends Controller {
 
                     $surveys[$surveyid]['id'] = $swp['surveyid'];
                     $surveys[$surveyid]['title'] = $swp['title'];
-                    $surveys[$surveyid]['created'] = $swp['creationdate']->format('j/M/Y').' por: '.$swp['createdby'];
+                    $surveys[$surveyid]['createdon'] = $swp['creationdate']->format('j/M/Y');
+                    $surveys[$surveyid]['createdby'] = $swp['createdby'];
                     $surveys[$surveyid]['closingdate'] = $swp['closingdate']->format('j/M/Y \@ g:i a');
                     $surveys[$surveyid]['progress'] = $stats['bySurvey'][$surveyid]['avance'];
                     $surveys[$surveyid]['completed'] = $stats['bySurvey'][$surveyid]['respondido'];
                     $surveys[$surveyid]['expected'] = $stats['bySurvey'][$surveyid]['esperado'];
                     $surveys[$surveyid]['active'] = $swp['active'];
-                    array_push($surveys[$surveyid]['profiles'],$swp['profile'].' de '.$swp['schoollevel']);
-                }
-                elseif( $swp['surveyid'] == $surveyid && array_key_exists('surveyid',$surveys[$surveyid])){
 
-                    array_push($surveys[$surveyid]['profiles'],$swp['profile'].' de '.$swp['schoollevel']);
+                    if(!array_key_exists($swp['profile'],$surveys[$surveyid]['profiles'])) {
+
+                        $surveys[$surveyid]['profiles'][$swp['profile']] = array();
+                    }
+
+                    array_push($surveys[$surveyid]['profiles'][$swp['profile']],$swp['schoollevel']);
+                }
+                elseif( $swp['surveyid'] == $surveyid && array_key_exists('surveyid',$surveys[$surveyid])) {
+
+                    array_push($surveys[$surveyid]['profiles'][$swp['profile']],$swp['schoollevel']);
                 }
             }
         }
+
         return $surveys;
     }
 

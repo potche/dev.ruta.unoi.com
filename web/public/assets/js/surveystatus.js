@@ -1,24 +1,23 @@
-var SurveyStatus = function(){
+var SurveyTable = function(){
 
     return{
+
         init: function(urlPost, redirectUrl){
 
             var accion = '';
             var survey = '';
 
+            //Asigno variables al dar click en inactivar para manejar evento de inactivación
             $('.disable-survey, .enable-survey').click(function(){
 
                 accion = $(this).hasClass('enable-survey');
                 survey = $(this).attr('id');
-
-                console.log(accion)
-                console.log(survey)
             });
 
+            //Manejo evento para enviar cambio de estado de evaluación
             $('#confInactivar').click(function(){
 
                 $(this).modal("hide");
-
                 $.ajax({
 
                     url: urlPost,
@@ -31,6 +30,14 @@ var SurveyStatus = function(){
 
                     window.location.href=redirectUrl;
                 });
+            });
+
+            // Manejo evento para mostrar matríz de perfiles y niveles
+            $('.btn-matriz').click(function(){
+
+                event.preventDefault();
+                $('#modal_perfiles').modal();
+                $('#matriz-perfiles').html($(this).next().html());
             });
         }
     }
