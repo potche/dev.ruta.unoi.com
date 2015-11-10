@@ -167,7 +167,7 @@ class ResponderController extends Controller
         }
     }
 
-    private function createLog($status,$survey, $personId){
+    private function createLog($status,$survey, $personId) {
         $em = $this->getDoctrine()->getManager();
         $newAction = $this->getDoctrine()->getRepository('UNOEvaluacionesBundle:Action')->findOneBy(array("actioncode"=>$status));
         $newLog = new Log();
