@@ -1,188 +1,7 @@
 /**
  * Created by isra on 20/10/15.
  */
-function pieGrl(jsonTotalResponsePie) {
-    var chartGrl = new Highcharts.Chart({
-        chart: {
-            type: 'pie',
-            renderTo: 'container',
-            options3d: {
-                enabled: true,
-                alpha: 45,
-                beta: 0
-            }
-        },
-        title: {
-            text: 'Estadistica General'
-        },
-        subtitle: {
-            text: 'En porcentaje.'
-        },
-        tooltip: {
-            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-        },
-        plotOptions: {
-            pie: {
-                allowPointSelect: true,
-                cursor: 'pointer',
-                depth: 35,
-                dataLabels: {
-                    enabled: true,
-                    format: '{point.name}'
-                }
-            }
-        },
-        series: [{
-            type: 'pie',
-            name: 'Respuesta',
-            data: jsonTotalResponsePie
-            }]
-    });
-}
 
-//---------------------------------------------
-function columnGrl(jsonTotalResponseColumn, jsonTotalResponseDDColumn) {
-    // Create the chart
-    var chartColoumn = new Highcharts.Chart({
-        chart: {
-            type: 'column',
-            renderTo: 'containerColumn'
-        },
-        title: {
-            text: 'Estadistica General'
-        },
-        subtitle: {
-            text: 'Cantidad de Respuestas.'
-        },
-        xAxis: {
-            type: 'category'
-        },
-        yAxis: {
-            title: {
-                text: 'Total de preguntas contestadas'
-            }
-
-        },
-        legend: {
-            enabled: false
-        },
-        plotOptions: {
-            series: {
-                borderWidth: 0,
-                dataLabels: {
-                    enabled: true,
-                    format: '{point.y}'
-                }
-            }
-        },
-
-        tooltip: {
-            headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-            pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y}</b><br/>'
-        },
-
-        series: [{
-                    name: 'Respuesta',
-                    colorByPoint: true,
-                    data: jsonTotalResponseColumn
-                }]
-    });
-}
-
-//---------------------------------------
-var chart;
-
-function pieGrlLU(jsonTotalResponseLUPie) {
-    chart = new Highcharts.Chart({
-        chart: {
-            type: 'pie',
-            renderTo: 'containerPieLU',
-            options3d: {
-                enabled: true,
-                alpha: 45,
-                beta: 0
-            }
-        },
-        title: {
-            text: 'Estadistica General'
-        },
-        subtitle: {
-            text: 'En porcentaje.'
-        },
-        tooltip: {
-            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-        },
-        plotOptions: {
-            pie: {
-                allowPointSelect: true,
-                cursor: 'pointer',
-                depth: 35,
-                dataLabels: {
-                    enabled: true,
-                    format: '{point.name}'
-                }
-            }
-        },
-        series: [{
-            type: 'pie',
-            name: 'Respuesta',
-            data: jsonTotalResponseLUPie
-        }]
-    });
-
-}
-
-//---------------------------------------------
-var chartColoumn;
-function columnGrlLU(jsonTotalResponseLUColumn) {
-    // Create the chart
-    chartColoumn = new Highcharts.Chart({
-        chart: {
-            type: 'column',
-            renderTo: 'containerColumnLU'
-        },
-        title: {
-            text: 'Estadistica General'
-        },
-        subtitle: {
-            text: 'Cantidad de Respuestas.'
-        },
-        xAxis: {
-            type: 'category'
-        },
-        yAxis: {
-            title: {
-                text: 'Total de preguntas contestadas'
-            }
-
-        },
-        legend: {
-            enabled: false
-        },
-        plotOptions: {
-            series: {
-                borderWidth: 0,
-                dataLabels: {
-                    enabled: true,
-                    format: '{point.y}'
-                }
-            }
-        },
-
-        tooltip: {
-            headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-            pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y}</b><br/>'
-        },
-
-        series: [{
-            name: 'Respuesta',
-            colorByPoint: true,
-            data: jsonTotalResponseLUColumn
-        }]
-    });
-}
-
-//---------------------------------------
 $( "#schoolId" ).change(function() {
     $("#schoolFrm").submit();
 });
@@ -225,14 +44,28 @@ function statsUser(personid, username, avance, eval){
     createGraph(siG, noG, noseG);
 
 
-    var progress = '<h1>avance: <h3>'+avance+'%</h3></h1>' +
-                    '<div class="progress progress-bar-info progress-bar-striped">'+
-                        '<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'+avance+'"aria-valuemin="0" aria-valuemax="100" style="width: '+avance+'%;">'+
-                        '</div>'+
-                    '</div>'
-                    ;
+    var progress =  '<div class="progress progress-bar-info progress-bar-striped">'+
+            '<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'+avance+'"aria-valuemin="0" aria-valuemax="100" style="width: '+avance+'%;">'+
+            avance+
+            '%</div>'+
+            '</div>'
+        ;
 
-    var divList = "<div class='row'><div class='col-sm-6'><h1>"+username+"</h1></div><div class='col-sm-4 col-sm-offset-2'>"+progress+"</div></div><h5>Selecciona alguna Evaluación para ver su <b>detalle</b>:</h5><div class='well'><select id='evaluacioLU' class='form-control' size='1' onchange='(abc(this.value))'><option value='"+siG+":"+noG+":"+noseG+":0'>Global</option>"+list+"</select></div>";
+    var divList = "<div class='row'>" +
+        "<div class='col-sm-6'>" +
+        "<img src='public/assets/images/login/icon_niño1.png' alt='avatar' class='img-circle'>" +
+        "<h1>"+username+"</h1>" +
+        progress+
+        "<small><em>Porcentaje de avance</em></small><hr/>"+
+        "</div>" +
+        "<div class='col-sm-4 col-sm-offset-2'></div>" +
+        "</div>" +
+        "<div class='well'>" +
+        "<h5>Selecciona alguna Evaluación para ver su <b>detalle</b>:</h5>" +
+        "<select id='evaluacioLU' class='form-control' size='1' onchange='(abc(this.value))'>" +
+        "<option value='"+siG+":"+noG+":"+noseG+":0'>Global</option>"+list+"" +
+        "</select>" +
+        "</div>";
 
     $('#statsUser').modal();
     $('#bodyStatsUser').html(divList);
@@ -277,8 +110,8 @@ var TablesDatatables = function() {
 
             /* Initialize Datatables */
             $('#userList-datatable').dataTable({
-                columnDefs: [ { orderable: false, targets: [ 0, 4 ] } ],
-                pageLength: 4,
+                columnDefs: [ { orderable: false, targets: [ 0, 3 ] } ],
+                pageLength: 3,
                 lengthMenu: [[5,10,15,20,25,30, -1], [5,10,15,20,25,30, 'All']]
             });
 
@@ -288,3 +121,26 @@ var TablesDatatables = function() {
         }
     };
 }();
+
+
+var TablesDatatables2 = function() {
+
+    return {
+        init: function() {
+            /* Initialize Bootstrap Datatables Integration */
+            App.datatables();
+
+            /* Initialize Datatables */
+            $('#example-datatable').dataTable({
+                columnDefs: [ { orderable: false, targets: [ 1, 5 ] } ],
+                pageLength: 10,
+                lengthMenu: [[10, 20, 30, -1], [10, 20, 30, 'All']]
+            });
+
+            /* Add placeholder attribute to the search input */
+            $('.dataTables_filter input').attr('placeholder', 'Search');
+        }
+    };
+}();
+
+
