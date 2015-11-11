@@ -126,7 +126,7 @@
                                         </td>
                                         <td>
                                             {{ list.username|e }}
-                                            <div class="progress progress-bar-info progress-bar-striped">
+                                            <div class="progress progress-striped active">
                                                 <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{list.avance}}" aria-valuemin="0" aria-valuemax="100" style="width: {{ list.avance }}%;">
                                                     {% if list.avance != 0 %} {{ list.avance }} % {% endif %}
                                                 </div>

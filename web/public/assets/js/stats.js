@@ -110,7 +110,7 @@ var TablesDatatables = function() {
             /* Initialize Datatables */
             $('#userList-datatable').dataTable({
                 columnDefs: [ { orderable: false, targets: [ 0, 3 ] } ],
-                pageLength: 3,
+                pageLength: 5,
                 lengthMenu: [[5,10,15,20,25,30, -1], [5,10,15,20,25,30, 'All']]
             });
 
