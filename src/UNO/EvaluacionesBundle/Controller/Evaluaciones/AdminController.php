@@ -112,7 +112,6 @@ class AdminController extends Controller {
                 }
             }
         }
-
         return $surveys;
     }
 
@@ -123,7 +122,6 @@ class AdminController extends Controller {
     private function getStats(){
 
         $data = array();
-
         $em = $this->getDoctrine()->getManager();
 
         //Consulta para obtener el numero esperado de respuestas por evaluacion
@@ -225,5 +223,4 @@ class AdminController extends Controller {
             'Content-Type' => 'application/json'
         ));
     }
-
 }

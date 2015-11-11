@@ -76,8 +76,6 @@ var CrearWizard = function() {
              * Se valida que la fecha ingresada sea un día mayor al de hoy
              */
 
-            var profilesPreview = '';
-
             jQuery.validator.addMethod("dateAfter", function(value, element, params) {
 
                 if (!/Invalid|NaN/.test(new Date(value))) {
@@ -118,7 +116,7 @@ var CrearWizard = function() {
                             '<a href="javascript:void(0)"  id ="deleter" class="btn btn-danger btn-xs" data-toggle="block-toggle-content"><i class="fa fa-times"></i></a>' +
                             '</div>' +
                             '</div>' +
-                            '<b>'+perftitle+'</b><br><em>'+nivtitle+'</em>' +
+                            '<b class="titulo_perfil">'+perftitle+'</b><br><em class="nivel_perfil">'+nivtitle+'</em>' +
                             '<div class="row"><br></div><div class="form-group" hidden>' +
                             '<input type="text" id="eval[perfiles]['+perfil_id+'][]" name="eval[perfiles]['+perfil_id+'][]" class="form-control" value="'+nivel_id+'">' +
                             '</div>' +
@@ -126,10 +124,36 @@ var CrearWizard = function() {
 
                         $(elem).appendTo('#perf-niv-agregados');
                         $("#count_profiles").val(count+1);
-                        profilesPreview = profilesPreview+perftitle+' de '+nivtitle+'<br>';
+                        $("#error_select_perfiles").remove();
+
                     }
+                } else if((perfil_id === '' || nivel_id === '') && !$("#error_select_perfiles").is(':visible')) {
+
+                    $('<span id="error_select_perfiles" class="text-danger help-block animation-slideDown">' +
+                        '<i class="fa fa-times"></i> ' +
+                        'Debes agregar un perfil con nivel' +
+                        '</span>').appendTo('#perf-niv-agregados');
                 }
             }
+
+            function borrarTodosPerfiles(){
+
+                $('.perfil').remove();
+                $('#count_profiles').val(0);
+            }
+
+            /**
+             * Función que limpia de caracteres escapables las preguntas de una evaluación
+             *
+             * @param question
+             * @returns {void|string|XML}
+             */
+
+            function wipeQuestion(question) {
+
+                return question.replace(/[`~@#%^&*_|+=:'"<>\{\}\[\]\\\/]/gi, '');
+            }
+
 
             /**
              * Evento para agregar todos los perfiles y niveles
@@ -138,8 +162,7 @@ var CrearWizard = function() {
 
             $("#btn_all_profiles").click(function(){
 
-                $('.perfil').remove();
-                $('#count_profiles').val(0);
+                borrarTodosPerfiles();
 
                 $("#select-perfil option").each(function()
                 {
@@ -154,6 +177,15 @@ var CrearWizard = function() {
                         agregaPerfil(perfil_id,nivel_id,nivtitle,perftitle);
                     });
                 });
+            });
+
+            /**
+             * Evento para borrar todos los perfiles y niveles
+             */
+
+            $("#btn_borrar_perfiles").click(function(){
+
+                borrarTodosPerfiles();
             });
 
 
@@ -172,19 +204,6 @@ var CrearWizard = function() {
 
             });
 
-
-            /**
-             * Función que limpia de caracteres escapables las preguntas de una evaluación
-             *
-             * @param question
-             * @returns {void|string|XML}
-             */
-
-            function wipeQuestion(question) {
-
-               return question.replace(/[`~@#%^&*_|+=:'"<>\{\}\[\]\\\/]/gi, '');
-            }
-
             /**
              * Manejamos el evento del botón para agregar preguntas
              */
@@ -200,26 +219,34 @@ var CrearWizard = function() {
                 if(pregunta != '' && categoria_id != ''){
 
                     var elem =
-                        '<div class="col-sm-12 pregunta"><div class="block">' +
+
+                        '<div class="block pregunta-div">' +
                             '<div class="block-title">' +
-                                '<div class="block-options pull-right">' +
-                                    '<a href="javascript:void(0)"  id ="deleter" class="btn btn-danger btn-xs" data-toggle="block-toggle-content"><i class="fa fa-times"></i></a>' +
+                                '<div class="block-options pull-left">' +
+                                    '<a href="javascript:void(0)"  id ="dragger" class="btn btn-xs" onmouseover="" style="cursor: all-scroll"><i class="fa fa-bars"></i></a>' +
                                 '</div>' +
-                            '<h4><em id ="cattexto" >'+cattexto+'</em></h4>'+
+                                '<div class="block-options pull-right">' +
+                                    '<a href="javascript:void(0)"  id ="deleter" class="btn btn-danger btn-xs" data-toggle="block-hide"><i class="fa fa-times"></i></a>' +
+                                '</div>' +
+                            '<h4><em class="cattexto" >'+cattexto+'</em></h4>'+
                             '</div>' +
-                            '<p id="pregtexto" style="text-align: center;">'+pregunta+'</p>'+
+                            '<p class="pregtexto" style="text-align: center;">'+pregunta+'</p>'+
                             '<div class="form-group" hidden>' +
                                 '<input type="text" id="eval[preguntas][]" name="eval[preguntas][]" class="form-control" value="'+categoria_id+'::'+pregunta+'">' +
                             '</div>' +
-                        '</div></div>';
+                        '</div>';
 
                     $(elem).appendTo('#div-preg-agregadas');
                     $("#count_questions").val(countPreg+1);
+                    $("#error_preguntas").remove();
 
+                } else if((pregunta === '' || categoria_id === '') && !$("#error_preguntas").is(':visible')) {
+
+                    $('<span id="error_preguntas" class="text-danger help-block animation-slideDown"><i class="fa fa-times"></i> Debes agregar una pregunta con su categoría</span>').appendTo('#div-preg-agregadas');
                 }
             });
 
-            //Evento para eliminar perfiles/niveles
+            //Evento para eliminar perfiles/niveles agregados
 
             $('#perf-niv-agregados').on("click", ".block-title #deleter", function() {
 
@@ -231,7 +258,7 @@ var CrearWizard = function() {
             //Evento para eliminar preguntas que ya han sido agregadas
 
             $('#div-preg-agregadas').on("click", ".block-title #deleter", function() {
-                $(this).closest("div .pregunta").remove();
+                $(this).closest(".pregunta-div").remove();
                 var countPreg = $("#count_questions").val();
                 $("#count_questions").val(parseInt(countPreg)-1);
             });
@@ -259,31 +286,57 @@ var CrearWizard = function() {
             setFinishedLabel();
 
             /**
-             * Esta funcion simplifica el encabezado cuando se agregan todos los perfiles para mostrarlo en el modal
+             * Esta funcion construye la matriz para el preview de perfiles de la evaluacion
              * @returns {string}
              */
             function parseProfilesforModal(){
 
-                return (($('#select-perfil option').size()-1) *
-                ($('#select-nivel option').size()-1) ==
-                $('#count_profiles').val()) ?
-                    'Todos los perfiles y niveles' :
-                    profilesPreview;
+                var profs = [];
+                var rows = '';
+                $('.perfil').each(function(){
+
+                    var perfil = $(this).find('.titulo_perfil').text();
+                    var nivel = $(this).find('.nivel_perfil').text();
+
+                    if(typeof profs[perfil] === 'undefined'){
+
+                        profs[perfil] = [];
+                    }
+                        profs[perfil].push(nivel);
+                });
+
+                for(var p in profs) {
+
+                    rows = rows+'<tr>'+
+                            '<td>'+p+'</td><td><ul>';
+
+                    for(var n in profs[p]){
+
+                        rows = rows+'<li>'+
+                            profs[p][n]+
+                            '</li>';
+
+                    }
+                    rows = rows+
+                    '</ul></td></tr>';
+                }
+
+                return rows;
             }
 
             function parseQuestionsforModal() {
 
                 var count = 0;
                 var pregs = '';
-                $('.pregunta').each(function(){
+                $('.pregunta-div').each(function(){
 
                     pregs =
                         pregs+
                         '<tr><td class="text-left"><b>'+
                         (++count)+'.- '+
-                        $(this).find('#cattexto').text()+
+                        $(this).find('.cattexto').text()+
                         ': </b><em>'+
-                        $(this).find('#pregtexto').text()+
+                        $(this).find('.pregtexto').text()+
                         '</em></td></tr>';
                 });
 
@@ -295,15 +348,13 @@ var CrearWizard = function() {
 
                 $('#title').html($('#eval\\[title\\]').val());
                 $('#closedate').html($('#eval\\[closingdate\\]').val());
-                $('#profiles').html(parseProfilesforModal());
+                $('#preview-perfniv').html(parseProfilesforModal());
                 $('#questions').html(parseQuestionsforModal());
-
             }
 
             /**
              * Comportamiento de botones anterior y siguiente
              */
-
 
             $("#back2, #next2").click(function(){
                 setInputLabels();
@@ -317,6 +368,14 @@ var CrearWizard = function() {
             });
 
             /**
+             * Manejo de confirmación del modal
+             */
+            $('#confirmar').click(function(){
+
+                $('#advanced-wizard').submit();
+            });
+
+            /**
              * Cargamos las preguntas para el autocompletado
              *
              */
@@ -324,13 +383,6 @@ var CrearWizard = function() {
             //var preguntas = ["Pregunta de prueba"];
             $('.input-typeahead').typeahead({ source: questions });
 
-            /**
-             * Manejo de confirmación
-             */
-            $('#confirmar').click(function(){
-
-                $('#advanced-wizard').submit();
-            });
 
         }
     };
