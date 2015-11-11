@@ -152,7 +152,7 @@ class StatsController extends Controller{
      * obtiene toda la informacion de las evaluaciones realizadas por colegio o general
      */
     private function getSurveyResultsGral() {
-        $query = "SELECT P.personId, CONCAT(P.name, ' ', P.surname) as username, PS.schoolId, S.surveyId, S.title, count(A.answer) countAnswer, A.answer
+        $query = "SELECT count(A.answer) countAnswer, A.answer
                     FROM
 
                         Person P
@@ -176,7 +176,7 @@ class StatsController extends Controller{
             $query .= "AND PS.schoolId in (".$this->_schoolIdPerson.")";
         }
 
-        $query .= " GROUP BY  P.personId, QS.Survey_surveyId, A.answer
+        $query .= " GROUP BY A.answer
                     ;";
 
         $em = $this->getDoctrine()->getManager();
@@ -193,22 +193,17 @@ class StatsController extends Controller{
         $si = 0;
         $no = 0;
         $nose = 0;
-        $evalSiArray = array();
-        $evalNoArray = array();
-        $evalNoSeArray = array();
+
         foreach($this->_surveyResultsGral as $value){
             switch ($value['answer']):
                 default:
-                    $nose += $value['countAnswer'];
-                    array_push($evalNoSeArray, $value['title']);
+                    $nose = $value['countAnswer'];
                     break;
                 case 'Sí':
-                    $si += $value['countAnswer'];
-                    array_push($evalSiArray, $value['title']);
+                    $si = $value['countAnswer'];
                     break;
                 case 'No':
-                    $no += $value['countAnswer'];
-                    array_push($evalNoArray, $value['title']);
+                    $no = $value['countAnswer'];
                     break;
             endswitch;
         }
@@ -313,14 +308,12 @@ class StatsController extends Controller{
             $a=false;
             for ($i=0; $i<count($_userEval); $i++){
                 if($totalUser['personId'] == $_userEval[$i]['personId']){
-                    $this->evalUser($totalUser['personId']);
                     array_push( $userList,
                         array(
                         'personId' => $_userEval[$i]['personId'],
                         'username' => $_userEval[$i]['username'],
                         'progreso' => $_userEval[$i]['realizadas'].'/'.$totalUser['asig'],
-                        'avance' => $this->getPorcentaje($totalUser['asig'], $_userEval[$i]['realizadas']),
-                        'eval' => $this->evalUser($totalUser['personId'])
+                        'avance' => $this->getPorcentaje($totalUser['asig'], $_userEval[$i]['realizadas'])
                         )
                     );
                     $a = true;
@@ -332,13 +325,14 @@ class StatsController extends Controller{
                             'username' => $totalUser['username'],
                             'progreso' => '0'.'/'.$totalUser['asig'],
                             'avance' => $this->getPorcentaje($totalUser['asig'], 0),
-                            'eval' => ''
                         )
                     );
                 }
             }
         }
         $this->_userList = $userList;
+
+        //print_r($this->_userList);
     }
 
     /**
@@ -429,34 +423,6 @@ class StatsController extends Controller{
         $_surveyAsigUser = $statement->fetchAll();
 
         return ($_surveyAsigUser);
-    }
-
-    /**
-     * obtiene las evaluaciones que realizo el usuario
-     *
-     * @param $personId
-     * @return array
-     */
-    private function evalUser($personId){
-
-        $titleEval = array();
-        foreach($this->_surveyResultsGral as $value){
-            if($value['personId'] == $personId){
-                array_push($titleEval, $value['title']);
-            }
-        }
-
-        $titleEval = array_unique($titleEval);
-        $evalArray = array();
-        foreach($this->_surveyResultsGral as $value){
-            foreach($titleEval as $valueT) {
-                if ($value['personId'] == $personId && $value['title'] == $valueT) {
-                    $evalArray[$valueT][$value['answer']] = $value['countAnswer'];
-                }
-            }
-        }
-
-        return($evalArray);
     }
 
     /**
