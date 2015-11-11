@@ -19,10 +19,12 @@ function parseInfo(privilege, profile){
     //-----------------------------------------------
 
     $.each(privilegeArray, function(i, item) {
-        menu += "<li>"+
-                    "<a href='" + privilegeArray[i].ruteOptionApplication + "'><i class='" + privilegeArray[i].iconOptionApplication + "'></i> " + privilegeArray[i].nameOptionApplication + "</a>"+
+        if(privilegeArray[i].nameOptionApplication != 'Inicio'){
+            menu += "<li>"+
+                "<a href='" + privilegeArray[i].ruteOptionApplication + "'><i class='" + privilegeArray[i].iconOptionApplication + "'></i> " + privilegeArray[i].nameOptionApplication + "</a>"+
                 "</li>"
             ;
+        }
     });
     $('#menuInicio').html(menu);
 
