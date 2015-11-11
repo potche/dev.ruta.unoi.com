@@ -81,22 +81,20 @@
                         {% for survey in surveyList %}
                             <tr>
                                 <td>
-                                    {% if survey['status']  == 0 %}
+                                    {% if survey['actioncode']  == '0' %}
                                         <i class="fa fa-exclamation-circle text-danger" data-toggle="tooltip" title="Aun no has respondido o completado esta evaluación"></i>
-                                    {% elseif  survey['status']  == 4 %}
+                                    {% elseif  survey['actioncode']  == '004' %}
                                         <i class="fa fa-check-circle text-success" data-toggle="tooltip" title="Ya completaste esta evaluación, puedes ver su resumen"></i>
-                                    {% elseif survey['status'] == 5 %}
-                                        <i class="fa fa-exclamation-circle text-warning" data-toggle="tooltip" title="Aun no has respondido o completado esta evaluación"></i>
                                     {% endif %}
                                     <strong>{{ survey['title'] }}</strong>
                                 </td>
-                                <td class="hidden-sm hidden-xs">{{ survey['closingDate'] }}</td>
+                                <td class="hidden-sm hidden-xs">{{ survey['closingdate']|date('j/M/Y \@ g:i a') }}</td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-xs">
-                                        {% if survey['status']  == 0 or survey['status']  == 5 %}
-                                                <a href="{{ path('responder',{'id': survey['id']}) }}" data-toggle="tooltip" title="Responde esta evaluación" class="btn btn-xs btn-success" style="width: 85px;">Responder</a>
+                                        {% if survey['actioncode']  == '0' %}
+                                                <a href="{{ path('responder',{'id': survey['surveyid']}) }}" data-toggle="tooltip" title="Responde esta evaluación" class="btn btn-xs btn-success" style="width: 85px;">Responder</a>
                                         {% else %}
-                                                <a href="{{ path('resumen',{'surveyId': survey['id']}) }}"  data-toggle="tooltip" title="Ver resumen de tus respuestas" class="btn btn-xs btn-info" style="width: 85px;">Resumen</a>
+                                                <a href="{{ path('resumen',{'surveyId': survey['surveyid']}) }}"  data-toggle="tooltip" title="Ver resumen de tus respuestas" class="btn btn-xs btn-info" style="width: 85px;">Resumen</a>
                                         {% endif %}
                                     </div>
                                 </td>

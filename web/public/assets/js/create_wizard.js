@@ -315,12 +315,10 @@ var CrearWizard = function() {
                         rows = rows+'<li>'+
                             profs[p][n]+
                             '</li>';
-
                     }
                     rows = rows+
                     '</ul></td></tr>';
                 }
-
                 return rows;
             }
 
