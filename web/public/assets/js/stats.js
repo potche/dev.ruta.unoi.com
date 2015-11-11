@@ -74,7 +74,6 @@ function statsUser(personid, username, avance, eval){
 }
 
 function reflowChart(){
-    console.log('reflowChart');
     chart.reflow();
     chartColoumn.reflow();
 }
@@ -86,6 +85,7 @@ function abc(rs){
         $.post( "ajax/stats", { title: arr[3], personId: personIdGlobal })
             .done(function( data ) {
                 $('#surveyUser').html( data );
+                TablesDatatables2.init();
             });
     }else{
         $('#surveyUser').html( '' );
@@ -102,7 +102,6 @@ function createGraph(si, no, nose){
 
 
 var TablesDatatables = function() {
-
     return {
         init: function() {
             /* Initialize Bootstrap Datatables Integration */
@@ -111,7 +110,7 @@ var TablesDatatables = function() {
             /* Initialize Datatables */
             $('#userList-datatable').dataTable({
                 columnDefs: [ { orderable: false, targets: [ 0, 3 ] } ],
-                pageLength: 3,
+                pageLength: 5,
                 lengthMenu: [[5,10,15,20,25,30, -1], [5,10,15,20,25,30, 'All']]
             });
 
@@ -124,7 +123,6 @@ var TablesDatatables = function() {
 
 
 var TablesDatatables2 = function() {
-
     return {
         init: function() {
             /* Initialize Bootstrap Datatables Integration */
@@ -132,13 +130,13 @@ var TablesDatatables2 = function() {
 
             /* Initialize Datatables */
             $('#example-datatable').dataTable({
-                columnDefs: [ { orderable: false, targets: [ 1, 5 ] } ],
+                columnDefs: [ { orderable: false, targets: [ 0, 3 ] } ],
                 pageLength: 10,
                 lengthMenu: [[10, 20, 30, -1], [10, 20, 30, 'All']]
             });
 
             /* Add placeholder attribute to the search input */
-            $('.dataTables_filter input').attr('placeholder', 'Search');
+            $('.dataTables_filter input').attr('placeholder', 'buscar');
         }
     };
 }();

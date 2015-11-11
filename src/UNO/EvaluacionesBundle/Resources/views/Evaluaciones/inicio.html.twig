@@ -1,25 +1,26 @@
 {% extends 'base.html.twig' %}
 {% block body %}
 
-    <!-- Buttons - Dropdowns Header -->
-    <div class="content-header">
-        <div class="header-section">
+    <div class="content-header content-header-media">
+        <div class="header-section" style="height: 185px;">
             <h1>
                 <i class="fa fa-bookmark-o" onclick="showVideo();"></i>
-                Bienvenid@ <strong>{{ app.session.get('nameS') }}</strong>
-                <br/><small>al Sistema de Evaluaciones, aqui podras bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla...</small>
+                Bienvenid@, <strong>{{ app.session.get('nameS') }}</strong>
+                <br/><small>al Sistema de Evaluaciones (Ruta - Gauss), aqui podras bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla...</small>
             </h1>
         </div>
+        <!-- For best results use an image with a resolution of 2560x248 pixels (You can also use a blurred image with ratio 10:1 - eg: 1000x100 pixels - it will adjust and look great!) -->
+        <img src="{{ asset('public/assets/images/listar/camino2.png') }}" alt="header image" class="animation-pulseSlow" style="height: 180px; width: auto;">
     </div>
-    <!-- END Buttons - Dropdowns Header -->
+    <!-- END Dashboard Header -->
 
-    <!-- eCommerce Dashboard Header -->
+    <!-- Dashboard Header -->
     <div class="content-header">
         <ul class="nav-horizontal text-center">
             <div id="menuInicio"></div>
         </ul>
     </div>
-    <!-- END eCommerce Dashboard Header -->
+    <!-- END Dashboard Header -->
 
     <!-- Form Example with Blocks in the Grid -->
     <div class="row">
@@ -28,12 +29,14 @@
             <div class="block">
                 <!-- Title -->
                 <div class="block-title">
-                    <h2>News</h2>
+                    <h2>Noticias.</h2>
                 </div>
                 <div class="widget-extra-full text-center">
-                    <div class="pie-chart" data-percent="75" data-size="90" data-bar-color="#e67e22">
-                        <span>75%</span>
-                    </div>
+                    <img src="http://mx.unoi.com/wp-content/uploads/2015/10/BID-Talento.jpg" width="70%">
+                    <h3>Cuatro claves para entender de dónde viene el talento</h3>
+                    <small><em>23 octubre, 2015</em></small>
+                    <br/>
+                    <p>Recientemente, se ha reabierto el debate sobre si el talento sobresaliente es una característica fija e innata de una persona o si se puede desarrollar a lo largo de la vida y con apoyo de los sistemas educativos. Veamos a continuación algunas claves para resolver esta interrogante.</p>
                 </div>
             </div>
             <!-- END Block -->
@@ -43,12 +46,13 @@
             <div class="block">
                 <!-- Title -->
                 <div class="block-title">
-                    <h2>News</h2>
+                    <h2>{{ titleAvance }}</h2>
                 </div>
                 <div class="widget-extra-full text-center">
-                    <div class="pie-chart" data-percent="75" data-size="90" data-bar-color="#e67e22">
-                        <span>75%</span>
+                    <div class="pie-chart" data-percent="{{ avance | raw }}" data-size="90" data-bar-color="#e67e22">
+                        <span>{{ avance | raw }}%</span>
                     </div>
+                    <br/>
                 </div>
             </div>
             <!-- END Video -->
@@ -77,6 +81,8 @@
         </div>
     </div>
     <!-- END Modal Video -->
+
+    <script src="{{ asset('public/assets/js/jquery-1.11.3.min.js') }}"></script>
 {% endblock %}
 
 

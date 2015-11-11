@@ -13,7 +13,7 @@ function pieGrl(jsonTotalResponsePie) {
             }
         },
         title: {
-            text: 'Estadistica General'
+            text: 'Estadística General.'
         },
         subtitle: {
             text: 'En porcentaje.'
@@ -49,7 +49,7 @@ function columnGrl(jsonTotalResponseColumn, jsonTotalResponseDDColumn) {
             renderTo: 'containerColumn'
         },
         title: {
-            text: 'Estadistica General'
+            text: 'Estadística General.'
         },
         subtitle: {
             text: 'Cantidad de Respuestas.'
@@ -104,7 +104,7 @@ function pieGrlLU(jsonTotalResponseLUPie) {
             }
         },
         title: {
-            text: 'Estadistica General'
+            text: 'Estadística General.'
         },
         subtitle: {
             text: 'En porcentaje.'
@@ -142,7 +142,7 @@ function columnGrlLU(jsonTotalResponseLUColumn) {
             renderTo: 'containerColumnLU'
         },
         title: {
-            text: 'Estadistica General'
+            text: 'Estadística General.'
         },
         subtitle: {
             text: 'Cantidad de Respuestas.'
