@@ -354,7 +354,7 @@ var CrearWizard = function() {
              * Comportamiento de botones anterior y siguiente
              */
 
-            $("#back2, #next2").click(function(){
+            $("#back2, #next2").click(function(event){
                 setInputLabels();
                 setFinishedLabel();
                 event.preventDefault();

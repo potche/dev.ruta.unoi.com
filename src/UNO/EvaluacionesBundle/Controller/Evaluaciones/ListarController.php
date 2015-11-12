@@ -54,7 +54,9 @@ class ListarController extends Controller
 
         $countToBeAnswered = array_count_values(array_column($surveys,'actioncode'))['0'];
         $session->set('authorized_in',base64_encode(json_encode(array_column($surveys,'surveyid'))));
+
         $statistics = $this->fetchStats(count($surveys),$countToBeAnswered);
+        $session->set('compliance',$statistics['compliance']);
 
         return $this->render('@UNOEvaluaciones/Evaluaciones/listar.html.twig', array(
 
