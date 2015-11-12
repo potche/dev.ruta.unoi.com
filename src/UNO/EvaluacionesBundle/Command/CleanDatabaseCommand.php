@@ -20,12 +20,22 @@ class CleanDatabaseCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+
+        ini_set("memory_limit","1000M");
+        set_time_limit(600000);
+
         $em = $this->getContainer()->get('doctrine')->getEntityManager();
         $connection = $em->getConnection();
 
+		$output->writeln("Borrando entradas antiguas del log");
+
+        $q = "DELETE FROM Log WHERE Action_idAction = 5";
+        $statement = $connection->prepare($q);
+        $statement->execute();
+
         $output->writeln("Obteniendo preguntas duplicadas");
 
-        $q = "SELECT CONCAT(A.Person_personId,'-',surveyId,'-',questionId) as val, A.answerId
+        $qs = "SELECT CONCAT(A.Person_personId,'-',surveyId,'-',questionId) as val, A.answerId
             FROM
                 Answer A
             INNER JOIN
@@ -40,9 +50,12 @@ class CleanDatabaseCommand extends ContainerAwareCommand
 	            ON Q.questionId = QXS.Question_questionId
             GROUP BY questionId, surveyId, Person_personId, AnswerId";
 
-        $statement = $connection->prepare($q);
-        $statement->execute();
-        $results = $statement->fetchAll();
+        //$statement = $connection->prepare($q);
+        //$statement->execute();
+        //$results = $statement->fetchAll();
+        $results = $connection->fetchAll($qs);
+
+        $output->writeln("Consulta: ".count($results));
 
         $filtered = array();
 
@@ -62,6 +75,7 @@ class CleanDatabaseCommand extends ContainerAwareCommand
             ));
         }
 
+        
         $output->writeln("Eliminando preguntas duplicadas y entradas del log");
         $i = 0;
 
@@ -87,13 +101,6 @@ class CleanDatabaseCommand extends ContainerAwareCommand
 
                     $i++;
                 }
-            }
-
-            else{
-
-                $output->writeln(" ");
-                $output->writeln("No se detectaron preguntas duplicadas, sé feliz! (por hoy)");
-                exit();
             }
         }
         $output->writeln("Finalizado de eliminar ".$i." duplicados y limpiar logs");
