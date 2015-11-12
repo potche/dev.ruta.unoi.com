@@ -117,7 +117,7 @@
                                     <tbody>
                                     {% for list in userList %}
                                         {% if list.avance != 0 %}
-                                        <tr onclick="statsUser('{{ list.personId|e }}','{{ list.username|e }}',{{ list.avance }},{{ list.eval | json_encode() }})" data-toggle="tooltip" title="Haz click para ver el detalle de {{ list.username|e }}" style="cursor: pointer">
+                                        <tr onclick="statsUser('{{ list.personId|e }}','{{ list.username|e }}',{{ list.avance }})" data-toggle="tooltip" title="Haz click para ver el detalle de {{ list.username|e }}" style="cursor: pointer">
                                         {% else %}
                                             <tr>
                                         {% endif %}

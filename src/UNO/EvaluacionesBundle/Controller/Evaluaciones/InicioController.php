@@ -41,6 +41,11 @@ class InicioController extends Controller{
                 $avance = 0;
             }
 
+             // if($session->has('compliance')){
+
+             // 	$avance = $session->get('compliance');
+             // }
+
             return $this->render('UNOEvaluacionesBundle:Evaluaciones:inicio.html.twig', array(
                 'avance' => $avance,
                 'titleAvance' => $titleAvance
@@ -54,36 +59,40 @@ class InicioController extends Controller{
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 
-        $realizadas = $qb->select("P.personid", "CONCAT(P.name, ' ', P.surname) AS username", "COUNT(DISTINCT (S.title)) AS realizadas")
-            ->from('UNOEvaluacionesBundle:Person','P')
-            ->innerJoin('UNOEvaluacionesBundle:Answer','A', 'WITH', 'P.personid = A.personPersonid')
-            ->innerJoin('UNOEvaluacionesBundle:Personschool','PS', 'WITH', 'A.personPersonid = PS.personid')
-            ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile','SP', 'WITH', 'PS.profileid = SP.profileProfileid AND PS.schoollevelid = SP.schoollevelid')
-            ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','OQ', 'WITH', 'A.optionxquestion = OQ.optionxquestionId')
-            ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','QS', 'WITH', 'OQ.questionxsurvey = QS.questionxsurveyId')
-            ->innerJoin('UNOEvaluacionesBundle:Survey','S', 'WITH', 'QS.surveySurveyid = S.surveyid')
-            ->where('P.personid = :personId')
-            ->setParameter('personId', $this->_personId)
+        $surveys = $qb->select("su.surveyid, su.title, su.closingdate, COALESCE(a.actioncode,'0') AS actioncode")
+            ->from('UNOEvaluacionesBundle:Surveyxprofile','sxp')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','sxp.profileProfileid = ps.profileid AND ps.schoollevelid = sxp.schoollevelid AND ps.personid = :personId')
+            ->innerJoin('UNOEvaluacionesBundle:Survey','su','WITH','su.surveyid = sxp.surveySurveyid')
+            ->leftJoin('UNOEvaluacionesBundle:Log','l','WITH','l.surveySurveyid = su.surveyid AND l.personPersonid = :personId')
+            ->leftJoin('UNOEvaluacionesBundle:Action','a','WITH','l.actionaction = a.idaction')
+            ->where('su.active = 1')
+            ->andWhere('su.closingdate >= CURRENT_DATE()')
+            ->groupBy('su.surveyid, su.title, su.closingdate, a.actioncode')
+            ->setParameter('personId',$this->_personId)
             ->getQuery()
             ->getResult();
 
-        return $realizadas[0]['realizadas'];
+            return array_count_values(array_column($surveys,'actioncode'))['004'];
     }
 
     private function getAsignadasUser(){
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 
-        $asignadas = $qb->select("P.personid", "CONCAT(P.name, ' ', P.surname) AS username", "COUNT(DISTINCT (SP.surveySurveyid)) AS asignadas")
-            ->from('UNOEvaluacionesBundle:Surveyxprofile','SP')
-            ->innerJoin('UNOEvaluacionesBundle:Personschool','PS', 'WITH', 'PS.profileid = SP.profileProfileid AND PS.schoollevelid = SP.schoollevelid')
-            ->innerJoin('UNOEvaluacionesBundle:Person','P', 'WITH', 'PS.personid = P.personid')
-            ->where('P.personid = :personId')
-            ->setParameter('personId', $this->_personId)
+		$surveys = $qb->select("su.surveyid, su.title, su.closingdate, COALESCE(a.actioncode,'0') AS actioncode")
+            ->from('UNOEvaluacionesBundle:Surveyxprofile','sxp')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','sxp.profileProfileid = ps.profileid AND ps.schoollevelid = sxp.schoollevelid AND ps.personid = :personId')
+            ->innerJoin('UNOEvaluacionesBundle:Survey','su','WITH','su.surveyid = sxp.surveySurveyid')
+            ->leftJoin('UNOEvaluacionesBundle:Log','l','WITH','l.surveySurveyid = su.surveyid AND l.personPersonid = :personId')
+            ->leftJoin('UNOEvaluacionesBundle:Action','a','WITH','l.actionaction = a.idaction')
+            ->where('su.active = 1')
+            ->andWhere('su.closingdate >= CURRENT_DATE()')
+            ->groupBy('su.surveyid, su.title, su.closingdate, a.actioncode')
+            ->setParameter('personId',$this->_personId)
             ->getQuery()
             ->getResult();
 
-        return $asignadas[0]['asignadas'];
+            return count($surveys);
     }
 
     private function getRealizadasGrl(){
@@ -98,7 +107,7 @@ class InicioController extends Controller{
             ->innerJoin('UNOEvaluacionesBundle:Log','log','WITH','ps.personid = log.personPersonid AND sxp.surveySurveyid = log.surveySurveyid')
             ->where('log.surveySurveyid > 1')
             ->andWhere('p.admin NOT IN (1)')
-            ->andWhere('log.actionaction = 5')
+            ->andWhere('log.actionaction = 4')
             ->groupBy('sxp.surveySurveyid')
             ->getQuery()
             ->getResult();
@@ -143,7 +152,7 @@ class InicioController extends Controller{
      * Calcula el porcentaje
      */
     private function getPorcentaje($total, $parte, $redondear = 2) {
-        return round($parte / $total * 100, $redondear);
+        return round(($parte*100) / $total, $redondear);
     }
 
     /**

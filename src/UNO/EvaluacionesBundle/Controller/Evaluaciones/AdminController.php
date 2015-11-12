@@ -147,7 +147,7 @@ class AdminController extends Controller {
             ->innerJoin('UNOEvaluacionesBundle:Log','log','WITH','ps.personid = log.personPersonid AND sxp.surveySurveyid = log.surveySurveyid')
             ->where('log.surveySurveyid > 1')
             ->andWhere('p.admin NOT IN (1)')
-            ->andWhere('log.actionaction = 5')
+            ->andWhere('log.actionaction = 4')
             ->groupBy('sxp.surveySurveyid')
             ->getQuery()
             ->getResult();
