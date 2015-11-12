@@ -54,6 +54,7 @@ class AjaxStatsController extends Controller{
                             INNER JOIN
                         Survey S ON QS.Survey_surveyId = S.surveyid
                         WHERE P.personId = $personId
+                        AND S.active = 1
                     GROUP BY P.personId, QS.Survey_surveyId, A.answer
                     ;";
 

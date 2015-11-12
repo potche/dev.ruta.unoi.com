@@ -117,7 +117,7 @@
                                     <tbody>
                                     {% for list in userList %}
                                         {% if list.avance != 0 %}
-                                        <tr onclick="statsUser('{{ list.personId|e }}','{{ list.username|e }}',{{ list.avance }})" data-toggle="tooltip" title="Haz click para ver el detalle de {{ list.username|e }}" style="cursor: pointer">
+                                        <tr onclick="statsUser('{{ list.personId|e }}','{{ list.username|e }}',{{ list.avance }})" data-tooltip aria-haspopup="true"  data-options="disable_for_touch:true" class="has-tip" title="Haz click para ver el detalle de {{ list.username|e }}" style="cursor: pointer">
                                         {% else %}
                                             <tr>
                                         {% endif %}
@@ -127,7 +127,7 @@
                                         <td>
                                             {{ list.username|e }}
                                             <div class="progress progress-striped active">
-                                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{list.avance}}" aria-valuemin="0" aria-valuemax="100" style="width: {{ list.avance }}%;">
+                                                <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{list.avance}}" aria-valuemin="0" aria-valuemax="100" style="width: {{ list.avance }}%;">
                                                     {% if list.avance != 0 %} {{ list.avance }} % {% endif %}
                                                 </div>
                                             </div>
@@ -138,7 +138,7 @@
                                         <!-- <td class="text-center" {% if list.avance == 0 %} style="color: red;" {% endif %}>
                                             {#{{ list.avance }}#} %
                                         </td>-->
-                                        <td class="text-center"><i class="fa fa-eye fa-2x" {% if list.avance == 0 %} style="color: gray;" {% endif %}></i></td>
+                                        <td class="text-center"><i class="fa fa-eye fa-2x" {% if list.avance == 0 %} style="color: #cdd0d7;" {% endif %}></i></td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>
@@ -157,9 +157,9 @@
     <div id="statsUser" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header bg-success">
+                <div class="modal-header bg-primary">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title"><i class="fa fa-hand-spock-o"></i> Estad&iacute;sticas por <strong>Usuario</strong></h4>
+                    <h4 class="modal-title"><i class="fa fa-rebel"></i> Estad&iacute;sticas por <strong>Usuario</strong></h4>
                 </div>
                 <div class="modal-body">
                     <span id="bodyStatsUser"></span>
