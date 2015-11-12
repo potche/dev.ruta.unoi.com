@@ -19,6 +19,93 @@ use UNO\EvaluacionesBundle\Entity\Optionxquestion;
 class AjaxStatsController extends Controller{
 
     /**
+     * @Route("/ajax/detalleStats")
+     *
+     * obtiene y crea la tabla con el detalle de la evaluacion
+     */
+    public function detalleUserAction(Request $request){
+
+        $session = $request->getSession();
+        $session->start();
+        if ($request->getMethod() == 'POST') {
+            $personId = $request->get('personId');
+            $survey = $this->getSurveyResultsGral($personId);
+            return new response(json_encode($this->evalUser($survey)));
+        }else{
+            return new response($request->getMethod());
+        }
+    }
+
+    /**
+     * obtiene toda la informacion de las evaluaciones realizadas por colegio o general
+     */
+    private function getSurveyResultsGral($personId) {
+        $query = "SELECT P.personId, CONCAT(P.name, ' ', P.surname) as username, PS.schoolId, S.surveyId, S.title, count(A.answer) countAnswer, A.answer
+                    FROM
+                        Person P
+                            INNER JOIN
+                        Answer A ON P.personId = A.Person_personId
+                            INNER JOIN
+                        (SELECT DISTINCT schoolId, personId FROM PersonSchool) PS ON P.personId = PS.personId
+                            INNER JOIN
+                        OptionXQuestion OQ ON A.OptionXQuestion_id = OQ.OptionXQuestion_id
+                            INNER JOIN
+                        QuestionXSurvey QS ON OQ.QuestionXSurvey_id = QS.QuestionXSurvey_id
+                            INNER JOIN
+                        Survey S ON QS.Survey_surveyId = S.surveyid
+                        WHERE P.personId = $personId
+                    GROUP BY P.personId, QS.Survey_surveyId, A.answer
+                    ;";
+
+        $em = $this->getDoctrine()->getManager();
+        $connection = $em->getConnection();
+        $statement = $connection->prepare($query);
+        $statement->execute();
+        $_surveyResultsGral = $statement->fetchAll();
+
+        return $_surveyResultsGral;
+    }
+
+    /**
+     * obtiene las evaluaciones que realizo el usuario
+     *
+     * @param $survey
+     * @return array
+     */
+    private function evalUser($survey){
+        $evalUser = array_unique(array_column($survey, 'title'));
+
+        $evalUserArray = array();
+
+        foreach($evalUser as $valTitle){
+            $evalTitleArray = array(
+                'title' => '',
+                'si' => 0,
+                'no' => 0,
+                'nose' => 0
+            );
+            foreach($survey as $value){
+                $evalTitleArray['title'] = $valTitle;
+                if($valTitle == $value['title']){
+                    switch ($value['answer']):
+                        default:
+                            $evalTitleArray['nose'] = $value['countAnswer'];
+                            break;
+                        case 'Sí':
+                            $evalTitleArray['si'] = $value['countAnswer'];
+                            break;
+                        case 'No':
+                            $evalTitleArray['no'] = $value['countAnswer'];
+                            break;
+                    endswitch;
+                }
+            }
+            array_push($evalUserArray, $evalTitleArray);
+        }
+        return($evalUserArray);
+    }
+
+    /**
      * @Route("/ajax/stats")
      *
      * obtiene y crea la tabla con el detalle de la evaluacion

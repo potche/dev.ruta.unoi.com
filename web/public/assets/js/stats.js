@@ -8,69 +8,59 @@ $( "#schoolId" ).change(function() {
 
 var personIdGlobal = '';
 
-function statsUser(personid, username, avance, eval){
+function statsUser(personid, username, avance){
     $('#surveyUser').html( '' );
 
     personIdGlobal = personid;
-
     var siG = 0;
     var noG = 0;
     var noseG = 0;
     var list = "";
+    var evalUser;
 
-    $.each(eval, function(i, item) {
-        var si = 0;
-        var no = 0;
-        var nose = 0;
-        $.each(item, function(j, item2) {
-            switch(j){
-                case 'Sí':
-                    siG += parseInt(item2);
-                    si += parseInt(item2);
-                    break;
-                case 'No':
-                    noG += parseInt(item2);
-                    no += parseInt(item2);
-                    break;
-                case 'No sé':
-                    noseG += parseInt(item2);
-                    nose += parseInt(item2);
-                    break;
-            }
+    $.post( "ajax/detalleStats", { personId: personid })
+        .done(function( data ) {
+            evalUser = jQuery.parseJSON(data);
+
+            $.each(evalUser, function(i, item) {
+                siG += parseInt(item.si);
+                noG += parseInt(item.no);
+                noseG += parseInt(item.nose);
+                list += "<option value='"+item.si+":"+item.no+":"+item.nose+":"+item.title+"'>"+item.title+"</option>";
+            });
+
+            createGraph(siG, noG, noseG);
+
+
+            var progress =  '<div class="progress progress-bar-info progress-bar-striped">'+
+                    '<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'+avance+'"aria-valuemin="0" aria-valuemax="100" style="width: '+avance+'%;">'+
+                    avance+
+                    '%</div>'+
+                    '</div>'
+                ;
+
+            var divList = "<div class='row'>" +
+                "<div class='col-sm-6'>" +
+                "<img src='public/assets/images/login/icon_niño1.png' alt='avatar' class='img-circle'>" +
+                "<h1>"+username+"</h1>" +
+                progress+
+                "<small><em>Porcentaje de avance</em></small><hr/>"+
+                "</div>" +
+                "<div class='col-sm-4 col-sm-offset-2'></div>" +
+                "</div>" +
+                "<div class='well'>" +
+                "<h5>Selecciona alguna Evaluación para ver su <b>detalle</b>:</h5>" +
+                "<select id='evaluacioLU' class='form-control' size='1' onchange='(abc(this.value))'>" +
+                "<option value='"+siG+":"+noG+":"+noseG+":0'>Global</option>"+list+"" +
+                "</select>" +
+                "</div>";
+
+            $('#statsUser').modal();
+            $('#bodyStatsUser').html(divList);
+
+            reflowChart();
         });
-        list += "<option value='"+si+":"+no+":"+nose+":"+i+"'>"+i+"</option>";
-    });
 
-    createGraph(siG, noG, noseG);
-
-
-    var progress =  '<div class="progress progress-bar-info progress-bar-striped">'+
-            '<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'+avance+'"aria-valuemin="0" aria-valuemax="100" style="width: '+avance+'%;">'+
-            avance+
-            '%</div>'+
-            '</div>'
-        ;
-
-    var divList = "<div class='row'>" +
-        "<div class='col-sm-6'>" +
-        "<img src='public/assets/images/login/icon_niño1.png' alt='avatar' class='img-circle'>" +
-        "<h1>"+username+"</h1>" +
-        progress+
-        "<small><em>Porcentaje de avance</em></small><hr/>"+
-        "</div>" +
-        "<div class='col-sm-4 col-sm-offset-2'></div>" +
-        "</div>" +
-        "<div class='well'>" +
-        "<h5>Selecciona alguna Evaluación para ver su <b>detalle</b>:</h5>" +
-        "<select id='evaluacioLU' class='form-control' size='1' onchange='(abc(this.value))'>" +
-        "<option value='"+siG+":"+noG+":"+noseG+":0'>Global</option>"+list+"" +
-        "</select>" +
-        "</div>";
-
-    $('#statsUser').modal();
-    $('#bodyStatsUser').html(divList);
-
-    reflowChart();
 }
 
 function reflowChart(){
