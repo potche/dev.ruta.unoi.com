@@ -173,17 +173,23 @@ class AjaxStatsController extends Controller{
                             <table id="example-datatable" class="table table-vcenter table-condensed table-bordered">
                                 <thead>
                                     <tr>
-                                        <th class="text-center">Orden</th>
+                                        <th class="hidden-sm hidden-xs text-center">Orden</th>
                                         <th class="text-center">Pregunta</th>
-                                        <th class="text-center">Respuesta</th>
-                                        <th class="text-center">Comentario</th>
+                                        <th class="text-center">
+                                            <span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>Respuesta</b></span>
+                                            <span class="visible-xs-inline"><b><i class="fa fa-pencil-square-o"></i></b></span>
+                                        </th>
+                                        <th class="text-center">
+                                            <span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>Comentario</b></span>
+                                            <span class="visible-xs-inline"><b><i class="fa fa-commenting-o"></i></b></span>
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>';
         foreach($survey as $value){
             $table .= '
                                     <tr>
-                                        <td>'.$value['order'].'</td>
+                                        <td class="hidden-sm hidden-xs text-center">'.$value['order'].'</td>
                                         <td>'.$value['question'].'</td>
                                         <td>'.$value['answer'].'</td>
                                         <td>'.$value['comment'].'</td>

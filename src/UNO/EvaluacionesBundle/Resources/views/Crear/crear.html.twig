@@ -85,10 +85,10 @@
 
                         <div class="row">
                             <div class="col-sm-4">
-                                <a id="btn_all_profiles" class="btn btn-sm btn-success" data-toggle="tooltip" title="Agrega todos los perfiles y niveles existentes para responder esta evaluación">
+                                <a id="btn_all_profiles" class="btn btn-sm btn-success has-tip" data-tooltip aria-haspopup="true" data-options="disable_for_touch:true"  title="Agrega todos los perfiles y niveles existentes para responder esta evaluación">
                                     <i class="fa fa-plus-circle"></i> Agregar a todos
                                 </a>
-                                <a id="btn_borrar_perfiles" class="btn btn-sm btn-danger" data-toggle="tooltip" title="Borra todos los perfiles que has asignado hasta el momento">
+                                <a id="btn_borrar_perfiles" class="btn btn-sm btn-danger has-tip" data-tooltip aria-haspopup="true" data-options="disable_for_touch:true"  title="Borra todos los perfiles que has asignado hasta el momento">
                                     <i class="fa fa-minus-circle"></i> Borrar todo
                                 </a>
                             </div>
@@ -121,7 +121,7 @@
                                     </select>
                                 </div>
                                 <div class="col-sm-2">
-                                    <a id="btn_add_profile" class="btn btn-sm btn-success" data-toggle="tooltip" title="Cuando hayas seleccionado un Perfil con Nivel, haz click en Agregar">
+                                    <a id="btn_add_profile" class="btn btn-sm btn-success has-tip" data-tooltip aria-haspopup="true" data-options="disable_for_touch:true"  title="Cuando hayas seleccionado un Perfil con Nivel, haz click en Agregar">
                                         <i class="fa fa-plus"></i> Agregar
                                     </a>
                                 </div>
@@ -187,7 +187,7 @@
                                     </select>
                                 </div>
                                 <div class="col-sm-2">
-                                    <a id="btn_add_pregunta" class="btn btn-sm btn-success" data-toggle="tooltip" title="Cuando hayas escrito una pregunta y seleccionado una categoría, haz click en Agregar">
+                                    <a id="btn_add_pregunta" class="btn btn-sm btn-success has-tip" data-tooltip aria-haspopup="true" data-options="disable_for_touch:true"  title="Cuando hayas escrito una pregunta y seleccionado una categoría, haz click en Agregar">
                                         <i class="fa fa-plus"></i> Agregar
                                     </a>
                                 </div>
@@ -223,46 +223,54 @@
     </div>
 
     <div id="create_confirm" class="modal fade in" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-md">
             <div class="modal-content">
-                <div class="modal-header bg-info">
+                <div class="modal-header bg-primary">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title"><i class="fa fa-info-circle"></i> Confirmar</h4>
                 </div>
                 <div class="modal-body">
                     <p><b>Está a punto de crear una nueva evaluación, para confirmar presione Aceptar</b></p>
                     <br>
-                    <table class="table">
-                        <tr>
-                            <th>Título</th>
-                            <td id="title"></td>
-                        </tr>
-                        <tr>
-                            <th>Finaliza</th>
-                            <td id="closedate"></td>
-                        </tr>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tr>
+                                <th>Título</th>
+                                <td id="title"></td>
+                            </tr>
+                            <tr>
+                                <th>Finaliza</th>
+                                <td id="closedate"></td>
+                            </tr>
+                        </table>
+                    </div>
                     <br>
                     <p><b>Aplicable a</b></p>
-                    <table id="preview-perfiles" class="table table-vcenter table-condensed table-bordered table-responsive">
-                        <thead>
-                        <tr>
-                            <th class="text-center">{{ 'Perfil' }}</th>
-                            <th class="text-center">{{ 'Niveles' }}</th>
-                        </tr>
-                        </thead>
-                        <tbody id="preview-perfniv">
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table id="preview-perfiles" class="table table-vcenter table-condensed table-bordered table-responsive">
+                            <thead>
+                            <tr>
+                                <th class="text-center">{{ 'Perfil' }}</th>
+                                <th class="text-center">{{ 'Niveles' }}</th>
+                            </tr>
+                            </thead>
+                            <tbody id="preview-perfniv">
+                            </tbody>
+                        </table>
+                    </div>
                     <br>
-                    <table class="table table-vcenter table-condensed table-bordered">
-                        <thead>
-                        <tr>
-                            <th style="text-align: center;">Reactivos</th>
-                        </tr>
-                        </thead>
-                        <tbody id="questions"></tbody>
-                    </table>
+                    <small class="visible-xs"><i class="fa fa-info-circle text-primary"></i> Puedes navegar horizontalmente para ver las demás columnas</small>
+                    <br>
+                    <div class="table-responsive">
+                        <table class="table table-vcenter table-condensed table-bordered">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center;">Reactivos</th>
+                            </tr>
+                            </thead>
+                            <tbody id="questions"></tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <a href="#" class="btn btn-default" data-dismiss="modal">Cancelar</a>
@@ -271,7 +279,6 @@
             </div>
         </div>
     </div>
-
 
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="{{ asset('public/assets/js/create_wizard.js') }}"></script>
