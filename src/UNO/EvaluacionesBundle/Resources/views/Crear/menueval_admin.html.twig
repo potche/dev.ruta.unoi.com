@@ -35,18 +35,30 @@
                 <div class="row">
                     <a href="{{ path('crear') }}" class="btn btn-md btn-info animation-pulse" data-toggle="block-toggle-content"><i class="fa fa-plus"></i> Crear evaluación</a>
                 </div>
+                <br>
+                <small class="visible-xs"><i class="fa fa-info-circle text-primary"></i> Puedes navegar horizontalmente para ver las demás columnas</small>
+                <br>
                 <div class="table-responsive">
                     <br>
                     <table id="tbl-datatable" class="table table-vcenter table-condensed table-bordered">
                         <thead>
                         <tr>
                             <th class="hidden-sm hidden-xs">Id</th>
-                            <th>Evaluación</th>
-                            <th>Usuarios</th>
-                            <th>Avance</th>
-                            <th class="hidden-sm hidden-xs">Creada</th>
-                            <th class="hidden-sm hidden-xs">Autor</th>
-                            <th class="hidden-sm hidden-xs">Finaliza</th>
+                            <th class="text-center">
+                                <span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>Evaluación</b></span>
+                                <span class="visible-xs-inline"><b><i class="fa fa-list-ol"></i></b></span>
+                            </th>
+                            <th class="text-center">
+                                <span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>Usuarios</b></span>
+                                <span class="visible-xs-inline"><b><i class="fa fa-user-plus"></i></b></span>
+                            </th>
+                            <th class="text-center">
+                                <span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>Avance</b></span>
+                                <span class="visible-xs-inline"><b><i class="fa fa-pie-chart"></i></b></span>
+                            </th>
+                            <th class="hidden-sm hidden-xs text-center">Creada</th>
+                            <th class="hidden-sm hidden-xs text-center">Autor</th>
+                            <th class="hidden-sm hidden-xs text-center">Finaliza</th>
                             <th class="text-center">Acciones</th>
                         </tr>
                         </thead>
@@ -60,11 +72,11 @@
                                         <span class="label label-danger" data-toggle="tooltip" title="Esta evaluación está inactiva">{{ survey['id'] }}</span>
                                     {% endif %}
                                 </td>
-                                <td>
+                                <td class="text-left">
                                     <b>{{ survey['title'] }}</b>
                                 </td>
                                 <td class="text-center">
-                                    <a href="#" id="ver-{{ survey['id'] }}" class="btn-matriz btn btn-xs btn-info" style="width: 85px;">Ver lista</a>
+                                    <a href="#" id="ver-{{ survey['id'] }}" class="btn-matriz btn btn-xs btn-info" style="width: 85px;"><i class="fa fa-eye"></i> Ver</a>
                                     <table id="tbl-perfiles-{{ survey['id'] }}" style="display: none;">
                                         <thead>
                                         <tr>
@@ -90,7 +102,7 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="progress progress-striped active">
-                                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{survey['progress']}}" aria-valuemin="0" aria-valuemax="100" style="width: {{survey['progress']}}%;">
+                                        <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{survey['progress']}}" aria-valuemin="0" aria-valuemax="100" style="width: {{survey['progress']}}%;">
                                         </div>
                                     </div>
                                     {{ survey['progress']|round ~ '%' }}
@@ -126,7 +138,7 @@
     <div id="disable_confirm" class="modal fade in" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header bg-info">
+                <div class="modal-header bg-primary">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title"><i class="fa fa-info-circle"></i> Cambiar estatus de evaluación</h4>
                 </div>
@@ -144,12 +156,16 @@
     <div id="modal_perfiles" class="modal fade in" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header bg-info">
+                <div class="modal-header bg-primary">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title"><i class="fa fa-info-circle"></i> Perfiles y niveles asignados</h4>
                 </div>
                 <div class="modal-body">
-                    <table id="matriz-perfiles" class="table table-vcenter table-condensed table-bordered table-responsive"></table>
+                    <small class="visible-xs"><i class="fa fa-info-circle text-primary"></i> Puedes navegar horizontalmente para ver las demás columnas</small>
+                    <br>
+                    <div class="table-responsive">
+                        <table id="matriz-perfiles" class="table table-vcenter table-condensed table-bordered table-responsive"></table>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <a href="#" class="btn btn-default" data-dismiss="modal">Aceptar</a>
