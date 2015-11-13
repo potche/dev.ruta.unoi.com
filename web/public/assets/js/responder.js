@@ -6,8 +6,6 @@ function setProgress(progress){
     $("#progressbar").animate({width: progress+'%'});
     $("#progressbar").attr("aria-valuenow",progress);
 
-    console.log(progress);
-
     if(progress==100){
         $("#sendAnswers").show();
     }
@@ -129,7 +127,7 @@ function saveEvaluacion(){
         data: JSON.stringify(postData)
     }).fail(function (data) {
         if(typeof data !== 'undefined'){
-            alert(data.message);
+
         }
     }).done(function (data) {
         window.location.href=urlRedirect;
