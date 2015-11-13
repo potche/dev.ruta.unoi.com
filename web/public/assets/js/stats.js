@@ -32,8 +32,8 @@ function statsUser(personid, username, avance){
             createGraph(siG, noG, noseG);
 
 
-            var progress =  '<div class="progress progress-bar-info progress-bar-striped">'+
-                    '<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'+avance+'"aria-valuemin="0" aria-valuemax="100" style="width: '+avance+'%;">'+
+            var progress =  '<div class="progress progress-striped active">'+
+                '<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="'+avance+'"aria-valuemin="0" aria-valuemax="100" style="width: '+avance+'%;">'+
                     avance+
                     '%</div>'+
                     '</div>'
@@ -130,5 +130,3 @@ var TablesDatatables2 = function() {
         }
     };
 }();
-
-

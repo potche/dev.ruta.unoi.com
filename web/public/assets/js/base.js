@@ -2,6 +2,7 @@
  * Created by isra on 13/10/15.
  */
 
+
 function parseInfo(privilege, profile){
     var privilegeArray = $.parseJSON(privilege);
     var link = '';
