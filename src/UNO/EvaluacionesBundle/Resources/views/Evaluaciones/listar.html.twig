@@ -60,6 +60,7 @@
                     </div>
                     <h3 class="widget-content text-left animation-pullDown">
                         Mis <strong>Evaluaciones</strong><br>
+                        <small class="visible-xs"><i class="fa fa-info-circle text-primary"></i> Presiona el título para verlo completo</small>
                     </h3>
                     {% if surveyList|length == 0 %}
                     <h3 class="widget-content text-center animation-pullDown">
@@ -69,10 +70,10 @@
                 </div>
                 {% if surveyList|length > 0 %}
                 <div class="table-responsive">
-                    <table class="table table-vcenter table-striped">
+                    <table class="table table-striped">
                         <thead>
                         <tr>
-                            <th>Evaluación </th>
+                            <th>Título</th>
                             <th class="hidden-sm hidden-xs">Fecha Límite</th>
                             <th class="text-center">Acciones</th>
                         </tr>
@@ -81,20 +82,22 @@
                         {% for survey in surveyList %}
                             <tr>
                                 <td>
-                                    {% if survey['actioncode']  == '0' %}
-                                        <i class="fa fa-exclamation-circle text-danger" data-toggle="tooltip" title="Aun no has respondido o completado esta evaluación"></i>
-                                    {% elseif  survey['actioncode']  == '004' %}
-                                        <i class="fa fa-check-circle text-success" data-toggle="tooltip" title="Ya completaste esta evaluación, puedes ver su resumen"></i>
-                                    {% endif %}
-                                    <strong>{{ survey['title'] }}</strong>
+                                        {% if survey['actioncode']  == '0' %}
+                                            <i class="fa fa-exclamation-circle text-danger"></i>
+                                        {% elseif  survey['actioncode']  == '004' %}
+                                            <i class="fa fa-check-circle text-success"></i>
+                                        {% endif %}
+
+                                        <span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><strong>{{ survey['title']}}</strong></span>
+                                        <span class="visible-xs-inline hidden-sm hidden-md hidden-lg text-justify" data-toggle="tooltip" title="{{ survey['title'] }}"><strong>{{ survey['title']|slice (0,25) ~ '...' }}</strong></span>
                                 </td>
                                 <td class="hidden-sm hidden-xs">{{ survey['closingdate']|date('j/M/Y \@ g:i a') }}</td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-xs">
                                         {% if survey['actioncode']  == '0' %}
-                                                <a href="{{ path('responder',{'id': survey['surveyid']}) }}" data-toggle="tooltip" title="Responde esta evaluación" class="btn btn-xs btn-success" style="width: 85px;">Responder</a>
+                                                <a href="{{ path('responder',{'id': survey['surveyid']}) }}" data-tooltip aria-haspopup="true" data-options="disable_for_touch:true"  title="Responde esta evaluación" class="btn btn-xs btn-success has-tip" style="width: 85px;">Responder</a>
                                         {% else %}
-                                                <a href="{{ path('resumen',{'surveyId': survey['surveyid']}) }}"  data-toggle="tooltip" title="Ver resumen de tus respuestas" class="btn btn-xs btn-info" style="width: 85px;">Resumen</a>
+                                                <a href="{{ path('resumen',{'surveyId': survey['surveyid']}) }}"  data-tooltip aria-haspopup="true" data-options="disable_for_touch:true" title="Ver resumen de tus respuestas" class="btn btn-xs btn-info has-tip" style="width: 85px;">Resumen</a>
                                         {% endif %}
                                     </div>
                                 </td>

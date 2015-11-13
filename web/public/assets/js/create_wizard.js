@@ -88,6 +88,15 @@ var CrearWizard = function() {
 
             $('#eval\\[closingdate\\]').rules('add', { dateAfter: new Date() });
 
+
+            if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+
+                $('#eval\\[closingdate\\]').prop('class','form-control');
+                $('#eval\\[closingdate\\]').prop('type','date');
+                $('#eval\\[closingdate\\]').removeAttr('placeholder');
+
+            }
+
             /**
              *
              * Función para agregar perfil con nivel
@@ -205,8 +214,20 @@ var CrearWizard = function() {
             });
 
             /**
-             * Manejamos el evento del botón para agregar preguntas
+             * Manejamos el evento para agregar preguntas
              */
+
+            function showQuestionErrors(message){
+
+                if(!$("#error_preguntas").is(':visible')) {
+
+                    $('<span id="error_preguntas" class="text-danger animation-slideDown"><i class="fa fa-times"></i>'+message+'</span>').appendTo('#div-preg-agregadas');
+
+                } else{
+
+                    $('#error_preguntas').html('<i class="fa fa-times"></i>'+message);
+                }
+            }
 
             $("#btn_add_pregunta").click(function(){
 
@@ -215,37 +236,43 @@ var CrearWizard = function() {
                 var pregunta = wipeQuestion($("#pregunta").val());
                 var categoria_id = $("#select-categoria").val();
                 var cattexto = $("#select-categoria option:selected").text();
+                var exists = $('.pregtexto[pregunta="'+pregunta+'"]').html();
 
-                if(pregunta != '' && categoria_id != ''){
+                if(typeof exists === 'undefined'){
 
-                    var elem =
+                    if(pregunta != '' && categoria_id != ''){
 
-                        '<div class="block pregunta-div">' +
+                        var elem =
+
+                            '<div class="block pregunta-div">' +
                             '<div class="block-title">' +
-                                '<div class="block-options pull-left">' +
-                                    '<a href="javascript:void(0)"  id ="dragger" class="btn btn-xs" onmouseover="" style="cursor: all-scroll"><i class="fa fa-bars"></i></a>' +
-                                '</div>' +
-                                '<div class="block-options pull-right">' +
-                                    '<a href="javascript:void(0)"  id ="deleter" class="btn btn-danger btn-xs" data-toggle="block-hide"><i class="fa fa-times"></i></a>' +
-                                '</div>' +
+                            '<div class="block-options pull-left">' +
+                            '<a href="javascript:void(0)"  id ="dragger" class="btn btn-xs" onmouseover="" style="cursor: all-scroll"><i class="fa fa-bars"></i></a>' +
+                            '</div>' +
+                            '<div class="block-options pull-right">' +
+                            '<a href="javascript:void(0)"  id ="deleter" class="btn btn-danger btn-xs" data-toggle="block-hide"><i class="fa fa-times"></i></a>' +
+                            '</div>' +
                             '<h4><em class="cattexto" >'+cattexto+'</em></h4>'+
                             '</div>' +
-                            '<p class="pregtexto" style="text-align: center;">'+pregunta+'</p>'+
+                            '<p class="pregtexto" style="text-align: center;" pregunta="'+pregunta+'">'+pregunta+'</p>'+
                             '<div class="form-group" hidden>' +
-                                '<input type="text" id="eval[preguntas][]" name="eval[preguntas][]" class="form-control" value="'+categoria_id+'::'+pregunta+'">' +
+                            '<input type="text" id="eval[preguntas][]" name="eval[preguntas][]" class="form-control" value="'+categoria_id+'::'+pregunta+'">' +
                             '</div>' +
-                        '</div>';
+                            '</div>';
 
-                    $(elem).appendTo('#div-preg-agregadas');
-                    $("#count_questions").val(countPreg+1);
-                    $("#error_preguntas").remove();
+                        $(elem).appendTo('#div-preg-agregadas');
+                        $("#count_questions").val(countPreg+1);
+                        $("#error_preguntas").remove();
 
-                } else if((pregunta === '' || categoria_id === '') && !$("#error_preguntas").is(':visible')) {
+                    } else if((pregunta === '' || categoria_id === '')){
 
-                    $('<span id="error_preguntas" class="text-danger help-block animation-slideDown"><i class="fa fa-times"></i> Debes agregar una pregunta con su categoría</span>').appendTo('#div-preg-agregadas');
-                }
+                        showQuestionErrors("Por favor selecciona o agrega una pregunta con una categoría");
+                    }
+                }else showQuestionErrors("Por favor agrega una pregunta que no haya sido agregada a esta evaluación");
+
             });
 
+            
             //Evento para eliminar perfiles/niveles agregados
 
             $('#perf-niv-agregados').on("click", ".block-title #deleter", function() {
