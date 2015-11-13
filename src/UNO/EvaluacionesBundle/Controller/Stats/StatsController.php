@@ -167,6 +167,7 @@ class StatsController extends Controller{
                             INNER JOIN
                         Survey S ON QS.Survey_surveyId = S.surveyid
                         WHERE P.personId != 1
+                        AND S.active = 1
                     ";
         if( in_array('SuperAdmin', $this->_profile) ){
             if($this->_schoolIdFrm != 0){
@@ -361,6 +362,7 @@ class StatsController extends Controller{
                         Survey S ON QS.Survey_surveyId = S.surveyid
                     WHERE
                         P.personId !=1
+                        AND S.active = 1
                     ";
 
         if( in_array('SuperAdmin', $this->_profile) ){
@@ -400,8 +402,11 @@ class StatsController extends Controller{
                         PersonSchool PS ON SP.Profile_profileId = PS.profileId AND SP.schoolLevelId = PS.schoolLevelId
                             INNER JOIN
                         Person P ON PS.personId = P.personId
+                            INNER JOIN
+                        Survey S ON SP.Survey_surveyId = S.surveyid
                     WHERE
  	                    P.personId !=1
+ 	                    AND S.active = 1
                     ";
 
         if( in_array('SuperAdmin', $this->_profile) ){
