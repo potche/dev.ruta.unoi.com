@@ -33,7 +33,7 @@ var SurveyTable = function(){
             });
 
             // Manejo evento para mostrar matríz de perfiles y niveles
-            $('.btn-matriz').click(function(){
+            $('.btn-matriz').click(function(event){
 
                 event.preventDefault();
                 $('#modal_perfiles').modal();

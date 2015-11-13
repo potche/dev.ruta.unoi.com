@@ -67,34 +67,45 @@
             </div>
 
             <div id="cont-respuestas" class="block-content">
-                <table id="tbl-datatable" class="table table-vcenter table-condensed table-bordered">
-                    <thead>
-                    <tr>
-                        <th>Orden</th>
-                        <th>Pregunta</th>
-                        <th>Respuesta</th>
-                        <th>Comentario</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for result in results %}
+                <small class="visible-xs"><i class="fa fa-info-circle text-primary"></i> Puedes navegar horizontalmente para ver los demás campos</small>
+                <div class="table-responsive">
+                    <table id="tbl-datatable" class="table table-bordered">
+                        <thead>
                         <tr>
-                            <td class="text-center">
-                                {{ result['order'] }}
-                            </td>
-                            <td>
-                                {{ result['question'] }}
-                            </td>
-                            <td class="text-center">
-                                {{ result['answer'] }}
-                            </td>
-                            <td>
-                                {{ result['comment'] }}
-                            </td>
+                            <th class="hidden-sm hidden-xs"><b>#</b></th>
+                            <th class="text-center">
+                                <b>Pregunta</b>
+                            </th>
+                            <th class="text-center">
+                                <span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>Respuesta</b></span>
+                                <span class="visible-xs-inline"><b><i class="fa fa-pencil-square-o"></i></b></span>
+                            </th>
+                            <th class="text-center">
+                                <span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>Comentario</b></span>
+                                <span class="visible-xs-inline"><b><i class="fa fa-commenting-o"></i></b></span>
+                            </th>
                         </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {% for result in results %}
+                            <tr>
+                                <td class="hidden-sm hidden-xs text-center">
+                                    {{ result['order'] }}
+                                </td>
+                                <td class="text-left">
+                                    {{ result['question'] }}
+                                </td>
+                                <td class="text-center">
+                                    {{ result['answer'] }}
+                                </td>
+                                <td class="text-left">
+                                    {{ result['comment'] }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
