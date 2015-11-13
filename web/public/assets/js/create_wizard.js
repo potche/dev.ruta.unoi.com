@@ -272,7 +272,7 @@ var CrearWizard = function() {
 
             });
 
-            
+
             //Evento para eliminar perfiles/niveles agregados
 
             $('#perf-niv-agregados').on("click", ".block-title #deleter", function() {
