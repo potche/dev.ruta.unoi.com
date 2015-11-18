@@ -80,6 +80,7 @@ class ResumenController extends Controller
      * @param $surveyId
      * @param $action
      * @return mixed
+     * @author julio
      */
 
     private function getSurveyLog($personId, $surveyId, $action){
@@ -195,9 +196,7 @@ class ResumenController extends Controller
     }
 
     private function getStatsByCategory($categories, $options, $results){
-        /**
-         * ToDo: implementar formato de estadisticas por categoria (barras)
-         */
+
         $siStr = '';
         $noStr = '';
         $noseStr = '';

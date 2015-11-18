@@ -40,8 +40,12 @@ var Charts = function() {
                         }
                     },
 
-                    series: JSON.parse(stats_barsA[1])
-                });
+                        series: JSON.parse(stats_barsA[1])
+                    }, function (chart) {
+
+                        chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();
+                    }
+                );
 
             var chart_pie = new Highcharts.Chart({
                 chart: {
@@ -75,6 +79,9 @@ var Charts = function() {
                     colorByPoint: true,
                     data: JSON.parse(stats_pie)
                 }]
+            }, function (chart) {
+
+                chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();
             });
         }
     };

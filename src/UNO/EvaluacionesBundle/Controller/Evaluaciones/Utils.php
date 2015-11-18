@@ -79,4 +79,26 @@ class Utils {
         }
         return false;
     }
+
+    /**
+     *
+     * Devuelve el porcentaje de avance dados el total de evaluaciones y el total de las pendientes
+     *
+     * @param $countSurveys
+     * @param $countToBeAnswered
+     * @return array
+     *
+     */
+
+    public static function fetchStats($countSurveys, $countToBeAnswered) {
+
+        $answeredCount = $countSurveys - $countToBeAnswered;
+        $compliancePercentage = ($countSurveys > 0 ? number_format((($answeredCount * 100)/$countSurveys), 2, '.', ''): 0);
+
+        return array(
+            'answered' => $answeredCount,
+            'toBeAnswered' => $countToBeAnswered,
+            'compliance' => $compliancePercentage,
+        );
+    }
 }
