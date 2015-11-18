@@ -29,7 +29,7 @@ function statsUser(personid, username, avance){
                 list += "<option value='"+item.si+":"+item.no+":"+item.nose+":"+item.title+"'>"+item.title+"</option>";
             });
 
-            createGraph(siG, noG, noseG);
+            createGraph(siG, noG, noseG, 'Global');
 
 
             var progress =  '<div class="progress progress-striped active">'+
@@ -70,7 +70,7 @@ function reflowChart(){
 
 function abc(rs){
     var arr = rs.split(':');
-    createGraph(arr[0],arr[1],arr[2]);
+    createGraph(arr[0],arr[1],arr[2], arr[3]);
     if(arr[3] != 0){
         $.post( "ajax/stats", { title: arr[3], personId: personIdGlobal })
             .done(function( data ) {
@@ -83,11 +83,11 @@ function abc(rs){
 
 }
 
-function createGraph(si, no, nose){
+function createGraph(si, no, nose, title){
     var jsonTotalResponseLUPie= jQuery.parseJSON( '[{"name": "Sí", "y": '+si+', "sliced": true, "selected": true},{"name": "No", "y": '+no+', "sliced": false, "selected": false},{"name": "No sé", "y": '+nose+', "sliced": false, "selected": false}]' );
     var jsonTotalResponseLUColumn = jQuery.parseJSON( '[{"name": "Sí", "y": '+si+'},{"name": "No", "y": '+no+'},{"name": "No sé", "y": '+nose+'}]' );
-    pieGrlLU(jsonTotalResponseLUPie);
-    columnGrlLU(jsonTotalResponseLUColumn);
+    pieGrlLU(jsonTotalResponseLUPie, title);
+    columnGrlLU(jsonTotalResponseLUColumn, title);
 }
 
 

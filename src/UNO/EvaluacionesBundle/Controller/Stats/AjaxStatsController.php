@@ -40,29 +40,28 @@ class AjaxStatsController extends Controller{
      * obtiene toda la informacion de las evaluaciones realizadas por colegio o general
      */
     private function getSurveyResultsGral($personId) {
-        $query = "SELECT P.personId, CONCAT(P.name, ' ', P.surname) as username, PS.schoolId, S.surveyId, S.title, count(A.answer) countAnswer, A.answer
-                    FROM
-                        Person P
-                            INNER JOIN
-                        Answer A ON P.personId = A.Person_personId
-                            INNER JOIN
-                        (SELECT DISTINCT schoolId, personId FROM PersonSchool) PS ON P.personId = PS.personId
-                            INNER JOIN
-                        OptionXQuestion OQ ON A.OptionXQuestion_id = OQ.OptionXQuestion_id
-                            INNER JOIN
-                        QuestionXSurvey QS ON OQ.QuestionXSurvey_id = QS.QuestionXSurvey_id
-                            INNER JOIN
-                        Survey S ON QS.Survey_surveyId = S.surveyid
-                        WHERE P.personId = $personId
-                        AND S.active = 1
-                    GROUP BY P.personId, QS.Survey_surveyId, A.answer
-                    ;";
 
         $em = $this->getDoctrine()->getManager();
-        $connection = $em->getConnection();
-        $statement = $connection->prepare($query);
-        $statement->execute();
-        $_surveyResultsGral = $statement->fetchAll();
+        $qb = $em->createQueryBuilder();
+
+        $_surveyResultsGral = $qb->select("PS.personid, TRIM(S.title) AS title, O.option as answer, COUNT(DISTINCT (Ans.answerid)) as countAnswer")
+            ->from('UNOEvaluacionesBundle:Surveyxprofile ','SP')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','PS', 'WITH', "PS.profileid = SP.profileProfileid AND PS.schoollevelid = SP.schoollevelid AND PS.personid = $personId")
+            ->innerJoin('UNOEvaluacionesBundle:Survey','S', 'WITH', 'S.surveyid = SP.surveySurveyid')
+            ->leftJoin('UNOEvaluacionesBundle:Log','L', 'WITH', "L.surveySurveyid = S.surveyid AND L.personPersonid = $personId")
+            ->leftJoin('UNOEvaluacionesBundle:Action','A', 'WITH', 'A.idaction = L.actionaction')
+            ->leftJoin('UNOEvaluacionesBundle:Questionxsurvey','QS', 'WITH', 'QS.surveySurveyid = S.surveyid')
+            ->leftJoin('UNOEvaluacionesBundle:Optionxquestion','OQ', 'WITH', 'OQ.questionxsurvey = QS.questionxsurveyId')
+            ->leftJoin('UNOEvaluacionesBundle:Option','O', 'WITH', 'O.optionid = OQ.optionOptionid')
+            ->leftJoin('UNOEvaluacionesBundle:Answer','Ans', 'WITH', "Ans.optionxquestion = OQ.optionxquestionId AND Ans.personPersonid = $personId")
+            ->where('S.active = 1')
+            ->andWhere('PS.personid > 1')
+            ->andWhere('S.closingdate >= CURRENT_DATE()')
+            ->andWhere('A.actioncode IS NOT NULL')
+            ->groupBy('PS.personid, S.surveyid, S.title , OQ.optionOptionid, O.option')
+            ->orderBy( 'PS.schoolid')
+            ->getQuery()
+            ->getResult();
 
         return $_surveyResultsGral;
     }
@@ -173,7 +172,7 @@ class AjaxStatsController extends Controller{
                             <table id="example-datatable" class="table table-vcenter table-condensed table-bordered">
                                 <thead>
                                     <tr>
-                                        <th class="hidden-sm hidden-xs text-center">Orden</th>
+                                        <th class="hidden-sm hidden-xs text-center">#</th>
                                         <th class="text-center">Pregunta</th>
                                         <th class="text-center">
                                             <span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>Respuesta</b></span>
