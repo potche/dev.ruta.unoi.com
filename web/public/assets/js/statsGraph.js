@@ -1,8 +1,7 @@
 /**
  * Created by isra on 9/11/15.
  */
-function pieGrl(jsonTotalResponsePie) {
-
+function pieGrl(jsonTotalResponsePie, nameSchool) {
     Highcharts.setOptions({
         lang: {
             thousandsSep: ','
@@ -19,11 +18,15 @@ function pieGrl(jsonTotalResponsePie) {
                 beta: 0
             }
         },
+        credits: {
+            text: 'UNOi',
+            href: 'http://mx.unoi.com/'
+        },
         title: {
-            text: 'Estadística General.'
+            text: nameSchool
         },
         subtitle: {
-            text: 'En porcentaje.'
+            text: 'Porcentaje de Respuestas.'
         },
         tooltip: {
             pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -44,31 +47,36 @@ function pieGrl(jsonTotalResponsePie) {
             name: 'Respuesta',
             data: jsonTotalResponsePie
             }]
-    }, function (chart) {
-
-        chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();
-    });
+    },
+        function (chart) {
+            chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();
+        }
+    );
 }
 
 //---------------------------------------------
-function columnGrl(jsonTotalResponseColumn, jsonTotalResponseDDColumn) {
-
+function columnGrl(jsonTotalResponseColumn, nameSchool) {
     Highcharts.setOptions({
         lang: {
             thousandsSep: ','
         }
     });
+
     // Create the chart
     var chartColoumn = new Highcharts.Chart({
         chart: {
             type: 'column',
             renderTo: 'containerColumn'
         },
+        credits: {
+            text: 'UNOi',
+            href: 'http://mx.unoi.com/'
+        },
         title: {
-            text: 'Estadística General'
+            text: nameSchool
         },
         subtitle: {
-            text: 'Cantidad de Respuestas'
+            text: 'Cantidad de Respuestas.'
         },
         xAxis: {
             type: 'category'
@@ -91,10 +99,9 @@ function columnGrl(jsonTotalResponseColumn, jsonTotalResponseDDColumn) {
                 }
             }
         },
-
         tooltip: {
             headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-            pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:,.0f}</b><br/>'
+            pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y}</b><br/>'
         },
 
         series: [{
@@ -102,18 +109,17 @@ function columnGrl(jsonTotalResponseColumn, jsonTotalResponseDDColumn) {
                     colorByPoint: true,
                     data: jsonTotalResponseColumn
                 }]
-    }, function (chart) {
-
-        chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();
-
-    });
+    },
+        function (chart) {
+            chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();
+        }
+    );
 }
 
 //---------------------------------------
 var chart;
 
-function pieGrlLU(jsonTotalResponseLUPie) {
-
+function pieGrlLU(jsonTotalResponseLUPie, title) {
     Highcharts.setOptions({
         lang: {
             thousandsSep: ','
@@ -130,11 +136,15 @@ function pieGrlLU(jsonTotalResponseLUPie) {
                 beta: 0
             }
         },
+        credits: {
+            text: 'UNOi',
+            href: 'http://mx.unoi.com/'
+        },
         title: {
-            text: 'Estadística General.'
+            text: title
         },
         subtitle: {
-            text: 'En porcentaje.'
+            text: 'Porcentaje de Respuestas.'
         },
         tooltip: {
             pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -155,30 +165,34 @@ function pieGrlLU(jsonTotalResponseLUPie) {
             name: 'Respuesta',
             data: jsonTotalResponseLUPie
         }]
-    }, function (chart) {
-
-        chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();
-    });
-
+    },
+        function (chart) {
+            chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();
+        }
+    );
 }
 
 //---------------------------------------------
 var chartColoumn;
-function columnGrlLU(jsonTotalResponseLUColumn) {
-
+function columnGrlLU(jsonTotalResponseLUColumn, title) {
     Highcharts.setOptions({
         lang: {
             thousandsSep: ','
         }
     });
+
     // Create the chart
     chartColoumn = new Highcharts.Chart({
         chart: {
             type: 'column',
             renderTo: 'containerColumnLU'
         },
+        credits: {
+            text: 'UNOi',
+            href: 'http://mx.unoi.com/'
+        },
         title: {
-            text: 'Estadística General.'
+            text: title
         },
         subtitle: {
             text: 'Cantidad de Respuestas.'
@@ -215,8 +229,9 @@ function columnGrlLU(jsonTotalResponseLUColumn) {
             colorByPoint: true,
             data: jsonTotalResponseLUColumn
         }]
-    }, function (chart) {
-
-        chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();
-    });
+    },
+        function (chart) {
+            chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();
+        }
+    );
 }
