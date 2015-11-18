@@ -41,11 +41,6 @@ class InicioController extends Controller{
                 $avance = 0;
             }
 
-             // if($session->has('compliance')){
-
-             // 	$avance = $session->get('compliance');
-             // }
-
             return $this->render('UNOEvaluacionesBundle:Evaluaciones:inicio.html.twig', array(
                 'avance' => $avance,
                 'titleAvance' => $titleAvance
@@ -72,7 +67,8 @@ class InicioController extends Controller{
             ->getQuery()
             ->getResult();
 
-            return array_count_values(array_column($surveys,'actioncode'))['004'];
+            return !array_key_exists('004', array_count_values(array_column($surveys,'actioncode'))) ? 0 : array_count_values(array_column($surveys,'actioncode'))['004'];
+
     }
 
     private function getAsignadasUser(){
