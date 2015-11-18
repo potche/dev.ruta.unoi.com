@@ -2,6 +2,13 @@
  * Created by isra on 9/11/15.
  */
 function pieGrl(jsonTotalResponsePie) {
+
+    Highcharts.setOptions({
+        lang: {
+            thousandsSep: ','
+        }
+    });
+
     var chartGrl = new Highcharts.Chart({
         chart: {
             type: 'pie',
@@ -37,11 +44,20 @@ function pieGrl(jsonTotalResponsePie) {
             name: 'Respuesta',
             data: jsonTotalResponsePie
             }]
+    }, function (chart) {
+
+        chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();
     });
 }
 
 //---------------------------------------------
 function columnGrl(jsonTotalResponseColumn, jsonTotalResponseDDColumn) {
+
+    Highcharts.setOptions({
+        lang: {
+            thousandsSep: ','
+        }
+    });
     // Create the chart
     var chartColoumn = new Highcharts.Chart({
         chart: {
@@ -49,10 +65,10 @@ function columnGrl(jsonTotalResponseColumn, jsonTotalResponseDDColumn) {
             renderTo: 'containerColumn'
         },
         title: {
-            text: 'Estadística General.'
+            text: 'Estadística General'
         },
         subtitle: {
-            text: 'Cantidad de Respuestas.'
+            text: 'Cantidad de Respuestas'
         },
         xAxis: {
             type: 'category'
@@ -71,14 +87,14 @@ function columnGrl(jsonTotalResponseColumn, jsonTotalResponseDDColumn) {
                 borderWidth: 0,
                 dataLabels: {
                     enabled: true,
-                    format: '{point.y}'
+                    format: '{point.y:,.0f}'
                 }
             }
         },
 
         tooltip: {
             headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-            pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y}</b><br/>'
+            pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:,.0f}</b><br/>'
         },
 
         series: [{
@@ -86,6 +102,10 @@ function columnGrl(jsonTotalResponseColumn, jsonTotalResponseDDColumn) {
                     colorByPoint: true,
                     data: jsonTotalResponseColumn
                 }]
+    }, function (chart) {
+
+        chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();
+
     });
 }
 
@@ -93,6 +113,13 @@ function columnGrl(jsonTotalResponseColumn, jsonTotalResponseDDColumn) {
 var chart;
 
 function pieGrlLU(jsonTotalResponseLUPie) {
+
+    Highcharts.setOptions({
+        lang: {
+            thousandsSep: ','
+        }
+    });
+
     chart = new Highcharts.Chart({
         chart: {
             type: 'pie',
@@ -128,6 +155,9 @@ function pieGrlLU(jsonTotalResponseLUPie) {
             name: 'Respuesta',
             data: jsonTotalResponseLUPie
         }]
+    }, function (chart) {
+
+        chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();
     });
 
 }
@@ -135,6 +165,12 @@ function pieGrlLU(jsonTotalResponseLUPie) {
 //---------------------------------------------
 var chartColoumn;
 function columnGrlLU(jsonTotalResponseLUColumn) {
+
+    Highcharts.setOptions({
+        lang: {
+            thousandsSep: ','
+        }
+    });
     // Create the chart
     chartColoumn = new Highcharts.Chart({
         chart: {
@@ -164,7 +200,7 @@ function columnGrlLU(jsonTotalResponseLUColumn) {
                 borderWidth: 0,
                 dataLabels: {
                     enabled: true,
-                    format: '{point.y}'
+                    format: '{point.y:,.0f}'
                 }
             }
         },
@@ -179,5 +215,8 @@ function columnGrlLU(jsonTotalResponseLUColumn) {
             colorByPoint: true,
             data: jsonTotalResponseLUColumn
         }]
+    }, function (chart) {
+
+        chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();
     });
 }

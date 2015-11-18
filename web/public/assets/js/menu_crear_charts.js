@@ -33,6 +33,9 @@ var Charts = function() {
                     colorByPoint: true,
                     data: JSON.parse(stats_general)
                 }]
+            }, function (chart) {
+
+                chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();
             });
         }
     };

@@ -270,6 +270,7 @@ var CrearWizard = function() {
                     }
                 }else showQuestionErrors("Por favor agrega una pregunta que no haya sido agregada a esta evaluación");
 
+                $('#pregunta').val('');
             });
 
 

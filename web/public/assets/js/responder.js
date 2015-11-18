@@ -130,6 +130,12 @@ function saveEvaluacion(){
 
         }
     }).done(function (data) {
+
+        try {
+                ga('send', 'event', 'Evaluacion', 'Completada','Fin', 1);
+            }catch(err) {
+                
+            }
         window.location.href=urlRedirect;
     });
 }
