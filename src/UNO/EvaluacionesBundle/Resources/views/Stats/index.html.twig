@@ -215,8 +215,8 @@
 
             {% if jsonTotalResponsePie is not empty %}
             //genera las graficas de informacion general
-            pieGrl({{ jsonTotalResponsePie | raw }});
-            columnGrl({{ jsonTotalResponseColumn | raw }});
+            pieGrl({{ jsonTotalResponsePie | raw }}, '{{ nameSchool }}');
+            columnGrl({{ jsonTotalResponseColumn | raw }}, '{{ nameSchool }}');
             {% endif %}
 
             {% if schoolId is defined %}
