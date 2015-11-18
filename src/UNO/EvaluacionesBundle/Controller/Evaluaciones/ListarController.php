@@ -55,7 +55,7 @@ class ListarController extends Controller
         $countToBeAnswered = array_count_values(array_column($surveys,'actioncode'))['0'];
         $session->set('authorized_in',base64_encode(json_encode(array_column($surveys,'surveyid'))));
 
-        $statistics = $this->fetchStats(count($surveys),$countToBeAnswered);
+        $statistics = Utils::fetchStats(count($surveys),$countToBeAnswered);
         $session->set('compliance',$statistics['compliance']);
 
         return $this->render('@UNOEvaluaciones/Evaluaciones/listar.html.twig', array(
@@ -63,32 +63,5 @@ class ListarController extends Controller
             'surveyList' => $surveys,
             'stats' => $statistics,
         ));
-    }
-
-    /**
-     * Método para generar estadísticas de las evaluaciones del usuario.
-     *
-     * Devuelve un arreglo con:
-     *
-     * answered: el número de evaluaciones completadas (total - encuestasASerRespondidas)
-     * toBeAnswered: el número de evaluaciones a ser completadas
-     * compliance: el porcentaje de cumplimiento del usuario (número de encuestas respondidas * 100 / total)
-     *
-     * @param $countSurveys
-     * @param $countToBeAnswered
-     * @return array
-     *
-     * @author jbravob julio@dsindigo.com
-     */
-    private function fetchStats($countSurveys, $countToBeAnswered) {
-
-        $answeredCount = $countSurveys - $countToBeAnswered;
-        $compliancePercentage = ($countSurveys > 0 ? number_format((($answeredCount * 100)/$countSurveys), 2, '.', ''): 0);
-
-        return array(
-            'answered' => $answeredCount,
-            'toBeAnswered' => $countToBeAnswered,
-            'compliance' => $compliancePercentage,
-        );
     }
 }

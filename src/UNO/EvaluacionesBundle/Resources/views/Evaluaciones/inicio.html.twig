@@ -33,7 +33,7 @@
                 </div>
                 <div class="widget-extra-full text-center">
                     <img src="http://mx.unoi.com/wp-content/uploads/2015/10/BID-Talento.jpg" width="70%">
-                    <h3>Cuatro claves para entender de dónde viene el talento</h3>
+                    <h3><a href="http://mx.unoi.com/2015/10/23/cuatro-claves-para-entender-de-donde-viene-el-talento/" target="_blank">Cuatro claves para entender de dónde viene el talento</a></h3>
                     <small><em>23 octubre, 2015</em></small>
                     <br/>
                     <p>Recientemente, se ha reabierto el debate sobre si el talento sobresaliente es una característica fija e innata de una persona o si se puede desarrollar a lo largo de la vida y con apoyo de los sistemas educativos. Veamos a continuación algunas claves para resolver esta interrogante.</p>
@@ -43,18 +43,20 @@
         </div>
         <div class="col-sm-6">
             <!-- Video -->
-            <div class="block">
-                <!-- Title -->
-                <div class="block-title">
-                    <h2>{{ titleAvance }}</h2>
-                </div>
-                <div class="widget-extra-full text-center">
-                    <div class="pie-chart" data-percent="{{ avance | raw }}" data-size="90" data-bar-color="#e67e22">
-                        <span>{{ avance | raw }}%</span>
+            {% if app.session.get('nameS') != 'Coach' %}
+                <div class="block">
+                    <!-- Title -->
+                    <div class="block-title">
+                        <h2>{{ titleAvance }}</h2>
                     </div>
-                    <br/>
+                    <div class="widget-extra-full text-center">
+                        <div class="pie-chart" data-percent="{{ avance | raw }}" data-size="90" data-bar-color="#e67e22">
+                            <span>{{ avance | raw }}%</span>
+                        </div>
+                        <br/>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
             <!-- END Video -->
         </div>
 
@@ -84,5 +86,3 @@
 
     <script src="{{ asset('public/assets/js/jquery-1.11.3.min.js') }}"></script>
 {% endblock %}
-
-
