@@ -11,10 +11,12 @@ var ValidateSchool = function() {
         init: function(exampleTypeheadData) {
 
             jQuery.validator.addMethod("valSchool", function(value, element){
-                if(exampleTypeheadData.indexOf(value) != -1){
-                    return true
-                }
-                return false
+
+                    if(exampleTypeheadData.indexOf(value) != -1){
+                        return true
+                    }
+                    return false
+
             }, '<div class="text-danger"><i class="fa fa-times"></i> Ingrese una Escuela Valida</div>');
 
             /*
@@ -23,6 +25,10 @@ var ValidateSchool = function() {
 
             /* Login form - Initialize Validation */
             $('#schoolFrm').validate({
+                onfocusout: false,
+                onkeyup: false,
+                onclick: false,
+
                 errorClass: 'help-block animation-slideDown', // You can change the animation class for a different entrance animation - check animations page
                 errorElement: 'div',
                 rules: {

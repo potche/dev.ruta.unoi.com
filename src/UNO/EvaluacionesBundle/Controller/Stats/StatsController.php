@@ -47,13 +47,13 @@ class StatsController extends Controller{
         $session->start();
         if ($session->get('logged_in')) {
             $this->setProfile($session);
-            if (array_intersect(array('SuperAdmin','Director'), $this->_profile)) {
+            if (array_intersect(array('SuperAdmin','Director','COACH'), $this->_profile)) {
                 $this->setPersonId($session);
                 $this->setSchoolIdFrm($request);
                 $this->setSchooIdPerson($session);
                 $this->getResults();
                 #vista para Admin
-                if (in_array('SuperAdmin', $this->_profile)) {
+                if (array_intersect(array('SuperAdmin','COACH'), $this->_profile)) {
                     $this->getSchoolResponse();
                     return $this->render('UNOEvaluacionesBundle:Stats:index.html.twig', array(
                         'nameSchool' => $this->_nameSchool,
@@ -107,7 +107,7 @@ class StatsController extends Controller{
     private function setSchooIdPerson($session){
         $schoolIdPerson = '';
         $_schoolIdPerson = json_decode($session->get('schoolIdS'));
-        if (!in_array('SuperAdmin', $this->_profile)) {
+        if (!array_intersect(array('SuperAdmin','COACH'), $this->_profile)) {
             foreach($_schoolIdPerson as $value){
                 $schoolIdPerson .= $value->schoolid. ', ';
                 $this->_nameSchool = $value->school;
@@ -137,14 +137,25 @@ class StatsController extends Controller{
     /**
      * este metodo invoca a otros metodos con el fin de separar las acciones
      */
-    private function getResults()
-    {
+    private function getResults(){
         //obtencion de los datos generales para las estadisticas
         $this->getSurveyResultsGral();
         if (!empty($this->_surveyResultsGral)) {
             $this->getTotalResponse();
             //obtencion de los usuario
-            $this->creaListUser();
+            $and = "PS.schoolid != ''";
+            if( array_intersect(array('SuperAdmin','COACH'), $this->_profile) ){
+                if($this->_schoolIdFrm != 0){
+                    $and = "PS.schoolid in (".$this->_schoolIdFrm.")";
+                    $this->creaListUser($and);
+                }else{
+                    $this->_userList = "";
+                }
+            }else{
+                $and = "PS.schoolid in (".$this->_schoolIdPerson.")";
+                $this->creaListUser($and);
+            }
+
         }
     }
 
@@ -169,7 +180,7 @@ class StatsController extends Controller{
                         WHERE P.personId != 1
                         AND S.active = 1
                     ";
-        if( in_array('SuperAdmin', $this->_profile) ){
+        if( array_intersect(array('SuperAdmin','COACH'), $this->_profile) ){
             if($this->_schoolIdFrm != 0){
                 $query .= "AND PS.schoolId in (".$this->_schoolIdFrm.")";
             }
@@ -274,16 +285,9 @@ class StatsController extends Controller{
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 
-        $_schoolId = $qb->select("CONCAT(trim(PS.schoolid),'-',trim(Sc.school)) as school")
-            ->from('UNOEvaluacionesBundle:Answer','A')
-            ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','OQ', 'WITH', 'A.optionxquestion = OQ.optionxquestionId')
-            ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','QS', 'WITH', 'OQ.questionxsurvey = QS.questionxsurveyId')
-            ->innerJoin('UNOEvaluacionesBundle:Question','Q', 'WITH', 'QS.questionQuestionid = Q.questionid')
-            ->innerJoin('UNOEvaluacionesBundle:Subcategory','Sub', 'WITH', 'Q.subcategorySubcategoryid = Sub.subcategoryid')
-            ->innerJoin('UNOEvaluacionesBundle:Survey','S', 'WITH', 'QS.surveySurveyid = S.surveyid')
-            ->innerJoin('UNOEvaluacionesBundle:Personschool','PS', 'WITH', 'A.personPersonid = PS.personid')
-            ->innerJoin('UNOEvaluacionesBundle:Person','P', 'WITH', 'PS.personid = P.personid')
-            ->innerJoin('UNOEvaluacionesBundle:School','Sc', 'WITH', 'PS.schoolid = Sc.schoolid')
+        $_schoolId = $qb->select("CONCAT(trim(PS.schoolid),'-',trim(S.school)) as school")
+            ->from('UNOEvaluacionesBundle:Personschool','PS')
+            ->innerJoin('UNOEvaluacionesBundle:School','S', 'WITH', 'PS.schoolid = S.schoolid')
             ->groupBy('PS.schoolid')
             ->orderBy( 'PS.schoolid')
             ->getQuery()
@@ -300,134 +304,75 @@ class StatsController extends Controller{
     /**
      *Crea la lista de usuario con su progreso, avance y evaluaciones relizadas
      */
-    private function creaListUser(){
-        $_userEval = $this->getUserEval();
-        $_surveyAsigUser = $this->getSurveyAsigUser();
+    private function creaListUser($and){
+        $_userEval = $this->getUserEval($and);
+        $evalUsers = array_unique(array_column($_userEval, 'personid'));
 
         $userList = array();
-        foreach ( $_surveyAsigUser as $totalUser ) {
-            $a=false;
-            for ($i=0; $i<count($_userEval); $i++){
-                if($totalUser['personId'] == $_userEval[$i]['personId']){
-                    array_push( $userList,
-                        array(
-                        'personId' => $_userEval[$i]['personId'],
-                        'username' => $_userEval[$i]['username'],
-                        'progreso' => $_userEval[$i]['realizadas'].'/'.$totalUser['asig'],
-                        'avance' => $this->getPorcentaje($totalUser['asig'], $_userEval[$i]['realizadas'])
-                        )
-                    );
-                    $a = true;
-                    break;
-                }
-                if( ($i == count($_userEval)-1) && !$a){
-                    array_push( $userList,
-                        array( 'personId' => $totalUser['personId'],
-                            'username' => $totalUser['username'],
-                            'progreso' => '0'.'/'.$totalUser['asig'],
-                            'avance' => $this->getPorcentaje($totalUser['asig'], 0),
-                        )
-                    );
+        foreach($evalUsers as $valUSers) {
+            $si = 0;
+            $no = 0;
+            $personid = "";
+            $username = "";
+            foreach ($_userEval as $totalUser) {
+                if($valUSers == $totalUser['personid']){
+                    $personid = $totalUser['personid'];
+                    $username = $totalUser['username'];
+                    switch ($totalUser['finished']):
+                        case 'si':
+                            $si++;
+                            break;
+                        case 'no':
+                            $no++;
+                            break;
+                    endswitch;
                 }
             }
+            $totalUser = $si + $no;
+            array_push( $userList,
+                array(
+                    'personId' => $personid,
+                    'username' => $username,
+                    'progreso' => $si.'/'.$totalUser,
+                    'avance' => $this->getPorcentaje($totalUser, $si)
+                )
+            );
         }
         $this->_userList = $userList;
-
-        //print_r($this->_userList);
     }
 
     /**
      * obtiene el numero de evaluaciones que ha realizado cada usuario
      * @return mixed
      */
-    private function getUserEval(){
-        $query = "SELECT
-                        P.personId,
-                        CONCAT(P.name, ' ', P.surname) AS username,
-                        COUNT(distinct(QS.Survey_surveyId)) as realizadas
-                    FROM
-                        Person P
-                            INNER JOIN
-                        Answer A ON P.personId = A.Person_personId
-                            INNER JOIN
-                        (SELECT DISTINCT
-                            schoolId, personId
-                        FROM
-                            PersonSchool) PS ON P.personId = PS.personId
-                            INNER JOIN
-                        OptionXQuestion OQ ON A.OptionXQuestion_id = OQ.OptionXQuestion_id
-                            INNER JOIN
-                        QuestionXSurvey QS ON OQ.QuestionXSurvey_id = QS.QuestionXSurvey_id
-                            INNER JOIN
-                        Survey S ON QS.Survey_surveyId = S.surveyid
-                    WHERE
-                        P.personId !=1
-                        AND S.active = 1
-                    ";
-
-        if( in_array('SuperAdmin', $this->_profile) ){
-            if($this->_schoolIdFrm != 0){
-                $query .= "AND PS.schoolId in (".$this->_schoolIdFrm.")";
-            }
-        }else{
-            $query .= "AND PS.schoolId in (".$this->_schoolIdPerson.")";
-        }
-
-        $query .= " GROUP BY P.personId
-                    ORDER by P.personId
-                    ;";
+    private function getUserEval($and){
 
         $em = $this->getDoctrine()->getManager();
-        $connection = $em->getConnection();
-        $statement = $connection->prepare($query);
-        $statement->execute();
-        $_userEval = $statement->fetchAll();
+        $qb = $em->createQueryBuilder();
+
+        $_userEval = $qb->select("PS.personid, CONCAT(P.name,' ', P.surname) AS username,S.surveyid")
+            ->addSelect("CASE WHEN ( A.actioncode = '004') THEN 'si' ELSE 'no'  AS finished")
+            ->from('UNOEvaluacionesBundle:Surveyxprofile ','SP')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','PS', 'WITH', 'PS.profileid = SP.profileProfileid AND PS.schoollevelid = SP.schoollevelid')
+            ->innerJoin('UNOEvaluacionesBundle:Person','P', 'WITH', 'PS.personid = P.personid')
+            ->innerJoin('UNOEvaluacionesBundle:Survey','S', 'WITH', 'S.surveyid = SP.surveySurveyid')
+            ->leftJoin('UNOEvaluacionesBundle:Log','L', 'WITH', 'L.surveySurveyid = S.surveyid AND L.personPersonid = PS.personid')
+            ->leftJoin('UNOEvaluacionesBundle:Action','A', 'WITH', 'A.idaction = L.actionaction')
+            ->leftJoin('UNOEvaluacionesBundle:Questionxsurvey','QS', 'WITH', 'QS.surveySurveyid = S.surveyid')
+            ->leftJoin('UNOEvaluacionesBundle:Optionxquestion','OQ', 'WITH', 'OQ.questionxsurvey = QS.questionxsurveyId')
+            ->leftJoin('UNOEvaluacionesBundle:Option','O', 'WITH', 'O.optionid = OQ.optionOptionid')
+            ->leftJoin('UNOEvaluacionesBundle:Answer','Ans', 'WITH', 'Ans.optionxquestion = OQ.optionxquestionId AND Ans.personPersonid = PS.personid')
+            ->where('S.active = 1')
+            ->andWhere('PS.personid > 1')
+            ->andWhere('S.closingdate >= CURRENT_DATE()')
+            ->andWhere($and)
+            ->groupBy('PS.personid, S.surveyid, finished')
+            ->orderBy( 'PS.schoolid')
+            ->addOrderBy('finished')
+            ->getQuery()
+            ->getResult();
 
         return ($_userEval);
-    }
-
-    /**
-     * obtiene el numero de evaluaciones que tiene asignado cada usuario
-     * @return mixed
-     */
-    private function getSurveyAsigUser() {
-
-        $query = "SELECT
-                        P.personId,
-                        CONCAT(P.name, ' ', P.surname) AS username,
-                        COUNT(DISTINCT (SP.Survey_surveyId)) AS asig
-                    FROM
-                        SurveyXProfile SP
-                            INNER JOIN
-                        PersonSchool PS ON SP.Profile_profileId = PS.profileId AND SP.schoolLevelId = PS.schoolLevelId
-                            INNER JOIN
-                        Person P ON PS.personId = P.personId
-                            INNER JOIN
-                        Survey S ON SP.Survey_surveyId = S.surveyid
-                    WHERE
- 	                    P.personId !=1
- 	                    AND S.active = 1
-                    ";
-
-        if( in_array('SuperAdmin', $this->_profile) ){
-            if($this->_schoolIdFrm != 0){
-                $query .= "AND PS.schoolId in (".$this->_schoolIdFrm.")";
-            }
-        }else{
-            $query .= "AND PS.schoolId in (".$this->_schoolIdPerson.")";
-        }
-
-        $query .= " GROUP BY P.personId
-                    ORDER by P.personId
-                    ;";
-
-        $em = $this->getDoctrine()->getManager();
-        $connection = $em->getConnection();
-        $statement = $connection->prepare($query);
-        $statement->execute();
-        $_surveyAsigUser = $statement->fetchAll();
-
-        return ($_surveyAsigUser);
     }
 
     /**
