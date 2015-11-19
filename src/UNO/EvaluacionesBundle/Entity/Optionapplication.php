@@ -38,6 +38,13 @@ class Optionapplication
     /**
      * @var string
      *
+     * @ORM\Column(name="iconOptionApplication", type="string", length=45, nullable=true)
+     */
+    private $iconOptionApplication;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="ruteOptionApplication", type="string", length=60, nullable=false)
      */
     private $ruteOptionApplication;
@@ -106,6 +113,30 @@ class Optionapplication
     public function getDescOptionApplication()
     {
         return $this->descOptionApplication;
+    }
+
+    /**
+     * Set iconOptionApplication
+     *
+     * @param string $iconOptionApplication
+     *
+     * @return Optionapplication
+     */
+    public function setIconOptionApplication($iconOptionApplication)
+    {
+        $this->iconOptionApplication = $iconOptionApplication;
+
+        return $this;
+    }
+
+    /**
+     * Get iconOptionApplication
+     *
+     * @return string
+     */
+    public function getIconOptionApplication()
+    {
+        return $this->iconOptionApplication;
     }
 
     /**

@@ -9,7 +9,7 @@ var TablesDatatables = function() {
 
             App.datatables();
             $('#tbl-datatable').DataTable({
-                pageLength: 10,
+                pageLength: -1,
                 lengthMenu: [[10, 20, 30, -1], [10, 20, 30, 'Ver Todo']]
             });
 

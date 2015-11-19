@@ -14,7 +14,7 @@
         <div class="content-header">
             <div class="header-section">
                 <h1>
-                    <i class="fa fa-line-chart"></i><b>{{ title }}</b><br><small><em>Evaluaciones</em></small>
+                    <i class="fa fa-line-chart"></i><b>Estad&iacute;sticas</b><small>{% if nameSchool is defined %}<br/><span class="label label-primary">{{ nameSchool }}</span>{% endif %}</small>
                 </h1>
             </div>
         </div>
@@ -27,8 +27,8 @@
                 <div class="row">
                     <div class="block-content">
                         <div class="col-sm-12">
-                            <form id="schoolFrm" action="{{ path('estadisticas')}}" method="POST">
-                                <input type="text" id="schooId-typeahead" name="schooId-typeahead" class="form-control input-typeaheadSchool" autocomplete="off" placeholder="Busca Escuelas..">
+                            <form id="schoolFrm" action="" method="POST">
+                                <input type="text" id="schooIdFrm" name="schooIdFrm" class="form-control input-typeaheadSchool" autocomplete="off" placeholder="Busca Escuelas..">
                                 <div class="form-group form-actions">
                                     <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-angle-right"></i> Buscar</button>
                                 </div>
@@ -44,48 +44,48 @@
                 <div class="block-options pull-right">
                     <a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
                 </div>
-                <h2>Graficas de <strong>Avance</strong></h2>
+                <h2>Gr&aacute;ficas de <strong>Avance</strong></h2>
             </div>
             {% if jsonTotalResponsePie is not empty %}
-            <div class="row">
-                <div class="block-content">
-                    <div class="col-sm-6">
-                        <div id="pie" class="block">
-                            <div id="container"></div>
+                <div class="row">
+                    <div class="block-content">
+                        <div class="col-sm-6">
+                            <div id="pie" class="block">
+                                <div id="container"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="block-content">
+                        <div class="col-sm-6">
+                            <div id="bars" class="block">
+                                <div id="containerColumn"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="block-content">
-                    <div class="col-sm-6">
-                        <div id="bars" class="block">
-                            <div id="containerColumn"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
             {% else %}
-            <div class="row">
-                <div class="block-content">
-                    <div class="col-sm-12 text-center">
-                        <div class="block">
-                            <h1>No han realizado ninguna Evaluación !!!</h1>
-                            <div class="carousel slide" data-ride="carousel">
-                                <div class="carousel-inner" role="listbox">
-                                    <div class="item active">
-                                        <h2 class="text-center"><span class="fa fa-bed fa-2x"></span></h2>
-                                    </div>
-                                    <div class="item">
-                                        <h2 class="text-center"><span class="fa fa-thumbs-down fa-2x"></span></h2>
-                                    </div>
-                                    <div class="item">
-                                        <h2 class="text-center"><span class="fa fa-hourglass-end fa-2x"></span></h2>
+                <div class="row">
+                    <div class="block-content">
+                        <div class="col-sm-12 text-center">
+                            <div class="block">
+                                <h1>No han realizado ninguna Evaluación !!!</h1>
+                                <div class="carousel slide" data-ride="carousel">
+                                    <div class="carousel-inner" role="listbox">
+                                        <div class="item active">
+                                            <h2 class="text-center"><span class="fa fa-bed fa-2x"></span></h2>
+                                        </div>
+                                        <div class="item">
+                                            <h2 class="text-center"><span class="fa fa-thumbs-down fa-2x"></span></h2>
+                                        </div>
+                                        <div class="item">
+                                            <h2 class="text-center"><span class="fa fa-hourglass-end fa-2x"></span></h2>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
             {% endif %}
         </div>
 
@@ -98,26 +98,29 @@
                 <h2>Tabla de <strong>Avance</strong></h2>
             </div>
 
-            <div class="row">
-                <div class="block-content">
-                    <div class="col-sm-12">
-                        <div class="table-responsive">
-                            <p>Estadisticas de usuarios que han realizado por lo menos una Evaluacion. <em>Da <b>click</b> sobre un usuario para ver su detalle</em></p>
-                            {% if userList is defined %}
+            {% if userList is not empty %}
+                <div class="row">
+                    <div class="block-content">
+                        <div class="col-sm-12">
+                            <br/>
+                            <small class="visible-xs"><i class="fa fa-info-circle text-primary"></i> Puedes navegar horizontalmente para ver las demás columnas</small>
+                            <br/>
+                            <div class="table-responsive">
+                                <p>Estad&iacute;sticas de usuarios que han realizado por lo menos una Evaluacion. <em>Da <b>click</b> sobre un usuario para ver su detalle</em></p>
                                 <table id="userList-datatable" class="table table-vcenter table-condensed table-bordered">
                                     <thead>
                                     <tr>
                                         <th style="width: 150px;" class="text-center"><i class="fa fa-users"></i></th>
                                         <th>Nombre</th>
                                         <th style="width: 150px;" class="text-center">Progreso</th>
-                                        <th style="width: 150px;" class="text-center">Avance</th>
+                                        <!-- <th style="width: 150px;" class="text-center">Avance</th>-->
                                         <th class="text-center">Detalle</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% for list in userList %}
                                         {% if list.avance != 0 %}
-                                        <tr onclick="statsUser('{{ list.personId|e }}','{{ list.username|e }}',{{ list.avance }},{{ list.eval | json_encode() }})" data-toggle="tooltip" title="Haz click para ver el detalle de {{ list.username|e }}" style="cursor: pointer">
+                                        <tr onclick="statsUser('{{ list.personId|e }}','{{ list.username|e }}',{{ list.avance }})" data-tooltip aria-haspopup="true"  data-options="disable_for_touch:true" class="has-tip" title="Haz click para ver el detalle de {{ list.username|e }}" style="cursor: pointer">
                                         {% else %}
                                             <tr>
                                         {% endif %}
@@ -126,45 +129,47 @@
                                         </td>
                                         <td>
                                             {{ list.username|e }}
-                                            <div class="progress progress-bar-info progress-bar-striped">
-                                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{list.avance}}" aria-valuemin="0" aria-valuemax="100" style="width: {{list.avance}}%;">
+                                            <div class="progress progress-striped active">
+                                                <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{list.avance}}" aria-valuemin="0" aria-valuemax="100" style="width: {{ list.avance }}%;">
+                                                    {% if list.avance != 0 %} {{ list.avance }} % {% endif %}
                                                 </div>
                                             </div>
                                         </td>
                                         <td class="text-center" {% if list.avance == 0 %} style="color: red;" {% endif %}>
                                             {{ list.progreso|e }}
                                         </td>
-                                        <td class="text-center" {% if list.avance == 0 %} style="color: red;" {% endif %}>
-                                            {{ list.avance }} %
-                                        </td>
-                                        <td class="text-center"><i class="fa fa-eye fa-2x" {% if list.avance == 0 %} style="color: gray;" {% endif %}></i></td>
+                                        <!-- <td class="text-center" {% if list.avance == 0 %} style="color: red;" {% endif %}>
+                                            {#{{ list.avance }}#} %
+                                        </td>-->
+                                        <td class="text-center"><i class="fa fa-eye fa-2x" {% if list.avance == 0 %} style="color: #cdd0d7;" {% endif %}></i></td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>
                                 </table>
-                            {% endif %}
-                            <br/>
+                                <br/>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            {% endif %}
         </div>
     </div>
+    <!-- END Page Content -->
 
     <!-- Modal Stats User -->
     <div id="statsUser" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header bg-success">
+                <div class="modal-header bg-primary">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title"><i class="fa fa-hand-spock-o"></i> Estadisticas por <strong>Usuario</strong></h4>
+                    <h4 class="modal-title"><i class="fa fa-rebel"></i> Estad&iacute;sticas por <strong>Usuario</strong></h4>
                 </div>
                 <div class="modal-body">
                     <span id="bodyStatsUser"></span>
 
                     <div id="block-resumenG" class="block">
                         <div class="block-title">
-                            <h2>Graficas de <strong>Avance</strong></h2>
+                            <h2>Gr&aacute;ficas de <strong>Avance</strong></h2>
                         </div>
                         <div class="row">
                             <div class="block-content ">
@@ -197,21 +202,21 @@
     </div>
     <!-- END Modal Stats User -->
 
-
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <!-- Load and execute javascript code used only in this page -->
-    <script src="{{ asset('public/assets/js/Highcharts/highcharts.js')}}"></script>
-    <script src="{{ asset('public/assets/js/Highcharts/highcharts-3d.js')}}"></script>
-    <script src="{{ asset('public/assets/js/Highcharts/modules/exporting.js')}}"></script>
-    <script src="{{ asset('public/assets/js/Highcharts/modules/drilldown.js')}}"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-3d.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="{{ asset('public/assets/js/stats.js')}}"></script>
+    <script src="{{ asset('public/assets/js/statsGraph.js')}}"></script>
+    <script src="{{ asset('public/assets/js/validateSchool.js') }}"></script>
     <script type="text/javascript">
         $(function () {
 
             {% if jsonTotalResponsePie is not empty %}
             //genera las graficas de informacion general
-            pieGrl({{ jsonTotalResponsePie | raw }});
-            columnGrl({{ jsonTotalResponseColumn | raw }});
+            pieGrl({{ jsonTotalResponsePie | raw }}, '{{ nameSchool }}');
+            columnGrl({{ jsonTotalResponseColumn | raw }}, '{{ nameSchool }}');
             {% endif %}
 
             {% if schoolId is defined %}
@@ -219,6 +224,8 @@
             // para el json de las escuelas
             var exampleTypeheadData = [{{ schoolId | raw}}];
             $('.input-typeaheadSchool').typeahead({ source: exampleTypeheadData });
+            //valida la Escuela Filtrada Admin
+            ValidateSchool.init(exampleTypeheadData);
             {% endif %}
 
             //tabla con filtros y ordenamiento

@@ -8,194 +8,108 @@
 
 namespace UNO\EvaluacionesBundle\Controller\Evaluaciones;
 
-
-use Proxies\__CG__\UNO\EvaluacionesBundle\Entity\Action;
-use Proxies\__CG__\UNO\EvaluacionesBundle\Entity\Answer;
-use Proxies\__CG__\UNO\EvaluacionesBundle\Entity\Option;
-use Proxies\__CG__\UNO\EvaluacionesBundle\Entity\Question;
-use Proxies\__CG__\UNO\EvaluacionesBundle\Entity\Questionxsurvey;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\Validator\Constraints\DateTime;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use UNO\EvaluacionesBundle\Entity\Answer;
 use UNO\EvaluacionesBundle\Entity\Log;
-
-
-
-/**
- * Responder controller.
- *
- * @Route("/responder")
- */
 
 class ResponderController extends Controller
 {
 
     public function indexAction(Request $request, $id){
-
         $surveyID = $id;
-
         $session = $request->getSession();
 
-        /*
-         * This section checks if the user is already logged in,
-         * in that case $personId gets the personIdS value from the session variable
-         * otherwise is redirected to the Login
-         * */
-        if ( !$session->has('logged_in') ) {
+        if(!Utils::isUserLoggedIn($session)){
+
             return $this->redirectToRoute('login');
-        }else{
-            $personId = $session->get('personIdS');
+        }
 
+        if(!Utils::isSurveyAuthorized($session,$surveyID)){
 
-            if(!Utils::isSurveyAuthorized($session,$surveyID)){
+            throw new AccessDeniedHttpException('No estás autorizado para ver este contenido');
+        }
 
-                return $this->render('@UNOEvaluaciones/Evaluaciones/responderError.html.twig',array(
-                    'title'=>'Error',
-                    'message'=>'Lo sentimos, el contenido que buscas es erróneo',
-                ));
+        $personId = $session->get('personIdS');
+        $questions = $this->getQuestions($surveyID,$personId);
+        $_survey = $this->getCurrentSurvey($surveyID);
+        $surveyJson = $this->creaJson($_survey, $questions);
+
+        return $this->render('@UNOEvaluaciones/Evaluaciones/responder.html.twig', array(
+            'surveyData' => json_decode($surveyJson, true)
+        ));
+    }
+
+    private function getQuestions($surveyId, $personId){
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+        $_survey = $qb->select("qxs.order, q.questionid, q.question, oxq.optionxquestionId, o.option, COALESCE(a.answer,' ') as ans")
+            ->from('UNOEvaluacionesBundle:Question','q')
+            ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','qxs','WITH','qxs.questionQuestionid = q.questionid AND qxs.surveySurveyid = :surveyId')
+            ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','oxq', 'WITH', 'qxs.questionxsurveyId = oxq.questionxsurvey')
+            ->leftJoin('UNOEvaluacionesBundle:Option','o', 'WITH', 'oxq.optionOptionid = o.optionid')
+            ->leftJoin('UNOEvaluacionesBundle:Answer','a','WITH','oxq.optionxquestionId = a.optionxquestion AND a.personPersonid = :personId')
+            ->groupBy('qxs.order, q.questionid, q.question, oxq.optionxquestionId')
+            ->orderBy('qxs.order')
+            ->setParameter('surveyId',$surveyId)
+            ->setParameter('personId',$personId)
+            ->getQuery()
+            ->getResult();
+
+        $questions = array();
+        foreach($_survey as $q) {
+
+            if(!array_key_exists($q['questionid'],$questions)){
+
+                $questions[$q['questionid']] = array(
+                    'questionid' => $q['questionid'],
+                    'order' => $q['order'],
+                    'question' => $q['question'],
+                    'options' => array(),
+                    'answer' => ''
+                );
             }
 
-        }
-
-        //---------- Getting the current SURVEY
-        $survey = $this->getCurrentSurvey($surveyID);
-
-         if(count($this->findLog($personId, $surveyID, '004' )) > 0 ){
-             return $this->render('@UNOEvaluaciones/Evaluaciones/responderError.html.twig',array(
-                 'title'=>'Error',
-                 'message'=>'Est encuesta ya ha sido contestada previamente',
-             ));
-         }
-
-
-        /*
-        * when the user complete a survey then a POST data is sent
-        * so if that data exists the answers and a log are inserted
-        * and redirect to the List of surveys
-         *
-         * If the data doesn't exists it means the user gonna answer the survey
-        */
-        if( isset($_POST['answers']) ){
-            $this->insertAnswers( $request,$personId);
-
-            //Create the log for "COMPLETE" status
-            $this->createLog('004',$survey, $personId);
-            return $this->redirectToRoute('listar');
-
-        }else {
-            //Create the log for "INCOMPLETE" status
-            $this->createLog('005', $survey, $personId);
-
-            //--- first step: get all Question IDs ordered by ORDER
-            $allQuestions = $this->getAllQuestions($survey);
-
-            //-- step two: we create the Itmes for the view
-            $items = $this->createItems($allQuestions);
-
-            //rendering teh VIEW
-            return $this->render('@UNOEvaluaciones/Evaluaciones/responder.html.twig', array(
-                'items' => $items,
-                'surveyName' => $survey->getTitle(),
-                'surveyDesc' => $survey->getDescription(),
+            array_push($questions[$q['questionid']]['options'],array(
+                'option' => $q['option'],
+                'optionxquestionId' => $q['optionxquestionId']
             ));
+
+            if($q['ans'] != ' ') {
+
+                $questions[$q['questionid']]['answer'] = $q['ans'];
+            }
         }
+        return $questions;
     }
 
-    public function findLog($personId, $surveyId, $action){
+    private function creaJson($_survey,$questions) {
 
-        $action = $this->getDoctrine()
-            ->getRepository('UNOEvaluacionesBundle:Action')
-            ->findOneBy(
-                array('actioncode'=>$action)
-            );
+        $qsToAnswer = array();
+        foreach($questions as $q){
 
-        $criteria = array_filter(array(
-            'actionaction' => $action,
-            'surveySurveyid' => $surveyId,
-            'personPersonid' => $personId
-        ));
-
-
-        $log = $this->getDoctrine()
-            ->getRepository('UNOEvaluacionesBundle:Log')
-            ->findBy( $criteria );
-
-        return $log;
-    }
-
-    /*
-     * This function inserts the answers using the data from the POST
-     *
-     */
-    public function insertAnswers(Request $request,$personId ){
-        $em = $this->getDoctrine()->getManager();
-
-        $answersItems = json_decode( $request->request->get('answers'),true );
-
-        print_r($answersItems);
-        exit();
-        foreach( $answersItems as $answerItem ){
-
-            $newAnswer = new Answer();
-            $newAnswer->setAnswer( $answerItem['answer'] );
-            $newAnswer->setComment( $answerItem['comment'] );
-
-            $newPerson = $this->getDoctrine()
-                ->getRepository('UNOEvaluacionesBundle:Person')
-                ->find( $personId );
-
-            $newAnswer->setPersonPersonid( $newPerson );
-
-            $newOptionXQuestion = $this->getDoctrine()
-                ->getRepository('UNOEvaluacionesBundle:Optionxquestion')
-                ->find( $answerItem['OptionXQuestion_id'] );
-
-            $newAnswer->setOptionxquestion( $newOptionXQuestion );
-
-            $em->persist( $newAnswer );
-            $em->flush();
-
+            if($q['answer'] == '') {
+                array_push($qsToAnswer,$q);
+            }
         }
+
+        $json_pack = array(
+            'surveyid' => $_survey->getSurveyid(),
+            'title' => $_survey->getTitle(),
+            'description' => $_survey->getDescription(),
+            'questions' => $qsToAnswer
+        );
+
+        return json_encode($json_pack);
     }
 
-    /*
-     *This function creates a Log using the SurveyID (only the ID),
-     * PersonID (only ID), date, and teh action (COMPLETE,INCOMPLETE, etc)
-     * */
-    private function createLog($status,$survey, $personId){
-        $em = $this->getDoctrine()->getManager();
-
-        $newLog = new Log();
-
-        $newPerson = $this->getDoctrine()
-            ->getRepository('UNOEvaluacionesBundle:Person')
-            ->find( $personId );
-        $newLog->setPersonPersonid( $newPerson->getPersonid() );
-
-        $newLog->setSurveySurveyid( $survey->getSurveyid() );
-
-        $newLog->setDate( new \DateTime("now") );
-
-        $newAction = $this->getDoctrine()
-            ->getRepository('UNOEvaluacionesBundle:Action')
-            ->findOneBy(
-                array("actioncode"=>$status)
-            );
-
-        $newLog->setActionaction( $newAction );
-
-        $em->persist( $newLog );
-        $em->flush();
+    private function getOptionXQuestion($id){
+        return $this->getDoctrine()->getRepository('UNOEvaluacionesBundle:Optionxquestion')->find($id);
     }
 
-    /*
-     * This function gets the Survey from DB using the ID
-     * returns a Survey
-     * */
     private function getCurrentSurvey($id){
         $survey = $this->getDoctrine()
             ->getRepository('UNOEvaluacionesBundle:Survey')
@@ -204,120 +118,64 @@ class ResponderController extends Controller
         return $survey;
     }
 
-    /*
-     * This function gets all questions
-     * receives a Survey
-     * returns array[Question]
-     * */
-    private function getAllQuestions($survey){
-        $questionsXSurvey = $this->getDoctrine()
-            ->getRepository('UNOEvaluacionesBundle:Questionxsurvey')
-            ->findBy(
-                array('surveySurveyid' => $survey->getSurveyid()),
-                array('order'=>'ASC')
-            );
-
-        return $questionsXSurvey;
+    private function getPerson($id){
+        return $this->getDoctrine()->getRepository('UNOEvaluacionesBundle:Person')->find($id);
     }
 
-    /*
-     * This function create the Items array for the view
-     * receives an array[Question]
-     * returns an array
-     * */
-    private function createItems($questionsList){
-        $itemsList = array();
+    public function guardarAction(Request $request){
+        $session = $request->getSession();
+        $personId = $session->get('personIdS');
+        $content = $this->get("request")->getContent();
+        $survey = "";
+        if (!empty($content)) {
+            $params = json_decode($content, true);
+            $i = 0;
+            $em = $this->getDoctrine()->getManager();
+            $em->getConnection()->beginTransaction();
+            try{
+                $personIdObj = $this->getPerson($personId);
+                foreach ($params as $pms) {
+                    $survey = ($survey == "" ? $this->getCurrentSurvey($pms['surveyid']) : $survey);
+                    $ans = new Answer();
+                    $ans->setAnswer($pms['Answer']);
+                    $ans->setComment($pms['Comment']);
+                    $ans->setOptionxquestion($this->getOptionXQuestion($pms['optionxquestionId']));
+                    $ans->setPersonPersonid($personIdObj);
+                    $em->persist($ans);
+                    $em->flush();
+                    $i++;
+                }
+                $em->getConnection()->commit();
+                $response = json_encode(array('message' => 'Se guardaron ' .  $i . ' preguntas'));
+                $this->createLog('004',$survey, $personId);
+                return new Response($response, 200, array(
+                    'Content-Type' => 'application/json'
+                ));
+            } catch (\Exception $ex){
 
-        foreach($questionsList as $questionItem ){
-
-            array_push($itemsList, $this->createSingleItem($questionItem) );
-
-        }
-        return $itemsList;
-    }
-
-    /*
-     *This function creates a single Item for the final itemsList
-     * This function receives a Question
-     * returns an array with the properties we need for the view
-     * */
-    private function createSingleItem($questionItem){
-        $questionsXSurveyID = $questionItem->getquestionxsurveyId();
-
-        $singleQuestion = $this->getSingleQuestion($questionItem->getquestionQuestionid()->getquestionid());
-
-        $thisOptions = $this->getOptions($questionsXSurveyID);
-
-        $thisItem = [
-            'questionsxsurveyid'=>$questionsXSurveyID,
-            'questionid'=>$singleQuestion->getquestionid(),
-            'question'=>$singleQuestion->getquestion(),
-            'required'=>$singleQuestion->getRequired(),
-            'order'=>$questionItem->getOrder(),
-            'options'=> $this->createOptions($thisOptions),
-
-        ];
-        return $thisItem;
-    }
-
-
-    /*
-     *This function returns a single question from DB
-     * returns a Question
-     * */
-    private function getSingleQuestion($id){
-        $singleQuestion = $this->getDoctrine()
-            ->getRepository('UNOEvaluacionesBundle:Question')
-            ->find( $id  );
-
-        return $singleQuestion;
-    }
-
-    /*
-     *This function gets all options
-     * receives an ID from QuestionXSurvey table
-     * returns an array[Optionxquestion]
-     * */
-    private function getOptions($questionxsurveyID){
-        $options = $this->getDoctrine()
-            ->getRepository('UNOEvaluacionesBundle:Optionxquestion')
-            ->findBy(
-                array('questionxsurvey'=>$questionxsurveyID),
-                array('order'=>'ASC')
-            );
-        return $options;
-
-    }
-
-    /*
-     * This function finds the properties we will need for each Option
-     * receives an array[Option]
-     * returns an array with the properties
-     * */
-    private function createOptions($optionsList){
-        $em = $this->getDoctrine()->getManager();
-        $connection = $em->getConnection();
-        $optionsArray = array();
-
-        foreach( $optionsList as $eachOption ){
-            $eachOptionQuery =
-                'SELECT * FROM unoevaluaciones.Option
-                     WHERE Option.optionId =:optionID';
-
-            $statement = $connection->prepare($eachOptionQuery);
-            $statement->bindValue('optionID', $eachOption->getOptionOptionid()->getOptionid() );
-
-            $statement->execute();
-            $optionFound = $statement->fetchAll();
-
-            array_push($optionsArray,array(
-                'optionxquestionid'=>$eachOption->getOptionxquestionId(),
-                'optionText'=>$optionFound[0]['option'],
-
+                $em->getConnection()->rollback();
+                $response = json_encode(array('message' => $ex->getMessage()));
+                return new Response($response, 500, array(
+                    'Content-Type' => 'application/json'
+                ));
+            }
+        }else{
+            $response = json_encode(array('message' => 'Error Empty'));
+            return new Response($response, 500, array(
+                'Content-Type' => 'application/json'
             ));
         }
-        return $optionsArray;
     }
 
-
+    private function createLog($status,$survey, $personId) {
+        $em = $this->getDoctrine()->getManager();
+        $newAction = $this->getDoctrine()->getRepository('UNOEvaluacionesBundle:Action')->findOneBy(array("actioncode"=>$status));
+        $newLog = new Log();
+        $newLog->setPersonPersonid( $personId );
+        $newLog->setSurveySurveyid( $survey->getSurveyid() );
+        $newLog->setDate( new \DateTime("now") );
+        $newLog->setActionaction( $newAction );
+        $em->persist( $newLog );
+        $em->flush();
+    }
 }

@@ -19,6 +19,93 @@ use UNO\EvaluacionesBundle\Entity\Optionxquestion;
 class AjaxStatsController extends Controller{
 
     /**
+     * @Route("/ajax/detalleStats")
+     *
+     * obtiene y crea la tabla con el detalle de la evaluacion
+     */
+    public function detalleUserAction(Request $request){
+
+        $session = $request->getSession();
+        $session->start();
+        if ($request->getMethod() == 'POST') {
+            $personId = $request->get('personId');
+            $survey = $this->getSurveyResultsGral($personId);
+            return new response(json_encode($this->evalUser($survey)));
+        }else{
+            return new response($request->getMethod());
+        }
+    }
+
+    /**
+     * obtiene toda la informacion de las evaluaciones realizadas por colegio o general
+     */
+    private function getSurveyResultsGral($personId) {
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $_surveyResultsGral = $qb->select("PS.personid, TRIM(S.title) AS title, O.option as answer, COUNT(DISTINCT (Ans.answerid)) as countAnswer")
+            ->from('UNOEvaluacionesBundle:Surveyxprofile ','SP')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','PS', 'WITH', "PS.profileid = SP.profileProfileid AND PS.schoollevelid = SP.schoollevelid AND PS.personid = $personId")
+            ->innerJoin('UNOEvaluacionesBundle:Survey','S', 'WITH', 'S.surveyid = SP.surveySurveyid')
+            ->leftJoin('UNOEvaluacionesBundle:Log','L', 'WITH', "L.surveySurveyid = S.surveyid AND L.personPersonid = $personId")
+            ->leftJoin('UNOEvaluacionesBundle:Action','A', 'WITH', 'A.idaction = L.actionaction')
+            ->leftJoin('UNOEvaluacionesBundle:Questionxsurvey','QS', 'WITH', 'QS.surveySurveyid = S.surveyid')
+            ->leftJoin('UNOEvaluacionesBundle:Optionxquestion','OQ', 'WITH', 'OQ.questionxsurvey = QS.questionxsurveyId')
+            ->leftJoin('UNOEvaluacionesBundle:Option','O', 'WITH', 'O.optionid = OQ.optionOptionid')
+            ->leftJoin('UNOEvaluacionesBundle:Answer','Ans', 'WITH', "Ans.optionxquestion = OQ.optionxquestionId AND Ans.personPersonid = $personId")
+            ->where('S.active = 1')
+            ->andWhere('PS.personid > 1')
+            ->andWhere('S.closingdate >= CURRENT_DATE()')
+            ->andWhere('A.actioncode IS NOT NULL')
+            ->groupBy('PS.personid, S.surveyid, S.title , OQ.optionOptionid, O.option')
+            ->orderBy( 'PS.schoolid')
+            ->getQuery()
+            ->getResult();
+
+        return $_surveyResultsGral;
+    }
+
+    /**
+     * obtiene las evaluaciones que realizo el usuario
+     *
+     * @param $survey
+     * @return array
+     */
+    private function evalUser($survey){
+        $evalUser = array_unique(array_column($survey, 'title'));
+
+        $evalUserArray = array();
+
+        foreach($evalUser as $valTitle){
+            $evalTitleArray = array(
+                'title' => '',
+                'si' => 0,
+                'no' => 0,
+                'nose' => 0
+            );
+            foreach($survey as $value){
+                $evalTitleArray['title'] = $valTitle;
+                if($valTitle == $value['title']){
+                    switch ($value['answer']):
+                        default:
+                            $evalTitleArray['nose'] = $value['countAnswer'];
+                            break;
+                        case 'Sí':
+                            $evalTitleArray['si'] = $value['countAnswer'];
+                            break;
+                        case 'No':
+                            $evalTitleArray['no'] = $value['countAnswer'];
+                            break;
+                    endswitch;
+                }
+            }
+            array_push($evalUserArray, $evalTitleArray);
+        }
+        return($evalUserArray);
+    }
+
+    /**
      * @Route("/ajax/stats")
      *
      * obtiene y crea la tabla con el detalle de la evaluacion
@@ -82,20 +169,26 @@ class AjaxStatsController extends Controller{
                         </div>
                         <div class="table-responsive">
                             <p><em>Detalle de la Evaluación.</em></p>
-                            <table id="userEva-datatable" class="table table-vcenter table-condensed table-bordered text-center">
+                            <table id="example-datatable" class="table table-vcenter table-condensed table-bordered">
                                 <thead>
                                     <tr>
-                                        <th class="text-center">Orden</th>
+                                        <th class="hidden-sm hidden-xs text-center">#</th>
                                         <th class="text-center">Pregunta</th>
-                                        <th class="text-center">Respuesta</th>
-                                        <th class="text-center">Comentario</th>
+                                        <th class="text-center">
+                                            <span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>Respuesta</b></span>
+                                            <span class="visible-xs-inline"><b><i class="fa fa-pencil-square-o"></i></b></span>
+                                        </th>
+                                        <th class="text-center">
+                                            <span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>Comentario</b></span>
+                                            <span class="visible-xs-inline"><b><i class="fa fa-commenting-o"></i></b></span>
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>';
         foreach($survey as $value){
             $table .= '
                                     <tr>
-                                        <td>'.$value['order'].'</td>
+                                        <td class="hidden-sm hidden-xs text-center">'.$value['order'].'</td>
                                         <td>'.$value['question'].'</td>
                                         <td>'.$value['answer'].'</td>
                                         <td>'.$value['comment'].'</td>

@@ -325,8 +325,9 @@ class LoginController extends Controller{
     private function getSchoolId(){
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
-        $q = $qb->select('P.schoolid')
+        $q = $qb->select('P.schoolid, S.school')
             ->from('UNOEvaluacionesBundle:Personschool', 'P')
+            ->innerJoin('UNOEvaluacionesBundle:School','S','WITH', 'P.schoolid = S.schoolid')
             ->where('P.personid = :personId')
             ->setParameter('personId', $this->_personDB->getPersonid())
             ->groupBy('P.schoolid')

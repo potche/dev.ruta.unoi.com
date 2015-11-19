@@ -26,22 +26,39 @@
 
         <div id="block-evals" class="block">
             <div class="block-title themed-background">
-                <h2 style="color: #ffffff;" ><strong>Evaluaciones creadas</strong></h2>
+                <h2 style="color: #ffffff;" ><strong>Evaluaciones</strong>
+                </h2>
                 <div class="block-options pull-right">
-                    <a href="{{ path('crear') }}" class="label label-success animation-pulse" data-toggle="block-toggle-content"><i class="fa fa-plus-circle"></i> Crear evaluación</a>
                 </div>
             </div>
             <div id="cont-respuestas" class="block-content">
+                <div class="row">
+                    <a href="{{ path('crear') }}" class="btn btn-md btn-info animation-pulse" data-toggle="block-toggle-content"><i class="fa fa-plus"></i> Crear evaluación</a>
+                </div>
+                <br>
+                <small class="visible-xs"><i class="fa fa-info-circle text-primary"></i> Puedes navegar horizontalmente para ver las demás columnas</small>
+                <br>
                 <div class="table-responsive">
+                    <br>
                     <table id="tbl-datatable" class="table table-vcenter table-condensed table-bordered">
                         <thead>
                         <tr>
                             <th class="hidden-sm hidden-xs">Id</th>
-                            <th>Evaluación</th>
-                            <th>Asignada</th>
-                            <th>Avance</th>
-                            <th class="hidden-sm hidden-xs">Creada el</th>
-                            <th class="hidden-sm hidden-xs">Finaliza el</th>
+                            <th class="text-center">
+                                <span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>Evaluación</b></span>
+                                <span class="visible-xs-inline"><b><i class="fa fa-list-ol"></i></b></span>
+                            </th>
+                            <th class="text-center">
+                                <span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>Usuarios</b></span>
+                                <span class="visible-xs-inline"><b><i class="fa fa-user-plus"></i></b></span>
+                            </th>
+                            <th class="text-center">
+                                <span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>Avance</b></span>
+                                <span class="visible-xs-inline"><b><i class="fa fa-pie-chart"></i></b></span>
+                            </th>
+                            <th class="hidden-sm hidden-xs text-center">Creada</th>
+                            <th class="hidden-sm hidden-xs text-center">Autor</th>
+                            <th class="hidden-sm hidden-xs text-center">Finaliza</th>
                             <th class="text-center">Acciones</th>
                         </tr>
                         </thead>
@@ -49,36 +66,63 @@
                         {% for survey in surveylist %}
                             <tr>
                                 <td class="text-center hidden-sm hidden-xs">
-                                    <span class="label label-success" >{{ survey['id'] }}</span>
-                                </td>
-                                <td>
-                                    <b>{{ survey['title'] }}</b>
-                                </td>
-                                <td>
-                                    {% for profile in survey['profiles'] %}
-                                        <i class="fa fa-user"></i> {{ profile }}<br>
-                                    {% endfor %}
-                                </td>
-                                <td class="text-center">
-                                    {% if survey['progress'] <= 33.33 %}
-                                    <span class="text-danger"><b>{{ survey['progress']~'%' }}</b></span>
-                                    {% elseif survey['progress'] > 33.33 and survey['progress'] < 100 %}
-                                        <span class="text-warning"><b>{{ survey['progress']~'%' }}</b></span>
-                                    {% elseif survey['progress'] == 100 %}
-                                        <span class="text-success"><b>{{ survey['progress']~'%' }}</b></span>
+                                    {% if survey['active'] %}
+                                        <span class="label label-success" data-toggle="tooltip" title="Esta evaluación está activa">{{ survey['id'] }}</span>
+                                    {% else %}
+                                        <span class="label label-danger" data-toggle="tooltip" title="Esta evaluación está inactiva">{{ survey['id'] }}</span>
                                     {% endif %}
                                 </td>
-                                <td class="hidden-sm hidden-xs">
-                                    {{ survey['created'] }}
+                                <td class="text-left">
+                                    <b>{{ survey['title'] }}</b>
                                 </td>
-                                <td class="hidden-sm hidden-xs">
+                                <td class="text-center">
+                                    <a href="#" id="ver-{{ survey['id'] }}" class="btn-matriz btn btn-xs btn-info" style="width: 85px;"><i class="fa fa-eye"></i> Ver</a>
+                                    <table id="tbl-perfiles-{{ survey['id'] }}" style="display: none;">
+                                        <thead>
+                                        <tr>
+                                            {% for profile,level in survey['profiles'] %}
+                                                <th class="text-center">{{ profile }}</th>
+                                            {% endfor %}
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                        {% for profile, level in survey['profiles'] %}
+                                            <th>
+                                                <ul>
+                                                    {% for l in level %}
+                                                        <li>{{ l }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </th>
+                                        {% endfor %}
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td class="text-center">
+                                    <div class="progress progress-striped active">
+                                        <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{survey['progress']}}" aria-valuemin="0" aria-valuemax="100" style="width: {{survey['progress']}}%;">
+                                        </div>
+                                    </div>
+                                    {{ survey['progress']|round ~ '%' }}
+                                </td>
+                                <td class="text-center hidden-sm hidden-xs">
+                                    {{ survey['createdon'] }}
+                                </td>
+                                <td class="text-center hidden-sm hidden-xs">
+                                    {{ survey['createdby'] }}
+                                </td>
+                                <td class="text-center hidden-sm hidden-xs">
                                     {{ survey['closingdate'] }}
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-xs">
-                                        <a href="/" class="label label-danger" style="display: block;" data-toggle="tooltip" data-placement="top" title="Hacer una evaluación no visible al usuario"><i class="fa fa-times"></i> Desactivar</a>
-                                        <br>
-                                        <a href="/" class="label label-info" style="display: block;" data-toggle="tooltip" data-placement="top" title="Puedes modificar el título y la fecha de fin de la evaluación"><i class="fa fa-pencil"></i> Modificar</a>
+                                        {% if survey['active'] %}
+                                        <a href="#" id="{{ survey['id'] }}" class="disable-survey btn btn-xs btn-danger" style="display: block; width: 85px;" data-toggle="modal" data-target="#disable_confirm" data-placement="top"> Inactivar</a>
+                                        {% else %}
+                                        <a href="#" id="{{ survey['id'] }}" class="enable-survey btn btn-xs btn-success" style="display: block; width: 85px;" data-toggle="modal" data-target="#disable_confirm" data-placement="top"> Activar</a>
+                                        {% endif %}
                                     </div>
                                 </td>
                             </tr>
@@ -91,14 +135,55 @@
         </div>
     </div>
 
+    <div id="disable_confirm" class="modal fade in" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-info-circle"></i> Cambiar estatus de evaluación</h4>
+                </div>
+                <div class="modal-body">
+                    <p><b>Para confirmar el cambio de estatus de esta evaluación, presiona Aceptar</b></p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-default" data-dismiss="modal">Cancelar</a>
+                    <a href="#" id="confInactivar" class="btn btn-success success">Aceptar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal_perfiles" class="modal fade in" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-info-circle"></i> Perfiles y niveles asignados</h4>
+                </div>
+                <div class="modal-body">
+                    <small class="visible-xs"><i class="fa fa-info-circle text-primary"></i> Puedes navegar horizontalmente para ver las demás columnas</small>
+                    <br>
+                    <div class="table-responsive">
+                        <table id="matriz-perfiles" class="table table-vcenter table-condensed table-bordered table-responsive"></table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-default" data-dismiss="modal">Aceptar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
-    <script src="http://code.highcharts.com/highcharts.js"></script>
-    <script src="http://code.highcharts.com/modules/data.js"></script>
-    <script src="http://code.highcharts.com/modules/drilldown.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/data.js"></script>
+    <script src="https://code.highcharts.com/modules/drilldown.js"></script>
     <script src="{{ asset('public/assets/js/resumen.js') }}"></script>
     <script src="{{ asset('public/assets/js/menu_crear_charts.js') }}"></script>
+    <script src="{{ asset('public/assets/js/surveystatus.js') }}"></script>
     <script>$(function(){ TablesDatatables.init(); });</script>
     <script>$(function(){ Charts.init('{{ stats_general|json_encode()|raw }}'); });</script>
+    <script>$(function(){ SurveyTable.init('{{ url('ajaxSurveyStatus') }}','{{ url('evaluaciones') }}'); });</script>
 
 {% endblock %}

@@ -9,6 +9,7 @@
 namespace UNO\EvaluacionesBundle\Controller\Evaluaciones;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\CssSelector\Exception\InternalErrorException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -90,17 +91,24 @@ class AdminController extends Controller {
 
                     $surveys[$surveyid]['id'] = $swp['surveyid'];
                     $surveys[$surveyid]['title'] = $swp['title'];
-                    $surveys[$surveyid]['created'] = $swp['creationdate']->format('j/M/Y').' por: '.$swp['createdby'];
+                    $surveys[$surveyid]['createdon'] = $swp['creationdate']->format('j/M/Y');
+                    $surveys[$surveyid]['createdby'] = $swp['createdby'];
                     $surveys[$surveyid]['closingdate'] = $swp['closingdate']->format('j/M/Y \@ g:i a');
                     $surveys[$surveyid]['progress'] = $stats['bySurvey'][$surveyid]['avance'];
                     $surveys[$surveyid]['completed'] = $stats['bySurvey'][$surveyid]['respondido'];
                     $surveys[$surveyid]['expected'] = $stats['bySurvey'][$surveyid]['esperado'];
                     $surveys[$surveyid]['active'] = $swp['active'];
-                    array_push($surveys[$surveyid]['profiles'],$swp['profile'].' de '.$swp['schoollevel']);
-                }
-                elseif( $swp['surveyid'] == $surveyid && array_key_exists('surveyid',$surveys[$surveyid])){
 
-                    array_push($surveys[$surveyid]['profiles'],$swp['profile'].' de '.$swp['schoollevel']);
+                    if(!array_key_exists($swp['profile'],$surveys[$surveyid]['profiles'])) {
+
+                        $surveys[$surveyid]['profiles'][$swp['profile']] = array();
+                    }
+
+                    array_push($surveys[$surveyid]['profiles'][$swp['profile']],$swp['schoollevel']);
+                }
+                elseif( $swp['surveyid'] == $surveyid && array_key_exists('surveyid',$surveys[$surveyid])) {
+
+                    array_push($surveys[$surveyid]['profiles'][$swp['profile']],$swp['schoollevel']);
                 }
             }
         }
@@ -114,7 +122,6 @@ class AdminController extends Controller {
     private function getStats(){
 
         $data = array();
-
         $em = $this->getDoctrine()->getManager();
 
         //Consulta para obtener el numero esperado de respuestas por evaluacion
@@ -140,7 +147,7 @@ class AdminController extends Controller {
             ->innerJoin('UNOEvaluacionesBundle:Log','log','WITH','ps.personid = log.personPersonid AND sxp.surveySurveyid = log.surveySurveyid')
             ->where('log.surveySurveyid > 1')
             ->andWhere('p.admin NOT IN (1)')
-            ->andWhere('log.actionaction = 5')
+            ->andWhere('log.actionaction = 4')
             ->groupBy('sxp.surveySurveyid')
             ->getQuery()
             ->getResult();
@@ -188,6 +195,32 @@ class AdminController extends Controller {
         return $data;
     }
 
+    public function setSurveyStatusAction(Request $request) {
 
+        $surveyId = $request->request->get('surveyid');
+        $status = $request->request->get('surveyStatus');
 
+        if (!$surveyId || !$status) {
+
+            $response = json_encode(array('message' => 'Petición malformada'));
+            return new Response($response, 500, array(
+                'Content-Type' => 'application/json'
+            ));
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $survey = $this->getDoctrine()
+            ->getRepository('UNOEvaluacionesBundle:Survey')
+            ->findOneBy(array(
+                'surveyid' => $surveyId
+            ));
+
+        $survey->setActive($status === 'true');
+        $em->flush();
+
+        $response = json_encode(array('message' => 'Se ha actualizado con exito'));
+        return new Response($response, 200, array(
+            'Content-Type' => 'application/json'
+        ));
+    }
 }
