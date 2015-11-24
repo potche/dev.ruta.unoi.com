@@ -368,6 +368,7 @@ class LoginController extends Controller{
         $session->remove('personIdS');
         $session->remove('nameS');
         $session->remove('authorized_in');
+        $session->remove('compliance');
         $session->invalidate();
         unset($session);
 

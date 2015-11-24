@@ -263,6 +263,7 @@ var CrearWizard = function() {
                         $(elem).appendTo('#div-preg-agregadas');
                         $("#count_questions").val(countPreg+1);
                         $("#error_preguntas").remove();
+<<<<<<< HEAD
 
                     } else if((pregunta === '' || categoria_id === '')){
 
@@ -270,6 +271,16 @@ var CrearWizard = function() {
                     }
                 }else showQuestionErrors("Por favor agrega una pregunta que no haya sido agregada a esta evaluación");
 
+=======
+
+                    } else if((pregunta === '' || categoria_id === '')){
+
+                        showQuestionErrors("Por favor selecciona o agrega una pregunta con una categoría");
+                    }
+                }else showQuestionErrors("Por favor agrega una pregunta que no haya sido agregada a esta evaluación");
+
+                $('#pregunta').val('');
+>>>>>>> 83fd9838aca9e24613c9e0099936a78fe7fbaba6
             });
 
 
