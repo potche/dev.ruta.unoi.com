@@ -105,8 +105,5 @@ class RespondeController extends Controller
         return json_encode($surveyJson);
     }
 
-    public function insert(){
-
-    }
 
 }

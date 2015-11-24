@@ -15,7 +15,7 @@ class BodyMail{
     public function run($nombre, $codigo, $url) {
         $aviso = "Este correo electrónico, así como los archivos adjuntos que contenga, es confidencial de conformidad con las leyes aplicables, y es para uso exclusivo del destinatario al que expresamente se le ha enviado. Si usted no es el destinatario legítimo del mismo, deberá reportarlo al remitente del correo y borrarlo inmediatamente. Cualquier revisión, retransmisión, divulgación, difusión o cualquier otro uso de este correo, por personas o entidades distintas a las del destinatario legítimo, queda expresamente prohibido. Los derechos de propiedad respecto de la información, material, documentos electrónicos, bases de datos, diseños, y los distintos elementos en él contenidos, son titularidad de alguna de las empresas de Grupo Santillana en México. Este correo electrónico, no pretende ni debe ser considerado como constitutivo de ninguna relación legal, contractual o de otra índole similar.";
 
-        return '<!DOCTYPE html>
+        $html = '<!DOCTYPE html>
                     <html lang="en">
                         <head>
                             <meta charset="UTF-8">
@@ -778,6 +778,8 @@ class BodyMail{
                         </body>
                     </html>
         ';
+
+        return $html;
     }
 
 }

@@ -1,0 +1,5 @@
+Borrando entradas antiguas del log
+Obteniendo preguntas duplicadas
+Eliminando preguntas duplicadas y entradas del log
+ 
+No se detectaron preguntas duplicadas, sé feliz! (por hoy)
