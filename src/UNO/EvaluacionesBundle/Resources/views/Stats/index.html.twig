@@ -16,6 +16,8 @@
                 <h1>
                     <i class="fa fa-line-chart"></i><b>Estad&iacute;sticas</b><small>{% if nameSchool is defined %}<br/><span class="label label-primary">{{ nameSchool }}</span>{% endif %}</small>
                 </h1>
+
+                <span class="tag label label-info">Vietnam<span data-role="remove"> <i class="fa fa-times"></i> </span></span>
             </div>
         </div>
 
@@ -29,6 +31,26 @@
                         <div class="col-sm-12">
                             <form id="schoolFrm" action="" method="POST">
                                 <input type="text" id="schooIdFrm" name="schooIdFrm" class="form-control input-typeaheadSchool" autocomplete="off" placeholder="Busca Escuelas..">
+                                <div class="form-group form-actions">
+                                    <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-angle-right"></i> Buscar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if surveyId is defined %}
+            <div class="block">
+                <div class="block-title">
+                    <h2>Filtro por <strong>Evaluacion</strong></h2>
+                </div>
+                <div class="row">
+                    <div class="block-content">
+                        <div class="col-sm-12">
+                            <form id="surveyFrm" action="" method="POST">
+                                <input type="text" id="surveyIdFrm" name="surveyIdFrm" class="form-control input-typeaheadSurvey" autocomplete="off" placeholder="Busca Evaluacion..">
                                 <div class="form-group form-actions">
                                     <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-angle-right"></i> Buscar</button>
                                 </div>
@@ -210,6 +232,7 @@
     <script src="{{ asset('public/assets/js/stats.js')}}"></script>
     <script src="{{ asset('public/assets/js/statsGraph.js')}}"></script>
     <script src="{{ asset('public/assets/js/validateSchool.js') }}"></script>
+    <script src="{{ asset('public/assets/js/validateSurvey.js') }}"></script>
     <script type="text/javascript">
         $(function () {
 
@@ -226,6 +249,15 @@
             $('.input-typeaheadSchool').typeahead({ source: exampleTypeheadData });
             //valida la Escuela Filtrada Admin
             ValidateSchool.init(exampleTypeheadData);
+            {% endif %}
+
+            {% if surveyId is defined %}
+            // Initialize Typeahead - Example with countries
+            // para el json de las escuelas
+            var surveyTypeheadData = [{{ surveyId | raw}}];
+            $('.input-typeaheadSurvey').typeahead({ source: surveyTypeheadData });
+            //valida la Escuela Filtrada Admin
+            ValidateSurvey.init(surveyTypeheadData);
             {% endif %}
 
             //tabla con filtros y ordenamiento

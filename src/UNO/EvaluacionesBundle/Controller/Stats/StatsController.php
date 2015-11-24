@@ -25,7 +25,8 @@ use UNO\EvaluacionesBundle\Entity\Optionxquestion;
 class StatsController extends Controller{
 
     private $_profile = array();
-    private $_schoolId = array();
+    private $_schoolId;
+    private $_surveyId;
     private $_personId;
     private $_schoolIdFrm;
     private $_schoolIdPerson;
@@ -35,6 +36,10 @@ class StatsController extends Controller{
     private $_jsonTotalResponseColumn = '';
     private $_userList = array();
     private $_nameSchool = 'General';
+
+    private $_surveyIdFrm;
+    private $_nameSurvey = 'Todas las Evaluaciones';
+    private $_andSurvey = "S.surveyid != ''";
 
     /**
      * @Route("/estadisticas")
@@ -47,28 +52,38 @@ class StatsController extends Controller{
         $session->start();
         if ($session->get('logged_in')) {
             $this->setProfile($session);
+            $and = "PS.schoolid != '' ";
+            #perfiles validos para ver las Estadisticas
             if (array_intersect(array('SuperAdmin','Director','COACH'), $this->_profile)) {
                 $this->setPersonId($session);
-                $this->setSchoolIdFrm($request);
                 $this->setSchooIdPerson($session);
-                $this->getResults();
+                $this->setSurveyIdFrm($request);
+
                 #vista para Admin
                 if (array_intersect(array('SuperAdmin','COACH'), $this->_profile)) {
+                    $this->setSchoolIdFrm($request);
+                    if($this->_schoolIdFrm != 0){ $and = "PS.schoolid in (".$this->_schoolIdFrm.")"; }
+                    else{ $this->_userList = "";}
+                    $this->getResults($and);
                     $this->getSchoolResponse();
                     return $this->render('UNOEvaluacionesBundle:Stats:index.html.twig', array(
                         'nameSchool' => $this->_nameSchool,
                         'jsonTotalResponsePie' => $this->_jsonTotalResponsePie,
                         'jsonTotalResponseColumn' => $this->_jsonTotalResponseColumn,
                         'userList' => $this->_userList,
-                        'schoolId' => $this->_schoolId
+                        'schoolId' => $this->_schoolId,
+                        'surveyId' => $this->_surveyId
                     ));
                 } else {
                     #vista para director
+                    $and = "PS.schoolid in (".$this->_schoolIdPerson.")";
+                    $this->getResults($and);
                     return $this->render('UNOEvaluacionesBundle:Stats:index.html.twig', array(
                         'nameSchool' => $this->_nameSchool,
                         'jsonTotalResponsePie' => $this->_jsonTotalResponsePie,
                         'jsonTotalResponseColumn' => $this->_jsonTotalResponseColumn,
                         'userList' => $this->_userList,
+                        'surveyId' => $this->_surveyId
                     ));
                 }
             }return $this->redirect("/inicio");
@@ -113,7 +128,6 @@ class StatsController extends Controller{
                 $this->_nameSchool = $value->school;
             }
         }
-
         $this->_schoolIdPerson = rtrim($schoolIdPerson, ', ');
     }
 
@@ -135,67 +149,78 @@ class StatsController extends Controller{
     }
 
     /**
+     * @param $request
+     *
+     * cacha la Evaluacion filtrada y enviado por metdo post
+     */
+    private function setSurveyIdFrm($request){
+        $idSurveyPost = $request->request->get('surveyIdFrm');
+        if(!empty($idSurveyPost)){
+            $idS = explode('-',$idSurveyPost);
+            $this->_surveyIdFrm = $idS[0];
+            $this->_nameSurvey = $idS[1];
+            $this->_andSurvey = "S.surveyid = '".$this->_surveyIdFrm."'";
+        }else{
+            $this->_surveyIdFrm = 0;
+            $this->_nameSurvey = 'Todas Las evaluaciones';
+        }
+    }
+
+    /**
      * este metodo invoca a otros metodos con el fin de separar las acciones
      */
-    private function getResults(){
+    private function getResults($and){
         //obtencion de los datos generales para las estadisticas
-        $this->getSurveyResultsGral();
+        $this->getSurveyResultsGral($and);
         if (!empty($this->_surveyResultsGral)) {
+            $this->getSurveys();
             $this->getTotalResponse();
             //obtencion de los usuario
-            $and = "PS.schoolid != ''";
-            if( array_intersect(array('SuperAdmin','COACH'), $this->_profile) ){
-                if($this->_schoolIdFrm != 0){
-                    $and = "PS.schoolid in (".$this->_schoolIdFrm.")";
-                    $this->creaListUser($and);
-                }else{
-                    $this->_userList = "";
-                }
-            }else{
-                $and = "PS.schoolid in (".$this->_schoolIdPerson.")";
+            if($this->_userList != ''){
                 $this->creaListUser($and);
             }
-
         }
     }
 
     /**
      * obtiene toda la informacion de las evaluaciones realizadas por colegio o general
      */
-    private function getSurveyResultsGral() {
-        $query = "SELECT count(A.answer) countAnswer, A.answer
-                    FROM
-
-                        Person P
-                            INNER JOIN
-                        Answer A ON P.personId = A.Person_personId
-                            INNER JOIN
-                        (SELECT DISTINCT schoolId, personId FROM PersonSchool) PS ON P.personId = PS.personId
-                            INNER JOIN
-                        OptionXQuestion OQ ON A.OptionXQuestion_id = OQ.OptionXQuestion_id
-                            INNER JOIN
-                        QuestionXSurvey QS ON OQ.QuestionXSurvey_id = QS.QuestionXSurvey_id
-                            INNER JOIN
-                        Survey S ON QS.Survey_surveyId = S.surveyid
-                        WHERE P.personId != 1
-                        AND S.active = 1
-                    ";
-        if( array_intersect(array('SuperAdmin','COACH'), $this->_profile) ){
-            if($this->_schoolIdFrm != 0){
-                $query .= "AND PS.schoolId in (".$this->_schoolIdFrm.")";
-            }
-        }else{
-            $query .= "AND PS.schoolId in (".$this->_schoolIdPerson.")";
-        }
-
-        $query .= " GROUP BY A.answer
-                    ;";
-
+    private function getSurveyResultsGral($and) {
         $em = $this->getDoctrine()->getManager();
-        $connection = $em->getConnection();
-        $statement = $connection->prepare($query);
-        $statement->execute();
-        $this->_surveyResultsGral = $statement->fetchAll();
+        $qb = $em->createQueryBuilder();
+
+        $this->_surveyResultsGral = $qb->select("concat(S.surveyid,'-',S.title) as surveyTitle, COUNT( DISTINCT(Ans.answerid) ) as countAnswer, O.option as answer")
+            ->from('UNOEvaluacionesBundle:Person','P')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','PS', 'WITH', 'P.personid = PS.personid')
+            ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile ','SP', 'WITH', 'PS.profileid = SP.profileProfileid AND PS.schoollevelid = SP.schoollevelid')
+            ->innerJoin('UNOEvaluacionesBundle:Survey','S', 'WITH', 'S.surveyid = SP.surveySurveyid')
+            ->innerJoin('UNOEvaluacionesBundle:Log','L', 'WITH', 'S.surveyid = L.surveySurveyid AND PS.personid = L.personPersonid')
+            ->innerJoin('UNOEvaluacionesBundle:Action','A', 'WITH', 'L.actionaction = A.idaction')
+            ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','QS', 'WITH', 'QS.surveySurveyid = S.surveyid')
+            ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','OQ', 'WITH', 'OQ.questionxsurvey = QS.questionxsurveyId')
+            ->innerJoin('UNOEvaluacionesBundle:Answer','Ans', 'WITH', 'Ans.optionxquestion = OQ.optionxquestionId AND Ans.personPersonid = PS.personid')
+            ->innerJoin('UNOEvaluacionesBundle:Option','O', 'WITH', 'OQ.optionOptionid = O.optionid')
+            ->where('S.active = 1')
+            ->andWhere('PS.personid > 1')
+            ->andWhere('S.closingdate >= CURRENT_DATE()')
+            ->andWhere('A.actioncode = 004')
+            ->andWhere($and)
+            ->andWhere($this->_andSurvey)
+            ->groupBy('S.surveyid, O.option')
+            ->orderBy( 'S.surveyid')
+            ->addOrderBy('O.option')
+            ->getQuery()
+            ->getResult();
+    }
+
+    private function getSurveys(){
+        $_surveyId = array_unique(array_column($this->_surveyResultsGral,'surveyTitle'));
+        $jsonSurveyId = '';
+        foreach($_surveyId as $value){
+            $jsonSurveyId .= '"'.$value.'",';
+        }
+        $jsonSurveyId = trim($jsonSurveyId, ',');
+        $this->_surveyId = $jsonSurveyId;
     }
 
     /**
@@ -209,13 +234,13 @@ class StatsController extends Controller{
         foreach($this->_surveyResultsGral as $value){
             switch ($value['answer']):
                 default:
-                    $nose = $value['countAnswer'];
+                    $nose += $value['countAnswer'];
                     break;
                 case 'Sí':
-                    $si = $value['countAnswer'];
+                    $si += $value['countAnswer'];
                     break;
                 case 'No':
-                    $no = $value['countAnswer'];
+                    $no += $value['countAnswer'];
                     break;
             endswitch;
         }
@@ -257,7 +282,6 @@ class StatsController extends Controller{
         }else{
             $this->_jsonTotalResponsePie = '';
         }
-
     }
 
     /**
@@ -281,7 +305,6 @@ class StatsController extends Controller{
      * la almacena en el atributo $this->_schoolId
      */
     private function getSchoolResponse() {
-
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 
@@ -366,6 +389,7 @@ class StatsController extends Controller{
             ->andWhere('PS.personid > 1')
             ->andWhere('S.closingdate >= CURRENT_DATE()')
             ->andWhere($and)
+            ->andWhere($this->_andSurvey)
             ->groupBy('PS.personid, S.surveyid, finished')
             ->orderBy( 'PS.schoolid')
             ->addOrderBy('finished')
