@@ -24,7 +24,7 @@ var ValidateSurvey = function() {
              */
 
             /* Login form - Initialize Validation */
-            $('#surveyFrm').validate({
+            $('#schoolFrm').validate({
                 onfocusout: false,
                 onkeyup: false,
                 onclick: false,
