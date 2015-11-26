@@ -30,7 +30,8 @@ class AjaxStatsController extends Controller{
         $session->start();
         if ($request->getMethod() == 'POST') {
             $personId = $request->get('personId');
-            $survey = $this->getSurveyResultsGral($personId);
+            $eval = $request->get('eval');
+            $survey = $this->getSurveyResultsGral($personId, $eval);
             return new response(json_encode($this->evalUser($survey)));
         }else{
             return new response($request->getMethod());
@@ -40,8 +41,13 @@ class AjaxStatsController extends Controller{
     /**
      * obtiene toda la informacion de las evaluaciones realizadas por colegio o general
      */
-    private function getSurveyResultsGral($personId) {
+    private function getSurveyResultsGral($personId, $eval) {
 
+        if($eval == 'Todas las Evaluaciones'){
+            $and = "S.title != ''";
+        }else{
+            $and = "S.title = '$eval'";
+        }
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 
@@ -59,6 +65,7 @@ class AjaxStatsController extends Controller{
             ->andWhere('PS.personid > 1')
             ->andWhere('S.closingdate >= CURRENT_DATE()')
             ->andWhere('A.actioncode IS NOT NULL')
+            ->andWhere($and)
             ->groupBy('PS.personid, S.surveyid, S.title , OQ.optionOptionid, O.option')
             ->orderBy( 'PS.schoolid')
             ->getQuery()

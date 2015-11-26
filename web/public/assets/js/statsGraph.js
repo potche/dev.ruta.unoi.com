@@ -1,7 +1,7 @@
 /**
  * Created by isra on 9/11/15.
  */
-function pieGrl(jsonTotalResponsePie, nameSchool) {
+function pieGrl(jsonTotalResponsePie, nameSchool, nameSurvey) {
     Highcharts.setOptions({
         lang: {
             thousandsSep: ','
@@ -26,7 +26,7 @@ function pieGrl(jsonTotalResponsePie, nameSchool) {
             text: nameSchool
         },
         subtitle: {
-            text: 'Porcentaje de Respuestas.'
+            text: '<b>'+nameSurvey+'</b><br/>Porcentaje de Respuestas.'
         },
         tooltip: {
             pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -55,7 +55,7 @@ function pieGrl(jsonTotalResponsePie, nameSchool) {
 }
 
 //---------------------------------------------
-function columnGrl(jsonTotalResponseColumn, nameSchool) {
+function columnGrl(jsonTotalResponseColumn, nameSchool, nameSurvey) {
     Highcharts.setOptions({
         lang: {
             thousandsSep: ','
@@ -76,7 +76,7 @@ function columnGrl(jsonTotalResponseColumn, nameSchool) {
             text: nameSchool
         },
         subtitle: {
-            text: 'Cantidad de Respuestas.'
+            text: '<b>'+nameSurvey+'</b><br/>Cantidad de Respuestas.'
         },
         xAxis: {
             type: 'category'

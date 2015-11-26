@@ -13,25 +13,24 @@ var ValidateSchool = function() {
     return {
         init: function(exampleTypeheadData, surveyTypeheadData) {
 
-            console.log(exampleTypeheadData);
-            console.log(surveyTypeheadData);
-
             jQuery.validator.addMethod("valSchool", function(value, element){
-
-                    if(exampleTypeheadData.indexOf(value) != -1){
+                if(value != '') {
+                    if (exampleTypeheadData.indexOf(value) != -1) {
                         return true
                     }
                     return false
-
+                }
+                return true
             }, '<div class="text-danger"><i class="fa fa-times"></i> Ingrese una Escuela Valida</div>');
 
             jQuery.validator.addMethod("valSurvey", function(value, element){
-
-                if(surveyTypeheadData.indexOf(value) != -1){
-                    return true
+                if(value != '') {
+                    if (surveyTypeheadData.indexOf(value) != -1) {
+                        return true
+                    }
+                    return false
                 }
-                return false
-
+                return true
             }, '<div class="text-danger"><i class="fa fa-times"></i> Ingrese una Evaluacion Valida</div>');
 
 
