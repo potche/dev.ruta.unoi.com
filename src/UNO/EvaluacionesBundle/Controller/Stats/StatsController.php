@@ -51,22 +51,20 @@ class StatsController extends Controller{
         $session = $request->getSession();
         $session->start();
         if ($session->get('logged_in')) {
-
             $this->setProfile($session);
             $and = "PS.schoolid != '' ";
             #perfiles validos para ver las Estadisticas
             if (array_intersect(array('SuperAdmin','Director','COACH'), $this->_profile)) {
                 $this->setPersonId($session);
                 $this->setSchooIdPerson($session);
-                if( empty($request->query->get('all')) ){
-                    $this->setSurveyIdFrm($request);
-                    $this->setSchoolIdFrm($request);
-                }else{
-                    $session->set('schoolFilter', '0-General');
-                }
                 #vista para Admin
                 if (array_intersect(array('SuperAdmin','COACH'), $this->_profile)) {
-
+                    if( empty($request->query->get('all')) ){
+                        $this->setSurveyIdFrm($request);
+                        $this->setSchoolIdFrm($request);
+                    }else{
+                        $session->set('schoolFilter', '0-General');
+                    }
                     if($this->_schoolIdFrm != 0){ $and = "PS.schoolid in (".$this->_schoolIdFrm.")"; }
                     else{ $this->_userList = "";}
                     $this->getResults($and);
@@ -83,6 +81,7 @@ class StatsController extends Controller{
                     ));
                 } else {
                     #vista para director
+                    $this->setSurveyIdFrm($request);
                     $and = "PS.schoolid in (".$this->_schoolIdPerson.")";
                     $this->getResults($and);
                     $this->getSurvey($and);

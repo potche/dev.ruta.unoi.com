@@ -26,7 +26,7 @@ function pieGrl(jsonTotalResponsePie, nameSchool, nameSurvey) {
             text: nameSchool
         },
         subtitle: {
-            text: '<b>'+nameSurvey+'</b><br/>Porcentaje de Respuestas.'
+            text: '<b>'+nameSurvey+'</b><br/>Porcentaje de respuestas.'
         },
         tooltip: {
             pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -76,7 +76,7 @@ function columnGrl(jsonTotalResponseColumn, nameSchool, nameSurvey) {
             text: nameSchool
         },
         subtitle: {
-            text: '<b>'+nameSurvey+'</b><br/>Cantidad de Respuestas.'
+            text: '<b>'+nameSurvey+'</b><br/>Cantidad de respuestas.'
         },
         xAxis: {
             type: 'category'
@@ -141,10 +141,10 @@ function pieGrlLU(jsonTotalResponseLUPie, title) {
             href: 'http://mx.unoi.com/'
         },
         title: {
-            text: title
+            text: usernameGlobal
         },
         subtitle: {
-            text: 'Porcentaje de Respuestas.'
+            text: '<b>'+title+'<b><br/>Porcentaje de respuestas.'
         },
         tooltip: {
             pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -191,11 +191,11 @@ function columnGrlLU(jsonTotalResponseLUColumn, title) {
             text: 'UNOi',
             href: 'http://mx.unoi.com/'
         },
-        title: {
-            text: title
-        },
-        subtitle: {
-            text: 'Cantidad de Respuestas.'
+            title: {
+                text: usernameGlobal
+            },
+            subtitle: {
+                text: '<b>'+title+'<b><br/>Cantidad de respuestas.'
         },
         xAxis: {
             type: 'category'

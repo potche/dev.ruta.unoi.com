@@ -176,7 +176,7 @@ class AjaxStatsController extends Controller{
                             <h2>Evaluación <strong>'.$title.'</strong></h2>
                         </div>
                         <div class="table-responsive">
-                            <p><em>Detalle de la Evaluación.</em></p>
+                            <p><em>Detalle de la evaluación.</em></p>
                             <table id="example-datatable" class="table table-vcenter table-condensed table-bordered">
                                 <thead>
                                     <tr>

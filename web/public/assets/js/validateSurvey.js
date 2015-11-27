@@ -11,12 +11,13 @@ var ValidateSurvey = function() {
         init: function(surveyTypeheadData) {
 
             jQuery.validator.addMethod("valSurvey", function(value, element){
-
-                    if(surveyTypeheadData.indexOf(value) != -1){
+                if(value != '') {
+                    if (surveyTypeheadData.indexOf(value) != -1) {
                         return true
                     }
                     return false
-
+                }
+                return true
             }, '<div class="text-danger"><i class="fa fa-times"></i> Ingrese una Evaluacion Valida</div>');
 
             /*
@@ -33,13 +34,7 @@ var ValidateSurvey = function() {
                 errorElement: 'div',
                 rules: {
                     surveyIdFrm: {
-                        required: true,
                         valSurvey: true
-                    }
-                },
-                messages: {
-                    surveyIdFrm: {
-                        required: '<div class="text-danger"><i class="fa fa-times"></i> Ingresa una Evalacion</div>'
                     }
                 },
                 submitHandler: function(form) {

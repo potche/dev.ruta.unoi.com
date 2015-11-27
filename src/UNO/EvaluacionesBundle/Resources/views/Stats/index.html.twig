@@ -43,13 +43,13 @@
 
                             <div id="divSchool" class="col-sm-6" >
                                 <strong>Escuela</strong>
-                                <input type="text" id="schooIdFrm" name="schooIdFrm" class="form-control input-typeaheadSchool" autocomplete="off" placeholder="Busca Escuelas..">
+                                <input type="text" id="schooIdFrm" name="schooIdFrm" class="form-control input-typeaheadSchool" autocomplete="off" placeholder="Busca escuelas..">
                             </div>
                         {% endif %}
 
                             {% if surveyName != 'Todas las Evaluaciones' %}
                                 <!-- Success Alert Content -->
-                                <div id="divAlertSurvey" class="col-sm-6">
+                                <div id="divAlertSurvey" {% if schoolId is defined %} class="col-sm-6" {% else %} class="col-sm-12" {% endif %}>
                                     <div class="alert alert-info alert-dismissable">
                                         <button id="closeSurvey" type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                                         <h4><i class="fa fa-pencil-square-o"></i> <strong>{{ surveyName }}</strong></h4>
@@ -58,9 +58,9 @@
                                 <!-- END Success Alert Content -->
                             {% endif %}
 
-                            <div id="divSurvey" class="col-sm-6">
-                                <strong>Evaluacion</strong>
-                                <input type="text" id="surveyIdFrm" name="surveyIdFrm" class="form-control input-typeaheadSurvey" autocomplete="off" placeholder="Busca Evaluacion..">
+                            <div id="divSurvey" {% if schoolId is defined %} class="col-sm-6" {% else %} class="col-sm-12" {% endif %}>
+                                <strong>Evaluación</strong>
+                                <input type="text" id="surveyIdFrm" name="surveyIdFrm" class="form-control input-typeaheadSurvey" autocomplete="off" placeholder="Busca evaluación..">
                             </div>
 
                             <input type="text" id="clearSearch" name="clearSearch" style="visibility: hidden"/>
@@ -82,7 +82,7 @@
                 <div class="block-options pull-right">
                     <a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
                 </div>
-                <h2>Gr&aacute;ficas de Avance <strong>{{ nameSchool }}</strong></h2>
+                <h2>Gr&aacute;ficas de avance <strong>{{ nameSchool }}</strong></h2>
             </div>
             {% if jsonTotalResponsePie is not empty %}
                 <div class="row">
@@ -106,7 +106,7 @@
                     <div class="block-content">
                         <div class="col-sm-12 text-center">
                             <div class="block">
-                                <h1>No han realizado ninguna Evaluación !!!</h1>
+                                <h1>No se ha realizado ninguna Evaluación.</h1>
                                 <div class="carousel slide" data-ride="carousel">
                                     <div class="carousel-inner" role="listbox">
                                         <div class="item active">
@@ -133,7 +133,7 @@
                 <div class="block-options pull-right">
                     <a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
                 </div>
-                <h2>Tabla de Avance <strong>{{ nameSchool }}</strong></h2>
+                <h2>Tabla de avance <strong>{{ nameSchool }}</strong></h2>
             </div>
             <div class="row">
                 <div class="block-content">
@@ -143,9 +143,9 @@
                         <br/>
                         <div class="table-responsive">
                             {% if surveyName == 'Todas las Evaluaciones' %}
-                            <p>Estad&iacute;sticas de usuarios que han realizado por lo menos una Evaluacion. <em>Da <b>click</b> sobre un usuario para ver su detalle</em></p>
+                            <p>Estad&iacute;sticas de usuarios que han realizado por lo menos una evaluación. <em>Da <b>click</b> sobre un usuario para ver su detalle</em></p>
                             {% else %}
-                            <p>Estad&iacute;sticas de usuarios que han realizado esta Evaluacion. <em>Da <b>click</b> sobre un usuario para ver su detalle</em></p>
+                            <p>Estad&iacute;sticas de usuarios que han realizado esta evaluación. <em>Da <b>click</b> sobre un usuario para ver su detalle</em></p>
                             {% endif %}
                             <table id="userList-datatable" class="table table-vcenter table-condensed table-bordered">
                                 <thead>
@@ -204,14 +204,14 @@
             <div class="modal-content">
                 <div class="modal-header bg-primary">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title"><i class="fa fa-rebel"></i> Estad&iacute;sticas por <strong>Usuario</strong></h4>
+                    <h4 class="modal-title"><i class="fa fa-rebel"></i> Estad&iacute;sticas por <strong>usuario</strong></h4>
                 </div>
                 <div class="modal-body">
                     <span id="bodyStatsUser"></span>
 
                     <div id="block-resumenG" class="block">
                         <div class="block-title">
-                            <h2>Gr&aacute;ficas de <strong>Avance</strong></h2>
+                            <h2>Gr&aacute;ficas de <strong>avance</strong></h2>
                         </div>
                         <div class="row">
                             <div class="block-content ">
@@ -244,6 +244,20 @@
     </div>
     <!-- END Modal Stats User -->
 
+
+    <!-- Modal loading -->
+    <div id="loadingStats" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-body bg-primary text-center">
+                    <h4 class="modal-title"><i class="fa fa-refresh fa-spin"></i> Cargando, <strong>por favor espere...</strong></h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal loading -->
+
+
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <!-- Load and execute javascript code used only in this page -->
     <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -252,7 +266,7 @@
     <script src="{{ asset('public/assets/js/stats.js')}}"></script>
     <script src="{{ asset('public/assets/js/statsGraph.js')}}"></script>
     <script src="{{ asset('public/assets/js/validateSchool.js') }}"></script>
-    <!-- <script src="{{ asset('public/assets/js/validateSurvey.js') }}"></script>-->
+    <script src="{{ asset('public/assets/js/validateSurvey.js') }}"></script>
     <script type="text/javascript">
         $(function () {
 
@@ -263,34 +277,37 @@
             {% endif %}
 
             {% if app.session.get('schoolFilter') != '0-General' and app.session.get('schoolFilter') != '' %}
-            $('#divSchool').hide();
+            $('#divSchool').hide('fast');
             {% else %}
-            $('#divSchool').show();
+            $('#divSchool').show('fast');
             {% endif %}
 
             {% if surveyName != 'Todas las Evaluaciones' %}
-            $('#divSurvey').hide();
+            $('#divSurvey').hide('fast');
             {% else %}
-            $('#divSurvey').show();
+            $('#divSurvey').show('fast');
             {% endif %}
 
             {% if schoolId is defined %}
             // Initialize Typeahead - Example with countries
             // para el json de las escuelas
-
             var exampleTypeheadData = [{{ schoolId | raw}}];
             $('.input-typeaheadSchool').typeahead({ source: exampleTypeheadData });
-            {% endif %}
             // para el json de las escuelas
             var surveyTypeheadData = {{ surveyId | raw}};
             $('.input-typeaheadSurvey').typeahead({ source: surveyTypeheadData });
             //valida la Escuela Filtrada Admin
             ValidateSchool.init(exampleTypeheadData, surveyTypeheadData);
-
+            {% else %}
+            var surveyTypeheadData = {{ surveyId | raw}};
+            $('.input-typeaheadSurvey').typeahead({ source: surveyTypeheadData });
+            //valida la Escuela Filtrada Admin
+            ValidateSurvey.init(surveyTypeheadData);
+            {% endif %}
 
             $('#schooIdFrm').change(function () {
                 var value = $('#schooIdFrm').val();
-                console.log(value);
+                //console.log(value);
                 if(validaSchool (value, exampleTypeheadData)){
                     $.post( "/ajax/searchEval", { schoolId: value })
                             .done(function( data ) {
@@ -301,7 +318,7 @@
                                     //valida la Escuela Filtrada Admin
                                     ValidateSchool.init(exampleTypeheadData, data);
                                 }else{
-                                    console.log("NO DATA!");
+                                    //console.log("NO DATA!");
                                     $('#surveyIdFrm').prop('disabled', true);
                                 }
 
@@ -330,14 +347,14 @@
 
                         });
                 $('#clearSearch').val('1');
-                $('#divAlertSurvey').hide();
-                $('#divSurvey').show();
-                $('#divSchool').show();
+                $('#divAlertSurvey').hide('fast');
+                $('#divSurvey').show('slow');
+                $('#divSchool').show('slow');
 
             });
 
             $('#closeSurvey').click(function(){
-                $('#divSurvey').show();
+                $('#divSurvey').show('slow');
             });
 
             //tabla con filtros y ordenamiento

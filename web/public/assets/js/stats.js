@@ -7,13 +7,16 @@ $( "#schoolId" ).change(function() {
 });
 
 var personIdGlobal = '';
+var usernameGlobal = '';
 
 function statsUser(personid, username, avance, eval){
+    $('#loadingStats').modal();
+
     $('#surveyUser').html( '' );
-
-    console.log(eval);
-
+    //console.log(eval);
     personIdGlobal = personid;
+    usernameGlobal = username;
+
     var siG = 0;
     var noG = 0;
     var noseG = 0;
@@ -31,7 +34,7 @@ function statsUser(personid, username, avance, eval){
                 list += "<option value='"+item.si+":"+item.no+":"+item.nose+":"+item.title+"'>"+item.title+"</option>";
             });
 
-            createGraph(siG, noG, noseG, 'Global');
+
 
 
             var progress =  '<div class="progress progress-striped active">'+
@@ -42,6 +45,7 @@ function statsUser(personid, username, avance, eval){
                 ;
 
             if(eval == 'Todas las Evaluaciones') {
+                createGraph(siG, noG, noseG, 'Global');
                 var divList = "<div class='row'>" +
                     "<div class='col-sm-6'>" +
                     "<img src='public/assets/images/login/icon_niño1.png' alt='avatar' class='img-circle'>" +
@@ -52,12 +56,13 @@ function statsUser(personid, username, avance, eval){
                     "<div class='col-sm-4 col-sm-offset-2'></div>" +
                     "</div>" +
                     "<div class='well'>" +
-                    "<h5>Selecciona alguna Evaluación para ver su <b>detalle</b>:</h5>" +
+                    "<h5>Selecciona alguna evaluación para ver su <b>detalle</b>:</h5>" +
                     "<select id='evaluacioLU' class='form-control' size='1' onchange='(abc(this.value))'>" +
                     "<option value='" + siG + ":" + noG + ":" + noseG + ":0'>Global</option>" + list + "" +
                     "</select>" +
                     "</div>";
             }else{
+                createGraph(siG, noG, noseG, eval);
                 var divList = "<div class='row'>" +
                     "<div class='col-sm-6'>" +
                     "<img src='public/assets/images/login/icon_niño1.png' alt='avatar' class='img-circle'>" +
@@ -77,10 +82,14 @@ function statsUser(personid, username, avance, eval){
                         TablesDatatables2.init();
                     });
             }
+
+            $('#loadingStats').modal('hide');
+
             $('#statsUser').modal();
             $('#bodyStatsUser').html(divList);
 
             reflowChart();
+
         });
 
 }
