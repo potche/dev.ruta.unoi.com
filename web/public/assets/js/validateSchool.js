@@ -4,11 +4,17 @@
  *  Description: valida el filtro por Escuela
  */
 
+
+
+
 var ValidateSchool = function() {
 
 
     return {
-        init: function(exampleTypeheadData) {
+        init: function(exampleTypeheadData, surveyTypeheadData) {
+
+            console.log(exampleTypeheadData);
+            console.log(surveyTypeheadData);
 
             jQuery.validator.addMethod("valSchool", function(value, element){
 
@@ -18,6 +24,16 @@ var ValidateSchool = function() {
                     return false
 
             }, '<div class="text-danger"><i class="fa fa-times"></i> Ingrese una Escuela Valida</div>');
+
+            jQuery.validator.addMethod("valSurvey", function(value, element){
+
+                if(surveyTypeheadData.indexOf(value) != -1){
+                    return true
+                }
+                return false
+
+            }, '<div class="text-danger"><i class="fa fa-times"></i> Ingrese una Evaluacion Valida</div>');
+
 
             /*
              *  Jquery Validation, Check out more examples and documentation at https://github.com/jzaefferer/jquery-validation
@@ -33,13 +49,20 @@ var ValidateSchool = function() {
                 errorElement: 'div',
                 rules: {
                     schooIdFrm: {
-                        required: true,
+                        //required: true,
                         valSchool: true
+                    },
+                    surveyIdFrm: {
+                        //required: true,
+                        valSurvey: true
                     }
                 },
                 messages: {
                     schooIdFrm: {
                         required: '<div class="text-danger"><i class="fa fa-times"></i> Ingresa una Escuela</div>'
+                    },
+                    surveyIdFrm: {
+                        required: '<div class="text-danger"><i class="fa fa-times"></i> Ingresa una Evalacion</div>'
                     }
                 },
                 submitHandler: function(form) {

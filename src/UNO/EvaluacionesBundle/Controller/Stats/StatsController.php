@@ -66,13 +66,15 @@ class StatsController extends Controller{
                     else{ $this->_userList = "";}
                     $this->getResults($and);
                     $this->getSchoolResponse();
+                    $this->getSurvey($and);
                     return $this->render('UNOEvaluacionesBundle:Stats:index.html.twig', array(
                         'nameSchool' => $this->_nameSchool,
                         'jsonTotalResponsePie' => $this->_jsonTotalResponsePie,
                         'jsonTotalResponseColumn' => $this->_jsonTotalResponseColumn,
                         'userList' => $this->_userList,
                         'schoolId' => $this->_schoolId,
-                        'surveyId' => $this->_surveyId
+                        'surveyId' => $this->_surveyId,
+                        'surveyName' => $this->_nameSurvey
                     ));
                 } else {
                     #vista para director
@@ -83,7 +85,8 @@ class StatsController extends Controller{
                         'jsonTotalResponsePie' => $this->_jsonTotalResponsePie,
                         'jsonTotalResponseColumn' => $this->_jsonTotalResponseColumn,
                         'userList' => $this->_userList,
-                        'surveyId' => $this->_surveyId
+                        'surveyId' => $this->_surveyId,
+                        'surveyName' => $this->_nameSurvey
                     ));
                 }
             }return $this->redirect("/inicio");
@@ -137,14 +140,24 @@ class StatsController extends Controller{
      * cacha el colegio filtrado y enviado por metdo post (Admin)
      */
     private function setSchoolIdFrm($request){
-        $idPost = $request->request->get('schooIdFrm');
-        if(!empty($idPost)){
+        $session = $request->getSession();
+        $session->start();
+
+        echo "schooIdFrm: ".$request->request->get('schooIdFrm');
+        if(!empty($request->request->get('schooIdFrm'))){
+            $idPost = $request->request->get('schooIdFrm');
             $id = explode('-',$idPost);
+            $session->set('schoolFilter', $idPost);
             $this->_schoolIdFrm = $id[0];
             $this->_nameSchool = $id[1];
-        }else{
+        }elseif(empty($request->request->get('schooIdFrm'))){
             $this->_schoolIdFrm = 0;
             $this->_nameSchool = 'General';
+            $session->remove('schoolFilter');
+        }elseif($session->has('schoolFilter') == true){
+            $id = explode('-',$session->get('schoolFilter'));
+            $this->_schoolIdFrm = $id[0];
+            $this->_nameSchool = $id[1];
         }
     }
 
@@ -154,7 +167,7 @@ class StatsController extends Controller{
      * cacha la Evaluacion filtrada y enviado por metdo post
      */
     private function setSurveyIdFrm($request){
-        $idSurveyPost = $request->request->get('surveyIdFrm');
+        $idSurveyPost = trim($request->request->get('surveyIdFrm'));
         if(!empty($idSurveyPost)){
             $idS = explode('-',$idSurveyPost);
             $this->_surveyIdFrm = $idS[0];
@@ -173,7 +186,7 @@ class StatsController extends Controller{
         //obtencion de los datos generales para las estadisticas
         $this->getSurveyResultsGral($and);
         if (!empty($this->_surveyResultsGral)) {
-            $this->getSurveys();
+            //$this->getSurveys();
             $this->getTotalResponse();
             //obtencion de los usuario
             if($this->_userList != ''){
@@ -213,8 +226,46 @@ class StatsController extends Controller{
             ->getResult();
     }
 
+    /**
+     * obtiene toda la informacion de las evaluaciones realizadas por colegio o general
+     */
+    private function getSurvey($and) {
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $_surveyList = $qb->select("concat(S.surveyid,'-',S.title) as surveyTitle")
+            ->from('UNOEvaluacionesBundle:Person','P')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','PS', 'WITH', 'P.personid = PS.personid')
+            ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile ','SP', 'WITH', 'PS.profileid = SP.profileProfileid AND PS.schoollevelid = SP.schoollevelid')
+            ->innerJoin('UNOEvaluacionesBundle:Survey','S', 'WITH', 'S.surveyid = SP.surveySurveyid')
+            ->innerJoin('UNOEvaluacionesBundle:Log','L', 'WITH', 'S.surveyid = L.surveySurveyid AND PS.personid = L.personPersonid')
+            ->innerJoin('UNOEvaluacionesBundle:Action','A', 'WITH', 'L.actionaction = A.idaction')
+            ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','QS', 'WITH', 'QS.surveySurveyid = S.surveyid')
+            ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','OQ', 'WITH', 'OQ.questionxsurvey = QS.questionxsurveyId')
+            ->innerJoin('UNOEvaluacionesBundle:Answer','Ans', 'WITH', 'Ans.optionxquestion = OQ.optionxquestionId AND Ans.personPersonid = PS.personid')
+            ->innerJoin('UNOEvaluacionesBundle:Option','O', 'WITH', 'OQ.optionOptionid = O.optionid')
+            ->where('S.active = 1')
+            ->andWhere('PS.personid > 1')
+            ->andWhere('S.closingdate >= CURRENT_DATE()')
+            ->andWhere('A.actioncode = 004')
+            ->andWhere($and)
+            ->groupBy('S.surveyid')
+            ->orderBy( 'S.surveyid')
+            ->getQuery()
+            ->getResult();
+
+        $arraySurvey = array();
+        foreach($_surveyList as $value){
+            array_push($arraySurvey, $value['surveyTitle']);
+        }
+
+        $this->_surveyId = json_encode($arraySurvey);
+    }
+
     private function getSurveys(){
         $_surveyId = array_unique(array_column($this->_surveyResultsGral,'surveyTitle'));
+
         $jsonSurveyId = '';
         foreach($_surveyId as $value){
             $jsonSurveyId .= '"'.$value.'",';

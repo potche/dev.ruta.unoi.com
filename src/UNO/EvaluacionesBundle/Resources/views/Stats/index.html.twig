@@ -14,52 +14,62 @@
         <div class="content-header">
             <div class="header-section">
                 <h1>
-                    <i class="fa fa-line-chart"></i><b>Estad&iacute;sticas</b><small>{% if nameSchool is defined %}<br/><span class="label label-primary">{{ nameSchool }}</span>{% endif %}</small>
+                    <i class="fa fa-line-chart"></i><b>Estad&iacute;sticas</b>
+                    <small>{% if nameSchool is defined %}<br/><span class="label label-primary">{{ nameSchool }}</span>{% endif %}</small>
+                    <small>{% if surveyName is defined %}<br/><span class="label label-primary">{{ surveyName }}</span>{% endif %}</small>
                 </h1>
-
-                <span class="tag label label-info">Vietnam<span data-role="remove"> <i class="fa fa-times"></i> </span></span>
             </div>
         </div>
 
         {% if schoolId is defined %}
             <div class="block">
                 <div class="block-title">
-                    <h2>Filtro por <strong>Escuela</strong></h2>
+                    <h2>Filtro</h2>
                 </div>
                 <div class="row">
                     <div class="block-content">
-                        <div class="col-sm-12">
-                            <form id="schoolFrm" action="" method="POST">
-                                <input type="text" id="schooIdFrm" name="schooIdFrm" class="form-control input-typeaheadSchool" autocomplete="off" placeholder="Busca Escuelas..">
-                                <div class="form-group form-actions">
-                                    <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-angle-right"></i> Buscar</button>
+
+                        <form id="schoolFrm" action="" method="POST">
+                            {% if app.session.get('schoolFilter') != 'General' and app.session.get('schoolFilter') != '' %}
+                                <!-- Success Alert Content -->
+                                <div class="alert alert-success alert-dismissable col-sm-6">
+                                    <button id="closeSchool" type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                    <h4><i class="fa fa-university"></i> <strong>{{ app.session.get('schoolFilter') }}</strong></h4>
                                 </div>
-                            </form>
-                        </div>
+                                <!-- END Success Alert Content -->
+                            {% endif %}
+
+                            <div id="divSchool" class="col-sm-6" >
+                                <strong>Escuela</strong>
+                                <input type="text" id="schooIdFrm" name="schooIdFrm" class="form-control input-typeaheadSchool" autocomplete="off" placeholder="Busca Escuelas..">
+                            </div>
+
+                            {% if surveyName != 'Todas Las evaluaciones' %}
+                                <!-- Success Alert Content -->
+                                <div class="alert-dismissable col-sm-6">
+                                    <div class="alert alert-info alert-dismissable">
+                                        <button id="closeSurvey" type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                        <h4><i class="fa fa-pencil-square-o"></i> <strong>{{ surveyName }}</strong></h4>
+                                    </div>
+                                </div>
+                                <!-- END Success Alert Content -->
+                            {% endif %}
+
+                            <div id="divSurvey" class="col-sm-6">
+                                <strong>Evaluacion</strong>
+                                <input type="text" id="surveyIdFrm" name="surveyIdFrm" class="form-control input-typeaheadSurvey" autocomplete="off" placeholder="Busca Evaluacion..">
+                            </div>
+
+                            <div class="col-sm-12 text-center form-group form-actions">
+                                <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                            </div>
+                        </form>
+
                     </div>
                 </div>
             </div>
         {% endif %}
 
-        {% if surveyId is defined %}
-            <div class="block">
-                <div class="block-title">
-                    <h2>Filtro por <strong>Evaluacion</strong></h2>
-                </div>
-                <div class="row">
-                    <div class="block-content">
-                        <div class="col-sm-12">
-                            <form id="surveyFrm" action="" method="POST">
-                                <input type="text" id="surveyIdFrm" name="surveyIdFrm" class="form-control input-typeaheadSurvey" autocomplete="off" placeholder="Busca Evaluacion..">
-                                <div class="form-group form-actions">
-                                    <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-angle-right"></i> Buscar</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
 
         <div id="block-resumen" class="block">
             <div class="block-title">
@@ -232,7 +242,7 @@
     <script src="{{ asset('public/assets/js/stats.js')}}"></script>
     <script src="{{ asset('public/assets/js/statsGraph.js')}}"></script>
     <script src="{{ asset('public/assets/js/validateSchool.js') }}"></script>
-    <script src="{{ asset('public/assets/js/validateSurvey.js') }}"></script>
+    <!-- <script src="{{ asset('public/assets/js/validateSurvey.js') }}"></script>-->
     <script type="text/javascript">
         $(function () {
 
@@ -242,22 +252,80 @@
             columnGrl({{ jsonTotalResponseColumn | raw }}, '{{ nameSchool }}');
             {% endif %}
 
+            {% if app.session.get('schoolFilter') != 'General' and app.session.get('schoolFilter') != '' %}
+            $('#divSchool').hide();
+            {% else %}
+            $('#divSchool').show();
+            {% endif %}
+
+            {% if surveyName != 'Todas Las evaluaciones' %}
+            $('#divSurvey').hide();
+            {% else %}
+            $('#divSurvey').show();
+            {% endif %}
+
             {% if schoolId is defined %}
             // Initialize Typeahead - Example with countries
             // para el json de las escuelas
             var exampleTypeheadData = [{{ schoolId | raw}}];
             $('.input-typeaheadSchool').typeahead({ source: exampleTypeheadData });
+            // para el json de las escuelas
+            var surveyTypeheadData = {{ surveyId | raw}};
+            $('.input-typeaheadSurvey').typeahead({ source: surveyTypeheadData });
+
+            $('#schooIdFrm').change(function () {
+                var value = $('#schooIdFrm').val();
+                console.log(value);
+                if(validaSchool (value, exampleTypeheadData)){
+                    $.post( "/ajax/searchEval", { schoolId: value })
+                            .done(function( data ) {
+                                $('.input-typeaheadSurvey').typeahead('destroy');
+                                $('.input-typeaheadSurvey').typeahead({ source: data });
+
+                            });
+                }else if(value == ''){
+                    $('.input-typeaheadSurvey').typeahead('destroy');
+                    $('.input-typeaheadSurvey').typeahead({ source: surveyTypeheadData });
+                }
+            });
+
+
+            function validaSchool (value, exampleTypeheadData){
+
+                if(exampleTypeheadData.indexOf(value) != -1){
+                    return true
+                }
+                return false
+
+            }
+
+
             //valida la Escuela Filtrada Admin
-            ValidateSchool.init(exampleTypeheadData);
+            //ValidateSchool.init(exampleTypeheadData, surveyTypeheadData);
             {% endif %}
+
+            $('#closeSchool').click(function(){
+                $.post( "/ajax/searchEval", { schoolId: 'all' })
+                        .done(function( data ) {
+                            $('.input-typeaheadSurvey').typeahead('destroy');
+                            $('.input-typeaheadSurvey').typeahead({ source: data });
+
+                        });
+                $('#divSchool').show();
+
+            });
+
+            $('#closeSurvey').click(function(){
+                $('#divSurvey').show();
+            });
 
             {% if surveyId is defined %}
             // Initialize Typeahead - Example with countries
             // para el json de las escuelas
-            var surveyTypeheadData = [{{ surveyId | raw}}];
-            $('.input-typeaheadSurvey').typeahead({ source: surveyTypeheadData });
+            //var surveyTypeheadData = [{{ surveyId | raw}}];
+            //$('.input-typeaheadSurvey').typeahead({ source: surveyTypeheadData });
             //valida la Escuela Filtrada Admin
-            ValidateSurvey.init(surveyTypeheadData);
+            //ValidateSurvey.init(surveyTypeheadData);
             {% endif %}
 
             //tabla con filtros y ordenamiento
