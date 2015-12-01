@@ -65,3 +65,11 @@ ajaxSurveyStatus:
     path:   /evaluaciones/setstatus
     defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Admin:setSurveyStatus}
     methods: [POST]
+APISurveys:
+    path: /api/v0/survey
+    defaults: {_controller: UNOEvaluacionesBundle:API/APISurvey:survey}
+    methods: [POST]
+APIResults:
+    path: /api/v0/results
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIResults:results}
+    methods: [POST]
