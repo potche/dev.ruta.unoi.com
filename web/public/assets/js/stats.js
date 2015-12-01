@@ -7,18 +7,23 @@ $( "#schoolId" ).change(function() {
 });
 
 var personIdGlobal = '';
+var usernameGlobal = '';
 
-function statsUser(personid, username, avance){
+function statsUser(personid, username, avance, eval){
+    $('#loadingStats').modal();
+
     $('#surveyUser').html( '' );
-
+    //console.log(eval);
     personIdGlobal = personid;
+    usernameGlobal = username;
+
     var siG = 0;
     var noG = 0;
     var noseG = 0;
     var list = "";
     var evalUser;
 
-    $.post( "ajax/detalleStats", { personId: personid })
+    $.post( "ajax/detalleStats", { personId: personid, eval: eval })
         .done(function( data ) {
             evalUser = jQuery.parseJSON(data);
 
@@ -29,7 +34,7 @@ function statsUser(personid, username, avance){
                 list += "<option value='"+item.si+":"+item.no+":"+item.nose+":"+item.title+"'>"+item.title+"</option>";
             });
 
-            createGraph(siG, noG, noseG, 'Global');
+
 
 
             var progress =  '<div class="progress progress-striped active">'+
@@ -39,26 +44,52 @@ function statsUser(personid, username, avance){
                     '</div>'
                 ;
 
-            var divList = "<div class='row'>" +
-                "<div class='col-sm-6'>" +
-                "<img src='public/assets/images/login/icon_niño1.png' alt='avatar' class='img-circle'>" +
-                "<h1>"+username+"</h1>" +
-                progress+
-                "<small><em>Porcentaje de avance</em></small><hr/>"+
-                "</div>" +
-                "<div class='col-sm-4 col-sm-offset-2'></div>" +
-                "</div>" +
-                "<div class='well'>" +
-                "<h5>Selecciona alguna Evaluación para ver su <b>detalle</b>:</h5>" +
-                "<select id='evaluacioLU' class='form-control' size='1' onchange='(abc(this.value))'>" +
-                "<option value='"+siG+":"+noG+":"+noseG+":0'>Global</option>"+list+"" +
-                "</select>" +
-                "</div>";
+            if(eval == 'Todas las Evaluaciones') {
+                createGraph(siG, noG, noseG, 'Global');
+                var divList = "<div class='row'>" +
+                    "<div class='col-sm-6'>" +
+                    "<img src='public/assets/images/login/icon_niño1.png' alt='avatar' class='img-circle'>" +
+                    "<h1>" + username + "</h1>" +
+                    progress +
+                    "<small><em>Porcentaje de avance</em></small><hr/>" +
+                    "</div>" +
+                    "<div class='col-sm-4 col-sm-offset-2'></div>" +
+                    "</div>" +
+                    "<div class='well'>" +
+                    "<h5>Selecciona alguna evaluación para ver su <b>detalle</b>:</h5>" +
+                    "<select id='evaluacioLU' class='form-control' size='1' onchange='(abc(this.value))'>" +
+                    "<option value='" + siG + ":" + noG + ":" + noseG + ":0'>Global</option>" + list + "" +
+                    "</select>" +
+                    "</div>";
+            }else{
+                createGraph(siG, noG, noseG, eval);
+                var divList = "<div class='row'>" +
+                    "<div class='col-sm-6'>" +
+                    "<img src='public/assets/images/login/icon_niño1.png' alt='avatar' class='img-circle'>" +
+                    "<h1>" + username + "</h1>" +
+                    progress +
+                    "<small><em>Porcentaje de avance</em></small><hr/>" +
+                    "</div>" +
+                    "<div class='col-sm-4 col-sm-offset-2'></div>" +
+                    "</div>" +
+                    "<div class='well'>" +
+                    "<h5>"+eval+"</h5>" +
+                    "</div>";
+
+                $.post( "ajax/stats", { title: eval, personId: personid })
+                    .done(function( data ) {
+                        $('#surveyUser').html( data );
+                        TablesDatatables2.init();
+                    });
+            }
+
+            $('#loadingStats').modal('hide');
 
             $('#statsUser').modal();
             $('#bodyStatsUser').html(divList);
 
             reflowChart();
+
         });
 
 }
@@ -91,7 +122,7 @@ function createGraph(si, no, nose, title){
 }
 
 
-var TablesDatatables = function() {
+var TablesDatatables = function(col) {
     return {
         init: function() {
             /* Initialize Bootstrap Datatables Integration */
@@ -99,7 +130,7 @@ var TablesDatatables = function() {
 
             /* Initialize Datatables */
             $('#userList-datatable').dataTable({
-                columnDefs: [ { orderable: false, targets: [ 0, 3 ] } ],
+                columnDefs: [ { orderable: false, targets: [ 0, col ] } ],
                 pageLength: 5,
                 lengthMenu: [[5,10,15,20,25,30, -1], [5,10,15,20,25,30, 'All']]
             });

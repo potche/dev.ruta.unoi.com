@@ -57,11 +57,14 @@ class StatsController extends Controller{
             if (array_intersect(array('SuperAdmin','Director','COACH'), $this->_profile)) {
                 $this->setPersonId($session);
                 $this->setSchooIdPerson($session);
-                $this->setSurveyIdFrm($request);
-
                 #vista para Admin
                 if (array_intersect(array('SuperAdmin','COACH'), $this->_profile)) {
-                    $this->setSchoolIdFrm($request);
+                    if( empty($request->query->get('all')) ){
+                        $this->setSurveyIdFrm($request);
+                        $this->setSchoolIdFrm($request);
+                    }else{
+                        $session->set('schoolFilter', '0-General');
+                    }
                     if($this->_schoolIdFrm != 0){ $and = "PS.schoolid in (".$this->_schoolIdFrm.")"; }
                     else{ $this->_userList = "";}
                     $this->getResults($and);
@@ -78,8 +81,10 @@ class StatsController extends Controller{
                     ));
                 } else {
                     #vista para director
+                    $this->setSurveyIdFrm($request);
                     $and = "PS.schoolid in (".$this->_schoolIdPerson.")";
                     $this->getResults($and);
+                    $this->getSurvey($and);
                     return $this->render('UNOEvaluacionesBundle:Stats:index.html.twig', array(
                         'nameSchool' => $this->_nameSchool,
                         'jsonTotalResponsePie' => $this->_jsonTotalResponsePie,
@@ -143,22 +148,27 @@ class StatsController extends Controller{
         $session = $request->getSession();
         $session->start();
 
-        echo "schooIdFrm: ".$request->request->get('schooIdFrm');
-        if(!empty($request->request->get('schooIdFrm'))){
-            $idPost = $request->request->get('schooIdFrm');
-            $id = explode('-',$idPost);
-            $session->set('schoolFilter', $idPost);
+        $schooIdFrm = $request->request->get('schooIdFrm');
+        $schoolFilter = $session->get('schoolFilter');
+        $clearSearch = $request->request->get('clearSearch');
+
+        if(!empty($schooIdFrm)){
+            $id = explode('-',$schooIdFrm);
+            $session->set('schoolFilter', $schooIdFrm);
             $this->_schoolIdFrm = $id[0];
             $this->_nameSchool = $id[1];
-        }elseif(empty($request->request->get('schooIdFrm'))){
+        }elseif($schoolFilter != '' && $schoolFilter != '0-General' && $clearSearch != 1){
+            $id = explode('-',$schoolFilter);
+            $this->_schoolIdFrm = $id[0];
+            $this->_nameSchool = $id[1];
+        }else{
             $this->_schoolIdFrm = 0;
             $this->_nameSchool = 'General';
-            $session->remove('schoolFilter');
-        }elseif($session->has('schoolFilter') == true){
-            $id = explode('-',$session->get('schoolFilter'));
-            $this->_schoolIdFrm = $id[0];
-            $this->_nameSchool = $id[1];
+            $session->set('schoolFilter', '0-General');
+            //$session->remove('schoolFilter');
         }
+
+
     }
 
     /**
@@ -175,7 +185,7 @@ class StatsController extends Controller{
             $this->_andSurvey = "S.surveyid = '".$this->_surveyIdFrm."'";
         }else{
             $this->_surveyIdFrm = 0;
-            $this->_nameSurvey = 'Todas Las evaluaciones';
+            $this->_nameSurvey = 'Todas las Evaluaciones';
         }
     }
 

@@ -62,7 +62,7 @@
 
         <div id="page-container" class="header-fixed-top sidebar-mini sidebar-visible-lg-mini sidebar-no-animations ">
             <div class="loading" id="loading">
-                <button class="btn btn-lg btn-info">
+                <button class="btn btn-lg btn-primary">
                     <i class="fa fa-refresh fa-spin"></i>
                     Cargando, por favor espere...
                 </button>
@@ -186,6 +186,20 @@
     </div>
     <!-- END Page Wrapper -->
 
+
+    <!-- Modal loading -->
+    <div id="loading" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-body bg-primary text-center">
+                    <h4 class="modal-title"><i class="fa fa-refresh fa-spin"></i> Cargando, <strong>por favor espere...</strong></h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal loading -->
+
+
     <!-- Scroll to top link, initialized in js/app.js - scrollToTop() -->
     <a href="#" id="to-top"><i class="fa fa-angle-double-up"></i></a>
 
@@ -201,7 +215,7 @@
         <script>
             //-- Load and execute javascript code used only in this page
             $(window).load(function() {
-                $('#loading').slideUp("fast");
+                $('#loading').slideUp("slow");
             });
 
             //--- obtiene los Json de session
