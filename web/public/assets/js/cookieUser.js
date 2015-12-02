@@ -55,7 +55,7 @@ cookie = (function(window, undefined) {
                 });
             }else{
                 $('#avatar').html('<h2 style="color: rgba( 255,255,255,0.7 )"><span class="fa fa-user fa-3x"></span></h2>');
-                }
+            }
         }
 
     };

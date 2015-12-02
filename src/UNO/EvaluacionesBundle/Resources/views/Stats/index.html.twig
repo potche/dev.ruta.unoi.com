@@ -76,7 +76,7 @@
             </div>
 
 
-
+        {% if userList is not empty %}
         <div id="block-resumen" class="block">
             <div class="block-title">
                 <div class="block-options pull-right">
@@ -126,6 +126,7 @@
                 </div>
             {% endif %}
         </div>
+        {% endif %}
 
         {% if userList is not empty %}
         <div id="block-resumenT" class="block">
@@ -370,7 +371,6 @@
         function resetFilter(){
             window.location.href = "/estadisticas?all=1";
         }
+
     </script>
 {% endblock %}
-
-
