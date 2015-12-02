@@ -65,11 +65,17 @@ class StatsController extends Controller{
                     }else{
                         $session->set('schoolFilter', '0-General');
                     }
-                    if($this->_schoolIdFrm != 0){ $and = "PS.schoolid in (".$this->_schoolIdFrm.")"; }
-                    else{ $this->_userList = "";}
-                    $this->getResults($and);
+
+
+                    if($this->_schoolIdFrm != 0){
+                        $and = "PS.schoolid in (".$this->_schoolIdFrm.")";
+                        $this->getResults($and);
+
+                    }else{ $this->_userList = "";}
+
                     $this->getSchoolResponse();
                     $this->getSurvey($and);
+
                     return $this->render('UNOEvaluacionesBundle:Stats:index.html.twig', array(
                         'nameSchool' => $this->_nameSchool,
                         'jsonTotalResponsePie' => $this->_jsonTotalResponsePie,
@@ -196,10 +202,9 @@ class StatsController extends Controller{
         //obtencion de los datos generales para las estadisticas
         $this->getSurveyResultsGral($and);
         if (!empty($this->_surveyResultsGral)) {
-            //$this->getSurveys();
-            $this->getTotalResponse();
-            //obtencion de los usuario
             if($this->_userList != ''){
+                $this->getTotalResponse();
+                //obtencion de los usuario
                 $this->creaListUser($and);
             }
         }
