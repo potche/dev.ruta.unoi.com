@@ -72,4 +72,3 @@ APISurveys:
 APIResults:
     path: /api/v0/results
     defaults: {_controller: UNOEvaluacionesBundle:API/APIResults:results}
-    methods: [POST]
