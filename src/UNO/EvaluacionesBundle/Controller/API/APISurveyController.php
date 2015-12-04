@@ -56,7 +56,7 @@ class APISurveyController extends Controller{
     public function surveysbyschoolAction(Request $request, $schoolid){
 
         $response = new JsonResponse();
-        $response->setData($this->getBySchool($schoolid));
+        $response->setData($this->getByPersonSchool($schoolid));
 
         return $response;
     }
