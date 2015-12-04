@@ -35,6 +35,7 @@ class ListarController extends Controller
 
             return $this->redirectToRoute('login');
         }
+        $content = $this->get("request")->getContent();
 
         $personID = $session->get('personIdS');
         $em = $this->getDoctrine()->getManager();
