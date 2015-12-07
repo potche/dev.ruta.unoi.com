@@ -13,7 +13,6 @@ class APISurveyController extends Controller{
 
         $response = new JsonResponse();
         $response->setData($this->getBySurvey());
-
         //$response->setData(Utils::isUserLoggedIn($session) ? $this->getBySurvey(): $this->getErrorResponse('403'));
 
         return $response;
@@ -62,23 +61,10 @@ class APISurveyController extends Controller{
     public function surveybypersonAction(Request $request, $personid){
 
         $response = new JsonResponse();
-        $response->setData($this->getByPersonSchool(null,null,null,$personid));
+        $response->setData($this->getByPerson($personid));
 
         return $response;
     }
-
-
-    /**
-     * Funciones de consulta
-     */
-
-    /**
-     *
-     * Función para ejecutar query por evaluacion
-     *
-     * @param null $surveyid
-     * @return array
-     */
 
     protected function getBySurvey($surveyid = null) {
 
@@ -103,27 +89,16 @@ class APISurveyController extends Controller{
         return $all ? $this->buildArray($all): $this->getErrorResponse('404');
     }
 
-    /**
-     *
-     * Función para ejecutar query por escuela
-     *
-     * @param $schoolId
-     * @return array
-     */
-
-    protected function getByPersonSchool($schoolid = null, $schoollevelid = null, $profileid = null, $personid = null){
+    protected function getByPersonSchool($schoolid = null, $schoollevelid = null, $profileid = null){
 
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
         $condition = "su.surveyid > 1";
 
         //Se agregan las condiciones segun sea el caso
-
         $condition = $schoolid != null ? $condition.' AND ps.schoolid = '.$schoolid : $condition;
         $condition = $schoollevelid != null ? $condition.' AND sxp.schoollevelid = '.$schoollevelid : $condition;
         $condition = $profileid != null ? $condition.' AND sxp.profileProfileid = '.$profileid : $condition;
-        $condition = $personid != null ? $condition.' AND ps.personid = '.$personid : $condition;
-
 
         $bySchool = $qb->select("su.surveyid as id, su.title as titulo, su.active as activa, su.creationdate as creada, su.closingdate as fechacierre, su.createdby as creadapor, sxp.schoollevelid as nivel, ps.profileid as perfil, qxs.order as numpregunta ,q.question as pregunta, sc.subcategory as categoria, oxq.order as numopcion, oxq.optionxquestionId, o.option as opcion")
             ->from('UNOEvaluacionesBundle:Survey','su')
@@ -151,6 +126,11 @@ class APISurveyController extends Controller{
             ->from('UNOEvaluacionesBundle:Surveyxprofile','sxp')
             ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','sxp.profileProfileid = ps.profileid AND ps.schoollevelid = sxp.schoollevelid')
             ->innerJoin('UNOEvaluacionesBundle:Survey','su','WITH','su.surveyid = sxp.surveySurveyid')
+            ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','qxs','WITH','qxs.surveySurveyid = su.surveyid')
+            ->innerJoin('UNOEvaluacionesBundle:Question','q','WITH','q.questionid = qxs.questionQuestionid')
+            ->innerJoin('UNOEvaluacionesBundle:Subcategory','sc','WITH','sc.subcategoryid = q.subcategorySubcategoryid')
+            ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','oxq','WITH','oxq.questionxsurvey = qxs.questionxsurveyId')
+            ->innerJoin('UNOEvaluacionesBundle:Option','o','WITH','o.optionid = oxq.optionOptionid')
             ->leftJoin('UNOEvaluacionesBundle:Log','l','WITH','l.surveySurveyid = su.surveyid AND l.personPersonid = :personId')
             ->leftJoin('UNOEvaluacionesBundle:Action','a','WITH','l.actionaction = a.idaction')
             ->where('ps.personid = :personId')
@@ -161,17 +141,6 @@ class APISurveyController extends Controller{
 
         return $byPerson ? $this->buildArray($byPerson) : $this->getErrorResponse('404');
     }
-
-    /**
-     * Funciones de tratamiento de información
-     */
-
-    /**
-     *
-     *Función para construir arreglo a partir de los resultados de las consultas de evaluaciones
-     * @param $query
-     * @return array
-     */
 
     private function buildArray($query) {
 
@@ -225,8 +194,6 @@ class APISurveyController extends Controller{
     }
 
     private function getErrorResponse($code){
-
-        $reason = '';
 
         switch($code){
 
