@@ -78,6 +78,27 @@ APISurveysSchool:
     defaults: {_controller: UNOEvaluacionesBundle:API/APISurvey:surveysbyschool}
     requirements:
             schoolid: \d+
+APISurveysRole:
+    path: /api/v0/surveys/level/{schoollevelid}/profile/{profileid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APISurvey:surveybyrole}
+    requirements:
+            schoollevelid: \d+
+            profileid: \d+
+APISurveysLevel:
+    path: /api/v0/surveys/level/{schoollevelid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APISurvey:surveybylevel}
+    requirements:
+            schoollevelid: \d+
+APISurveysProfile:
+    path: /api/v0/surveys/profile/{profileid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APISurvey:surveybyprofile}
+    requirements:
+            profileid: \d+
+APISurveysPerson:
+    path: /api/v0/surveys/person/{personid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APISurvey:surveybyperson}
+    requirements:
+            personid: \d+
 APIResults:
     path: /api/v0/results
     defaults: {_controller: UNOEvaluacionesBundle:API/APIResults:results}

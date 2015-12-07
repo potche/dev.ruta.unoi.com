@@ -73,11 +73,11 @@ class Utils {
 
         $loggedIn = $session->get('logged_in');
 
-        if($loggedIn != NULL && $loggedIn){
+        if(!$loggedIn){
 
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**
