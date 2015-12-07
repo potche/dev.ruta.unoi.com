@@ -35,9 +35,14 @@ class ListarController extends Controller
 
             return $this->redirectToRoute('login');
         }
-        $content = $this->get("request")->getContent();
 
         $personID = $session->get('personIdS');
+        //$response = json_decode(file_get_contents($this->generateUrl('APISurveysPerson',array('personid'=>$personID),true), false), true);
+
+        /**
+         * ToDo: parsear información de la petición y presentar en vista, eliminar consulta
+         */
+
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 

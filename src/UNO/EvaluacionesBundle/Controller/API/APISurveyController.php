@@ -9,41 +9,15 @@ use UNO\EvaluacionesBundle\Controller\Evaluaciones\Utils;
 
 class APISurveyController extends Controller{
 
-    /**
-     * Endpoints
-     */
-
-    /**
-     * Endpoint que devuleve todas las evaluaciones
-     *
-     * @param Request $request
-     * @return JsonResponse
-     * @throws \Exception
-     */
-
     public function surveyAction(Request $request){
-
-        // $session = $request->getSession();
-
-        /*if (!Utils::isUserLoggedIn($session)) {
-
-            return $this->redirectToRoute('login');
-        }*/
 
         $response = new JsonResponse();
         $response->setData($this->getBySurvey());
 
+        //$response->setData(Utils::isUserLoggedIn($session) ? $this->getBySurvey(): $this->getErrorResponse('403'));
+
         return $response;
     }
-
-    /**
-     * Función que devuleve una evaluación dado un id de evaluación
-     *
-     * @param Request $request
-     * @param $surveyid
-     * @return JsonResponse
-     * @throws \Exception
-     */
 
     public function surveybyidAction(Request $request, $surveyid){
 
@@ -60,6 +34,39 @@ class APISurveyController extends Controller{
 
         return $response;
     }
+
+    public function surveybyroleAction(Request $request, $schoollevelid, $profileid){
+
+        $response = new JsonResponse();
+        $response->setData($this->getByPersonSchool(null,$schoollevelid, $profileid));
+
+        return $response;
+    }
+
+    public function surveybylevelAction(Request $request, $schoollevelid){
+
+        $response = new JsonResponse();
+        $response->setData($this->getByPersonSchool(null,$schoollevelid));
+
+        return $response;
+    }
+
+    public function surveybyprofileAction(Request $request, $profileid){
+
+        $response = new JsonResponse();
+        $response->setData($this->getByPersonSchool(null,null,$profileid));
+
+        return $response;
+    }
+
+    public function surveybypersonAction(Request $request, $personid){
+
+        $response = new JsonResponse();
+        $response->setData($this->getByPersonSchool(null,null,null,$personid));
+
+        return $response;
+    }
+
 
     /**
      * Funciones de consulta
@@ -93,7 +100,7 @@ class APISurveyController extends Controller{
             ->getQuery()
             ->getResult();
 
-        return $this->buildArray($all);
+        return $all ? $this->buildArray($all): $this->getErrorResponse('404');
     }
 
     /**
@@ -104,10 +111,19 @@ class APISurveyController extends Controller{
      * @return array
      */
 
-    protected function getByPersonSchool($schoolid = null, $personid =null, $surveyid = null, $schoollevelid = null, $profileid = null){
+    protected function getByPersonSchool($schoolid = null, $schoollevelid = null, $profileid = null, $personid = null){
 
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
+        $condition = "su.surveyid > 1";
+
+        //Se agregan las condiciones segun sea el caso
+
+        $condition = $schoolid != null ? $condition.' AND ps.schoolid = '.$schoolid : $condition;
+        $condition = $schoollevelid != null ? $condition.' AND sxp.schoollevelid = '.$schoollevelid : $condition;
+        $condition = $profileid != null ? $condition.' AND sxp.profileProfileid = '.$profileid : $condition;
+        $condition = $personid != null ? $condition.' AND ps.personid = '.$personid : $condition;
+
 
         $bySchool = $qb->select("su.surveyid as id, su.title as titulo, su.active as activa, su.creationdate as creada, su.closingdate as fechacierre, su.createdby as creadapor, sxp.schoollevelid as nivel, ps.profileid as perfil, qxs.order as numpregunta ,q.question as pregunta, sc.subcategory as categoria, oxq.order as numopcion, oxq.optionxquestionId, o.option as opcion")
             ->from('UNOEvaluacionesBundle:Survey','su')
@@ -118,13 +134,32 @@ class APISurveyController extends Controller{
             ->innerJoin('UNOEvaluacionesBundle:Subcategory','sc','WITH','sc.subcategoryid = q.subcategorySubcategoryid')
             ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','oxq','WITH','oxq.questionxsurvey = qxs.questionxsurveyId')
             ->innerJoin('UNOEvaluacionesBundle:Option','o','WITH','o.optionid = oxq.optionOptionid')
-            ->where('ps.schoolid = :schoolId')
+            ->where($condition)
             ->groupBy('id, titulo, nivel, perfil, pregunta, categoria, oxq.optionOptionid')
-            ->setParameter('schoolId',$schoolid)
             ->getQuery()
             ->getResult();
 
-        return ($this->buildArray($bySchool));
+        return $bySchool ? $this->buildArray($bySchool): $this->getErrorResponse('404');
+    }
+
+    private function getByPerson($personid){
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $byPerson = $qb->select("su.surveyid as id, su.title as titulo, su.active as activa, su.creationdate as creada, su.closingdate as fechacierre, su.createdby as creadapor, sxp.schoollevelid as nivel, ps.profileid as perfil, qxs.order as numpregunta ,q.question as pregunta, sc.subcategory as categoria, oxq.order as numopcion, oxq.optionxquestionId, o.option as opcion, COALESCE(a.actioncode,'0') AS actioncode")
+            ->from('UNOEvaluacionesBundle:Surveyxprofile','sxp')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','sxp.profileProfileid = ps.profileid AND ps.schoollevelid = sxp.schoollevelid')
+            ->innerJoin('UNOEvaluacionesBundle:Survey','su','WITH','su.surveyid = sxp.surveySurveyid')
+            ->leftJoin('UNOEvaluacionesBundle:Log','l','WITH','l.surveySurveyid = su.surveyid AND l.personPersonid = :personId')
+            ->leftJoin('UNOEvaluacionesBundle:Action','a','WITH','l.actionaction = a.idaction')
+            ->where('ps.personid = :personId')
+            ->groupBy('id, titulo, nivel, perfil, pregunta, categoria, oxq.optionOptionid, a.actioncode')
+            ->setParameter('personId',$personid)
+            ->getQuery()
+            ->getResult();
+
+        return $byPerson ? $this->buildArray($byPerson) : $this->getErrorResponse('404');
     }
 
     /**
@@ -152,6 +187,7 @@ class APISurveyController extends Controller{
                     'creada' => $s['creada']->format('U'),
                     'fechacierre' => $s['fechacierre']->format('U'),
                     'creadapor' => $s['creadapor'],
+                    'actioncode' => !isset($s['actioncode']) ? '' : $s['actioncode'],
                     'preguntas' => array(),
                     'roles' => array()
                 );
@@ -186,5 +222,28 @@ class APISurveyController extends Controller{
             }
         }
         return $surveys;
+    }
+
+    private function getErrorResponse($code){
+
+        $reason = '';
+
+        switch($code){
+
+            case '404':
+                $reason = 'Resource not exists';
+                break;
+            case '403':
+                $reason = 'Not authorized, please login';
+                break;
+            default:
+                $reason = 'Unknown error, try again later';
+                break;
+        }
+
+        return array(
+            'Error' => $reason,
+            'Code' => $code
+        );
     }
 }
