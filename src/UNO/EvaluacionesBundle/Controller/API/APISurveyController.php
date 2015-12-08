@@ -86,7 +86,7 @@ class APISurveyController extends Controller{
             ->getQuery()
             ->getResult();
 
-        return $all ? $this->buildArray($all): $this->getErrorResponse('404');
+        return $all ? $this->buildArray($all): APIUtils::getErrorResponse('404');
     }
 
     protected function getByPersonSchool($schoolid = null, $schoollevelid = null, $profileid = null){
@@ -114,7 +114,7 @@ class APISurveyController extends Controller{
             ->getQuery()
             ->getResult();
 
-        return $bySchool ? $this->buildArray($bySchool): $this->getErrorResponse('404');
+        return $bySchool ? $this->buildArray($bySchool): APIUtils::getErrorResponse('404');
     }
 
     private function getByPerson($personid){
@@ -139,7 +139,7 @@ class APISurveyController extends Controller{
             ->getQuery()
             ->getResult();
 
-        return $byPerson ? $this->buildArray($byPerson) : $this->getErrorResponse('404');
+        return $byPerson ? $this->buildArray($byPerson) : APIUtils::getErrorResponse('404');
     }
 
     private function buildArray($query) {
@@ -191,26 +191,5 @@ class APISurveyController extends Controller{
             }
         }
         return $surveys;
-    }
-
-    private function getErrorResponse($code){
-
-        switch($code){
-
-            case '404':
-                $reason = 'Resource not exists';
-                break;
-            case '403':
-                $reason = 'Not authorized, please login';
-                break;
-            default:
-                $reason = 'Unknown error, try again later';
-                break;
-        }
-
-        return array(
-            'Error' => $reason,
-            'Code' => $code
-        );
     }
 }
