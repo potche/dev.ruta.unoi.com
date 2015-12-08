@@ -88,16 +88,26 @@
                                             <i class="fa fa-check-circle text-success"></i>
                                         {% endif %}
 
-                                        <span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><strong>{{ survey['title']}}</strong></span>
-                                        <span class="visible-xs-inline hidden-sm hidden-md hidden-lg text-justify" data-toggle="tooltip" title="{{ survey['title'] }}"><strong>{{ survey['title']|slice (0,25) ~ '...' }}</strong></span>
+                                        <span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><strong>{{ survey['titulo']}}</strong></span>
+                                        <span class="visible-xs-inline hidden-sm hidden-md hidden-lg text-justify" data-toggle="tooltip" title="{{ survey['titulo'] }}"><strong>{{ survey['titulo']|slice (0,25) ~ '...' }}</strong></span>
                                 </td>
-                                <td class="hidden-sm hidden-xs">{{ survey['closingdate']|date('j/M/Y \@ g:i a') }}</td>
+                                <td class="hidden-sm hidden-xs">{{ survey['fechacierre']|date('j/M/Y \@ g:i a') }}</td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-xs">
                                         {% if survey['actioncode']  == '0' %}
-                                                <a href="{{ path('responder',{'id': survey['surveyid']}) }}" data-tooltip aria-haspopup="true" data-options="disable_for_touch:true"  title="Responde esta evaluación" class="btn btn-xs btn-success has-tip" style="width: 85px;">Responder</a>
+                                            {% if date(survey['fechacierre']) > date() and survey['activa'] == 1 %}
+
+                                                    <a href="{{ path('responder',{'id': survey['id']}) }}" data-tooltip aria-haspopup="true" data-options="disable_for_touch:true"  title="Responde esta evaluación" class="btn btn-xs btn-success has-tip" style="width: 85px;">Responder</a>
+
+                                                {% elseif date(survey['fechacierre']) < date() or survey['activa'] == 0 %}
+
+                                                    <button data-tooltip aria-haspopup="true" data-options="disable_for_touch:true"  title="La evaluación ya no se encuentra vigente o está inactiva" class="btn btn-xs btn-warning has-tip" style="width: 85px;" disabled>Responder</button>
+
+                                            {% endif %}
                                         {% else %}
-                                                <a href="{{ path('resumen',{'surveyId': survey['surveyid']}) }}"  data-tooltip aria-haspopup="true" data-options="disable_for_touch:true" title="Ver resumen de tus respuestas" class="btn btn-xs btn-info has-tip" style="width: 85px;">Resumen</a>
+
+                                                <a href="{{ path('resumen',{'surveyId': survey['id']}) }}"  data-tooltip aria-haspopup="true" data-options="disable_for_touch:true" title="Ver resumen de tus respuestas" class="btn btn-xs btn-info has-tip" style="width: 85px;">Resumen</a>
+
                                         {% endif %}
                                     </div>
                                 </td>

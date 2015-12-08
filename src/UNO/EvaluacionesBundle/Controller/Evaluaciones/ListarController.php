@@ -21,9 +21,8 @@ class ListarController extends Controller
      *
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
-     * @throws \Doctrine\DBAL\DBALException
      *
-     * @version 0.1.0
+     * @version 0.3.0
      * @author jbravob julio@dsindigo.com
      * @copyright Sistema UNO Internacional. 2015
      */
@@ -37,37 +36,16 @@ class ListarController extends Controller
         }
 
         $personID = $session->get('personIdS');
-        //$response = json_decode(file_get_contents($this->generateUrl('APISurveysPerson',array('personid'=>$personID),true), false), true);
+        $response = json_decode(file_get_contents($this->generateUrl('APISurveysPerson',array('personid'=>$personID),true), false), true);
 
-        /**
-         * ToDo: parsear información de la petición y presentar en vista, eliminar consulta
-         */
+        $countToBeAnswered = array_count_values(array_column($response,'actioncode'))['0'];
+        $session->set('authorized_in',base64_encode(json_encode(array_column($response,'id'))));
 
-        $em = $this->getDoctrine()->getManager();
-        $qb = $em->createQueryBuilder();
-
-        $surveys = $qb->select("su.surveyid, su.title, su.closingdate, COALESCE(a.actioncode,'0') AS actioncode")
-            ->from('UNOEvaluacionesBundle:Surveyxprofile','sxp')
-            ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','sxp.profileProfileid = ps.profileid AND ps.schoollevelid = sxp.schoollevelid AND ps.personid = :personId')
-            ->innerJoin('UNOEvaluacionesBundle:Survey','su','WITH','su.surveyid = sxp.surveySurveyid')
-            ->leftJoin('UNOEvaluacionesBundle:Log','l','WITH','l.surveySurveyid = su.surveyid AND l.personPersonid = :personId')
-            ->leftJoin('UNOEvaluacionesBundle:Action','a','WITH','l.actionaction = a.idaction')
-            ->where('su.active = 1')
-            ->andWhere('su.closingdate >= CURRENT_DATE()')
-            ->groupBy('su.surveyid, su.title, su.closingdate, a.actioncode')
-            ->setParameter('personId',$personID)
-            ->getQuery()
-            ->getResult();
-
-        $countToBeAnswered = array_count_values(array_column($surveys,'actioncode'))['0'];
-        $session->set('authorized_in',base64_encode(json_encode(array_column($surveys,'surveyid'))));
-
-        $statistics = Utils::fetchStats(count($surveys),$countToBeAnswered);
-        $session->set('compliance',$statistics['compliance']);
+        $statistics = Utils::fetchStats(count($response),$countToBeAnswered);
 
         return $this->render('@UNOEvaluaciones/Evaluaciones/listar.html.twig', array(
 
-            'surveyList' => $surveys,
+            'surveyList' => $response,
             'stats' => $statistics,
         ));
     }
