@@ -102,6 +102,51 @@ APISurveysPerson:
 APIStatsProgress:
     path: /api/v0/stats/progress
     defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progress}
+APIStatsProgressBySchool:
+    path: /api/v0/stats/progress/school/{schoolid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progressbyschool}
+    requirements:
+            schoolid: \d+
+APIStatsProgressByPerson:
+    path: /api/v0/stats/progress/person/{personid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progressbyperson}
+    requirements:
+            personid: \d+
+APIStatsProgressByProfile:
+    path: /api/v0/stats/progress/profile/{profileid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progressbyprofile}
+    requirements:
+            profileid: \d+
+APIStatsProgressByLevel:
+    path: /api/v0/stats/progress/level/{levelid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progressbylevel}
+    requirements:
+            levelid: \d+
+APIStatsProgressByLevelProfile:
+    path: /api/v0/stats/progress/level/{levelid}/profile{profileid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progressbyprofile}
+    requirements:
+            profileid: \d+
+            levelid: \d+
+APIStatsProgressBySchoolRole:
+    path: /api/v0/stats/progress/school/{schoolid}/level/{levelid}/profile{profileid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progressbyprofile}
+    requirements:
+            profileid: \d+
+            schoolid: \d+
+            levelid: \d+
+APIStatsProgressBySchoolLevel:
+    path: /api/v0/stats/progress/school/{schoolid}/level/{levelid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progressbyprofile}
+    requirements:
+            schoolid: \d+
+            levelid: \d+
+APIStatsProgressBySchoolProfile:
+    path: /api/v0/stats/progress/school/{schoolid}/profile/{profileid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progressbyprofile}
+    requirements:
+            schoolid: \d+
+            profileid: \d+
 APIResults:
     path: /api/v0/results
     defaults: {_controller: UNOEvaluacionesBundle:API/APIResults:results}
