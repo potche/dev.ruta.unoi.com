@@ -104,11 +104,11 @@ class APIStatsController extends Controller
         $condition = "su.surveyid > 1";
         $condition = $personid != null ? $condition.' AND p.personid = '.$personid : $condition;
         $condition = $surveyid != null ? $condition.' AND su.surveyid = '.$surveyid : $condition;
-        $condition = $profileid != null ? $condition.' AND ps.profileProfileid = '.$profileid : $condition;
+        $condition = $profileid != null ? $condition.' AND ps.profileid = '.$profileid : $condition;
         $condition = $level != null ? $condition.' AND ps.schoollevelid = '.$level : $condition;
         $condition = $school != null ? $condition.' AND ps.schoolid = '.$school : $condition;
 
-        $all = $qb->select("su.surveyid as id, p.personid as persona, COALESCE(a.idaction,0) as estatus")
+        $all = $qb->select("su.surveyid as id, su.title as titulo, p.personid as persona, COALESCE(a.idaction,0) as estatus")
             ->from('UNOEvaluacionesBundle:Survey','su')
             ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile','sxp','WITH','su.surveyid = sxp.surveySurveyid')
             ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.profileid = sxp.profileProfileid AND ps.schoollevelid = sxp.schoollevelid')
@@ -116,7 +116,7 @@ class APIStatsController extends Controller
             ->leftJoin('UNOEvaluacionesBundle:Log','l', 'WITH','l.personPersonid = p.personid AND l.surveySurveyid = su.surveyid')
             ->leftJoin('UNOEvaluacionesBundle:Action','a','WITH','l.actionaction = a.idaction')
             ->where($condition)
-            ->groupBy('id, persona, estatus')
+            ->groupBy('id, titulo, persona, estatus')
             ->getQuery()
             ->getResult();
 
@@ -126,7 +126,7 @@ class APIStatsController extends Controller
     private function buildResponse($all){
 
         $esperadas = count($all);
-        $respondidas = array_count_values(array_column($all,'estatus'))['4'];
+        $respondidas = count(array_filter($all, function($ar) { return ($ar['estatus'] == '4'); }));
         $porc_cumplimiento = ($esperadas > 0 ? round(($respondidas * 100 ) / $esperadas,2) : 0);
         $porc_pendiente = 100 - $porc_cumplimiento;
 
@@ -142,6 +142,9 @@ class APIStatsController extends Controller
 
         foreach (array_unique(array_column($all,'id')) as $a) {
 
+            $surveys = array_filter($all, function($ar) use($a){ return ($ar['id'] == $a); });
+            $titulo = array_unique(array_column($surveys,'titulo'))[0];
+
             if(!isset($response['bySurvey'][$a])){
 
                 $esperadas = count(array_filter($all, function($ar) use($a){ return ($ar['id'] == $a); }));
@@ -150,6 +153,7 @@ class APIStatsController extends Controller
                 $porc_pendiente = 100 - $porc_cumplimiento;
 
                 $response['bySurvey'][$a] = array(
+                    'titulo' => $titulo,
                     'esperadas' => $esperadas,
                     'respondidas' => $respondidas,
                     'porc_cumplimiento' => $porc_cumplimiento,
