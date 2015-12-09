@@ -102,6 +102,3 @@ APISurveysPerson:
 APIStatsProgress:
     path: /api/v0/stats/progress
     defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progress}
-APIResults:
-    path: /api/v0/results
-    defaults: {_controller: UNOEvaluacionesBundle:API/APIResults:results}
