@@ -1,0 +1,203 @@
+{% extends '::base.html.twig' %}
+{% block body %}
+
+    <style>
+        .fa-eye:hover {
+            color: #328287;
+        }
+        .fa-eye {
+            color: #46B7BF;
+        }
+    </style>
+
+    <div id="page-content">
+
+        <div class="content-header">
+            <div class="header-section">
+                <h1>
+                    <i class="fa fa-line-chart"></i><b>Estad&iacute;sticas</b>
+                    <small><br/><span class="label label-primary">nameSchool </span></small>
+                    <small><br/><span class="label label-primary">surveyName </span></small>
+                </h1>
+            </div>
+        </div>
+
+        <div class="block">
+            <div class="block-title">
+                <h2>Filtro</h2>
+            </div>
+            <div class="row">
+                <div class="block-content">
+                    <form id="schoolFrm" action="/estadisticas" method="POST">
+                        <div id="divSchool" class="col-sm-6">
+                            <strong>Escuela</strong>
+                            <input type="text" id="schooIdFrm" name="schooIdFrm" class="form-control input-typeaheadSchool" autocomplete="off" placeholder="Busca escuelas..">
+                        </div>
+
+                        <div id="divSurvey" class="col-sm-6">
+                            <strong>Evaluación</strong>
+                            <input type="text" id="surveyIdFrm" name="surveyIdFrm" class="form-control input-typeaheadSurvey" autocomplete="off" placeholder="Busca evaluación..">
+                        </div>
+
+                        <input type="text" id="clearSearch" name="clearSearch" style="visibility: hidden"/>
+
+                        <div class="col-sm-12 text-center form-group form-actions">
+                            <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                            <button type="button" class="btn btn-sm btn-primary" onclick="resetFilter()"><i class="fa fa-search"></i> Avance Global</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="block-resumen" class="block">
+            <div class="block-title">
+                <div class="block-options pull-right">
+                    <a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
+                </div>
+                <h2>Gr&aacute;ficas de avance <strong>School</strong></h2>
+            </div>
+            <div class="row">
+                <div class="block-content">
+                    <div class="col-sm-6">
+                        <div id="pie" class="block">
+                            <div id="container"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="block-content">
+                    <div class="col-sm-6">
+                        <div id="bars" class="block">
+                            <div id="containerColumn"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="block-resumenT" class="block">
+            <div class="block-title">
+                <div class="block-options pull-right">
+                    <a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
+                </div>
+                <h2>Tabla de avance <strong>nameSchool</strong></h2>
+            </div>
+            <div class="row">
+                <div class="block-content">
+                    <div class="col-sm-12">
+                        <small class="visible-xs"><i class="fa fa-info-circle text-primary"></i> Puedes navegar horizontalmente para ver las demás columnas</small>
+                        <div class="table-responsive">
+                            <p>Estad&iacute;sticas de usuarios que han realizado por lo menos una evaluación. <em>Da <b>click</b> sobre un usuario para ver su detalle</em></p>
+                            <table id="userList-datatable" class="table table-vcenter table-condensed table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 150px;" class="text-center"><i class="fa fa-users"></i></th>
+                                        <th>Nombre</th>
+                                        <th style="width: 150px;" class="text-center">Progreso</th>
+                                        <th class="text-center">Detalle</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr  style="cursor: pointer">
+                                        <td class="text-center">
+                                            <img src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar" class="img-circle">
+                                        </td>
+                                        <td>
+                                            list.username|e
+                                            <div class="progress progress-striped active">
+                                                <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%;">
+                                                     50  %
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center"  style="color: red;" >
+                                            1/2
+                                        </td>
+                                        <td class="text-center"><i class="fa fa-eye fa-2x"> </i></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <br/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Page Content -->
+
+    <!-- Modal Stats User -->
+    <div id="statsUser" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-rebel"></i> Estad&iacute;sticas por <strong>usuario</strong></h4>
+                </div>
+                <div class="modal-body">
+                    <span id="bodyStatsUser"></span>
+
+                    <div id="block-resumenG" class="block">
+                        <div class="block-title">
+                            <h2>Gr&aacute;ficas de <strong>avance</strong></h2>
+                        </div>
+                        <div class="row">
+                            <div class="block-content ">
+
+                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                    <div class="block">
+                                        <div id="containerPieLU" ></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="block-content ">
+                                <div class="col-sm-12  col-md-6 col-lg-6">
+                                    <div class="block">
+                                        <div id="containerColumnLU"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="surveyUser">
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal Stats User -->
+
+
+    <!-- Modal loading -->
+    <div id="loadingStats" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-body bg-primary text-center">
+                    <h4 class="modal-title"><i class="fa fa-refresh fa-spin"></i> Cargando, <strong>por favor espere...</strong></h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal loading -->
+
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- Load and execute javascript code used only in this page -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-3d.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script>
+        $(function() {
+            $.post( "{{ app.request.getBaseURL() }}/api/v0/catalog/schools")
+                .done(function( data ) {
+                    console.log( data );
+                });
+        })
+    </script>
+
+{% endblock %}

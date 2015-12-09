@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+use UNO\EvaluacionesBundle\Controller\API\APIUtils;
+
 /**
  * Created by PhpStorm.
  * User: isra
@@ -17,148 +19,191 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 
 /**
- * @Route("/api/v0")
+ * @Route("/api/v0/result")
  */
 class APIResultsController extends Controller{
 
     /**
-     * @Route("/results")
+     * @Route("/survey/{surveyId}/person/{personId}",
+     * requirements={"surveyId" = "\d+", "personId" = "\d+"},
+     * defaults={"personId" = null})
      * @Method({"GET"})
      */
-    public function resultsAction(){
-        $result = array('hola' => 'results');
+    public function resultSurveyPersonAction(Request $request, $surveyId, $personId){
 
+        $session = $request->getSession();
+        $session->start();
+        if ($session->get('logged_in')) {
+            $surveyPerson = $this->getResQuery(array('personId' => $personId, 'surveyId' => $surveyId), 'P.personid = :personId AND S.surveyid = :surveyId');
 
-        #-----envia el arreglo a JSON-----#
+            if ($surveyPerson) {
+                $result = $this->getJSON($surveyPerson);
+            } else {
+                $result = APIUtils::getErrorResponse(404);
+            }
+        }else{
+            $result = APIUtils::getErrorResponse(403);
+        }
+
+        #-----envia la respuesta en JSON-----#
         $response = new JsonResponse();
         $response->setData($result);
 
         return $response;
     }
 
-    private function getResQueryAll(){
-
-        $em = $this->getDoctrine()->getManager();
-        $qb = $em->createQueryBuilder();
-
-        $_surveyResults = $qb
-            ->select("PS.schoolid, Sc.schoolcode, Sc.school, P.personid, P.user, P.name, P.surname, S.surveyid, S.title, S.description, S.active")
-            ->addSelect("S.closingdate, S.creationdate, QS.order, Ac.actioncode, Q.questionid, Q.question, A.answerid, A.answer, A.comment, OQ.order, O.optionid, O.option")
-            ->from('UNOEvaluacionesBundle:Person ','P')
-            ->innerJoin('UNOEvaluacionesBundle:Personschool','PS', 'WITH', 'P.personid = PS.personid')
-            ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile ','SP', 'WITH', 'PS.profileid = SP.profileProfileid AND PS.schoollevelid = SP.schoollevelid')
-            ->innerJoin('UNOEvaluacionesBundle:School ','Sc', 'WITH', 'PS.schoolid = Sc.schoolid')
-            ->innerJoin('UNOEvaluacionesBundle:Survey','S', 'WITH', 'SP.surveySurveyid = S.surveyid')
-            ->innerJoin('UNOEvaluacionesBundle:Log','L', 'WITH', "S.surveyid = L.surveySurveyid AND P.personid = L.personPersonid")
-            ->innerJoin('UNOEvaluacionesBundle:Action','Ac', 'WITH', 'L.actionaction = Ac.idaction')
-            ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','QS', 'WITH', 'S.surveyid = QS.surveySurveyid')
-            ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','OQ', 'WITH', 'QS.questionxsurveyId = OQ.questionxsurvey')
-            ->innerJoin('UNOEvaluacionesBundle:Question','Q', 'WITH', 'QS.questionxsurveyId = Q.questionid')
-            ->leftJoin('UNOEvaluacionesBundle:Answer','A', 'WITH', "OQ.optionxquestionId = A.optionxquestion AND P.personid = A.personPersonid")
-            ->innerJoin('UNOEvaluacionesBundle:Option','O', 'WITH', 'OQ.optionOptionid = O.optionid')
-            ->where('S.active = 1')
-            ->andWhere('PS.personid > 1')
-            ->andWhere('S.closingdate >= CURRENT_DATE()')
-            ->andWhere("Ac.actioncode  = '004'")
-            ->andWhere('Sc.schoolid = :schoolId')
-            ->andWhere('P.personid = :personId')
-            ->andWhere('S.surveyid = :surveyId')
-            ->setParameter('schoolId',1145)
-            ->setParameter('personId',1159480)
-            ->setParameter('surveyId',3)
-            ->groupBy('PS.schoolid, P.personid, S.surveyid, Q.question, O.optionid')
-            ->orderBy( 'PS.schoolid')
-            ->addOrderBy('P.personid')
-            ->addOrderBy('S.surveyid')
-            ->addOrderBy('QS.order')
-            ->addOrderBy('O.optionid')
-            ->getQuery()
-            ->getResult();
-
-        return $_surveyResults;
-    }
-
     /**
-     * @Route("/result/survey/{surveyId}/person/{personId}"),
-     * requirements={"surveyId" = "\d+", "personId" = "\d+"}
-     * @Method({"GET"})
-     */
-    public function resultSurveyPersonAction($surveyId, $personId){
-
-        $surveyPerson = $this->getResQuerySurveyPerson($surveyId, $personId);
-        $result = $this->createJSON($surveyPerson);
-
-
-        #-----envia el arreglo a JSON-----#
-        $response = new JsonResponse();
-        $response->setData($result);
-
-        return $response;
-    }
-
-    private function getResQuerySurveyPerson($surveyId, $personId){
-
-        $em = $this->getDoctrine()->getManager();
-        $qb = $em->createQueryBuilder();
-
-        $_surveyResultSurveyPerson = $qb
-            ->select("PS.schoolid, Sc.schoolcode, Sc.school, P.personid, P.user, P.name, P.surname, S.surveyid, S.title, S.description, S.active")
-            ->addSelect("S.closingdate, S.creationdate, QS.order, Ac.actioncode, Q.questionid, Q.question, A.answerid, A.answer, A.comment, OQ.order, O.optionid, O.option")
-            ->from('UNOEvaluacionesBundle:Person ','P')
-            ->innerJoin('UNOEvaluacionesBundle:Personschool','PS', 'WITH', 'P.personid = PS.personid')
-            ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile ','SP', 'WITH', 'PS.profileid = SP.profileProfileid AND PS.schoollevelid = SP.schoollevelid')
-            ->innerJoin('UNOEvaluacionesBundle:School ','Sc', 'WITH', 'PS.schoolid = Sc.schoolid')
-            ->innerJoin('UNOEvaluacionesBundle:Survey','S', 'WITH', 'SP.surveySurveyid = S.surveyid')
-            ->innerJoin('UNOEvaluacionesBundle:Log','L', 'WITH', "S.surveyid = L.surveySurveyid AND P.personid = L.personPersonid")
-            ->innerJoin('UNOEvaluacionesBundle:Action','Ac', 'WITH', 'L.actionaction = Ac.idaction')
-            ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','QS', 'WITH', 'S.surveyid = QS.surveySurveyid')
-            ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','OQ', 'WITH', 'QS.questionxsurveyId = OQ.questionxsurvey')
-            ->innerJoin('UNOEvaluacionesBundle:Question','Q', 'WITH', 'QS.questionxsurveyId = Q.questionid')
-            ->leftJoin('UNOEvaluacionesBundle:Answer','A', 'WITH', "OQ.optionxquestionId = A.optionxquestion AND P.personid = A.personPersonid")
-            ->innerJoin('UNOEvaluacionesBundle:Option','O', 'WITH', 'OQ.optionOptionid = O.optionid')
-            ->where('S.active = 1')
-            ->andWhere('PS.personid > 1')
-            ->andWhere('S.closingdate >= CURRENT_DATE()')
-            ->andWhere("Ac.actioncode  = '004'")
-            ->andWhere('P.personid = :personId')
-            ->andWhere('S.surveyid = :surveyId')
-            ->setParameters(array('personId' => $personId, 'surveyId' => $surveyId))
-            ->groupBy('PS.schoolid, P.personid, S.surveyid, Q.question, O.optionid')
-            ->orderBy( 'PS.schoolid')
-            ->addOrderBy('P.personid')
-            ->addOrderBy('S.surveyid')
-            ->addOrderBy('QS.order')
-            ->addOrderBy('O.optionid')
-            ->getQuery()
-            ->getResult();
-
-        return $_surveyResultSurveyPerson;
-    }
-
-    /**
-     * @Route("/result/survey/{surveyId}/school/{schoolId}"),
+     * @Route("/survey/{surveyId}/school/{schoolId}"),
      * requirements={"surveyId" = "\d+", "schoolId" = "\d+"}
      * @Method({"GET"})
      */
     public function resultSurveySchoolAction(Request $request, $surveyId, $schoolId){
-        $surveyPerson = $this->getResQuerySurveySchool($surveyId, $schoolId);
-        $result = $this->createJSON($surveyPerson);
 
-        #-----envia el arreglo a JSON-----#
+        $session = $request->getSession();
+        $session->start();
+        if ($session->get('logged_in')) {
+            $surveySchool = $this->getResQuery(array('schoolId' => $schoolId, 'surveyId' => $surveyId), 'PS.schoolid = :schoolId AND S.surveyid = :surveyId');
+
+            if ($surveySchool) {
+                $result = $this->getJSON($surveySchool);
+            } else {
+                $result = APIUtils::getErrorResponse(404);
+            }
+        }else{
+            $result = APIUtils::getErrorResponse(403);
+        }
+
+        #-----envia la respuesta en JSON-----#
         $response = new JsonResponse();
         $response->setData($result);
 
         return $response;
-
     }
 
-    private function getResQuerySurveySchool($surveyId, $schoolId){
+    /**
+     * @Route("/school/{schoolId}/profile/{profileId}",
+     * requirements={"schoolId" = "\d+", "profileId" = "\d+"})
+     * @Method({"GET"})
+     */
+    public function resultSchoolProfileAction(Request $request, $schoolId, $profileId){
+
+        $session = $request->getSession();
+        $session->start();
+        if ($session->get('logged_in')) {
+            $schoolProfile = $this->getResQuery(array('schoolId' => $schoolId, 'profileId' => $profileId), 'PS.schoolid = :schoolId AND PS.profileid = :profileId');
+
+            if ($schoolProfile) {
+                $result = $this->getJSON($schoolProfile);
+            } else {
+                $result = APIUtils::getErrorResponse(404);
+            }
+        }else{
+            $result = APIUtils::getErrorResponse(403);
+        }
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * @Route("/person/{personId}/profile/{profileId}",
+     * requirements={"personId" = "\d+", "profileId" = "\d+"})
+     * @Method({"GET"})
+     */
+    public function resultPersonProfileAction(Request $request, $personId, $profileId){
+
+        $session = $request->getSession();
+        $session->start();
+        if ($session->get('logged_in')) {
+            $personProfile = $this->getResQuery(array('personId' => $personId, 'profileId' => $profileId), 'P.personid = :personId AND PS.profileid = :profileId');
+
+            if ($personProfile) {
+                $result = $this->getJSON($personProfile);
+            } else {
+                $result = APIUtils::getErrorResponse(404);
+            }
+        }else{
+            $result = APIUtils::getErrorResponse(403);
+        }
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * @Route("/person/{personId}",
+     * requirements={"personId" = "\d+"})
+     * @Method({"GET"})
+     */
+    public function resultPersonAction(Request $request, $personId){
+
+        $session = $request->getSession();
+        $session->start();
+        if ($session->get('logged_in')) {
+            $person = $this->getResQuery(array('personId' => $personId), 'P.personid = :personId');
+
+            if ($person) {
+                $result = $this->getJSON($person);
+            } else {
+                $result = APIUtils::getErrorResponse(404);
+            }
+        }else{
+            $result = APIUtils::getErrorResponse(403);
+        }
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * @Route("/school/{schoolId}",
+     * requirements={"schoolId" = "\d+"})
+     * @Method({"GET"})
+     */
+    public function resultSchoolAction(Request $request, $schoolId){
+
+        $session = $request->getSession();
+        $session->start();
+        if ($session->get('logged_in')) {
+            $school = $this->getResQuery(array('schoolId' => $schoolId), 'PS.schoolid = :schoolId');
+
+            if ($school) {
+                $result = $this->getJSON($school);
+            } else {
+                $result = APIUtils::getErrorResponse(404);
+            }
+        }else{
+            $result = APIUtils::getErrorResponse(403);
+        }
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * @param $parameters
+     * @param $where
+     * @return mixed
+     */
+    private function getResQuery($parameters, $where){
 
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 
         $_surveyResultSurveyPerson = $qb
-            ->select("PS.schoolid, Sc.schoolcode, Sc.school, P.personid, P.user, P.name, P.surname, S.surveyid, S.title, S.description, S.active ")
+            ->select("PS.schoolid, Sc.schoolcode, Sc.school, P.personid, P.user, P.name, P.surname, S.surveyid, S.title, S.description, S.active")
             ->addSelect("S.closingdate, S.creationdate, QS.order as orderQ, Ac.actioncode, Q.questionid, Q.question, A.answerid, A.answer, A.comment, OQ.order as orderO, O.optionid, O.option")
             ->from('UNOEvaluacionesBundle:Person ','P')
             ->innerJoin('UNOEvaluacionesBundle:Personschool','PS', 'WITH', 'P.personid = PS.personid')
@@ -176,9 +221,8 @@ class APIResultsController extends Controller{
             ->andWhere('PS.personid > 1')
             ->andWhere('S.closingdate >= CURRENT_DATE()')
             ->andWhere("Ac.actioncode  = '004'")
-            ->andWhere('PS.schoolid = :schoolId')
-            ->andWhere('S.surveyid = :surveyId')
-            ->setParameters(array('schoolId' => $schoolId, 'surveyId' => $surveyId))
+            ->andWhere($where)
+            ->setParameters($parameters)
             ->groupBy('PS.schoolid, P.personid, S.surveyid, Q.question, O.optionid')
             ->orderBy( 'PS.schoolid')
             ->addOrderBy('P.personid')
@@ -192,135 +236,11 @@ class APIResultsController extends Controller{
     }
 
     /**
-     * @Route("/result/school/{schoolId}/profile/{profileId}"),
-     * requirements={"schoolId" = "\d+", "profileId" = "\d+"}
-     * @Method({"GET"})
-     */
-    public function resultSchoolProfileAction($schoolId, $profileId){
-        $result = array(
-            'hola' => 'resultSchoolProfile',
-            'schoolId' => $schoolId,
-            'profileId' => $profileId,
-        );
-        #-----envia el arreglo a JSON-----#
-        $response = new JsonResponse();
-        $response->setData($result);
-
-        return $response;
-    }
-
-    /**
-     * @Route("/result/person/{personId}/profile/{profileId}"),
-     * requirements={"personId" = "\d+", "profileId" = "\d+"}
-     * @Method({"GET"})
-     */
-    public function resultPersonProfileAction($personId, $profileId){
-        $result = array(
-            'hola' => 'resultSchoolProfile',
-            'personId' => $personId,
-            'profileId' => $profileId,
-        );
-        #-----envia el arreglo a JSON-----#
-        $response = new JsonResponse();
-        $response->setData($result);
-
-        return $response;
-    }
-
-    /**
-     * @Route("/result/survey/{surveyId}"),
-     * requirements={"surveyId" = "\d+"}
-     * @Method({"GET"})
-     */
-    public function resultSurveyAction($surveyId){
-        $result = array(
-            'hola' => 'resultSurvey',
-            'surveyId' => $surveyId
-        );
-        #-----envia el arreglo a JSON-----#
-        $response = new JsonResponse();
-        $response->setData($result);
-
-        return $response;
-    }
-
-    /**
-     * @Route("/result/person/{personId}"),
-     * requirements={"personId" = "\d+"}
-     * @Method({"GET"})
-     */
-    public function resultPersonAction($personId){
-        $result = array(
-            'hola' => 'resultPerson',
-            'personId' => $personId
-        );
-        #-----envia el arreglo a JSON-----#
-        $response = new JsonResponse();
-        $response->setData($result);
-
-        return $response;
-    }
-
-    /**
-     * @Route("/result/school/{schoolId}"),
-     * requirements={"schoolId" = "\d+"}
-     * @Method({"GET"})
-     */
-    public function resultSchoolAction($schoolId){
-        $result = array(
-            'hola' => 'resultSchool',
-            'schoolId' => $schoolId
-        );
-        #-----envia el arreglo a JSON-----#
-        $response = new JsonResponse();
-        $response->setData($result);
-
-        return $response;
-    }
-
-    /**
-     * @Route("/result/profiles")
+     * @param $array
+     * @return mixed
      *
+     * crea el json
      */
-    public function resultProfilesAction(Request $request){
-        $result = array(
-            'hola' => 'resultProfiles',
-            'profiles' => $request->getContent()
-        );
-        #-----envia el arreglo a JSON-----#
-        $response = new JsonResponse();
-        $response->setData($result);
-
-        return $response;
-    }
-
-    /**
-     * @Route("/result/profile/{profileId}"),
-     * requirements={"profileId" = "\d+"}
-     * @Method({"GET"})
-     */
-    public function resultProfileAction($profileId){
-        $result = array(
-            'hola' => 'resultProfile',
-            'profileId' => $profileId
-        );
-        #-----envia el arreglo a JSON-----#
-        $response = new JsonResponse();
-        $response->setData($result);
-
-        return $response;
-    }
-
-    private function createJSON($array){
-        $jsonArray = array();
-
-        //$schools = $this->getSchool($array);
-        $schools = $this->getJSON($array);
-
-        array_push($jsonArray, $schools);
-        return $jsonArray;
-    }
-
     private function getJSON($array){
 
         $schoolArray = array();
@@ -403,77 +323,72 @@ class APIResultsController extends Controller{
         }
 
         $schools = array_unique($schoolArray, SORT_REGULAR);
-        //print_r($schools);
         $persons = array_unique($personArray, SORT_REGULAR);
-        //print_r($persons);
         $surveys = array_unique($surveyArray, SORT_REGULAR);
-        //print_r($surveys);
         $questions = array_unique($questionArray, SORT_REGULAR);
-        //print_r($questions);
         $options = array_unique($optionArray, SORT_REGULAR);
-        //print_r($options);
 
-        //$JSON = array();
         foreach($schools as $valSchool){
-            //array_push($JSON, $valSchool);
             foreach($persons as $valPerson){
                 if($valSchool['schoolId'] == $valPerson['schoolId']){
                     foreach ($surveys as $valSurvey) {
                         if ($valPerson['personId'] == $valSurvey['personId'] && $valPerson['schoolId'] == $valSurvey['schoolId']) {
                             foreach($questions as $valQuestion){
                                 if ($valSurvey['surveyId'] == $valQuestion['surveyId'] && $valSurvey['personId'] == $valQuestion['personId'] && $valSurvey['schoolId'] == $valQuestion['schoolId']) {
+                                    $answer = array();
                                     foreach($options as $valOption){
                                         if ($valQuestion['questionId'] == $valOption['questionId'] && $valQuestion['surveyId'] == $valOption['surveyId'] && $valQuestion['personId'] == $valOption['personId'] && $valQuestion['schoolId'] == $valOption['schoolId']) {
-                                            array_push($valQuestion['options'], array(
-                                                'orderO' => $value['orderO'],
-                                                'optionid' => $value['optionid'],
-                                                'option' => $value['option'],
-                                                'answer' => $value['answer'],
-                                                'comment' => $value['comment']
-                                            ));
+                                            if( !empty($valOption['answer']) ){
+                                                array_push($answer, array(
+                                                    'optionid' => $valOption['optionid'],
+                                                    'answer' => $valOption['answer'],
+                                                    'comment' => $valOption['comment']
+                                                ));
+                                            }
+                                            array_push($valQuestion['options'],
+                                                array(
+                                                    'orderO' => $valOption['orderO'],
+                                                    'optionid' => $valOption['optionid'],
+                                                    'option' => $valOption['option']
+                                                )
+                                            );
                                         }
                                     }
-                                    //print_r($valQuestion['options']);
                                     array_push($valSurvey['questions'], array(
-                                        'orderQ' => $value['orderQ'],
-                                        'questionId' => $value['questionid'],
-                                        'question' => $value['question'],
+                                        'orderQ' => $valQuestion['orderQ'],
+                                        'questionId' => $valQuestion['questionId'],
+                                        'question' => $valQuestion['question'],
                                         'options' => $valQuestion['options'],
-                                        'answers'
+                                        'answers' => $answer
                                     ));
                                 }
                             }
                             array_push($valPerson['surveys'], array(
-                                'surveyId' => $value['surveyid'],
-                                'title' => $value['title'],
-                                'description' => $value['description'],
-                                'active' => $value['active'],
-                                'closingDate' => $value['closingdate'],
-                                'creationDate' => $value['creationdate'],
+                                'surveyId' => $valSurvey['surveyId'],
+                                'title' => $valSurvey['title'],
+                                'description' => $valSurvey['description'],
+                                'active' => $valSurvey['active'],
+                                'closingDate' => $valSurvey['closingDate'],
+                                'creationDate' => $valSurvey['creationDate'],
                                 'questions' => $valSurvey['questions']
                             ));
                         }
                     }
                     array_push($valSchool['persons'],array(
-                        'personId' => $value['personid'],
-                        'user' => $value['user'],
-                        'name' => $value['name'],
-                        'surname' => $value['surname'],
+                        'personId' => $valPerson['personId'],
+                        'user' => $valPerson['user'],
+                        'name' => $valPerson['name'],
+                        'surname' => $valPerson['surname'],
                         'surveys' => $valPerson['surveys']
                     ));
                 }
             }
         }
-
         return($valSchool);
-
     }
 
     private function getSchool($array){
-        $schoolArray = array();
-        $personArray = array();
         $JSON = array();
-        $i = 0;
         foreach($array as $index){
 
 
@@ -536,12 +451,4 @@ class APIResultsController extends Controller{
 
     }
 
-    private function searchForId($index, $id, $array) {
-        foreach ($array as $key => $val) {
-            if ($val[$index] === $id) {
-                return true;
-            }
-        }
-        return false;
-    }
 }
