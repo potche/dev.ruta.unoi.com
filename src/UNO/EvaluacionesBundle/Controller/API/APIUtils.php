@@ -21,6 +21,9 @@ class APIUtils
             case '403':
                 $reason = 'Not authorized, please login';
                 break;
+            case '400':
+                $reason = 'Bad request, please build a valid one';
+                break;
             default:
                 $reason = 'Unknown error, try again later';
                 break;
