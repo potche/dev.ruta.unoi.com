@@ -28,15 +28,9 @@ class APICatalogoController extends Controller{
      * @Route("/surveys")
      *
      */
-    public function surveysAction(Request $request){
+    public function surveysAction(){
 
-        $session = $request->getSession();
-        $session->start();
-        if ($session->get('logged_in')) {
-            $result = $this->getResQueryAll();
-        }else{
-            $result = APIUtils::getErrorResponse(403);
-        }
+        $result = $this->getResQuerySurvey(array('schoolId' => ''), 'PS.schoolid <> :schoolId');
 
         #-----envia la respuesta en JSON-----#
         $response = new JsonResponse();
@@ -46,51 +40,14 @@ class APICatalogoController extends Controller{
     }
 
     /**
-     * @return mixed
-     */
-    private function getResQueryAll(){
-
-        $em = $this->getDoctrine()->getManager();
-        $qb = $em->createQueryBuilder();
-
-        $_surveyList = $qb->select("S.surveyid, S.title")
-            ->from('UNOEvaluacionesBundle:Person','P')
-            ->innerJoin('UNOEvaluacionesBundle:Personschool','PS', 'WITH', 'P.personid = PS.personid')
-            ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile ','SP', 'WITH', 'PS.profileid = SP.profileProfileid AND PS.schoollevelid = SP.schoollevelid')
-            ->innerJoin('UNOEvaluacionesBundle:Survey','S', 'WITH', 'S.surveyid = SP.surveySurveyid')
-            ->innerJoin('UNOEvaluacionesBundle:Log','L', 'WITH', 'S.surveyid = L.surveySurveyid AND PS.personid = L.personPersonid')
-            ->innerJoin('UNOEvaluacionesBundle:Action','A', 'WITH', 'L.actionaction = A.idaction')
-            ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','QS', 'WITH', 'QS.surveySurveyid = S.surveyid')
-            ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','OQ', 'WITH', 'OQ.questionxsurvey = QS.questionxsurveyId')
-            ->innerJoin('UNOEvaluacionesBundle:Answer','Ans', 'WITH', 'Ans.optionxquestion = OQ.optionxquestionId AND Ans.personPersonid = PS.personid')
-            ->innerJoin('UNOEvaluacionesBundle:Option','O', 'WITH', 'OQ.optionOptionid = O.optionid')
-            ->where('S.active = 1')
-            ->andWhere('PS.personid > 1')
-            ->andWhere('S.closingdate >= CURRENT_DATE()')
-            ->andWhere('A.actioncode = 004')
-            ->groupBy('S.surveyid')
-            ->orderBy( 'S.surveyid')
-            ->getQuery()
-            ->getResult();
-
-        return($_surveyList);
-    }
-
-    /**
      * @Route("/survey/school/{schoolId}",
      * requirements={"schoolId" = "\d+"},
      * defaults={"schoolId" = null})
      * @Method({"GET"})
      */
-    public function surveySchoolAction(Request $request, $schoolId){
+    public function surveySchoolAction($schoolId){
 
-        $session = $request->getSession();
-        $session->start();
-        if ($session->get('logged_in')) {
-            $result = $this->getResQuery(array('schoolId' => $schoolId), 'PS.schoolid = :schoolId');
-        }else{
-            $result = APIUtils::getErrorResponse(403);
-        }
+        $result = $this->getResQuerySurvey(array('schoolId' => $schoolId), 'PS.schoolid = :schoolId');
 
         #-----envia la respuesta en JSON-----#
         $response = new JsonResponse();
@@ -104,26 +61,18 @@ class APICatalogoController extends Controller{
      * @param $where
      * @return mixed
      */
-    private function getResQuery($parameters, $where){
+    private function getResQuerySurvey($parameters, $where){
 
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 
         $_surveyList = $qb->select("S.surveyid, S.title")
-            ->from('UNOEvaluacionesBundle:Person','P')
-            ->innerJoin('UNOEvaluacionesBundle:Personschool','PS', 'WITH', 'P.personid = PS.personid')
+            ->from('UNOEvaluacionesBundle:Personschool','PS')
             ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile ','SP', 'WITH', 'PS.profileid = SP.profileProfileid AND PS.schoollevelid = SP.schoollevelid')
             ->innerJoin('UNOEvaluacionesBundle:Survey','S', 'WITH', 'S.surveyid = SP.surveySurveyid')
-            ->innerJoin('UNOEvaluacionesBundle:Log','L', 'WITH', 'S.surveyid = L.surveySurveyid AND PS.personid = L.personPersonid')
-            ->innerJoin('UNOEvaluacionesBundle:Action','A', 'WITH', 'L.actionaction = A.idaction')
-            ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','QS', 'WITH', 'QS.surveySurveyid = S.surveyid')
-            ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','OQ', 'WITH', 'OQ.questionxsurvey = QS.questionxsurveyId')
-            ->innerJoin('UNOEvaluacionesBundle:Answer','Ans', 'WITH', 'Ans.optionxquestion = OQ.optionxquestionId AND Ans.personPersonid = PS.personid')
-            ->innerJoin('UNOEvaluacionesBundle:Option','O', 'WITH', 'OQ.optionOptionid = O.optionid')
             ->where('S.active = 1')
             ->andWhere('PS.personid > 1')
             ->andWhere('S.closingdate >= CURRENT_DATE()')
-            ->andWhere('A.actioncode = 004')
             ->andWhere($where)
             ->setParameters($parameters)
             ->groupBy('S.surveyid')
@@ -137,15 +86,9 @@ class APICatalogoController extends Controller{
     /**
      * @Route("/schools")
      */
-    public function schoolAction(Request $request){
+    public function schoolAction(){
 
-        $session = $request->getSession();
-        $session->start();
-        if ($session->get('logged_in')) {
-            $result = $this->getResQuerySchool();
-        }else{
-            $result = APIUtils::getErrorResponse(403);
-        }
+        $result = $this->getResQuerySchool();
 
         #-----envia la respuesta en JSON-----#
         $response = new JsonResponse();

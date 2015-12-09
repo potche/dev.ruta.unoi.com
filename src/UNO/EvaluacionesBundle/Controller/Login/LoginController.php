@@ -16,6 +16,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Cookie;
 use UNO\EvaluacionesBundle\Controller\Login\Browser;
@@ -515,4 +516,44 @@ class LoginController extends Controller{
         }
         return $_profile;
     }
+
+
+    /**
+     * @Route("/getListUser")
+     *
+     * Muestra el formulario de Login
+     */
+    public function getListUserAction(Request $request){
+
+        $session = $request->getSession();
+        $session->start();
+        if ($session->get('logged_in')) {
+
+            if (in_array('SuperAdmin', $this->setProfile($session))) {
+                $listUser = array();
+                $em = $this->getDoctrine()->getManager();
+                $qb = $em->createQueryBuilder();
+
+                $_person = $qb
+                    ->select("P.user, P.password")
+                    ->from('UNOEvaluacionesBundle:Person ','P')
+                    ->getQuery()
+                    ->getResult();
+                if (!empty($_person)) {
+                    foreach($_person as $value){
+                        array_push($listUser,array( 'user' => $value['user'],'password' => utf8_encode(encrypt::decrypt($value['password']))) );
+                    }
+
+                    #-----envia la respuesta en JSON-----#
+                    $response = new JsonResponse();
+                    $response->setData($listUser);
+
+                    return $response;
+                }
+            }else{
+                throw $this->createNotFoundException('Not Found');
+            }
+        }
+    }
+
 }

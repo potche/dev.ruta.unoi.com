@@ -28,7 +28,7 @@
             </div>
             <div class="row">
                 <div class="block-content">
-                    <form id="schoolFrm" action="/estadisticas" method="POST">
+                    <form id="schoolFrm" method="post">
                         <div id="divSchool" class="col-sm-6">
                             <strong>Escuela</strong>
                             <input type="text" id="schooIdFrm" name="schooIdFrm" class="form-control input-typeaheadSchool" autocomplete="off" placeholder="Busca escuelas..">
@@ -39,11 +39,20 @@
                             <input type="text" id="surveyIdFrm" name="surveyIdFrm" class="form-control input-typeaheadSurvey" autocomplete="off" placeholder="Busca evaluación..">
                         </div>
 
+                        <div id="errorBuscar" class="alert alert-danger col-sm-12 text-center" style="display: none">
+                            <div id="mensajeSchool" style="display: none">
+                                <h5><i class="fa fa-times"></i> Ingrese una <strong>Escuela Valida</strong></h5>
+                            </div>
+                            <div id="mensajeSurvey" style="display: none">
+                                <h5><i class="fa fa-times"></i> Ingrese una <strong>Avaluación Valida</strong></h5>
+                            </div>
+                        </div>
+
                         <input type="text" id="clearSearch" name="clearSearch" style="visibility: hidden"/>
 
                         <div class="col-sm-12 text-center form-group form-actions">
-                            <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-search"></i> Buscar</button>
-                            <button type="button" class="btn btn-sm btn-primary" onclick="resetFilter()"><i class="fa fa-search"></i> Avance Global</button>
+                            <button id="buscar" type="submit" class="btn btn-sm btn-primary" disabled ><i class="fa fa-search"></i> Buscar</button>
+                            <!-- <button type="button" class="btn btn-sm btn-primary" onclick="resetFilter()"><i class="fa fa-search"></i> Avance Global</button>-->
                         </div>
                     </form>
                 </div>
@@ -191,13 +200,91 @@
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/highcharts-3d.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="{{ asset('public/assets/js/validateSchoolSurvey.js') }}"></script>
     <script>
+        var schoolArrayG = [];
+        var schoolListJS = {{ schoolList | raw }};
+        var surveyListJS = {{ surveyList | raw }};
+        var okSchool = true;
+        var okSurvey = true;
+        var nullSchool = false;
+        var nullSurvey = false;
+
+
         $(function() {
-            $.post( "{{ app.request.getBaseURL() }}/api/v0/catalog/schools")
-                .done(function( data ) {
-                    console.log( data );
-                });
-        })
+
+            $('.input-typeaheadSchool').typeahead({ source: schoolListJS });
+            $('.input-typeaheadSurvey').typeahead({ source: surveyListJS });
+
+            $('#schooIdFrm').change(function(){
+                var schooIdFrm = $('#schooIdFrm').val();
+                if(schooIdFrm != '') {
+                    if (schoolListJS.indexOf(schooIdFrm) != -1) {
+                        $('#mensajeSchool').hide('fast');
+                        okSchool = true;
+                        nullSchool = true;
+                        showErrorBuscar(okSchool, okSurvey, nullSchool, nullSurvey);
+                    } else {
+                        $('#errorBuscar').show('fast');
+                        $('#mensajeSchool').show('fast');
+                        $("#buscar").prop('disabled', true);
+                        okSchool = false;
+                        nullSchool = false;
+                    }
+                }else{
+                    $('#mensajeSchool').hide('fast');
+                    okSchool = true;
+                    nullSchool = false;
+                    showErrorBuscar(okSchool, okSurvey, nullSchool, nullSurvey);
+                }
+            });
+
+            $('#surveyIdFrm').change(function() {
+                var surveyIdFrm = $('#surveyIdFrm').val();
+                if(surveyIdFrm != ''){
+                    if (surveyListJS.indexOf($('#surveyIdFrm').val()) != -1) {
+                        $('#mensajeSurvey').hide('fast');
+                        okSurvey = true;
+                        nullSurvey = true;
+                        showErrorBuscar(okSchool, okSurvey, nullSchool, nullSurvey);
+                    }else{
+                        $('#errorBuscar').show('fast');
+                        $('#mensajeSurvey').show('fast');
+                        $("#buscar").prop('disabled', true);
+                        okSurvey = false;
+                        nullSurvey = false;
+                    }
+                }else{
+                    $('#mensajeSurvey').hide('fast');
+                    okSurvey = true;
+                    nullSchool = false;
+                    showErrorBuscar(okSchool, okSurvey, nullSchool, nullSurvey);
+                }
+            });
+
+            /*
+                        var schoolAPI = "{{ app.request.getBaseURL() }}/api/v0/catalog/schools";
+            $.getJSON( schoolAPI,
+                function() {
+                //console.log( a);
+            }).done(function( data ) {
+                        return data;
+                    });
+*/
+
+        });
+
+        function showErrorBuscar(okSchool, okSurvey, nullSchool, nullSurvey){
+            if( okSchool && okSurvey ){
+                $('#errorBuscar').hide('fast');
+                if(nullSchool || nullSurvey){
+                    $("#buscar").prop('disabled', false);
+                }else {
+                    $("#buscar").prop('disabled', true);
+                }
+            }
+        }
+
     </script>
 
 {% endblock %}
