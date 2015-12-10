@@ -65,6 +65,9 @@ ajaxSurveyStatus:
     path:   /evaluaciones/setstatus
     defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Admin:setSurveyStatus}
     methods: [POST]
+
+#API Surveys
+
 APISurveys:
     path: /api/v0/surveys
     defaults: {_controller: UNOEvaluacionesBundle:API/APISurvey:survey}
@@ -99,6 +102,109 @@ APISurveysPerson:
     defaults: {_controller: UNOEvaluacionesBundle:API/APISurvey:surveybyperson}
     requirements:
             personid: \d+
+
+#API Stats - Progress
+
 APIStatsProgress:
     path: /api/v0/stats/progress
     defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progress}
+APIStatsProgressBySchool:
+    path: /api/v0/stats/progress/school/{schoolid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progressbyschool}
+    requirements:
+            schoolid: \d+
+APIStatsProgressByPerson:
+    path: /api/v0/stats/progress/person/{personid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progressbyperson}
+    requirements:
+            personid: \d+
+APIStatsProgressByProfile:
+    path: /api/v0/stats/progress/profile/{profileid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progressbyprofile}
+    requirements:
+            profileid: \d+
+APIStatsProgressByLevel:
+    path: /api/v0/stats/progress/level/{levelid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progressbylevel}
+    requirements:
+            levelid: \d+
+APIStatsProgressByLevelProfile:
+    path: /api/v0/stats/progress/level/{levelid}/profile{profileid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progressbyprofile}
+    requirements:
+            profileid: \d+
+            levelid: \d+
+APIStatsProgressBySchoolRole:
+    path: /api/v0/stats/progress/school/{schoolid}/level/{levelid}/profile/{profileid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progressbyschoolrole}
+    requirements:
+            profileid: \d+
+            schoolid: \d+
+            levelid: \d+
+APIStatsProgressBySchoolLevel:
+    path: /api/v0/stats/progress/school/{schoolid}/level/{levelid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progressbyschoollevel}
+    requirements:
+            schoolid: \d+
+            levelid: \d+
+APIStatsProgressBySchoolProfile:
+    path: /api/v0/stats/progress/school/{schoolid}/profile/{profileid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progressbyprofile}
+    requirements:
+            schoolid: \d+
+            profileid: \d+
+
+#API Stats - Results
+
+APIStatsResultsAll:
+    path: /api/v0/stats/results
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:allstats}
+APIStatsResultsBySurvey:
+    path: /api/v0/stats/results/survey/{surveyid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:statsbysurvey}
+    requirements:
+            surveyid: \d+
+APIStatsResultsBySchool:
+    path: /api/v0/stats/results/school/{schoolid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:statsbyschool}
+    requirements:
+            schoolid: \d+
+APIStatsResultsByPerson:
+    path: /api/v0/stats/results/person/{personid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:statsbyperson}
+    requirements:
+                personid: \d+
+APIStatsResultsBySchoolLevel:
+    path: /api/v0/stats/results/school/{schoolid}/level/{levelid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:statsbyschoollevel}
+    requirements:
+                schoolid: \d+
+                levelid: \d+
+APIStatsResultsBySchoolProfile:
+    path: /api/v0/stats/results/school/{schoolid}/profile/{profileid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:statsbyschoollevel}
+    requirements:
+                schoolid: \d+
+                profileid: \d+
+APIStatsResultsBySchoolRole:
+    path: /api/v0/stats/results/school/{schoolid}/level/{levelid}/profile/{profileid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:statsbyschoollevel}
+    requirements:
+                schoolid: \d+
+                levelid: \d+
+                profileid: \d+
+APIStatsResultsBySurveySchool:
+    path: /api/v0/stats/results/survey/{surveyid}/school/{schoolid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:statsbysurveyschool}
+    requirements:
+                surveyid: \d+
+                schoolid: \d+
+APIStatsResultsBySurveyPerson:
+    path: /api/v0/stats/results/survey/{surveyid}/person/{personid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:statsbysurveyperson}
+    requirements:
+                surveyid: \d+
+                personid: \d+
+APIResults:
+    path: /api/v0/results
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIResults:results}
