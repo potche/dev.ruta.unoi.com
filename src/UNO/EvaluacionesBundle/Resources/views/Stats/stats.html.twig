@@ -15,9 +15,12 @@
         <div class="content-header">
             <div class="header-section">
                 <h1>
+                    {#app.request.basepath#}
+                    {#app.request.baseurl#}
+                    {# app.request.uri #}
                     <i class="fa fa-line-chart"></i><b>Estad&iacute;sticas</b>
-                    <small><br/><span class="label label-primary">nameSchool </span></small>
-                    <small><br/><span class="label label-primary">surveyName </span></small>
+                    <small><br/><span class="label label-primary"><span id="tagNameSchool">Todas las Escuelas</span> </span></small>
+                    <small><br/><span class="label label-primary"><span id="tagNameSurvey">Todas las Evaluaciones</span> </span></small>
                 </h1>
             </div>
         </div>
@@ -28,31 +31,47 @@
             </div>
             <div class="row">
                 <div class="block-content">
-                    <form id="schoolFrm" method="post">
+                    <form id="schoolFrm">
                         <div id="divSchool" class="col-sm-6">
                             <strong>Escuela</strong>
-                            <input type="text" id="schooIdFrm" name="schooIdFrm" class="form-control input-typeaheadSchool" autocomplete="off" placeholder="Busca escuelas..">
+                            <input type="text" id="schoolIdFrm" name="schoolIdFrm" class="form-control input-typeaheadSchool" autocomplete="off" placeholder="Busca escuelas..">
                         </div>
+
+                        <!-- Success Alert Content -->
+                        <div id="divContentSchool" class="col-sm-6" style="display: none">
+                            <div class="alert alert-success alert-dismissable">
+                                <button id="closeSchool" type="button" class="close" >&times;</button>
+                                <h4><i class="fa fa-university"></i> <strong><span id="nameSchool"></span></strong></h4>
+                            </div>
+                        </div>
+                        <!-- END Success Alert Content -->
 
                         <div id="divSurvey" class="col-sm-6">
                             <strong>Evaluación</strong>
                             <input type="text" id="surveyIdFrm" name="surveyIdFrm" class="form-control input-typeaheadSurvey" autocomplete="off" placeholder="Busca evaluación..">
                         </div>
 
+                        <!-- Success Alert Content -->
+                        <div id="divContentSurvey" class="col-sm-6" style="display: none">
+                            <div class="alert alert-info alert-dismissable">
+                                <button id="closeSurvey" type="button" class="close" >&times;</button>
+                                <h4><i class="fa fa-pencil-square-o"></i> <strong><span id="nameSurvey"></span></strong></h4>
+                            </div>
+                        </div>
+                        <!-- END Success Alert Content -->
+
                         <div id="errorBuscar" class="alert alert-danger col-sm-12 text-center" style="display: none">
                             <div id="mensajeSchool" style="display: none">
                                 <h5><i class="fa fa-times"></i> Ingrese una <strong>Escuela Valida</strong></h5>
                             </div>
                             <div id="mensajeSurvey" style="display: none">
-                                <h5><i class="fa fa-times"></i> Ingrese una <strong>Avaluación Valida</strong></h5>
+                                <h5><i class="fa fa-times"></i> Ingrese una <strong>Evaluación Valida</strong></h5>
                             </div>
                         </div>
 
-                        <input type="text" id="clearSearch" name="clearSearch" style="visibility: hidden"/>
-
                         <div class="col-sm-12 text-center form-group form-actions">
-                            <button id="buscar" type="submit" class="btn btn-sm btn-primary" disabled ><i class="fa fa-search"></i> Buscar</button>
-                            <!-- <button type="button" class="btn btn-sm btn-primary" onclick="resetFilter()"><i class="fa fa-search"></i> Avance Global</button>-->
+                            <button id="buscar" type="button" class="btn btn-sm btn-primary" onclick="findFilter();" disabled ><i class="fa fa-search"></i> Buscar</button>
+                            <button id="todo" type="button" class="btn btn-sm btn-warning" onclick="resetFilter()" disabled ><i class="fa fa-repeat"></i> Avance Global</button>
                         </div>
                     </form>
                 </div>
@@ -201,89 +220,75 @@
     <script src="https://code.highcharts.com/highcharts-3d.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="{{ asset('public/assets/js/validateSchoolSurvey.js') }}"></script>
+    <script src="{{ asset('public/assets/js/statsGraph.js')}}"></script>
     <script>
         var schoolArrayG = [];
         var schoolListJS = {{ schoolList | raw }};
         var surveyListJS = {{ surveyList | raw }};
         var okSchool = true;
         var okSurvey = true;
-        var nullSchool = false;
-        var nullSurvey = false;
-
+        var nameSchool = 'Todas las Escuelas';
+        var nameSurvey = 'Todas las Evaluaciones';
 
         $(function() {
-
+            setTagNameSchool(nameSchool);
+            setTagNameSurvey(nameSurvey);
             $('.input-typeaheadSchool').typeahead({ source: schoolListJS });
             $('.input-typeaheadSurvey').typeahead({ source: surveyListJS });
 
-            $('#schooIdFrm').change(function(){
-                var schooIdFrm = $('#schooIdFrm').val();
-                if(schooIdFrm != '') {
-                    if (schoolListJS.indexOf(schooIdFrm) != -1) {
-                        $('#mensajeSchool').hide('fast');
+            var serverAPI = "{{ app.request.getSchemeAndHttpHost() }}{{ app.request.getBaseURL() }}/api/v0/stats/results";
+
+            graphs(serverAPI, nameSchool, nameSurvey);
+
+            var mensajeSchool = $('#mensajeSchool');
+            var mensajeSurvey = $('#mensajeSurvey');
+            var errorBuscar = $('#errorBuscar');
+            var buscar = $("#buscar");
+            var schoolIdFrm = $('#schoolIdFrm');
+            var surveyIdFrm = $('#surveyIdFrm');
+
+            $('#schoolIdFrm').change(function(){
+
+                if(schoolIdFrm.val() != '') {
+                    if (schoolListJS.indexOf(schoolIdFrm.val()) != -1) {
+                        mensajeSchool.hide();
                         okSchool = true;
-                        nullSchool = true;
-                        showErrorBuscar(okSchool, okSurvey, nullSchool, nullSurvey);
+                        showErrorBuscar(okSchool, okSurvey, schoolIdFrm, surveyIdFrm);
                     } else {
-                        $('#errorBuscar').show('fast');
-                        $('#mensajeSchool').show('fast');
-                        $("#buscar").prop('disabled', true);
+                        errorBuscar.show('fast');
+                        mensajeSchool.show();
+                        buscar.prop('disabled', true);
                         okSchool = false;
-                        nullSchool = false;
                     }
                 }else{
-                    $('#mensajeSchool').hide('fast');
+                    mensajeSchool.hide();
                     okSchool = true;
-                    nullSchool = false;
-                    showErrorBuscar(okSchool, okSurvey, nullSchool, nullSurvey);
+                    showErrorBuscar(okSchool, okSurvey, schoolIdFrm, surveyIdFrm);
                 }
             });
 
             $('#surveyIdFrm').change(function() {
-                var surveyIdFrm = $('#surveyIdFrm').val();
-                if(surveyIdFrm != ''){
-                    if (surveyListJS.indexOf($('#surveyIdFrm').val()) != -1) {
-                        $('#mensajeSurvey').hide('fast');
+
+                if(surveyIdFrm.val() != ''){
+                    if (surveyListJS.indexOf( surveyIdFrm.val() ) != -1) {
+                        mensajeSurvey.hide();
                         okSurvey = true;
-                        nullSurvey = true;
-                        showErrorBuscar(okSchool, okSurvey, nullSchool, nullSurvey);
+                        showErrorBuscar(okSchool, okSurvey, schoolIdFrm, surveyIdFrm);
                     }else{
-                        $('#errorBuscar').show('fast');
-                        $('#mensajeSurvey').show('fast');
-                        $("#buscar").prop('disabled', true);
+                        errorBuscar.show('fast');
+                        mensajeSurvey.show();
+                        buscar.prop('disabled', true);
                         okSurvey = false;
-                        nullSurvey = false;
                     }
                 }else{
-                    $('#mensajeSurvey').hide('fast');
+                    mensajeSurvey.hide();
                     okSurvey = true;
-                    nullSchool = false;
-                    showErrorBuscar(okSchool, okSurvey, nullSchool, nullSurvey);
+                    showErrorBuscar(okSchool, okSurvey, schoolIdFrm, surveyIdFrm);
                 }
             });
 
-            /*
-                        var schoolAPI = "{{ app.request.getBaseURL() }}/api/v0/catalog/schools";
-            $.getJSON( schoolAPI,
-                function() {
-                //console.log( a);
-            }).done(function( data ) {
-                        return data;
-                    });
-*/
-
         });
 
-        function showErrorBuscar(okSchool, okSurvey, nullSchool, nullSurvey){
-            if( okSchool && okSurvey ){
-                $('#errorBuscar').hide('fast');
-                if(nullSchool || nullSurvey){
-                    $("#buscar").prop('disabled', false);
-                }else {
-                    $("#buscar").prop('disabled', true);
-                }
-            }
-        }
 
     </script>
 
