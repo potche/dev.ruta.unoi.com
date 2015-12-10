@@ -17,7 +17,15 @@ class APIStatsresultsController extends Controller {
     public function allstatsAction(Request $request){
 
         $response = new JsonResponse();
-        $response->setData();
+        $response->setData($this->getAll());
+
+        return $response;
+    }
+
+    public function statsbysurveyAction(Request $request, $surveyid){
+
+        $response = new JsonResponse();
+        $response->setData($this->getAll($surveyid));
 
         return $response;
     }
@@ -37,14 +45,6 @@ class APIStatsresultsController extends Controller {
 
         return $response;
 
-    }
-
-    public function statsbysurveyAction(Request $request, $surveyid){
-
-        $response = new JsonResponse();
-        $response->setData();
-
-        return $response;
     }
 
     public function statsbysurveyschoolAction(Request $request, $surveyid, $schoolid){
@@ -88,19 +88,67 @@ class APIStatsresultsController extends Controller {
         return $response;
     }
 
-    public function getAll(){
+    public function getAll($surveyid = null){
 
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQuerybuilder();
 
-        //$all = $qb->select("su.surveyid as id, su.title as titulo")
+        $condition = 'su.surveyid > 1';
+        $condition = $surveyid != null ? $condition.' AND su.surveyid = '.$surveyid : $condition;
 
+        $all = $qb->select("su.surveyid as id, su.title as titulo, o.option as opcion, COUNT(ans.answerid) as resp")
+            ->from('UNOEvaluacionesBundle:Survey','su')
+            ->leftJoin('UNOEvaluacionesBundle:Questionxsurvey','qxs','WITH','su.surveyid = qxs.surveySurveyid')
+            ->leftJoin('UNOEvaluacionesBundle:Optionxquestion','oxq','WITH','oxq.questionxsurvey = qxs.questionxsurveyId')
+            ->leftJoin('UNOEvaluacionesBundle:Option','o','WITH','o.optionid = oxq.optionOptionid')
+            ->leftJoin('UNOEvaluacionesBundle:Answer','ans','WITH','ans.optionxquestion = oxq.optionxquestionId')
+            ->where($condition)
+            ->groupBy('id, titulo, oxq.optionOptionid')
+            ->getQuery()
+            ->getResult();
 
+        return $all ? $this->parseGeneral($all) : APIUtils::getErrorResponse('404');
+    }
 
+    private function parseGeneral($all){
 
+        $statsAll = array(
+            'global' => array(),
+            'bySurvey' => array(),
+        );
 
+        $options = array_unique(array_column($all,'opcion'));
+        $ids = array_unique(array_column($all,'id'));
 
+        foreach($options as $o){
 
+            $r = array_filter($all, function($ar) use($o){ return ($ar['opcion'] == $o); });
+            $suma = array_sum(array_column($r,'resp'));
+
+            array_push($statsAll['global'],array(
+                'name' => $o,
+                'y' => $suma
+            ));
+
+            foreach ($ids as $id) {
+
+                $surveys = array_filter($r, function($ar) use($id){ return ($ar['id'] == $id); });
+
+                if(!isset($statsAll['bySurvey'][$id])){
+
+                    $statsAll['bySurvey'][$id] = array(
+                        'titulo' => array_column($surveys,'titulo')[0],
+                        'opciones'=>array()
+                    );
+                }
+
+                array_push($statsAll['bySurvey'][$id]['opciones'],array(
+                   'name' => $o,
+                    'y'=> intval(array_column($surveys,'resp')[0])
+                ));
+            }
+        }
+        return $statsAll;
     }
 
 
