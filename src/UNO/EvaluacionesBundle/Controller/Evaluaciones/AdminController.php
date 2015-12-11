@@ -43,11 +43,10 @@ class AdminController extends Controller {
         $surveys = $this->getSurveysWithProfiles($stats);
 
         // Obtenemos las estadísticas generales de avance para mostrarlas en la gráfica de pastel
-        $stats_general =  $stats['general'];
 
         return $this->render('UNOEvaluacionesBundle:Crear:menueval_admin.html.twig', array(
             'surveylist' => $surveys,
-            'stats_general' => $stats_general,
+            'stats_general' => $stats['general'],
         ));
     }
 
@@ -94,7 +93,7 @@ class AdminController extends Controller {
                     $surveys[$surveyid]['createdon'] = $swp['creationdate']->format('j/M/Y');
                     $surveys[$surveyid]['createdby'] = $swp['createdby'];
                     $surveys[$surveyid]['closingdate'] = $swp['closingdate']->format('j/M/Y \@ g:i a');
-                    $surveys[$surveyid]['progress'] = $stats['bySurvey'][$surveyid]['avance'];
+                    $surveys[$surveyid]['progress'] = $stats['bySurvey'][$surveyid]['completado'];
                     $surveys[$surveyid]['completed'] = $stats['bySurvey'][$surveyid]['respondido'];
                     $surveys[$surveyid]['expected'] = $stats['bySurvey'][$surveyid]['esperado'];
                     $surveys[$surveyid]['active'] = $swp['active'];
@@ -193,6 +192,18 @@ class AdminController extends Controller {
         ));
 
         return $data;
+    }
+
+    private function getStatistics() {
+
+        //return json_decode(file_get_contents($this->generateUrl('APIStatsProgress',true), false), true);
+        return json_decode(file_get_contents($this->generateUrl('APIStatsProgress',array(),true),false),true);
+    }
+
+    private function getSurveys(){
+
+        return json_decode(file_get_contents($this->generateUrl('APIStatsProgress',array(),true),false),true);
+
     }
 
     public function setSurveyStatusAction(Request $request) {
