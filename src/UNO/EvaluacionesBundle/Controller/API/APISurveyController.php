@@ -72,17 +72,18 @@ class APISurveyController extends Controller{
         $qb = $em->createQueryBuilder();
         $condition = $surveyid != null ? 'su.surveyid = '.$surveyid : 'su.surveyid > 1';
 
-        $all = $qb->select("su.surveyid as id, su.title as titulo, su.active as activa, su.creationdate as creada, su.closingdate as fechacierre, su.createdby as creadapor, sxp.schoollevelid as nivel, p.profileid as perfil, qxs.order as numpregunta ,q.question as pregunta, sc.subcategory as categoria, oxq.order as numopcion, oxq.optionxquestionId, o.option as opcion")
+        $all = $qb->select("su.surveyid as id, su.title as titulo, su.active as activa, su.creationdate as creada, su.closingdate as fechacierre, su.createdby as creadapor, sxp.schoollevelid as nivel, l.schoollevel as titulonivel, p.profileid as perfil, p.profile as tituloperfil, qxs.order as numpregunta ,q.question as pregunta, sc.subcategory as categoria, oxq.order as numopcion, oxq.optionxquestionId, o.option as opcion")
             ->from('UNOEvaluacionesBundle:Survey','su')
             ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile','sxp','WITH','su.surveyid = sxp.surveySurveyid')
             ->innerJoin('UNOEvaluacionesBundle:Profile','p','WITH','p.profileid = sxp.profileProfileid')
+            ->innerJoin('UNOEvaluacionesBundle:Schoollevel','l','WITH','l.schoollevelid = sxp.schoollevelid')
             ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','qxs','WITH','qxs.surveySurveyid = su.surveyid')
             ->innerJoin('UNOEvaluacionesBundle:Question','q','WITH','q.questionid = qxs.questionQuestionid')
             ->innerJoin('UNOEvaluacionesBundle:Subcategory','sc','WITH','sc.subcategoryid = q.subcategorySubcategoryid')
             ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','oxq','WITH','oxq.questionxsurvey = qxs.questionxsurveyId')
             ->innerJoin('UNOEvaluacionesBundle:Option','o','WITH','o.optionid = oxq.optionOptionid')
             ->where($condition)
-            ->groupBy('id, titulo, nivel, perfil, pregunta, categoria, oxq.optionOptionid')
+            ->groupBy('id, titulo, nivel,titulonivel, perfil, tituloperfil, pregunta, categoria, oxq.optionOptionid')
             ->getQuery()
             ->getResult();
 
@@ -100,9 +101,11 @@ class APISurveyController extends Controller{
         $condition = $schoollevelid != null ? $condition.' AND sxp.schoollevelid = '.$schoollevelid : $condition;
         $condition = $profileid != null ? $condition.' AND sxp.profileProfileid = '.$profileid : $condition;
 
-        $bySchool = $qb->select("su.surveyid as id, su.title as titulo, su.active as activa, su.creationdate as creada, su.closingdate as fechacierre, su.createdby as creadapor, sxp.schoollevelid as nivel, ps.profileid as perfil, qxs.order as numpregunta ,q.question as pregunta, sc.subcategory as categoria, oxq.order as numopcion, oxq.optionxquestionId, o.option as opcion")
+        $bySchool = $qb->select("su.surveyid as id, su.title as titulo, su.active as activa, su.creationdate as creada, su.closingdate as fechacierre, su.createdby as creadapor, sxp.schoollevelid as nivel, lvl.schoollevel as titulonivel, ps.profileid as perfil, p.profile as tituloperfil, qxs.order as numpregunta ,q.question as pregunta, sc.subcategory as categoria, oxq.order as numopcion, oxq.optionxquestionId, o.option as opcion")
             ->from('UNOEvaluacionesBundle:Survey','su')
             ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile','sxp','WITH','su.surveyid = sxp.surveySurveyid')
+            ->innerJoin('UNOEvaluacionesBundle:Profile','p','WITH','p.profileid = sxp.profileProfileid')
+            ->innerJoin('UNOEvaluacionesBundle:Schoollevel','lvl','WITH','lvl.schoollevelid = sxp.schoollevelid')
             ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.profileid = sxp.profileProfileid AND ps.schoollevelid = sxp.schoollevelid')
             ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','qxs','WITH','qxs.surveySurveyid = su.surveyid')
             ->innerJoin('UNOEvaluacionesBundle:Question','q','WITH','q.questionid = qxs.questionQuestionid')
@@ -110,7 +113,7 @@ class APISurveyController extends Controller{
             ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','oxq','WITH','oxq.questionxsurvey = qxs.questionxsurveyId')
             ->innerJoin('UNOEvaluacionesBundle:Option','o','WITH','o.optionid = oxq.optionOptionid')
             ->where($condition)
-            ->groupBy('id, titulo, nivel, perfil, pregunta, categoria, oxq.optionOptionid')
+            ->groupBy('id, titulo, nivel, titulonivel, perfil, tituloperfil, pregunta, categoria, oxq.optionOptionid')
             ->getQuery()
             ->getResult();
 
@@ -122,9 +125,11 @@ class APISurveyController extends Controller{
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 
-        $byPerson = $qb->select("su.surveyid as id, su.title as titulo, su.active as activa, su.creationdate as creada, su.closingdate as fechacierre, su.createdby as creadapor, sxp.schoollevelid as nivel, ps.profileid as perfil, qxs.order as numpregunta ,q.question as pregunta, sc.subcategory as categoria, oxq.order as numopcion, oxq.optionxquestionId, o.option as opcion, COALESCE(a.actioncode,'0') AS actioncode")
+        $byPerson = $qb->select("su.surveyid as id, su.title as titulo, su.active as activa, su.creationdate as creada, su.closingdate as fechacierre, su.createdby as creadapor, sxp.schoollevelid as nivel, lvl.schoollevel as titulonivel, ps.profileid as perfil, p.profile as tituloperfil, qxs.order as numpregunta ,q.question as pregunta, sc.subcategory as categoria, oxq.order as numopcion, oxq.optionxquestionId, o.option as opcion, COALESCE(a.actioncode,'0') AS actioncode")
             ->from('UNOEvaluacionesBundle:Surveyxprofile','sxp')
             ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','sxp.profileProfileid = ps.profileid AND ps.schoollevelid = sxp.schoollevelid')
+            ->innerJoin('UNOEvaluacionesBundle:Profile','p','WITH','p.profileid = sxp.profileProfileid')
+            ->innerJoin('UNOEvaluacionesBundle:Schoollevel','lvl','WITH','lvl.schoollevelid = sxp.schoollevelid')
             ->innerJoin('UNOEvaluacionesBundle:Survey','su','WITH','su.surveyid = sxp.surveySurveyid')
             ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','qxs','WITH','qxs.surveySurveyid = su.surveyid')
             ->innerJoin('UNOEvaluacionesBundle:Question','q','WITH','q.questionid = qxs.questionQuestionid')
@@ -134,7 +139,7 @@ class APISurveyController extends Controller{
             ->leftJoin('UNOEvaluacionesBundle:Log','l','WITH','l.surveySurveyid = su.surveyid AND l.personPersonid = :personId')
             ->leftJoin('UNOEvaluacionesBundle:Action','a','WITH','l.actionaction = a.idaction')
             ->where('ps.personid = :personId')
-            ->groupBy('id, titulo, nivel, perfil, pregunta, categoria, oxq.optionOptionid, a.actioncode')
+            ->groupBy('id, titulo, nivel, titulonivel, perfil, tituloperfil, pregunta, categoria, oxq.optionOptionid, a.actioncode')
             ->setParameter('personId',$personid)
             ->getQuery()
             ->getResult();
@@ -164,13 +169,27 @@ class APISurveyController extends Controller{
 
             if(!isset($surveys[$s['id']]['roles'][$s['nivel']])) {
 
-                $surveys[$s['id']]['roles'][$s['nivel']] = array();
+                $surveys[$s['id']]['roles'][$s['nivel']] = array(
+                    'Nivel' => $s['titulonivel'],
+                    'Perfiles' => array(),
+                );
             }
 
-            if(!in_array($s['perfil'],$surveys[$s['id']]['roles'][$s['nivel']])) {
+            if(!isset($surveys[$s['id']]['roles'][$s['nivel']]['Perfiles'][$s['perfil']])){
+
+                $surveys[$s['id']]['roles'][$s['nivel']]['Perfiles'][$s['perfil']] = array(
+                    'perfil' => $s['perfil'],
+                    'titulo' => $s['tituloperfil']
+                );
+            }
+
+
+            /*if(!in_array($s['perfil'],$surveys[$s['id']]['roles'][$s['nivel']])) {
 
                 array_push($surveys[$s['id']]['roles'][$s['nivel']],$s['perfil']);
-            }
+            }*/
+
+
 
             if(!isset($surveys[$s['id']]['preguntas'][$s['numpregunta']])) {
 
