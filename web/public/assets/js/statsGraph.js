@@ -119,7 +119,7 @@ function columnGrl(jsonTotalResponseColumn, nameSchool, nameSurvey) {
 //---------------------------------------
 var chart;
 
-function pieGrlLU(jsonTotalResponseLUPie, title) {
+function pieGrlLU(jsonTotalResponseLUPie, userName, title) {
     Highcharts.setOptions({
         lang: {
             thousandsSep: ','
@@ -141,7 +141,7 @@ function pieGrlLU(jsonTotalResponseLUPie, title) {
             href: 'http://mx.unoi.com/'
         },
         title: {
-            text: usernameGlobal
+            text: userName
         },
         subtitle: {
             text: '<b>'+title+'<b><br/>Porcentaje de respuestas.'
@@ -174,7 +174,7 @@ function pieGrlLU(jsonTotalResponseLUPie, title) {
 
 //---------------------------------------------
 var chartColoumn;
-function columnGrlLU(jsonTotalResponseLUColumn, title) {
+function columnGrlLU(jsonTotalResponseLUColumn, userName, title) {
     Highcharts.setOptions({
         lang: {
             thousandsSep: ','
@@ -192,7 +192,7 @@ function columnGrlLU(jsonTotalResponseLUColumn, title) {
             href: 'http://mx.unoi.com/'
         },
             title: {
-                text: usernameGlobal
+                text: userName
             },
             subtitle: {
                 text: '<b>'+title+'<b><br/>Cantidad de respuestas.'
