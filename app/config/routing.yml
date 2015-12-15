@@ -208,3 +208,9 @@ APIStatsResultsBySurveyPerson:
 APIResults:
     path: /api/v0/results
     defaults: {_controller: UNOEvaluacionesBundle:API/APIResults:results}
+APIResultBySurveyPerson:
+  path: /api/v0/result/survey/{surveyId}/person/{personId}
+  defaults: {_controller: UNOEvaluacionesBundle:API/APIResults:resultSurveyPerson, personId = null}
+  requirements:
+              surveyId: \d+
+              personId: \d+

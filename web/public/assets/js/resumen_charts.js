@@ -2,7 +2,9 @@ var Charts = function() {
 
     return {
         init: function (stats_pie, stats_bars) {
-                var stats_barsA = stats_bars.split('|');
+
+            var stats = JSON.parse(stats_bars);
+
                 var chart_bars = new Highcharts.Chart({
 
                     chart: {
@@ -15,7 +17,7 @@ var Charts = function() {
                     },
 
                     xAxis: {
-                        categories: JSON.parse(stats_barsA[0])
+                        categories: stats.categories
                     },
 
                     yAxis: {
@@ -29,18 +31,16 @@ var Charts = function() {
                     tooltip: {
                         formatter: function () {
                             return '<b>' + this.x + '</b><br/>' +
-                                this.series.name + ': ' + this.y + '<br/>' +
-                                'Total: ' + this.point.stackTotal;
+                                this.series.name + ': ' + this.y + '<br/>';
                         }
                     },
 
                     plotOptions: {
                         column: {
-                            stacking: 'normal'
                         }
                     },
 
-                        series: JSON.parse(stats_barsA[1])
+                        series: stats.series
                     }, function (chart) {
 
                         chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();

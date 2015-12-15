@@ -66,32 +66,32 @@
                         {% for survey in surveylist %}
                             <tr>
                                 <td class="text-center hidden-sm hidden-xs">
-                                    {% if survey['active'] %}
+                                    {% if survey['activa'] %}
                                         <span class="label label-success" data-toggle="tooltip" title="Esta evaluación está activa">{{ survey['id'] }}</span>
                                     {% else %}
                                         <span class="label label-danger" data-toggle="tooltip" title="Esta evaluación está inactiva">{{ survey['id'] }}</span>
                                     {% endif %}
                                 </td>
                                 <td class="text-left">
-                                    <b>{{ survey['title'] }}</b>
+                                    <b>{{ survey['titulo'] }}</b>
                                 </td>
                                 <td class="text-center">
                                     <a href="#" id="ver-{{ survey['id'] }}" class="btn-matriz btn btn-xs btn-info" style="width: 85px;"><i class="fa fa-eye"></i> Ver</a>
                                     <table id="tbl-perfiles-{{ survey['id'] }}" style="display: none;">
                                         <thead>
                                         <tr>
-                                            {% for profile,level in survey['profiles'] %}
-                                                <th class="text-center">{{ profile }}</th>
+                                            {% for role in survey['roles'] %}
+                                                <th class="text-center">{{ role['Nivel'] }}</th>
                                             {% endfor %}
                                         </tr>
                                         </thead>
                                         <tbody>
                                         <tr>
-                                        {% for profile, level in survey['profiles'] %}
+                                        {% for role in survey['roles'] %}
                                             <th>
                                                 <ul>
-                                                    {% for l in level %}
-                                                        <li>{{ l }}</li>
+                                                    {% for profile in role['Perfiles'] %}
+                                                        <li>{{ profile['titulo'] }}</li>
                                                     {% endfor %}
                                                 </ul>
                                             </th>
@@ -102,23 +102,23 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="progress progress-striped active">
-                                        <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{survey['progress']}}" aria-valuemin="0" aria-valuemax="100" style="width: {{survey['progress']}}%;">
+                                        <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{stats['bySurvey'][survey['id']]['Stats'][0]['y']}}" aria-valuemin="0" aria-valuemax="100" style="width: {{stats['bySurvey'][survey['id']]['Stats'][0]['y']}}%;">
                                         </div>
                                     </div>
-                                    {{ survey['progress']|round ~ '%' }}
+                                    {{ stats['bySurvey'][survey['id']]['Stats'][0]['y']|round ~ '%' }}
                                 </td>
                                 <td class="text-center hidden-sm hidden-xs">
-                                    {{ survey['createdon'] }}
+                                    {{ survey['creada']|date('j/M/Y \@ g:i a') }}
                                 </td>
                                 <td class="text-center hidden-sm hidden-xs">
-                                    {{ survey['createdby'] }}
+                                    {{ survey['creadapor'] }}
                                 </td>
                                 <td class="text-center hidden-sm hidden-xs">
-                                    {{ survey['closingdate'] }}
+                                    {{ survey['fechacierre']|date('j/M/Y \@ g:i a') }}
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group btn-group-xs">
-                                        {% if survey['active'] %}
+                                        {% if survey['activa'] %}
                                         <a href="#" id="{{ survey['id'] }}" class="disable-survey btn btn-xs btn-danger" style="display: block; width: 85px;" data-toggle="modal" data-target="#disable_confirm" data-placement="top"> Inactivar</a>
                                         {% else %}
                                         <a href="#" id="{{ survey['id'] }}" class="enable-survey btn btn-xs btn-success" style="display: block; width: 85px;" data-toggle="modal" data-target="#disable_confirm" data-placement="top"> Activar</a>
@@ -183,7 +183,7 @@
     <script src="{{ asset('public/assets/js/menu_crear_charts.js') }}"></script>
     <script src="{{ asset('public/assets/js/surveystatus.js') }}"></script>
     <script>$(function(){ TablesDatatables.init(); });</script>
-    <script>$(function(){ Charts.init('{{ stats_general|json_encode()|raw }}'); });</script>
+    <script>$(function(){ Charts.init('{{ stats['global']['Stats']|json_encode()|raw }}'); });</script>
     <script>$(function(){ SurveyTable.init('{{ url('ajaxSurveyStatus') }}','{{ url('evaluaciones') }}'); });</script>
 
 {% endblock %}
