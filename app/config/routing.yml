@@ -214,3 +214,6 @@ APIResultBySurveyPerson:
   requirements:
               surveyId: \d+
               personId: \d+
+MailTest:
+  path: /mailing/test
+  defaults: {_controller: UNOEvaluacionesBundle:Notifications/Notifications:test}
