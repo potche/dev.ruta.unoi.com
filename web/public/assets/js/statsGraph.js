@@ -1,6 +1,8 @@
 /**
  * Created by isra on 9/11/15.
  */
+
+var chartGrl;
 function pieGrl(jsonTotalResponsePie, nameSchool, nameSurvey) {
     Highcharts.setOptions({
         lang: {
@@ -8,15 +10,10 @@ function pieGrl(jsonTotalResponsePie, nameSchool, nameSurvey) {
         }
     });
 
-    var chartGrl = new Highcharts.Chart({
+    chartGrl = new Highcharts.Chart({
         chart: {
             type: 'pie',
-            renderTo: 'container',
-            options3d: {
-                enabled: true,
-                alpha: 45,
-                beta: 0
-            }
+            renderTo: 'container'
         },
         credits: {
             text: 'UNOi',
@@ -55,6 +52,7 @@ function pieGrl(jsonTotalResponsePie, nameSchool, nameSurvey) {
 }
 
 //---------------------------------------------
+var chartColoumnGrl;
 function columnGrl(jsonTotalResponseColumn, nameSchool, nameSurvey) {
     Highcharts.setOptions({
         lang: {
@@ -63,7 +61,7 @@ function columnGrl(jsonTotalResponseColumn, nameSchool, nameSurvey) {
     });
 
     // Create the chart
-    var chartColoumn = new Highcharts.Chart({
+    chartColoumnGrl = new Highcharts.Chart({
         chart: {
             type: 'column',
             renderTo: 'containerColumn'
@@ -116,6 +114,12 @@ function columnGrl(jsonTotalResponseColumn, nameSchool, nameSurvey) {
     );
 }
 
+
+function reflowChart(){
+    chartGrl.reflow();
+    chartColoumnGrl.reflow();
+}
+
 //---------------------------------------
 var chart;
 
@@ -129,12 +133,7 @@ function pieGrlLU(jsonTotalResponseLUPie, userName, title) {
     chart = new Highcharts.Chart({
         chart: {
             type: 'pie',
-            renderTo: 'containerPieLU',
-            options3d: {
-                enabled: true,
-                alpha: 45,
-                beta: 0
-            }
+            renderTo: 'containerPieLU'
         },
         credits: {
             text: 'UNOi',
