@@ -118,6 +118,7 @@ function graphs(serverAPI, nameSchool, surveyName){
                     }
                 });
 
+
                 var total = (realizadas+pendientes);
                 var avance = (realizadas/total)*100;
                 if( avance == 0 ){
