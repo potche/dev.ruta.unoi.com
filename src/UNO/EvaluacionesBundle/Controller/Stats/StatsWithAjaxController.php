@@ -66,7 +66,6 @@ class StatsWithAjaxController extends Controller{
                     $surveysListAPI = $this->getAPI("$baseUrl/api/v0/catalog/surveys");
                     $surveyList = $this->createSurveyList($surveysListAPI);
 
-
                     return $this->render('UNOEvaluacionesBundle:Stats:stats.html.twig',
                         array(
                             'schoolList' => $schoolList,
@@ -75,7 +74,17 @@ class StatsWithAjaxController extends Controller{
                     );
                 }else {
                     #vista para Director
-                    return $this->render('UNOEvaluacionesBundle:Stats:stats.html.twig');
+                    $this->setSchooIdPerson($session);
+
+                    $surveysListAPI = $this->getAPI("$baseUrl/api/v0/catalog/surveys");
+                    $surveyList = $this->createSurveyList($surveysListAPI);
+
+                    return $this->render('UNOEvaluacionesBundle:Stats:statsDir.html.twig',
+                        array(
+                            'nameSchool' => $this->_nameSchool,
+                            'surveyList' => $surveyList
+                        )
+                    );
                 }
             }else {
                 return $this->redirect("/inicio");
@@ -125,5 +134,22 @@ class StatsWithAjaxController extends Controller{
         }
 
         return json_encode($arraySurvey);
+    }
+
+    /**
+     * @param $session
+     *
+     * filtra la escuela que puede ver el usuario
+     */
+    private function setSchooIdPerson($session){
+        $schoolIdPerson = '';
+        $_schoolIdPerson = json_decode($session->get('schoolIdS'));
+        if (!array_intersect(array('SuperAdmin','COACH'), $this->_profile)) {
+            foreach($_schoolIdPerson as $value){
+                $schoolIdPerson .= $value->schoolid. ', ';
+                $this->_nameSchool = $value->schoolid.'-'.$value->school;
+            }
+        }
+        $this->_schoolIdPerson = rtrim($schoolIdPerson, ', ');
     }
 }
