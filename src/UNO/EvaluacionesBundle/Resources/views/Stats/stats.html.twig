@@ -120,37 +120,10 @@
 
         </div>
 
-        <div id="block-resumenT" class="block" style="display: none">
-            <div class="block-title">
-                <div class="block-options pull-right">
-                    <a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
-                </div>
-                <h2>Tabla de avance <strong><span class="nameSchool"></span></strong></h2>
-            </div>
-            <div class="row">
-                <div class="block-content">
-                    <div class="col-sm-12">
-                        <small class="visible-xs"><i class="fa fa-info-circle text-primary"></i> Puedes navegar horizontalmente para ver las demás columnas</small>
-                        <div class="table-responsive">
-                            <p>Estad&iacute;sticas de usuarios que han realizado por lo menos una evaluación. <em>Da <b>click</b> sobre un usuario para ver su detalle</em></p>
-                            <table id="userList-datatable" class="table table-vcenter table-condensed table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 150px;" class="text-center"><i class="fa fa-users"></i></th>
-                                        <th>Nombre</th>
-                                        <th style="width: 150px;" class="text-center">Progreso</th>
-                                        <th class="text-center">Detalle</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="userList">
-                                </tbody>
-                            </table>
-                            <br/>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div id="userList">
+
         </div>
+
     </div>
     <!-- END Page Content -->
 
@@ -246,9 +219,10 @@
         var serverSchoolSurveyAPI = "{{ app.request.getSchemeAndHttpHost() }}{{ app.request.getBaseURL() }}/api/v0/stats/results/survey/3/school/";
         var serverSchoolAPI = "{{ app.request.getSchemeAndHttpHost() }}{{ app.request.getBaseURL() }}/api/v0/stats/results/school/";
         var serverSurveyAPI = "{{ app.request.getSchemeAndHttpHost() }}{{ app.request.getBaseURL() }}/api/v0/stats/results/survey/";
-
+        var serverSurveyUserAPI = "{{ app.request.getSchemeAndHttpHost() }}{{ app.request.getBaseURL() }}/api/v0/result/survey/";
 
         $(function() {
+
             setNameSchool(nameSchool);
             setNameSurvey(nameSurvey);
             $('.input-typeaheadSchool').typeahead({ source: schoolListJS });
@@ -264,7 +238,6 @@
             var surveyIdFrm = $('#surveyIdFrm');
 
             $('#schoolIdFrm').change(function(){
-
                 if(schoolIdFrm.val() != '') {
                     if (schoolListJS.indexOf(schoolIdFrm.val()) != -1) {
                         mensajeSchool.hide();
@@ -281,12 +254,9 @@
                     okSchool = true;
                     showErrorBuscar(okSchool, okSurvey, schoolIdFrm, surveyIdFrm);
                 }
-
-
             });
 
             $('#surveyIdFrm').change(function() {
-
                 if(surveyIdFrm.val() != ''){
                     if (surveyListJS.indexOf( surveyIdFrm.val() ) != -1) {
                         mensajeSurvey.hide();
@@ -308,92 +278,6 @@
         });
 
 
-
-        function detalle(personId, userName, avance, surveyName){
-
-            graphsUser('http://dev.evaluaciones.unoi.com/app_dev.php/api/v0/stats/results/person/'+personId, userName, surveyName);
-
-            $('.userName').html(userName);
-            $('#avanceUser').html('<div class="progress progress-striped active">'+
-                                    '<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="'+avance+'" aria-valuemin="0" aria-valuemax="100" style="width: '+avance+'%;">'+avance+'%</div>'+
-                                '</div>');
-            $('#statsUser').modal('show');
-        }
-
-        function graphsUser(serverAPI, userName, surveyName){
-            $.ajax({
-                url: serverAPI,
-                dataType: 'json',
-                success: function(results){
-                    createGraphsUser(results.global, userName, 'Todas las Evaluaciones');
-                    var list = '';
-                    $.each( results.byPerson, function( key, value ) {
-                        $.each( value.evaluaciones, function( key2, item ) {
-                            if(item.estatus == '4'){
-                                list += "<option value='"+item.id+"|"+JSON.stringify(item.opciones)+"|"+userName+"|"+item.titulo+"'>"+item.titulo+"</option>";
-                            }else{
-
-                            }
-                        });
-                    });
-
-                    $('#selectSurveys').html(
-                            "<h5>Selecciona alguna evaluación para ver su <b>detalle</b>:</h5>"+
-                            "<select id='evaluacioLU' class='form-control' size='1' onchange='(abc(this.value))'>"+
-                            "<option value='"+JSON.stringify(results.global)+"'>Global</option>" + list + "" +
-                            "</select>"
-                    );
-                }
-            });
-        }
-
-        function createGraphsUser(results, userName, surveyName){
-            if(typeof results =='object'){
-                // It is JSON
-            }else{
-                results = $.parseJSON(results);
-            }
-            pieGrlLU(results, userName, surveyName);
-            columnGrlLU(results, userName, surveyName);
-        }
-
-        function abc(rs){
-            console.log(rs);
-            var arr = rs.split('|');
-            createGraphsUser(arr[1],arr[2], arr[3]);
-            /*
-            if(arr[3] != 0){
-                $.post( "ajax/stats", { title: arr[3], personId: personIdGlobal })
-                        .done(function( data ) {
-                            $('#surveyUser').html( data );
-                            TablesDatatables2.init();
-                        });
-            }else{
-                $('#surveyUser').html( '' );
-            }
-            */
-        }
-
-        var TablesDatatables = function(col) {
-            return {
-                init: function() {
-                    /* Initialize Bootstrap Datatables Integration */
-                    App.datatables();
-
-                    /* Initialize Datatables */
-                    $('#userList-datatable').dataTable({
-                        columnDefs: [ { orderable: false, targets: [ 0, col ] } ],
-                        pageLength: 5,
-                        lengthMenu: [[5,10,15,20,25,30, -1], [5,10,15,20,25,30, 'All']],
-                        paging: true,
-                        searching: true
-                    });
-
-                    /* Add placeholder attribute to the search input */
-                    $('.dataTables_filter input').attr('placeholder', 'buscar');
-                }
-            };
-        }();
     </script>
 
 {% endblock %}
