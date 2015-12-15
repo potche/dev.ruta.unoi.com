@@ -1,15 +1,6 @@
 {% extends '::base.html.twig' %}
 {% block body %}
 
-    <style>
-        .fa-eye:hover {
-            color: #328287;
-        }
-        .fa-eye {
-            color: #46B7BF;
-        }
-    </style>
-
     <div id="page-content">
 
         <div class="content-header">
@@ -85,7 +76,8 @@
                 </div>
                 <h2>Gr&aacute;ficas de avance <strong><span class="nameSchool"></span></strong></h2>
             </div>
-            <div class="row">
+
+            <div id="withGraphs" class="row">
                 <div class="block-content">
                     <div class="col-sm-6">
                         <div id="pie" class="block">
@@ -101,6 +93,31 @@
                     </div>
                 </div>
             </div>
+
+
+            <div id="withOutGraphs" class="row" style="display: none">
+                <div class="block-content">
+                    <div class="col-sm-12 text-center">
+                        <div class="block">
+                            <h1>No se ha realizado ninguna <strong>evaluación</strong>.</h1>
+                            <div class="carousel slide" data-ride="carousel">
+                                <div class="carousel-inner" role="listbox">
+                                    <div class="item active">
+                                        <h2 class="text-center"><span class="fa fa-bed fa-2x"></span></h2>
+                                    </div>
+                                    <div class="item">
+                                        <h2 class="text-center"><span class="fa fa-thumbs-down fa-2x"></span></h2>
+                                    </div>
+                                    <div class="item">
+                                        <h2 class="text-center"><span class="fa fa-hourglass-end fa-2x"></span></h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <div id="block-resumenT" class="block" style="display: none">
@@ -153,6 +170,7 @@
                             <div id="avanceUser"></div>
                             <small><em>Porcentaje de avance</em></small>
                             <hr>
+                            <div id="selectSurveys" class="well"></div>
                         </div>
                     </div>
 
@@ -263,6 +281,8 @@
                     okSchool = true;
                     showErrorBuscar(okSchool, okSurvey, schoolIdFrm, surveyIdFrm);
                 }
+
+
             });
 
             $('#surveyIdFrm').change(function() {
@@ -305,12 +325,75 @@
                 url: serverAPI,
                 dataType: 'json',
                 success: function(results){
-                    console.log(results.global);
-                    pieGrlLU(results.global, userName, 'Todas las Evaluaciones');
-                    columnGrlLU(results.global, userName, 'Todas las Evaluaciones');
+                    createGraphsUser(results.global, userName, 'Todas las Evaluaciones');
+                    var list = '';
+                    $.each( results.byPerson, function( key, value ) {
+                        $.each( value.evaluaciones, function( key2, item ) {
+                            if(item.estatus == '4'){
+                                list += "<option value='"+item.id+"|"+JSON.stringify(item.opciones)+"|"+userName+"|"+item.titulo+"'>"+item.titulo+"</option>";
+                            }else{
+
+                            }
+                        });
+                    });
+
+                    $('#selectSurveys').html(
+                            "<h5>Selecciona alguna evaluación para ver su <b>detalle</b>:</h5>"+
+                            "<select id='evaluacioLU' class='form-control' size='1' onchange='(abc(this.value))'>"+
+                            "<option value='"+JSON.stringify(results.global)+"'>Global</option>" + list + "" +
+                            "</select>"
+                    );
                 }
             });
         }
+
+        function createGraphsUser(results, userName, surveyName){
+            if(typeof results =='object'){
+                // It is JSON
+            }else{
+                results = $.parseJSON(results);
+            }
+            pieGrlLU(results, userName, surveyName);
+            columnGrlLU(results, userName, surveyName);
+        }
+
+        function abc(rs){
+            console.log(rs);
+            var arr = rs.split('|');
+            createGraphsUser(arr[1],arr[2], arr[3]);
+            /*
+            if(arr[3] != 0){
+                $.post( "ajax/stats", { title: arr[3], personId: personIdGlobal })
+                        .done(function( data ) {
+                            $('#surveyUser').html( data );
+                            TablesDatatables2.init();
+                        });
+            }else{
+                $('#surveyUser').html( '' );
+            }
+            */
+        }
+
+        var TablesDatatables = function(col) {
+            return {
+                init: function() {
+                    /* Initialize Bootstrap Datatables Integration */
+                    App.datatables();
+
+                    /* Initialize Datatables */
+                    $('#userList-datatable').dataTable({
+                        columnDefs: [ { orderable: false, targets: [ 0, col ] } ],
+                        pageLength: 5,
+                        lengthMenu: [[5,10,15,20,25,30, -1], [5,10,15,20,25,30, 'All']],
+                        paging: true,
+                        searching: true
+                    });
+
+                    /* Add placeholder attribute to the search input */
+                    $('.dataTables_filter input').attr('placeholder', 'buscar');
+                }
+            };
+        }();
     </script>
 
 {% endblock %}

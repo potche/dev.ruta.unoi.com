@@ -192,7 +192,7 @@ class APIResultsController extends Controller{
 
         $_surveyResultSurveyPerson = $qb
             ->select("PS.schoolid, Sc.schoolcode, Sc.school, P.personid, P.user, P.name, P.surname, S.surveyid, S.title, S.description, S.active")
-            ->addSelect("S.closingdate, S.creationdate, QS.order as orderQ, Ac.actioncode, Q.questionid, Q.question, Sub.subcategory, A.answerid, A.answer, A.comment, OQ.order as orderO, O.optionid, O.option")
+            ->addSelect("S.closingdate, S.creationdate, L.date as answerDate, QS.order as orderQ, Ac.actioncode, Q.questionid, Q.question, Sub.subcategory, A.answerid, A.answer, A.comment, OQ.order as orderO, O.optionid, O.option")
             ->from('UNOEvaluacionesBundle:Person ','P')
             ->innerJoin('UNOEvaluacionesBundle:Personschool','PS', 'WITH', 'P.personid = PS.personid')
             ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile ','SP', 'WITH', 'PS.profileid = SP.profileProfileid AND PS.schoollevelid = SP.schoollevelid')
@@ -272,6 +272,7 @@ class APIResultsController extends Controller{
                         'active' => $value['active'],
                         'closingDate' => $value['closingdate'],
                         'creationDate' => $value['creationdate'],
+                        'answerDate' => $value['answerDate'],
                         'schoolId' => $value['schoolid'],
                         'personId' => $value['personid'],
                         'questions' => array()
@@ -361,6 +362,7 @@ class APIResultsController extends Controller{
                                 'active' => $valSurvey['active'],
                                 'closingDate' => $valSurvey['closingDate'],
                                 'creationDate' => $valSurvey['creationDate'],
+                                'answerDate' => $valSurvey['answerDate'],
                                 'questions' => $valSurvey['questions']
                             ));
                         }
