@@ -1,3 +1,5 @@
+var chart_bars;
+var chart_pie;
 var Charts = function() {
 
     return {
@@ -5,24 +7,28 @@ var Charts = function() {
 
             var stats = JSON.parse(stats_bars);
 
-                var chart_bars = new Highcharts.Chart({
+                chart_bars = new Highcharts.Chart({
 
                     chart: {
                         type: 'column',
                         renderTo: 'bars'
                     },
-
+                    credits: {
+                        text: 'UNOi',
+                        href: 'http://mx.unoi.com/'
+                    },
                     title: {
                         text: 'Respuestas por categorías'
                     },
 
                     xAxis: {
+                        type: 'category',
                         categories: stats.categories
                     },
 
                     yAxis: {
                         allowDecimals: false,
-                        min: 0,
+                        //min: 0,
                         title: {
                             text: 'Respuestas'
                         }
@@ -36,24 +42,33 @@ var Charts = function() {
                     },
 
                     plotOptions: {
-                        column: {
+                        series: {
+                            borderWidth: 0,
+                            dataLabels: {
+                                enabled: true,
+                                format: '{point.y:,.0f}'
+                            }
                         }
                     },
-
-                        series: stats.series
+                    series: stats.series
                     }, function (chart) {
 
                         chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();
+                        chart.reflow();
                     }
                 );
 
-            var chart_pie = new Highcharts.Chart({
+            chart_pie = new Highcharts.Chart({
                 chart: {
-                    plotBackgroundColor: null,
-                    plotBorderWidth: null,
-                    plotShadow: false,
+                    //plotBackgroundColor: null,
+                    //plotBorderWidth: null,
+                    //plotShadow: false,
                     renderTo: 'pie',
                     type: 'pie'
+                },
+                credits: {
+                    text: 'UNOi',
+                    href: 'http://mx.unoi.com/'
                 },
                 title: {
                     text: 'Respuestas'
@@ -65,16 +80,18 @@ var Charts = function() {
                     pie: {
                         allowPointSelect: true,
                         cursor: 'pointer',
+                        depth: 35,
                         dataLabels: {
                             enabled: true,
-                            format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-                            style: {
-                                color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
-                            }
+                            format: '<b>{point.name}</b>: {point.percentage:.1f} %'//,
+                            //style: {
+                              //  color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                            //}
                         }
                     }
                 },
                 series: [{
+                    type: 'pie',
                     name: "Porcentaje",
                     colorByPoint: true,
                     data: JSON.parse(stats_pie)
@@ -82,6 +99,7 @@ var Charts = function() {
             }, function (chart) {
 
                 chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();
+                chart.reflow();
             });
         }
     };
