@@ -103,7 +103,7 @@ var Login = function() {
                 },
                 submitHandler: function (form) {
                     var base_path = $('#baseUrl').val();
-                    var redir = $('#redir').val();
+                    var redirurl = $('#redir').val();
                     var params = $('#with').val();
 
                     $('#loading').slideDown("fast");
@@ -175,7 +175,20 @@ var Login = function() {
                                     $('.bodyError').html('Su password es incorrecto, por favor intentelo de nuevo');
                                     break;
                                 case 'ok':
-                                    login(base_path);
+
+                                    if(redirurl != 'none'){
+
+                                        if(params != 'none'){
+
+                                            login(base_path+"/"+redirurl+"/"+params);
+                                            break;
+                                        }else{
+
+                                            login(base_path+"/"+redirurl);
+                                            break;
+                                        }
+                                    }
+                                    login(base_path+"/inicio");
                                     break;
                                 default :
                                     $('#errorM').modal();
@@ -354,5 +367,5 @@ function checkCode(base_path){
 };
 
 function login(base_path){
-    window.location.replace(base_path+"/inicio");
+    window.location.replace(base_path);
 }

@@ -12,7 +12,7 @@ namespace UNO\EvaluacionesBundle\Controller\Evaluaciones;
  *
  * Clase que contiene diversos métodos comunes en los controladores del módulo de evaluaciones
 */
-class Utils {
+class Utils{
 
     /**
      * Devuelve si una evaluacion dada es visible al usuario que la solicita.
