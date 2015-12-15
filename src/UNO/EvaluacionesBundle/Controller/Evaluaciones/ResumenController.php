@@ -32,7 +32,12 @@ class ResumenController extends Controller
         // Validación de sesión activa
         $session = $request->getSession();
         if (!Utils::isUserLoggedIn($session)) {
-            return $this->redirectToRoute('login');
+
+            return $this->redirectToRoute('login',array(
+                'redirect' => 'resumen',
+                'with' => $surveyId
+            ));
+            //return $this->redirectToRoute('login');
         }
 
         // Autorización de evaluación
@@ -41,35 +46,50 @@ class ResumenController extends Controller
         }
 
         $personId = $session->get('personIdS');
-        $details = $this->getSurveyLog($personId,$surveyId,ANSWERED_LOG_CODE);
 
-        // Validamos contra el log que ya haya respondido (manejando el escenario donde el usuario ingresa escribiendo la ruta)
-        if(empty($details)) {
+        $survey = $this->getSurvey($surveyId,$personId);
+
+        if(isset($survey['Error'])){
 
             throw new NotFoundHttpException('Resumen no encontrado para esta evaluación');
         }
 
-        // Una vez que validamos los escenarios posibles, ejecutamos la consulta para traer las respuestas del usuario
-        $results = $this->getSurveyResults($surveyId,$personId);
-        $categories = array_unique(array_column($results,'subcategory'));
-        $tasks = $this->getTasksByCategory($results,$categories);
-        $options = $this->getAnswerOptions($surveyId);
-        $pie_stats = $this->getStatsByAnswer($results,$options);
-        $bars_stats = $this->getStatsByCategory($categories, $options, $results);
+        $categories = array_unique(array_column($survey['persons'][0]['surveys'][0]['questions'],'category'));
+        $tasks = $this->getTasksByCategory($survey,$categories);
+        $statsbyCat = $this->getStatsByCategory($survey,$categories);
+        $statsbyOpt = $this->getStatsByOptions($surveyId,$personId)['global'];
 
-        /**
-         * ToDo: pasar estadística de barras a vista
-         */
+
+
+        // Una vez que validamos los escenarios posibles, ejecutamos la consulta para traer las respuestas del usuario
+        //$results = $this->getSurveyResults($surveyId,$personId);
+        //$categories = array_unique(array_column($results,'subcategory'));
+        //$tasks = $this->getTasksByCategory($results,$categories);
+        //$options = $this->getAnswerOptions($surveyId);
+        //$pie_stats = $this->getStatsByAnswer($results,$options);
+        //$bars_stats = $this->getStatsByCategory($categories, $options, $results);
 
         return $this->render('UNOEvaluacionesBundle:Evaluaciones:resumen.html.twig', array(
-            'title' => $details[0]['title'],
-            'date' => $details[0]['date']->format('j/M/Y \@ g:i a'),
-            'results' => $results,
-            'categories' => $categories,
+
+            'survey' => $survey['persons'][0]['surveys'][0],
+            'date' => $survey['persons'][0]['surveys'][0]['answerDate']['date'],
+            //'title' => $details[0]['title'],
+            //'date' => $details[0]['date']->format('j/M/Y \@ g:i a'),
+            //'results' => $results,
+            //'categories' => $categories,
             'tasks' => $tasks,
-            'pie_stats'=> $pie_stats,
-            'bars_stats' => $bars_stats
+            'pie_stats'=> $statsbyOpt,
+            'bars_stats' => $statsbyCat
         ));
+    }
+
+
+    private function getSurvey($surveyId, $personId){
+
+        return json_decode(file_get_contents($this->generateUrl('APIResultBySurveyPerson',array(
+            'surveyId' => $surveyId,
+            'personId' => $personId
+        ),true),false),true);
     }
 
     /**
@@ -195,54 +215,59 @@ class ResumenController extends Controller
         return $pieStats;
     }
 
-    private function getStatsByCategory($categories, $options, $results){
+    private function getStatsByCategory($survey,$categories){
 
-        $siStr = '';
-        $noStr = '';
-        $noseStr = '';
-        foreach($categories as $valCat){
-            $si = 0;
-            $no = 0;
-            $nose = 0;
-            foreach($results as $valRes){
-                if($valCat == $valRes['subcategory']) {
-                    switch ($valRes['answer']):
-                        case 'Sí':
-                            $si ++;
-                            break;
-                        case 'No':
-                            $no ++;
-                            break;
-                        default:
-                            $nose ++;
-                    endswitch;
-                }
-            }
-            $siStr .= $si.',';
-            $noStr .= $no.',';
-            $noseStr .= $nose.',';
+        $questions = $survey['persons'][0]['surveys'][0]['questions'];
+        $si_serie = array(
+            'name' => 'Sí',
+            'data' => array()
+        );
+        $no_serie = array(
+            'name' => 'No',
+            'data' => array()
+        );
+        $nose_serie = array(
+            'name' => 'No sé',
+            'data' => array()
+        );
+
+        $statsbyCat = array(
+            'categories' => array(),
+            'series' => array(),
+        );
+
+        foreach($categories as $cat) {
+
+            array_push($statsbyCat['categories'],$cat);
+            array_push($si_serie['data'],count(array_filter($questions, function($ar) use($cat){ return ($ar['category'] == $cat AND $ar['answers'][0]['answer'] == 'Sí'); })));
+            array_push($no_serie['data'],count(array_filter($questions, function($ar) use($cat){ return ($ar['category'] == $cat AND $ar['answers'][0]['answer'] == 'No'); })));
+            array_push($nose_serie['data'],count(array_filter($questions, function($ar) use($cat){ return ($ar['category'] == $cat AND !in_array($ar['answers'][0]['answer'],array('No','Sí'))); })));
         }
 
-        return '["'.implode('","',$categories).'"]|'.
-        '[{"name": "Sí", "data": ['.trim($siStr,",").'], "stack": "good"},'.
-        '{"name": "No", "data": ['.trim($noStr,",").'], "stack": "bad"},'.
-        '{"name": "No sé", "data": ['.trim($noseStr,",").'], "stack": "bad"}]';
+        array_push($statsbyCat['series'],$si_serie);
+        array_push($statsbyCat['series'],$no_serie);
+        array_push($statsbyCat['series'],$nose_serie);
+
+        return $statsbyCat;
     }
 
-    private function getTasksByCategory($results, $categories) {
+    private function getTasksByCategory($survey, $categories) {
+
+        $questions = $survey['persons'][0]['surveys'][0]['questions'];
 
         $tasks = array();
         foreach($categories as $cat) {
 
-            $tasks[$cat] = array();
-            foreach($results as $r) {
-
-                if(strcasecmp($cat,$r['subcategory']) == 0 && in_array(strtolower($r['answer']),array('no', 'no sé'))) {
-
-                    array_push($tasks[$cat],$r['question']);
-                }
-            }
+            $tasks[$cat] = array_filter($questions, function($ar) use($cat){ return ($ar['category'] == $cat AND $ar['answers'][0]['answer'] != 'Sí'); });
         }
         return $tasks;
+    }
+
+    private function getStatsByOptions($surveyId, $personId){
+
+        return json_decode(file_get_contents($this->generateUrl('APIStatsResultsBySurveyPerson',array(
+            'surveyid' => $surveyId,
+            'personid' => $personId
+        ),true),false),true);
     }
 }
