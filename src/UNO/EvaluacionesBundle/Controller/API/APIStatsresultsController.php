@@ -115,7 +115,7 @@ class APIStatsresultsController extends Controller {
         $condition = $levelid != null ? $condition.' AND ps.schoollevelid = '.$levelid : $condition;
         $condition = $personid != null ? $condition.' AND ps.personid = '.$personid : $condition;
 
-        $byParams = $qb->select("su.surveyid as id, su.title as titulo, ps.personid as persona, CONCAT(p.name,' ',p.surname) as nombre, COALESCE(a.idaction,0) as estatus, o.option as opcion, COUNT(DISTINCT(ans.answerid)) as resp")
+        $byParams = $qb->select("su.surveyid as id, su.title as titulo, ps.personid as persona, CONCAT(p.name,' ',p.surname) as nombre, COALESCE(a.idaction,0) as estatus, l.date as fecharespuesta, o.option as opcion, COUNT(DISTINCT(ans.answerid)) as resp")
             ->from('UNOEvaluacionesBundle:Surveyxprofile','sxp')
             ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.profileid = sxp.profileProfileid AND ps.schoollevelid = sxp.schoollevelid')
             ->innerJoin('UNOEvaluacionesBundle:Person','p','WITH','p.personid = ps.personid')
@@ -127,7 +127,7 @@ class APIStatsresultsController extends Controller {
             ->leftJoin('UNOEvaluacionesBundle:Option','o','WITH','o.optionid = oxq.optionOptionid')
             ->leftJoin('UNOEvaluacionesBundle:Answer','ans','WITH','ans.optionxquestion = oxq.optionxquestionId AND ans.personPersonid = ps.personid')
             ->where($condition)
-            ->groupBy('persona, nombre, id, titulo, estatus, oxq.optionOptionid')
+            ->groupBy('persona, nombre, id, titulo, estatus, fecharespuesta, oxq.optionOptionid')
             ->getQuery()
             ->getResult();
 
@@ -194,10 +194,12 @@ class APIStatsresultsController extends Controller {
             foreach ($evals as $e) {
 
                 $byopts = array_filter($byperson, function($ar) use($e){ return ($ar['id'] == $e); });
+
                 $ei = array_push($statsByParams['byPerson'][$pi-1]['evaluaciones'],array(
                     'id' => $e,
                     'titulo' => array_unique(array_column($byopts,'titulo'))[0],
                     'estatus' => array_unique(array_column($byopts,'estatus'))[0],
+                    'fecharespuesta' => array_unique(array_column($byopts,'fecharespuesta'),SORT_REGULAR)[0],
                     'opciones' => array()
                 ));
 
