@@ -20,12 +20,12 @@
             <div class="row">
                 <div class="block-content">
                     <div class="col-sm-6">
-                        <div id="pie" class="block"></div>
+                        <div id="pie"></div>
                     </div>
                 </div>
                 <div class="block-content">
                     <div class="col-sm-6">
-                        <div id="bars" class="block"></div>
+                        <div id="bars"></div>
                     </div>
                 </div>
             </div>
@@ -118,6 +118,6 @@
     <script src="{{ asset('public/assets/js/resumen.js') }}"></script>
     <script src="{{ asset('public/assets/js/resumen_charts.js') }}"></script>
     <script>$(function(){ TablesDatatables.init(); });</script>
-    <script>$(function(){ Charts.init('{{ pie_stats|json_encode()|raw }}','{{ bars_stats|json_encode()|raw }}'); });</script>
+    <script>$(function(){ Charts.init('{{ pie_stats|json_encode()|raw }}','{{ bars_stats|json_encode()|raw }}');});</script>
 
 {% endblock %}

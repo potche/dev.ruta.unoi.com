@@ -43,7 +43,6 @@ class ListarController extends Controller
         $response = json_decode(file_get_contents($this->generateUrl('APISurveysPerson',array('personid'=>$personID),true), false), true);
 
         $countToBeAnswered = array_count_values(array_column($response,'actioncode'))['0'];
-        $session->set('authorized_in',base64_encode(json_encode(array_column($response,'id'))));
 
         $statistics = Utils::fetchStats(count($response),$countToBeAnswered);
 
