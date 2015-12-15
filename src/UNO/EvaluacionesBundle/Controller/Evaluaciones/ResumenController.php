@@ -32,7 +32,12 @@ class ResumenController extends Controller
         // Validación de sesión activa
         $session = $request->getSession();
         if (!Utils::isUserLoggedIn($session)) {
-            return $this->redirectToRoute('login');
+
+            return $this->redirectToRoute('login',array(
+                'redirect' => 'resumen',
+                'with' => $surveyId
+            ));
+            //return $this->redirectToRoute('login');
         }
 
         // Autorización de evaluación

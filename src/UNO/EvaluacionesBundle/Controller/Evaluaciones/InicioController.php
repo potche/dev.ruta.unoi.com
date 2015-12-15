@@ -25,7 +25,11 @@ class InicioController extends Controller{
 
         if(!Utils::isUserLoggedIn($session)){
 
-            return $this->redirect("/");
+            return $this->redirectToRoute('login',array(
+                'redirect' => 'inicio',
+                'with' => 'none'
+            ));
+            //return $this->redirect("/");
         }
 
         $this->_personId = $session->get('personIdS');

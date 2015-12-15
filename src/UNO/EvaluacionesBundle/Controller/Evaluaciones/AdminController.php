@@ -31,7 +31,10 @@ class AdminController extends Controller {
 
         if (!Utils::isUserLoggedIn($session)) {
 
-            return $this->redirectToRoute('login');
+            return $this->redirectToRoute('login',array(
+                'redirect' => 'evaluaciones',
+                'with' => 'none'
+            ));
         }
 
         if(!Utils::isUserAdmin($session)){

@@ -95,6 +95,10 @@ class LoginController extends Controller{
      * Muestra el formulario de Login
      */
     public function indexAction(Request $request){
+
+        $redir = $request->get('redirect') == null ? '' : $request->get('redirect');
+        $with = $request->get('with');
+
         $session = $request->getSession();
         $session->start();
         $dataBrowser = new Browser();
@@ -103,9 +107,9 @@ class LoginController extends Controller{
                 'browser' => $dataBrowser->getBrowser(),
                 'browserVersion' => $dataBrowser->getVersion()
             ));
-        }else{
-            return $this->redirect("/inicio");
         }
+
+        return $this->redirectToRoute("inicio");
     }
 
     /**

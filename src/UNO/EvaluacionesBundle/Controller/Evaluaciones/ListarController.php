@@ -32,7 +32,11 @@ class ListarController extends Controller
         // Si no se tiene iniciada una sesión, se redirige al login
         if (!Utils::isUserLoggedIn($session)) {
 
-            return $this->redirectToRoute('login');
+            return $this->redirectToRoute('login',array(
+                'redirect' => 'listar',
+                'with' => 'none'
+            ));
+            //return $this->redirectToRoute('login');
         }
 
         $personID = $session->get('personIdS');
