@@ -24,7 +24,12 @@ class ResponderController extends Controller
 
         if(!Utils::isUserLoggedIn($session)){
 
-            return $this->redirectToRoute('login');
+            return $this->redirectToRoute('login',array(
+                'redirect' => 'responder',
+                'with' => $id
+            ));
+
+            //return $this->redirectToRoute('login');
         }
 
         if(!Utils::isSurveyAuthorized($session,$surveyID)){

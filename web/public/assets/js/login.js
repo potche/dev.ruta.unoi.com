@@ -103,6 +103,8 @@ var Login = function() {
                 },
                 submitHandler: function (form) {
                     var base_path = $('#baseUrl').val();
+                    var redir = $('#redir').val();
+                    var params = $('#with').val();
 
                     $('#loading').slideDown("fast");
                     $.ajax({
