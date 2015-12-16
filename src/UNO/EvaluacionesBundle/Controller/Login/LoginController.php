@@ -166,6 +166,10 @@ class LoginController extends Controller{
      */
     private function valUserExisting(){
         if($this->_personDB->getActive()){
+            //preguntamos si es un Coach
+
+            //$this->valPassChoach();
+
             if($this->logIn()){
                 $this->addUserHttpSession();
                 $this->_response = 'ok';
@@ -173,6 +177,23 @@ class LoginController extends Controller{
         }else{
             $this->_response = '104';
         }
+    }
+
+    private function valPassChoach(){
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+        $q = $qb->select('P2.profileid, P2.profilecode, P2.profile')
+            ->from(PersonDB_L, 'P')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','P1','WITH', 'P.personid = P1.personid')
+            ->innerJoin('UNOEvaluacionesBundle:Profile','P2','WITH', 'P1.profileid = P2.profileid')
+            ->where('P.personid = :personId')
+            ->andWhere('P2.profileid = 2')
+            ->setParameter('personId', $this->_personDB->getPersonid())
+            ->groupBy('P2.profileid')
+            ->getQuery()
+            ->getResult();
+        print_r($q);
+        exit();
     }
 
     /**
@@ -284,9 +305,11 @@ class LoginController extends Controller{
         $encrypt = encrypt::encrypt($this->_pass);
         $em = $this->getDoctrine()->getManager();
         $this->_personDB = $em->getRepository(PersonDB_L)->findOneBy(array('user' => $this->_user, 'password' => $encrypt));
+        if($this->_personDB){
+            $this->_personDB->setLastLogin(new \DateTime());
+            $em->flush();
+        }
 
-        $this->_personDB->setLastLogin(new \DateTime());
-        $em->flush();
     }
 
     /**
