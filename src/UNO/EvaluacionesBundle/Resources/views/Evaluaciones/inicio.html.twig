@@ -1,6 +1,15 @@
 {% extends 'base.html.twig' %}
 {% block body %}
 
+    <style>
+        .widget .widget-icon{
+            background: #46b7bf;
+        }
+
+        .widget .widget-extra {
+            background: #4b89dc;
+        }
+    </style>
     <div class="content-header content-header-media">
         <div class="header-section" style="height: 185px;">
             <h1>
@@ -21,156 +30,113 @@
         </ul>
     </div>
     <!-- END Dashboard Header -->
+    {% if global != null and colegios != null and coaches != null and personas != null%}
+    <!-- Simple Stats Widgets Row -->
+    <div class="row">
+
+        <div class="col-md-6">
+            <!-- Widget -->
+            <div class="widget">
+                <div class="widget-extra text-center themed-background-dark-night">
+                    <h3 class="widget-content-light"><i class="fa fa-arrow-up animation-floating"></i> Estadisticas <strong>Generales</strong></h3>
+                </div>
+                <div class="widget-simple">
+                    <div class="row text-center">
+                        <div class="col-xs-4">
+                            <a href="javascript:void(0)" class="widget-icon themed-background-spring">
+                                <i class="fa fa-line-chart"></i>
+                            </a>
+                            <h3 class="remove-margin-bottom"> <strong>{{ global| raw }}%</strong><br><small>Nivel general de progreso</small></h3>
+                        </div>
+                        <div class="col-xs-4">
+                            <a href="javascript:void(0)" class="widget-icon themed-background-spring">
+                                <i class="fa fa-university"></i>
+                            </a>
+                            <h3 class="remove-margin-bottom"> <strong>{{ colegios| raw }}</strong><br><small>Colegios registrados en la plataforma</small></h3>
+                        </div>
+                        <div class="col-xs-4">
+                            <a href="javascript:void(0)" class="widget-icon themed-background-fire">
+                                <i class="fa fa-graduation-cap"></i>
+                            </a>
+                            <h3 class="remove-margin-bottom"> <strong>{{ coaches[0]['cuenta']| raw }}</strong><br><small>Coaches registrados en el sistema</small></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END Widget -->
+        </div>
+        <div class="col-md-6">
+            <!-- Widget -->
+            <div class="widget">
+                <div class="widget-extra text-center themed-background-dark-night">
+                    <h3 class="widget-content-light"><i class="fa fa-arrow-up animation-floating"></i> Estadisticas de <strong>Usuarios</strong></h3>
+                </div>
+                <div class="widget-simple">
+                    <div class="row text-center">
+                        <div class="col-xs-4">
+                            <a href="javascript:void(0)" class="widget-icon themed-background-fire">
+                                <i class="fa fa-users"></i>
+                            </a>
+                            <h3 class="remove-margin-bottom"> <strong>{{ personas['total']| raw }}</strong><br><small>Personas registradas en la plataforma</small></h3>
+                        </div>
+                        <div class="col-xs-4">
+                            <a href="javascript:void(0)" class="widget-icon themed-background-spring">
+                                <i class="fa fa-user-plus"></i>
+                            </a>
+                            <h3 class="remove-margin-bottom"> <strong>{{ personas['answered']| raw }}</strong><br><small>Personas que han atendido alguna evaluación</small></h3>
+                        </div>
+                        <div class="col-xs-4">
+                            <a href="javascript:void(0)" class="widget-icon themed-background-spring">
+                                <i class="fa fa-user-times"></i>
+                            </a>
+                            <h3 class="remove-margin-bottom"> <strong>{{ personas['pending']| raw }}</strong><br><small>Personas que no han atendido alguna evaluación</small></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END Widget -->
+        </div>
+    </div>
+    <!-- END Simple Stats Widgets Row -->
+    {% endif %}
 
     <!-- Form Example with Blocks in the Grid -->
     <div class="row">
+        {% if colegio != null %}
         <div class="col-sm-6">
-            <!-- Video -->
-            {% if global != null %}
-                <div class="block">
-                    <!-- Title -->
-                    <div class="block-title">
-                        <h2>{{ "Nivel general de progreso" }}</h2>
-                    </div>
-                    <div class="widget-extra-full text-center">
-                        <div class="pie-chart" data-percent="{{ global| raw }}" data-size="90" data-bar-color="#e67e22">
-                            <span>{{ global| raw }}%</span>
-                        </div>
-                        <br/>
+            <a href="javascript:void(0)" class="widget widget-hover-effect4">
+                <div class="widget-extra text-center themed-background-dark-autumn">
+                    <h3 class="widget-content-light">Nivel de avance en mi <strong>Colegio</strong></h3>
+                </div>
+                <div class="widget-extra-full text-center">
+                    <div class="pie-chart easyPieChart" data-percent="{{ colegio| raw }}" data-size="90" data-bar-color="#e67e22" style="width: 90px; height: 90px; line-height: 90px;">
+                        <span style="color: #0b0b0b">{{ colegio| raw }}%</span>
+                        <canvas width="90" height="90"></canvas>
                     </div>
                 </div>
-            {% endif %}
+            </a>
+        </div>
+        {% endif %}
 
-            {% if colegio != null %}
-                <div class="block">
-                    <!-- Title -->
-                    <div class="block-title">
-                        <h2>{{ "Nivel de avance en mi colegio" }}</h2>
-                    </div>
-                    <div class="widget-extra-full text-center">
-                        <div class="pie-chart" data-percent="{{ colegio| raw }}" data-size="90" data-bar-color="#e67e22">
-                            <span>{{ colegio| raw }}%</span>
-                        </div>
-                        <br/>
+        {% if personal != null %}
+        <div class="col-sm-6">
+            <a href="javascript:void(0)" class="widget widget-hover-effect4">
+                <div class="widget-extra text-center themed-background-dark-autumn">
+                    <h3 class="widget-content-light">Nivel personal de <strong>Progreso</strong></h3>
+                </div>
+                <div class="widget-extra-full text-center">
+                    <div class="pie-chart easyPieChart" data-percent="{{ personal['global']['Stats'][0]["y"]| raw }}" data-size="90" data-bar-color="#e67e22" style="width: 90px; height: 90px; line-height: 90px;">
+                        <span style="color: #0b0b0b">{{ personal['global']['Stats'][0]["y"]| raw }}%</span>
+                        <canvas width="90" height="90"></canvas>
                     </div>
                 </div>
-            {% endif %}
+            </a>
+        </div>
+        {% endif %}
 
-            <!-- END Video -->
-        </div>
-        <div class="col-sm-6">
-            <!-- Video -->
-            {% if personal != null %}
-                <div class="block">
-                    <!-- Title -->
-                    <div class="block-title">
-                        <h2>{{ "Nivel personal de progreso" }}</h2>
-                    </div>
-                    <div class="widget-extra-full text-center">
-                        <div class="pie-chart" data-percent="{{ personal['global']['Stats'][0]["y"]| raw }}" data-size="90" data-bar-color="#e67e22">
-                            <span>{{ personal['global']['Stats'][0]["y"]| raw }}%</span>
-                        </div>
-                        <br/>
-                    </div>
-                </div>
-            {% endif %}
-            <!-- END Video -->
-        </div>
     </div>
-    <div class="row">
-        <div class="col-sm-6">
-            <!-- Video -->
-            {% if colegios != null %}
-                <div class="block">
-                    <!-- Title -->
-                    <div class="block-title">
-                        <h2>{{ "Colegios registrados en la plataforma" }}</h2>
-                    </div>
-                    <div class="widget-extra-full text-center">
-                        <div class="pie-chart" data-percent="{{ colegios| raw }}" data-size="90" data-bar-color="#e67e22">
-                            <span>{{ colegios| raw }}</span>
-                        </div>
-                        <br/>
-                    </div>
-                </div>
-            {% endif %}
-            <!-- END Video -->
-        </div>
-        <div class="col-sm-6">
-            <!-- Video -->
-            {% if coaches != null %}
-                <div class="block">
-                    <!-- Title -->
-                    <div class="block-title">
-                        <h2>{{ "Coaches registrados en el sistema" }}</h2>
-                    </div>
-                    <div class="widget-extra-full text-center">
-                        <div class="pie-chart" data-percent="{{ coaches[0]['cuenta']| raw }}" data-size="90" data-bar-color="#e67e22">
-                            <span>{{ coaches[0]['cuenta']| raw }}</span>
-                        </div>
-                        <br/>
-                    </div>
-                </div>
-            {% endif %}
-            <!-- END Video -->
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-4">
-            <!-- Video -->
-            {% if personas != null %}
-                <div class="block">
-                    <!-- Title -->
-                    <div class="block-title">
-                        <h2>{{ "Personas registradas en la plataforma" }}</h2>
-                    </div>
-                    <div class="widget-extra-full text-center">
-                        <div class="pie-chart" data-percent="{{ personas['total']| raw }}" data-size="90" data-bar-color="#e67e22">
-                            <span>{{ personas['total']| raw }}</span>
-                        </div>
-                        <br/>
-                    </div>
-                </div>
-            {% endif %}
-            <!-- END Video -->
-        </div>
-        <div class="col-sm-4">
-            <!-- Video -->
-            {% if personas != null  %}
-                <div class="block">
-                    <!-- Title -->
-                    <div class="block-title">
-                        <h2>{{ "Personas que han atendido alguna evaluación" }}</h2>
-                    </div>
-                    <div class="widget-extra-full text-center">
-                        <div class="pie-chart" data-percent="{{ personas['answered']| raw }}" data-size="90" data-bar-color="#e67e22">
-                            <span>{{ personas['answered']| raw }}</span>
-                        </div>
-                        <br/>
-                    </div>
-                </div>
-            {% endif %}
-            <!-- END Video -->
-        </div>
-        <div class="col-sm-4">
-            <!-- Video -->
-            {% if personas != null %}
-                <div class="block">
-                    <!-- Title -->
-                    <div class="block-title">
-                        <h2>{{ "Personas que no han atendido alguna evaluación" }}</h2>
-                    </div>
-                    <div class="widget-extra-full text-center">
-                        <div class="pie-chart" data-percent="{{ personas['pending']| raw }}" data-size="90" data-bar-color="#e67e22">
-                            <span>{{ personas['pending']| raw }}</span>
-                        </div>
-                        <br/>
-                    </div>
-                </div>
-            {% endif %}
-            <!-- END Video -->
-        </div>
-    </div>
+
+
     <!-- END Form Example with Blocks in the Grid -->
     <!-- Modal Video -->
     <div id="videoWellcome" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -193,4 +159,5 @@
     <!-- END Modal Video -->
 
     <script src="{{ asset('public/assets/js/jquery-1.11.3.min.js') }}"></script>
+
 {% endblock %}
