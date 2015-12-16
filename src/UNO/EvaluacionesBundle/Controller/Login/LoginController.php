@@ -284,6 +284,9 @@ class LoginController extends Controller{
         $encrypt = encrypt::encrypt($this->_pass);
         $em = $this->getDoctrine()->getManager();
         $this->_personDB = $em->getRepository(PersonDB_L)->findOneBy(array('user' => $this->_user, 'password' => $encrypt));
+
+        $this->_personDB->setLastLogin(new \DateTime());
+        $em->flush();
     }
 
     /**
