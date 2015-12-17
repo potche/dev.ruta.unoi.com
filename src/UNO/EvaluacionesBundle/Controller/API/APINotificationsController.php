@@ -12,7 +12,6 @@ namespace UNO\EvaluacionesBundle\Controller\API;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Validator\Constraints\Date;
 
 class APINotificationsController extends Controller
 {
@@ -26,7 +25,7 @@ class APINotificationsController extends Controller
 
     protected function getNewSurveys($daysago){
 
-        if($daysago > 7){
+        if($daysago > 7 && $daysago != 0){
 
             return APIUtils::getErrorResponse('400');
         }
@@ -42,6 +41,9 @@ class APINotificationsController extends Controller
             ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.profileid = sxp.profileProfileid AND ps.schoollevelid = sxp.schoollevelid')
             ->innerJoin('UNOEvaluacionesBundle:Person','p','WITH','p.personid = ps.personid')
             ->where($qb->expr()->between('su.creationdate',':daysago','CURRENT_TIMESTAMP()'))
+            ->andWhere('p.mailing = 1')
+            ->andWhere('p.active = 1')
+            ->andWhere('p.personid IN (1,2)')
             ->groupBy('id, persona')
             ->setParameter('daysago',$date1)
             ->getQuery()
