@@ -1,6 +1,36 @@
 {% extends '::base2.mail.html.twig' %}
 {% block body %}
-
-    <h3>Hola, {{ name }}</h3>
-
+    <h3>Hola, <b>{{ name }}</b></h3>
+    <br>
+    <p>Recientemente, se ha creado una nueva evaluación que debes responder:</p>
+    <br>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th class="text-center"><b>Título</b></th>
+            <th class="text-center"><b>Descripción</b></th>
+            <th class="text-center"><b>Fecha límite de respuesta</b></th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="text-left">
+                    {{ "Título" }}
+                </td>
+                <td class="text-left">
+                    {{ "Esta es una descripcion de la evaluación a responder" }}
+                </td>
+                <td class="text-center">
+                    {{ "28/Ene/2015 @ 20:30h" }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <p>Para responderla ahora, haz click en el siguiente botón, o si lo prefieres, ingresa posteriormente a <a href="//ruta.unoi.com">Ruta UNOi</a> para responderla</p>
+    <br>
+    <div class="row text-center">
+        <a href="{{ absolute_url(path('responder',{'id': 2})) }}" class="btn btn-xs btn-success has-tip" style="width: 85px;">Responder</a>
+    </div>
+    <br>
 {% endblock %}

@@ -1,7 +1,10 @@
 <?php
 
 namespace UNO\EvaluacionesBundle\Controller\Notifications;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -14,7 +17,7 @@ class NotificationsController extends Controller {
 
     public function testAction(){
 
-        $message = \Swift_Message::newInstance()
+        /*$message = \Swift_Message::newInstance()
             ->setSubject('Mail de prueba')
             ->setFrom('noreplymx@unoi.com')
             ->setTo('jbravo@clb.unoi.com')
@@ -25,9 +28,22 @@ class NotificationsController extends Controller {
                 ),
                 'text/html'
             );
-        $this->get('mailer')->send($message);
+        $this->get('mailer')->send($message);*/
+        $kernel = $this->get('kernel');
+        $application = new Application($kernel);
+        $application->setAutoExit(false);
 
-        return new Response('Mail sent',200);
+        $input = new ArrayInput(array(
+            'command' => 'mailing:send',
+            'frequency' => 'weekly',
+        ));
+
+        $output = new BufferedOutput();
+        $application->run($input, $output);
+
+        $content = $output->fetch();
+
+        return new Response($content,200);
     }
 
 }
