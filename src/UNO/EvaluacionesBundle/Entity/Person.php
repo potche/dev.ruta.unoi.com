@@ -118,6 +118,20 @@ class Person
     private $active = 1;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="mailing", type="boolean", nullable=false)
+     */
+    private $mailing = 1;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="lastLogin", type="datetime", nullable=false)
+     */
+    private $lastLogin;
+
+    /**
      * @var integer
      * @ORM\personid
      * @ORM\GeneratedValue(strategy="NONE")
@@ -469,7 +483,7 @@ class Person
      *
      * @param boolean $active
      *
-     * @return Active
+     * @return Person
      */
     public function setActive($active)
     {
@@ -486,6 +500,54 @@ class Person
     public function getActive()
     {
         return $this->active;
+    }
+
+    /**
+     * Set mailing
+     *
+     * @param boolean $mailing
+     *
+     * @return Person
+     */
+    public function setMailing($mailing)
+    {
+        $this->mailing = $mailing;
+
+        return $this;
+    }
+
+    /**
+     * Get mailing
+     *
+     * @return boolean
+     */
+    public function getMailing()
+    {
+        return $this->mailing;
+    }
+
+    /**
+     * Set lastLogin
+     *
+     * @param \DateTime $lastLogin
+     *
+     * @return Person
+     */
+    public function setLastLogin($lastLogin)
+    {
+        $this->lastLogin = $lastLogin;
+
+        return $this;
+    }
+
+    /**
+     * Get lastLogin
+     *
+     * @return \DateTime
+     */
+    public function getLastLogin()
+    {
+        return $this->lastLogin;
     }
 
     public function setPersonid($personid)

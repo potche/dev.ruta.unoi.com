@@ -43,7 +43,7 @@ class StatsWithAjaxController extends Controller{
     private $_andSurvey = "S.surveyid != ''";
 
     /**
-     * @Route("/estadistica")
+     * @Route("/estadisticas")
      *
      * Muestra las estadisticas
      */
