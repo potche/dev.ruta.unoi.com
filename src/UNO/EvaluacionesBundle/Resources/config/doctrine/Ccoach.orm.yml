@@ -1,0 +1,21 @@
+UNO\EvaluacionesBundle\Entity\Ccoach:
+    type: entity
+    table: Ccoach
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: id
+            generator:
+                strategy: NONE
+    fields:
+        user:
+            type: string
+            nullable: false
+            length: 255
+            options:
+                fixed: false
+    lifecycleCallbacks: {  }

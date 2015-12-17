@@ -27,6 +27,7 @@ use UNO\EvaluacionesBundle\Entity\Schoolperiod;
 use UNO\EvaluacionesBundle\Entity\Schoollevel;
 use UNO\EvaluacionesBundle\Entity\Profile;
 use UNO\EvaluacionesBundle\Entity\Personschool;
+use UNO\EvaluacionesBundle\Entity\Ccoach;
 
 /**
  *
@@ -132,6 +133,7 @@ class AltaController extends Controller{
             ->innerJoin(ProfileDB,'P2','WITH', 'P1.profileid = P2.profileid')
             ->where('P.personid = :personId')
             ->setParameter('personId', $this->_datPerson->personId)
+            ->groupBy('P2.profileid')
             ->getQuery()
             ->getResult();
         return json_encode($q);
@@ -226,6 +228,15 @@ class AltaController extends Controller{
     private function valPerson(){
         $em = $this->getDoctrine()->getManager();
         return $em->getRepository(PersonDB)->findOneBy(array('personid' => $this->_datPerson->personId));
+    }
+
+    /**
+     * @return object
+     * valida que el usuario este dado de alta
+     */
+    private function valIsCoach(){
+        $em = $this->getDoctrine()->getManager();
+        return($em->getRepository('UNOEvaluacionesBundle:Ccoach')->findOneBy(array('user' => $this->_datPerson->user)));
     }
 
     /**
@@ -465,6 +476,7 @@ class AltaController extends Controller{
      * @return bool
      */
     private function insertPermission(){
+
         $em = $this->getDoctrine()->getManager();
         try{
             $Personschool = new Personschool();
@@ -473,7 +485,11 @@ class AltaController extends Controller{
             $Personschool->setSchoolid($this->_arrayInsert['schoolId']);
             $Personschool->setSchoolperiodid($this->_arrayInsert['schoolPeriodId']);
             $Personschool->setSchoollevelid($this->_arrayInsert['schoolLevelId']);
-            $Personschool->setProfileid($this->_arrayInsert['profileId']);
+            if($this->valIsCoach()){
+                $Personschool->setProfileid(2);
+            }else{
+                $Personschool->setProfileid($this->_arrayInsert['profileId']);
+            }
             $em->persist($Personschool);
             $em->flush();
             return true;
