@@ -42,7 +42,7 @@ class StatsController extends Controller{
     private $_andSurvey = "S.surveyid != ''";
 
     /**
-     * @Route("/estadisticas")
+     * @Route("/estadistica")
      *
      * Muestra las estadisticas
      */

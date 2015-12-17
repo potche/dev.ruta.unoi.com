@@ -253,6 +253,8 @@ class AltaController extends Controller{
             $Person->setTimezone($this->_datPerson->timeZone);
             $Person->setAdmin(0);
             $Person->setActive(1);
+            $Person->setMailing(1);
+            $Person->setLastLogin(new \DateTime());
 
             $em->persist($Person);
             $em->flush();
