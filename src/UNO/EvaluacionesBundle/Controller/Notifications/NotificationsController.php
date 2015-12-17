@@ -17,25 +17,13 @@ class NotificationsController extends Controller {
 
     public function testAction(){
 
-        /*$message = \Swift_Message::newInstance()
-            ->setSubject('Mail de prueba')
-            ->setFrom('noreplymx@unoi.com')
-            ->setTo('jbravo@clb.unoi.com')
-            ->setBody(
-                $this->renderView(
-                    'UNOEvaluacionesBundle:Notifications:newSurvey.html.twig',
-                    array('name' => 'JULZ')
-                ),
-                'text/html'
-            );
-        $this->get('mailer')->send($message);*/
         $kernel = $this->get('kernel');
         $application = new Application($kernel);
         $application->setAutoExit(false);
 
         $input = new ArrayInput(array(
             'command' => 'mailing:send',
-            'frequency' => 'weekly',
+            'frequency' => 'daily',
         ));
 
         $output = new BufferedOutput();

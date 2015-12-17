@@ -26,32 +26,17 @@ class MailingCommand extends ContainerAwareCommand{
     protected function execute(InputInterface $input, OutputInterface $output){
 
         $frequency = $input->getArgument('frequency');
-        $mesg = '';
 
         switch($frequency){
 
             case 'daily':
 
-                $mesg = $this->buildMessage(
-                        'Resumen diario',
-                        'UNOEvaluacionesBundle:Notifications:newSurvey.html.twig',
-                        array(
-                            'name' => 'Julio'
-                        ),
-                        $this->getDailyRecipients()
-                    );
+                $this->dailyBriefNewNotifications($output);
                 break;
 
             case 'weekly':
 
-                $this->buildMessage(
-                    'Resumen Semanal',
-                    'UNOEvaluacionesBundle:Notifications:newSurvey.html.twig',
-                    array(
-                        'name' => 'Julio'
-                    ),
-                    $this->getWeeklyRecipients()
-                );
+                $this->getWeeklyRecipients($output);
                 break;
 
             default:
@@ -60,31 +45,55 @@ class MailingCommand extends ContainerAwareCommand{
                 break;
         }
 
-        $output->writeln($mesg);
+        $output->writeln('Proceso de envío de notificaciones finalizado');
     }
 
-    private function buildMessage($title, $view, $params, $recipients){
+    protected function dailyBriefNewNotifications($output){
+
+        $response = json_decode(file_get_contents($this->getContainer()->get('router')->generate('APINotificationsNewSurveys',array('daysago'=>'1'),true), false), true);
+
+        foreach ($response as $p) {
+
+            if($p['Email'] != '' && $p['Email'] != null){
+
+                $mesg = $this->buildMessage(
+                    'Resumen diario',
+                    'UNOEvaluacionesBundle:Notifications:newSurvey.html.twig',
+                    array(
+                        'name' => $p['Nombre'],
+                        'surveys' => $p['NewSurveys']
+                    ),
+                    $p['Email']
+                );
+
+                $output->writeln("Se envió ".$mesg." mensaje a ".$p['Email']);
+            }
+
+            else{
+
+                $output->writeln("El contacto ".$p['Nombre']." carece de E-mail, no se ha enviado nada");
+
+            }
+        }
+    }
+
+    protected function weeklyRecipients($output){
+
+        return array('jbravo@clb.unoi.com');
+    }
+
+
+    private function buildMessage($title, $view, $params, $recipient){
 
         $message = \Swift_Message::newInstance()
             ->setSubject($title)
             ->setFrom('noreplymx@unoi.com')
-            ->setTo($recipients)
+            ->setTo($recipient)
             ->setBody(
                 $this->getContainer()->get('templating')->render($view, $params),
                 'text/html'
             );
-        $i = $this->getContainer()->get('mailer')->send($message);
 
-        return 'Finalizado. Se enviaron '.$i.' mensajes';
-    }
-
-    private function getDailyRecipients(){
-
-        return array('jbravo@clb.unoi.com','bovarbj90@gmail.com');
-    }
-
-    private function getWeeklyRecipients(){
-
-        return array('jbravo@clb.unoi.com');
+        return $this->getContainer()->get('mailer')->send($message);
     }
 }
