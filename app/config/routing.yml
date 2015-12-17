@@ -217,3 +217,8 @@ APIResultBySurveyPerson:
 MailTest:
   path: /mailing/test
   defaults: {_controller: UNOEvaluacionesBundle:Notifications/Notifications:test}
+APINotificationsNewSurveys:
+  path: /api/v0/notifications/newsurveys/daysago/{daysago}
+  defaults: {_controller: UNOEvaluacionesBundle:API/APINotifications:newsurveys}
+  requirements:
+              daysago: \d+
