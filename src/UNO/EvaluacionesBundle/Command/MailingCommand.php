@@ -11,6 +11,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class MailingCommand extends ContainerAwareCommand{
 
+    /**
+     * Configuración del comando
+     */
     protected function configure()
     {
         $this
@@ -23,6 +26,13 @@ class MailingCommand extends ContainerAwareCommand{
             );
     }
 
+    /**
+     *
+     * Método de ejecución del comando
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
     protected function execute(InputInterface $input, OutputInterface $output){
 
         $frequency = $input->getArgument('frequency');
@@ -36,7 +46,7 @@ class MailingCommand extends ContainerAwareCommand{
 
             case 'weekly':
 
-                $this->getWeeklyRecipients($output);
+                $this->weeklyBriefDirector($output);
                 break;
 
             default:
@@ -48,40 +58,98 @@ class MailingCommand extends ContainerAwareCommand{
         $output->writeln('Proceso de envío de notificaciones finalizado');
     }
 
+    /**
+     * Método para resumen diario de nuevas notificaciones
+     *
+     * @param $output
+     */
+
     protected function dailyBriefNewNotifications($output){
 
         $response = json_decode(file_get_contents($this->getContainer()->get('router')->generate('APINotificationsNewSurveys',array('daysago'=>'1'),true), false), true);
 
-        foreach ($response as $p) {
+        if(!isset ($response['Error'])){
 
-            if($p['Email'] != '' && $p['Email'] != null){
+            foreach ($response as $p) {
 
-                $mesg = $this->buildMessage(
-                    'Resumen diario',
-                    'UNOEvaluacionesBundle:Notifications:newSurvey.html.twig',
-                    array(
-                        'name' => $p['Nombre'],
-                        'surveys' => $p['NewSurveys']
-                    ),
-                    $p['Email']
-                );
+                if($p['Email'] != '' && $p['Email'] != null){
 
-                $output->writeln("Se envió ".$mesg." mensaje a ".$p['Email']);
-            }
+                    $mesg = $this->buildMessage(
+                        'Resumen diario',
+                        'UNOEvaluacionesBundle:Notifications:newSurvey.html.twig',
+                        array(
+                            'name' => $p['Nombre'],
+                            'surveys' => $p['NewSurveys']
+                        ),
+                        $p['Email']
+                    );
 
-            else{
+                    $output->writeln("Se envió ".$mesg." mensaje a ".$p['Email']);
 
-                $output->writeln("El contacto ".$p['Nombre']." carece de E-mail, no se ha enviado nada");
+                } else{
 
+                    $output->writeln("El contacto ".$p['Nombre']." carece de E-mail, no se ha enviado nada");
+                }
             }
         }
     }
 
-    protected function weeklyRecipients($output){
+    /**
+     * Resumen semanal del director
+     *
+     * @param $output
+     */
 
-        return array('jbravo@clb.unoi.com');
+    protected function weeklyBriefDirector($output){
+
+        $dirs = $this->obtenDirectores();
+
+        if(!$dirs){
+
+            $output->writeln('No se encontraron directores registrados en la plataforma');
+
+        }else{
+
+            foreach($dirs as $d){
+
+                $top5 = json_decode(file_get_contents($this->getContainer()->get('router')->generate('APINotificationsTopPersons',array('schoolid'=>$d['idescuela']),true), false), true);
+                $progressSchool = json_decode(file_get_contents($this->getContainer()->get('router')->generate('APIStatsProgressBySchool',array('schoolid'=>$d['idescuela']),true), false), true);
+                $progressPerson = json_decode(file_get_contents($this->getContainer()->get('router')->generate('APIStatsProgressByPerson',array('personid'=>$d['persona']),true), false), true);
+
+                if($d['email'] != '' && $d['email'] != null){
+
+                    $mesg = $this->buildMessage(
+                        'Resumen semanal',
+                        'UNOEvaluacionesBundle:Notifications:weeklyBrief.html.twig',
+                        array(
+                            'name' => $d['nombre'],
+                            'top5' => $top5,
+                            'progressSchool' => $progressSchool,
+                            'progressPerson' => $progressPerson),
+                        $d['email']);
+
+                    $output->writeln("Se envió ".$mesg." mensaje a ".$d['email']);
+
+                } else{
+
+                    $output->writeln("El contacto ".$d['nombre']." carece de E-mail, no se ha enviado nada");
+                }
+            }
+        }
     }
 
+    /**
+     *
+     * Construcción de mensaje para correo
+     *
+     * @param $title
+     * @param $view
+     * @param $params
+     * @param $recipient
+     * @return int
+     * @throws \Exception
+     * @throws \Twig_Error
+     */
 
     private function buildMessage($title, $view, $params, $recipient){
 
@@ -95,5 +163,29 @@ class MailingCommand extends ContainerAwareCommand{
             );
 
         return $this->getContainer()->get('mailer')->send($message);
+    }
+
+    /**
+     * Obtención de personas con perfil de director
+     * @return mixed
+     */
+
+    private function obtenDirectores(){
+
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $directores = $qb->select("p.personid as persona, p.email as email, CONCAT(p.name,' ',p.surname) as nombre, s.schoolid as idescuela, s.school as escuela")
+            ->from('UNOEvaluacionesBundle:School','s')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.schoolid = s.schoolid')
+            ->innerJoin('UNOEvaluacionesBundle:Profile','pr','WITH','ps.profileid = pr.profileid AND pr.profilecode = :profile')
+            ->innerJoin('UNOEvaluacionesBundle:Person','p','WITH','p.personid = ps.personid AND p.mailing = 1')
+            ->where('p.personid = 2') // Borrar
+            ->setParameter('profile', 'COACH') //Cambiar por DIR
+            ->groupBy('p.personid')
+            ->getQuery()
+            ->getResult();
+
+        return $directores;
     }
 }

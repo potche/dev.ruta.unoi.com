@@ -222,3 +222,8 @@ APINotificationsNewSurveys:
   defaults: {_controller: UNOEvaluacionesBundle:API/APINotifications:newsurveys}
   requirements:
               daysago: \d+
+APINotificationsTopPersons:
+  path: /api/v0/notifications/topPersons/school/{schoolid}
+  defaults: {_controller: UNOEvaluacionesBundle:API/APINotifications:toppersonsbyschol}
+  requirements:
+              schoolid: \d+
