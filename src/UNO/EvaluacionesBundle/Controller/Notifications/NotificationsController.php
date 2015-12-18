@@ -23,7 +23,7 @@ class NotificationsController extends Controller {
 
         $input = new ArrayInput(array(
             'command' => 'mailing:send',
-            'frequency' => 'daily',
+            'frequency' => 'weekly',
         ));
 
         $output = new BufferedOutput();
