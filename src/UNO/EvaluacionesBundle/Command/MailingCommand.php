@@ -78,6 +78,7 @@ class MailingCommand extends ContainerAwareCommand{
                         'Resumen diario',
                         'UNOEvaluacionesBundle:Notifications:newSurvey.html.twig',
                         array(
+                            'persona' => $p['Persona'],
                             'name' => $p['Nombre'],
                             'surveys' => $p['NewSurveys']
                         ),
@@ -122,6 +123,7 @@ class MailingCommand extends ContainerAwareCommand{
                         'Resumen semanal',
                         'UNOEvaluacionesBundle:Notifications:weeklyBrief.html.twig',
                         array(
+                            'persona' => $d['persona'],
                             'name' => $d['nombre'],
                             'top5' => $top5,
                             'progressSchool' => $progressSchool,
