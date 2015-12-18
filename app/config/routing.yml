@@ -227,3 +227,13 @@ APINotificationsTopPersons:
   defaults: {_controller: UNOEvaluacionesBundle:API/APINotifications:toppersonsbyschol}
   requirements:
               schoolid: \d+
+ajaxMailingStatus:
+    path:   /mailing/setstatus
+    defaults: {_controller: UNOEvaluacionesBundle:Notifications/Notifications:mailingstatus}
+    methods: [POST]
+urlDisableNotifications:
+    path: /mailing/disable/{personid}
+    defaults: {_controller: UNOEvaluacionesBundle:Notifications/Notifications:urldisablemailing, personid = null}
+    requirements:
+                  personid: \d+
+

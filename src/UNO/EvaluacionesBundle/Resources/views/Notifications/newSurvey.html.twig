@@ -29,6 +29,15 @@
         </tbody>
     </table>
     <br>
-    <p>Para responderla ahora, haz click en el botón de responder de una evaluación, o si lo prefieres, ingresa a <a href="//ruta.unoi.com/listar">Ruta UNOi</a> para ver tu lista de evaluaciones</p>
+    <div class="row text-center">
+        <h5>Para responderla ahora, haz click en el botón de responder de una evaluación, o si lo prefieres, ingresa a <a href="//ruta.unoi.com/listar">Ruta UNOi</a> para ver tu lista de evaluaciones</h5>
+        <a href="{{ absolute_url(path('listar')) }}" class="btn btn-sm btn-info"> {{ "Ver mi lista" }}</a>
+    </div>
     <br>
+{% endblock %}
+{% block unsuscribe %}
+    <div class="row text-center">
+        <h5>{{ "Si deseas dejar de recibir mensajes, haz click en el siguiente botón" }}</h5>
+        <a href="{{ absolute_url(path('urlDisableNotifications',{'personid': persona})) }}" class="btn btn-sm btn-danger"> {{ "Dejar de recibir mensajes" }}</a>
+    </div>
 {% endblock %}
