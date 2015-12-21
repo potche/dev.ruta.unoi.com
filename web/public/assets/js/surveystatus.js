@@ -12,12 +12,7 @@ var SurveyTable = function(){
 
                 accion = $(this).hasClass('enable-survey');
                 survey = $(this).attr('id');
-            });
 
-            //Manejo evento para enviar cambio de estado de evaluación
-            $('#confInactivar').click(function(){
-
-                $(this).modal("hide");
                 $.ajax({
 
                     url: urlPost,
@@ -28,7 +23,31 @@ var SurveyTable = function(){
                     }
                 }).done(function (data){
 
-                    window.location.href=redirectUrl;
+                    if(data.status == 200){
+
+                        if (accion == true ){
+
+                            $("#"+survey).attr( "class","disable-survey btn btn-xs btn-danger").html("Inactivar")
+
+                        }else{
+
+                            $("#"+survey).attr( "class","enable-survey btn btn-xs btn-success").html("Activar");
+                        }
+
+                        $.bootstrapGrowl("<h4>Cambio exitoso</h4><p>"+data.message+"</p>", {
+                            type: 'success',
+                            delay: 5000,
+                            allow_dismiss: true
+                        });
+                    }
+                    else{
+
+                        $.bootstrapGrowl("<h4>Error</h4><p>"+data.message+"</p>", {
+                            type: 'error',
+                            delay: 5000,
+                            allow_dismiss: true
+                        });
+                    }
                 });
             });
 

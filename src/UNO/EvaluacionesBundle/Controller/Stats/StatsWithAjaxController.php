@@ -43,7 +43,7 @@ class StatsWithAjaxController extends Controller{
     private $_andSurvey = "S.surveyid != ''";
 
     /**
-     * @Route("/estadistica")
+     * @Route("/estadisticas")
      *
      * Muestra las estadisticas
      */
@@ -51,7 +51,7 @@ class StatsWithAjaxController extends Controller{
 
         $session = $request->getSession();
         $session->start();
-        $baseUrl = "http://dev.evaluaciones.unoi.com".$this->container->get('router')->getContext()->getBaseUrl();
+        $baseUrl = "https://pre-ruta.unoi.com".$this->container->get('router')->getContext()->getBaseUrl();
 
         //valida usuario con session iniciada
         if ($session->get('logged_in')) {
@@ -60,12 +60,12 @@ class StatsWithAjaxController extends Controller{
             if (array_intersect(array('SuperAdmin','Director','COACH'), $this->_profile)) {
                 if (array_intersect(array('SuperAdmin','COACH'), $this->_profile)) {
                     #vista para SuperAdmin y COACH
+                    //echo "$baseUrl/api/v0/catalog/schools";
                     $schoolListAPI = $this->getAPI("$baseUrl/api/v0/catalog/schools");
                     $schoolList = $this->createSchoolList($schoolListAPI);
 
                     $surveysListAPI = $this->getAPI("$baseUrl/api/v0/catalog/surveys");
                     $surveyList = $this->createSurveyList($surveysListAPI);
-
 
                     return $this->render('UNOEvaluacionesBundle:Stats:stats.html.twig',
                         array(
@@ -75,13 +75,27 @@ class StatsWithAjaxController extends Controller{
                     );
                 }else {
                     #vista para Director
-                    return $this->render('UNOEvaluacionesBundle:Stats:stats.html.twig');
+                    $this->setSchooIdPerson($session);
+
+                    $surveysListAPI = $this->getAPI("$baseUrl/api/v0/catalog/surveys");
+                    $surveyList = $this->createSurveyList($surveysListAPI);
+
+                    return $this->render('UNOEvaluacionesBundle:Stats:statsDir.html.twig',
+                        array(
+                            'nameSchool' => $this->_nameSchool,
+                            'surveyList' => $surveyList
+                        )
+                    );
                 }
             }else {
                 return $this->redirect("/inicio");
             }
         }else{
-            return $this->redirect("/");
+
+            return $this->redirectToRoute('login',array(
+                'redirect' => 'estadistica',
+                'withParams' => 'none'
+            ));
         }
     }
 
@@ -98,11 +112,18 @@ class StatsWithAjaxController extends Controller{
     }
 
     public function getAPI($service_url){
-        $curl = curl_init($service_url);
+        
+        /*$curl = curl_init($service_url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         $curl_response = curl_exec($curl);
         curl_close($curl);
-        return($curl_response);
+
+        var_dump('url: '.$service_url);
+        var_dump('respuesta: '.$curl_response);
+        return($curl_response);*/
+
+        return file_get_contents($service_url, false);
+
     }
 
     private function createSchoolList($schoolList){
@@ -115,11 +136,29 @@ class StatsWithAjaxController extends Controller{
     }
 
     private function createSurveyList($surveyList){
+
         $arraySurvey = array();
         foreach(json_decode($surveyList) as $value){
             array_push( $arraySurvey, $value->surveyid .'-'. $value->title );
         }
 
         return json_encode($arraySurvey);
+    }
+
+    /**
+     * @param $session
+     *
+     * filtra la escuela que puede ver el usuario
+     */
+    private function setSchooIdPerson($session){
+        $schoolIdPerson = '';
+        $_schoolIdPerson = json_decode($session->get('schoolIdS'));
+        if (!array_intersect(array('SuperAdmin','COACH'), $this->_profile)) {
+            foreach($_schoolIdPerson as $value){
+                $schoolIdPerson .= $value->schoolid. ', ';
+                $this->_nameSchool = $value->schoolid.'-'.$value->school;
+            }
+        }
+        $this->_schoolIdPerson = rtrim($schoolIdPerson, ', ');
     }
 }

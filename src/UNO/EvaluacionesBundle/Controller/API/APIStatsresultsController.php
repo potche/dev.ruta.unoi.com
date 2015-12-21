@@ -8,6 +8,7 @@
 
 namespace UNO\EvaluacionesBundle\Controller\API;
 
+use Proxies\__CG__\UNO\EvaluacionesBundle\Entity\Surveyxprofile;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 class APIStatsresultsController extends Controller {
 
     public function allstatsAction(Request $request){
+
 
         $response = new JsonResponse();
         $response->setData($this->getAll());
@@ -149,6 +151,41 @@ class APIStatsresultsController extends Controller {
             }
         }
         return $statsAll;
+    }
+
+    private function getByParams($schoolid = null, $surveyid = null, $profileid = null, $levelid=null, $personid = null ){
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQuerybuilder();
+
+        $condition = 'su.surveyid > 1';
+        $condition = $schoolid != null ? $condition.' AND ps.schoolid = '.$schoolid : $condition;
+        $condition = $surveyid != null ? $condition.' AND su.surveyid = '.$surveyid : $condition;
+        $condition = $profileid != null ? $condition.' AND ps.profileid = '.$profileid : $condition;
+        $condition = $levelid != null ? $condition.' AND ps.schoollevelid = '.$levelid : $condition;
+        $condition = $personid != null ? $condition.' AND ps.personid = '.$personid : $condition;
+
+        /*$byParameters = $qb->select("su.surveyid as id, su.title as titulo, ps.personid as persona, CONCAT(p.name,' ',p.surname) as nombre, COALESCE(a.idaction,0) as estatus, o.option as opcion, COUNT(DISTINCT(ans.answerid)) as resp")
+            ->from('UNOEvaluacionesBundle:Surveyxprofile','sxp')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.profileid = sxp.profileProfileid AND ps.schoollevelid = sxp.schoollevelid')
+            ->innerJoin('UNOEvaluacionesBundle:Person','p','WITH','p.personid = ps.personid')
+            ->innerJoin('UNOEvaluacionesBundle:Survey','su','WITH','su.surveyid = sxp.surveySurveyid')
+            ->leftJoin('UNOEvaluacionesBundle:Log','l','WITH','l.surveySurveyid = su.surveyid AND l.personPersonid = ps.personid')
+            ->leftJoin('UNOEvaluacionesBundle:Action','a','WITH','a.idaction = l.actionaction = a.idaction')
+            ->leftJoin('UNOEvaluacionesBundle:Questionxsurvey','qxs','WITH','su.surveyid = qxs.surveySurveyid')
+            ->leftJoin('UNOEvaluacionesBundle:Optionxquestion','oxq','WITH','oxq.questionxsurvey = qxs.questionxsurveyId')
+            ->leftJoin('UNOEvaluacionesBundle:Option','o','WITH','o.optionid = oxq.optionOptionid')
+            ->leftJoin('UNOEvaluacionesBundle:Answer','ans','WITH','ans.optionxquestion = oxq.optionxquestionId')
+        */
+
+
+
+
+
+
+
+
+
     }
 
 
