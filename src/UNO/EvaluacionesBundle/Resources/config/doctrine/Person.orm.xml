@@ -79,5 +79,12 @@
         <option name="default">1</option>
       </options>
     </field>
+    <field name="mailing" type="boolean" column="mailing" nullable="false">
+      <options>
+        <option name="default">1</option>
+      </options>
+    </field>
+    <field name="lastLogin" type="datetime" column="lastLogin" nullable="false">
+    </field>
   </entity>
 </doctrine-mapping>

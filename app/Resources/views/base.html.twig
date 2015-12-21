@@ -146,6 +146,20 @@
                                 </li>
                                 <li id="profile">
                                 </li>
+                                <li class="dropdown-header text-center">
+                                    {% if app.session.get('mailing') == 1 %}
+                                        <i id="currentMailing" class="fa fa-check-circle text-success"></i>
+                                    {% else %}
+                                        <i id="currentMailing" class="fa fa-times-circle text-danger"></i>
+                                    {% endif %} {{ " Mensajes via mail" }}
+                                </li>
+                                <li class="text-left">
+                                    {% if app.session.get('mailing') == 1 %}
+                                        <a href="#" id="{{ app.session.get('personIdS') }}" class="disable-notif btn btn-xs btn-danger" style="display: block; width: 85px;"> Inactivar</a>
+                                    {% else %}
+                                        <a href="#" id="{{ app.session.get('personIdS') }}" class="enable-notif btn btn-xs btn-success" style="display: block; width: 85px;"> Activar</a>
+                                    {% endif %}
+                                </li>
                                 <li class="divider"></li>
                                 <li>
                                     <a href="{{ path('logout') }}"><i class="fa fa-sign-out pull-right" style="opacity: 0.8;"></i> Cerrar sesión</a>
@@ -210,7 +224,8 @@
         <script src="https://staticmx.unoi.com/global/js/plugins.js"></script>
         <script src="https://staticmx.unoi.com/global/js/app.js"></script>
         <script src="https://staticmx.unoi.com/global/js/vendor/modernizr-respond.min.js"></script>
-
+        <script src="https://staticmx.unoi.com/global/js/vendor/modernizr-respond.min.js"></script>
+        <script src="{{ asset('public/assets/js/notificationStatus.js') }}"></script>
         <script src="{{ asset('public/assets/js/base.js')}}"></script>
         <script>
             //-- Load and execute javascript code used only in this page
@@ -227,6 +242,7 @@
                 $('#videoWellcome').modal();
             }
         </script>
+            <script>$(function(){ NotifStatus.init('{{ url('ajaxMailingStatus') }}'); });</script>
     {% endblock %}
     </body>
 </html>

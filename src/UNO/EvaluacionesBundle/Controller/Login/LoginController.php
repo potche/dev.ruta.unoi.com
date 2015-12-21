@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use UNO\EvaluacionesBundle\Controller\Login\Browser;
 use UNO\EvaluacionesBundle\Controller\Login\BodyMail;
 use UNO\EvaluacionesBundle\Controller\Login\Encrypt;
@@ -95,16 +96,24 @@ class LoginController extends Controller{
      * Muestra el formulario de Login
      */
     public function indexAction(Request $request){
+
         $session = $request->getSession();
+
+        $redir = $request->get('redirect') == null ? 'none' : $request->get('redirect');
+        $with = $request->get('with') == null ? 'none' : $request->get('with');
+
         $session->start();
         $dataBrowser = new Browser();
         if (!$session->get(logged_in)) {
             return $this->render('UNOEvaluacionesBundle:Login:index.html.twig', array(
                 'browser' => $dataBrowser->getBrowser(),
-                'browserVersion' => $dataBrowser->getVersion()
+                'browserVersion' => $dataBrowser->getVersion(),
+                'redir' => $redir,
+                'with' => $with
             ));
         }else{
-            return $this->redirect("/inicio");
+
+            return $this->redirectToRoute("inicio");
         }
     }
 
@@ -275,6 +284,11 @@ class LoginController extends Controller{
         $encrypt = encrypt::encrypt($this->_pass);
         $em = $this->getDoctrine()->getManager();
         $this->_personDB = $em->getRepository(PersonDB_L)->findOneBy(array('user' => $this->_user, 'password' => $encrypt));
+        if($this->_personDB){
+            $this->_personDB->setLastLogin(new \DateTime());
+            $em->flush();
+        }
+
     }
 
     /**
@@ -352,8 +366,22 @@ class LoginController extends Controller{
         $session->set('privilegeS', $this->getPrivilege());
         $session->set('profileS', $this->getProfile());
         $session->set('schoolIdS', $this->getSchoolId());
+        $session->set('mailing', $this->_personDB->getMailing());
         $this->setCookie();
+        $this->setSurveys($this->_personDB->getPersonid(),$session);
         return true;
+    }
+
+    private function setSurveys($pid, $session){
+
+        $response = json_decode(file_get_contents($this->generateUrl('APISurveysPerson',array('personid'=>$pid),true), false), true);
+
+        if(isset ($response['Error'])){
+
+            $session->set('authorized_in',base64_encode(json_encode(array())));
+        }
+
+        $session->set('authorized_in',base64_encode(json_encode(array_column($response,'id'))));
     }
 
     /**
@@ -527,33 +555,41 @@ class LoginController extends Controller{
 
         $session = $request->getSession();
         $session->start();
-        if ($session->get('logged_in')) {
+        if (!$session->get('logged_in')) {
 
-            if (in_array('SuperAdmin', $this->setProfile($session))) {
-                $listUser = array();
-                $em = $this->getDoctrine()->getManager();
-                $qb = $em->createQueryBuilder();
-
-                $_person = $qb
-                    ->select("P.user, P.password")
-                    ->from('UNOEvaluacionesBundle:Person ','P')
-                    ->getQuery()
-                    ->getResult();
-                if (!empty($_person)) {
-                    foreach($_person as $value){
-                        array_push($listUser,array( 'user' => $value['user'],'password' => utf8_encode(encrypt::decrypt($value['password']))) );
-                    }
-
-                    #-----envia la respuesta en JSON-----#
-                    $response = new JsonResponse();
-                    $response->setData($listUser);
-
-                    return $response;
-                }
-            }else{
-                throw $this->createNotFoundException('Not Found');
-            }
+            throw new AccessDeniedHttpException('Necesitas iniciar sesión');
         }
-    }
 
+        if (!in_array('SuperAdmin', $this->setProfile($session))) {
+
+            throw $this->createNotFoundException('Not Found');
+
+
+        }
+        $listUser = array();
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $_person = $qb
+            ->select("P.user, P.password")
+            ->from('UNOEvaluacionesBundle:Person ','P')
+            ->getQuery()
+            ->getResult();
+
+        if (empty($_person)) {
+
+            throw $this->createNotFoundException('Not Found');
+        }
+
+        foreach($_person as $value){
+            array_push($listUser,array( 'user' => $value['user'],'password' => utf8_encode(encrypt::decrypt($value['password']))) );
+        }
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($listUser);
+
+        return $response;
+
+    }
 }

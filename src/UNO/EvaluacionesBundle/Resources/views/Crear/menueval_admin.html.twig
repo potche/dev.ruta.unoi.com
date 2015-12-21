@@ -119,7 +119,11 @@
                                 <td class="text-center">
                                     <div class="btn-group btn-group-xs">
                                         {% if survey['activa'] %}
+<<<<<<< HEAD
                                         <a href="#" id="{{ survey['id'] }}" class="disable-survey btn btn-xs btn-danger" style="display: block; width: 85px;"> Inactivar</a>
+=======
+                                        <a href="#" id="{{ survey['id'] }}" class="disable-survey btn btn-xs btn-danger" style="display: block; width: 85px;" data-toggle="modal" data-target="#disable_confirm" data-placement="top"> Inactivar</a>
+>>>>>>> 4e638d5e6b2298e16560ff0b0cb76baba3cbace2
                                         {% else %}
                                         <a href="#" id="{{ survey['id'] }}" class="enable-survey btn btn-xs btn-success" style="display: block; width: 85px;"> Activar</a>
                                         {% endif %}

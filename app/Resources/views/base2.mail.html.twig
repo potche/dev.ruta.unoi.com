@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no"/>
+    {% block stylesheets %}
+        <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/bootstrap.min.css" type="text/css">
+        <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/plugins.css" type="text/css">
+        <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/main.css" type="text/css">
+        <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/themes/modern.css" type="text/css">
+    {% endblock %}
+
+</head>
+<body style="background-color: #FFFFFF;">
+<div id="page-content">
+    <div class="row">
+    </div>
+    <div class="row">
+        <div class="widget">
+            <div class="widget-advanced">
+                <div class="widget-header text-center themed-background-dark">
+                    <h3 class="widget-content-light">
+                        <a href="#">Plataforma de Diagnóstico Institucional</a><br>
+                        <small>UNO Internacional</small>
+                    </h3>
+                </div>
+                <div class="widget-main">
+                    <a href="javascript:void(0)" class="widget-image-container animation-fadeIn">
+                        <span class="widget-icon themed-background"><img src="{{ absolute_url(asset('public/assets/images/login/logoUno.png'))}}" style="width: 60%; margin-bottom: 2px;"/></span>
+                    </a>
+                    <hr>
+                    {% block body %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row text-center">
+        <h3 class="aviso"><strong>Aviso Legal</strong></h3>
+        <p class="aviso" style="text-align: justify;">
+            {{ "Este correo electrónico, así como los archivos adjuntos que contenga, es confidencial de conformidad con las leyes aplicables, y es para uso exclusivo del destinatario al que expresamente se le ha enviado. Si usted no es el destinatario legítimo del mismo, deberá reportarlo al remitente del correo y borrarlo inmediatamente. Cualquier revisión, retransmisión, divulgación, difusión o cualquier otro uso de este correo, por personas o entidades distintas a las del destinatario legítimo, queda expresamente prohibido. Los derechos de propiedad respecto de la información, material, documentos electrónicos, bases de datos, diseños, y los distintos elementos en él contenidos, son titularidad de alguna de las empresas de Grupo Santillana en México. Este correo electrónico, no pretende ni debe ser considerado como constitutivo de ninguna relación legal, contractual o de otra índole similar." }}
+        </p>
+    </div>
+    {% block unsuscribe %}{% endblock %}
+</div>
+</body>
+</html>

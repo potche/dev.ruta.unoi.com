@@ -29,20 +29,14 @@ class APIResultsController extends Controller{
      * defaults={"personId" = null})
      * @Method({"GET"})
      */
-    public function resultSurveyPersonAction(Request $request, $surveyId, $personId){
+    public function resultSurveyPersonAction($surveyId, $personId){
 
-        $session = $request->getSession();
-        $session->start();
-        if ($session->get('logged_in')) {
-            $surveyPerson = $this->getResQuery(array('personId' => $personId, 'surveyId' => $surveyId), 'P.personid = :personId AND S.surveyid = :surveyId');
+        $surveyPerson = $this->getResQuery(array('personId' => $personId, 'surveyId' => $surveyId), 'P.personid = :personId AND S.surveyid = :surveyId');
 
-            if ($surveyPerson) {
-                $result = $this->getJSON($surveyPerson);
-            } else {
-                $result = APIUtils::getErrorResponse(404);
-            }
-        }else{
-            $result = APIUtils::getErrorResponse(403);
+        if ($surveyPerson) {
+            $result = $this->getJSON($surveyPerson);
+        } else {
+            $result = APIUtils::getErrorResponse(404);
         }
 
         #-----envia la respuesta en JSON-----#
@@ -141,20 +135,14 @@ class APIResultsController extends Controller{
      * requirements={"personId" = "\d+"})
      * @Method({"GET"})
      */
-    public function resultPersonAction(Request $request, $personId){
+    public function resultPersonAction($personId){
 
-        $session = $request->getSession();
-        $session->start();
-        if ($session->get('logged_in')) {
-            $person = $this->getResQuery(array('personId' => $personId), 'P.personid = :personId');
+        $person = $this->getResQuery(array('personId' => $personId), 'P.personid = :personId');
 
-            if ($person) {
-                $result = $this->getJSON($person);
-            } else {
-                $result = APIUtils::getErrorResponse(404);
-            }
-        }else{
-            $result = APIUtils::getErrorResponse(403);
+        if ($person) {
+            $result = $this->getJSON($person);
+        } else {
+            $result = APIUtils::getErrorResponse(404);
         }
 
         #-----envia la respuesta en JSON-----#
@@ -204,7 +192,7 @@ class APIResultsController extends Controller{
 
         $_surveyResultSurveyPerson = $qb
             ->select("PS.schoolid, Sc.schoolcode, Sc.school, P.personid, P.user, P.name, P.surname, S.surveyid, S.title, S.description, S.active")
-            ->addSelect("S.closingdate, S.creationdate, QS.order as orderQ, Ac.actioncode, Q.questionid, Q.question, A.answerid, A.answer, A.comment, OQ.order as orderO, O.optionid, O.option")
+            ->addSelect("S.closingdate, S.creationdate, L.date as answerDate, QS.order as orderQ, Ac.actioncode, Q.questionid, Q.question, Sub.subcategory, A.answerid, A.answer, A.comment, OQ.order as orderO, O.optionid, O.option")
             ->from('UNOEvaluacionesBundle:Person ','P')
             ->innerJoin('UNOEvaluacionesBundle:Personschool','PS', 'WITH', 'P.personid = PS.personid')
             ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile ','SP', 'WITH', 'PS.profileid = SP.profileProfileid AND PS.schoollevelid = SP.schoollevelid')
@@ -215,6 +203,7 @@ class APIResultsController extends Controller{
             ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','QS', 'WITH', 'S.surveyid = QS.surveySurveyid')
             ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','OQ', 'WITH', 'QS.questionxsurveyId = OQ.questionxsurvey')
             ->innerJoin('UNOEvaluacionesBundle:Question','Q', 'WITH', 'QS.questionxsurveyId = Q.questionid')
+            ->innerJoin('UNOEvaluacionesBundle:Subcategory','Sub', 'WITH', 'Q.subcategorySubcategoryid = Sub.subcategoryid')
             ->leftJoin('UNOEvaluacionesBundle:Answer','A', 'WITH', "OQ.optionxquestionId = A.optionxquestion AND P.personid = A.personPersonid")
             ->innerJoin('UNOEvaluacionesBundle:Option','O', 'WITH', 'OQ.optionOptionid = O.optionid')
             ->where('S.active = 1')
@@ -283,6 +272,7 @@ class APIResultsController extends Controller{
                         'active' => $value['active'],
                         'closingDate' => $value['closingdate'],
                         'creationDate' => $value['creationdate'],
+                        'answerDate' => $value['answerDate'],
                         'schoolId' => $value['schoolid'],
                         'personId' => $value['personid'],
                         'questions' => array()
@@ -296,6 +286,7 @@ class APIResultsController extends Controller{
                         'orderQ' => $value['orderQ'],
                         'questionId' => $value['questionid'],
                         'question' => $value['question'],
+                        'category' => $value['subcategory'],
                         'schoolId' => $value['schoolid'],
                         'personId' => $value['personid'],
                         'surveyId' => $value['surveyid'],
@@ -358,6 +349,7 @@ class APIResultsController extends Controller{
                                         'orderQ' => $valQuestion['orderQ'],
                                         'questionId' => $valQuestion['questionId'],
                                         'question' => $valQuestion['question'],
+                                        'category' => $valQuestion['category'],
                                         'options' => $valQuestion['options'],
                                         'answers' => $answer
                                     ));
@@ -370,6 +362,7 @@ class APIResultsController extends Controller{
                                 'active' => $valSurvey['active'],
                                 'closingDate' => $valSurvey['closingDate'],
                                 'creationDate' => $valSurvey['creationDate'],
+                                'answerDate' => $valSurvey['answerDate'],
                                 'questions' => $valSurvey['questions']
                             ));
                         }

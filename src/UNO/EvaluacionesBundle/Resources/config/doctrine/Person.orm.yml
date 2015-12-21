@@ -105,4 +105,13 @@ UNO\EvaluacionesBundle\Entity\Person:
             nullable: false
             options:
                 default: '1'
+        mailing:
+            type: boolean
+            nullable: false
+            options:
+                default: '1'
+        lastLogin:
+            type: datetime
+            nullable: false
+            column: lastLogin
     lifecycleCallbacks: {  }

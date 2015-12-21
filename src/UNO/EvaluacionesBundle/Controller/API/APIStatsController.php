@@ -19,7 +19,6 @@ class APIStatsController extends Controller
 
         $response = new JsonResponse();
         $response->setData($this->getAll());
-
         return $response;
     }
 
@@ -27,7 +26,6 @@ class APIStatsController extends Controller
 
         $response = new JsonResponse();
         $response->setData($this->getAll(null,$surveyid));
-
         return $response;
     }
 
@@ -35,7 +33,6 @@ class APIStatsController extends Controller
 
         $response = new JsonResponse();
         $response->setData($this->getAll(null,null,null,null,$schoolid));
-
         return $response;
     }
 
@@ -43,7 +40,6 @@ class APIStatsController extends Controller
 
         $response = new JsonResponse();
         $response->setData($this->getAll(null,null,null,$levelid));
-
         return $response;
     }
 
@@ -51,7 +47,6 @@ class APIStatsController extends Controller
 
         $response = new JsonResponse();
         $response->setData($this->getAll(null,null,$profileid));
-
         return $response;
     }
 
@@ -59,7 +54,6 @@ class APIStatsController extends Controller
 
         $response = new JsonResponse();
         $response->setData($this->getAll($personid));
-
         return $response;
     }
 
@@ -67,7 +61,6 @@ class APIStatsController extends Controller
 
         $response = new JsonResponse();
         $response->setData($this->getAll(null,null,$profileid,$levelid));
-
         return $response;
     }
 
@@ -75,7 +68,6 @@ class APIStatsController extends Controller
 
         $response = new JsonResponse();
         $response->setData($this->getAll(null,null,$profileid,$levelid, $schoolid));
-
         return $response;
     }
 
@@ -83,16 +75,13 @@ class APIStatsController extends Controller
 
         $response = new JsonResponse();
         $response->setData($this->getAll(null,null,null,$levelid,$schoolid));
-
         return $response;
-
     }
 
     public function progressbyschoolprofileAction(Request $request, $schoolid, $profileid){
 
         $response = new JsonResponse();
         $response->setData($this->getAll(null,null,$profileid,null,$schoolid));
-
         return $response;
     }
 
@@ -128,17 +117,25 @@ class APIStatsController extends Controller
         $esperadas = count($all);
         $respondidas = count(array_filter($all, function($ar) { return ($ar['estatus'] == '4'); }));
         $porc_cumplimiento = ($esperadas > 0 ? round(($respondidas * 100 ) / $esperadas,2) : 0);
-        $porc_pendiente = 100 - $porc_cumplimiento;
 
         $response = array(
             'global'=>array(
-                'esperadas' => $esperadas,
-                'respondidas' => $respondidas,
-                'porc_cumplimiento' => $porc_cumplimiento,
-                'porc_pendiente' => $porc_pendiente,
+                'Esperadas' => $esperadas,
+                'Respondidas' => $respondidas,
+                'Stats' => array()
             ),
             'bySurvey'=>array(),
         );
+
+        array_push($response['global']['Stats'],array(
+            'name' => 'Completado',
+            'y' => $porc_cumplimiento
+        ));
+
+        array_push($response['global']['Stats'],array(
+            'name' => 'Pendiente',
+            'y' => 100 - $porc_cumplimiento
+        ));
 
         foreach (array_unique(array_column($all,'id')) as $a) {
 
@@ -148,20 +145,27 @@ class APIStatsController extends Controller
             if(!isset($response['bySurvey'][$a])){
 
                 $esperadas = count(array_filter($all, function($ar) use($a){ return ($ar['id'] == $a); }));
-                $respondidas = count(array_filter($all, function($ar) use($a){ return ($ar['estatus'] == '4' AND $ar['id'] == $a); },ARRAY_FILTER_USE_BOTH));
+                $respondidas = count(array_filter($all, function($ar) use($a){ return ($ar['estatus'] == '4' AND $ar['id'] == $a); }));
                 $porc_cumplimiento = ($esperadas > 0 ? round(($respondidas * 100 ) / $esperadas,2) : 0);
-                $porc_pendiente = 100 - $porc_cumplimiento;
 
                 $response['bySurvey'][$a] = array(
-                    'titulo' => $titulo,
-                    'esperadas' => $esperadas,
-                    'respondidas' => $respondidas,
-                    'porc_cumplimiento' => $porc_cumplimiento,
-                    'porc_pendiente' => $porc_pendiente,
+                    'Titulo' => $titulo,
+                    'Esperadas' => $esperadas,
+                    'Respondidas' => $respondidas,
+                    'Stats' => array()
                     );
+
+                array_push($response['bySurvey'][$a]['Stats'],array(
+                    'name' => 'Completado',
+                    'y' => $porc_cumplimiento,
+                ));
+
+                array_push($response['bySurvey'][$a]['Stats'],array(
+                    'name' => 'Pendiente',
+                    'y' => 100 - $porc_cumplimiento,
+                ));
             }
         }
-
         return $response;
     }
 }

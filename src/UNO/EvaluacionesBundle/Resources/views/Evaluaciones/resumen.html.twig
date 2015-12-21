@@ -5,7 +5,7 @@
         <div class="content-header">
             <div class="header-section">
                 <h1>
-                    <i class="fa fa-list-ol" style="color: #CCC;"></i><b>{{ title }}</b><br><small><em>Respondida el {{ date }}</em></small>
+                    <i class="fa fa-list-ol" style="color: #CCC;"></i><b>{{ survey.title }}</b><br><small><em>Respondida el {{ date|date("j/M/Y \@ g:i a") }}</em></small>
                 </h1>
             </div>
         </div>
@@ -20,12 +20,12 @@
             <div class="row">
                 <div class="block-content">
                     <div class="col-sm-6">
-                        <div id="pie" class="block"></div>
+                        <div id="pie"></div>
                     </div>
                 </div>
                 <div class="block-content">
                     <div class="col-sm-6">
-                        <div id="bars" class="block"></div>
+                        <div id="bars"></div>
                     </div>
                 </div>
             </div>
@@ -49,7 +49,7 @@
                             {% for subtask in task %}
                                 <tr>
                                     <td>
-                                        {{ subtask }}
+                                        {{ subtask['question'] }}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -87,19 +87,19 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for result in results %}
+                        {% for result in survey.questions %}
                             <tr>
                                 <td class="hidden-sm hidden-xs text-center">
-                                    {{ result['order'] }}
+                                    {{ result['orderQ'] }}
                                 </td>
                                 <td class="text-left">
                                     {{ result['question'] }}
                                 </td>
                                 <td class="text-center">
-                                    {{ result['answer'] }}
+                                    {{ result['answers'][0]['answer'] }}
                                 </td>
                                 <td class="text-left">
-                                    {{ result['comment'] }}
+                                    {{ result['answers'][0]['comment'] }}
                                 </td>
                             </tr>
                         {% endfor %}
@@ -118,6 +118,6 @@
     <script src="{{ asset('public/assets/js/resumen.js') }}"></script>
     <script src="{{ asset('public/assets/js/resumen_charts.js') }}"></script>
     <script>$(function(){ TablesDatatables.init(); });</script>
-    <script>$(function(){ Charts.init('{{ pie_stats|json_encode()|raw }}','{{ bars_stats | raw }}'); });</script>
+    <script>$(function(){ Charts.init('{{ pie_stats|json_encode()|raw }}','{{ bars_stats|json_encode()|raw }}');});</script>
 
 {% endblock %}

@@ -32,7 +32,11 @@ class ResumenController extends Controller
         // Validación de sesión activa
         $session = $request->getSession();
         if (!Utils::isUserLoggedIn($session)) {
-            return $this->redirectToRoute('login');
+
+            return $this->redirectToRoute('login',array(
+                'redirect' => 'resumen',
+                'with' => $surveyId
+            ));
         }
 
         // Autorización de evaluación
@@ -41,208 +45,92 @@ class ResumenController extends Controller
         }
 
         $personId = $session->get('personIdS');
-        $details = $this->getSurveyLog($personId,$surveyId,ANSWERED_LOG_CODE);
 
-        // Validamos contra el log que ya haya respondido (manejando el escenario donde el usuario ingresa escribiendo la ruta)
-        if(empty($details)) {
+        $survey = $this->getSurvey($surveyId,$personId);
+
+        if(isset($survey['Error'])){
 
             throw new NotFoundHttpException('Resumen no encontrado para esta evaluación');
         }
 
-        // Una vez que validamos los escenarios posibles, ejecutamos la consulta para traer las respuestas del usuario
-        $results = $this->getSurveyResults($surveyId,$personId);
-        $categories = array_unique(array_column($results,'subcategory'));
-        $tasks = $this->getTasksByCategory($results,$categories);
-        $options = $this->getAnswerOptions($surveyId);
-        $pie_stats = $this->getStatsByAnswer($results,$options);
-        $bars_stats = $this->getStatsByCategory($categories, $options, $results);
+        $categories = array_unique(array_column($survey['persons'][0]['surveys'][0]['questions'],'category'));
+        $tasks = $this->getTasksByCategory($survey,$categories);
+        $statsbyCat = $this->getStatsByCategory($survey,$categories);
+        $statsbyOpt = $this->getStatsByOptions($surveyId,$personId)['global'];
 
-        /**
-         * ToDo: pasar estadística de barras a vista
-         */
 
         return $this->render('UNOEvaluacionesBundle:Evaluaciones:resumen.html.twig', array(
-            'title' => $details[0]['title'],
-            'date' => $details[0]['date']->format('j/M/Y \@ g:i a'),
-            'results' => $results,
-            'categories' => $categories,
+
+            'survey' => $survey['persons'][0]['surveys'][0],
+            'date' => $survey['persons'][0]['surveys'][0]['answerDate']['date'],
             'tasks' => $tasks,
-            'pie_stats'=> $pie_stats,
-            'bars_stats' => $bars_stats
+            'pie_stats'=> $statsbyOpt,
+            'bars_stats' => $statsbyCat
         ));
     }
 
-    /**
-     * Método que obtiene y devuelve título de evaluación, fecha y hora en que respondió el usuario
-     *
-     *
-     * @param $personId
-     * @param $surveyId
-     * @param $action
-     * @return mixed
-     * @author julio
-     */
 
-    private function getSurveyLog($personId, $surveyId, $action){
+    private function getSurvey($surveyId, $personId){
 
-        $em = $this->getDoctrine()->getManager();
-        $qb = $em->createQueryBuilder();
-
-        $eval = $qb->select('su.title', 'log.date')
-            ->from('UNOEvaluacionesBundle:Survey','su')
-            ->leftJoin('UNOEvaluacionesBundle:Log','log', 'WITH', 'su.surveyid = log.surveySurveyid')
-            ->where('log.surveySurveyid = :surveyId')
-            ->andWhere('log.personPersonid = :personId')
-            ->andWhere('log.actionaction = :logcode')
-            ->orderBy('log.date')
-            ->setMaxResults(1)
-            ->setParameters(array(
-                'personId' => $personId,
-                'surveyId' => $surveyId,
-                'logcode' => $action,
-            ))
-            ->getQuery()
-            ->getResult();
-
-        return $eval;
+        return json_decode(file_get_contents($this->generateUrl('APIResultBySurveyPerson',array(
+            'surveyId' => $surveyId,
+            'personId' => $personId
+        ),true),false),true);
     }
 
-    /**
-     *
-     * Método que obtiene y devuelve:
-     * orden, pregunta, categoría, respuesta, comentario de los reactivos de una evaluación
-     *
-     * @param $surveyId
-     * @param $personId
-     * @return mixed
-     */
+    private function getStatsByCategory($survey,$categories){
 
+        $questions = $survey['persons'][0]['surveys'][0]['questions'];
+        $si_serie = array(
+            'name' => 'Sí',
+            'data' => array()
+        );
+        $no_serie = array(
+            'name' => 'No',
+            'data' => array()
+        );
+        $nose_serie = array(
+            'name' => 'No sé',
+            'data' => array()
+        );
 
-    private function getSurveyResults($surveyId, $personId) {
+        $statsbyCat = array(
+            'categories' => array(),
+            'series' => array(),
+        );
 
-        $em = $this->getDoctrine()->getManager();
-        $qb = $em->createQueryBuilder();
+        foreach($categories as $cat) {
 
-        $results = $qb->select('qxs.order', 'qu.question', 'sub.subcategory','ans.answer','ans.comment')
-            ->from('UNOEvaluacionesBundle:Answer','ans')
-            ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','oxq', 'WITH', 'ans.optionxquestion = oxq.optionxquestionId')
-            ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','qxs', 'WITH', 'oxq.questionxsurvey = qxs.questionxsurveyId')
-            ->innerJoin('UNOEvaluacionesBundle:Question','qu', 'WITH', 'qxs.questionQuestionid = qu.questionid')
-            ->innerJoin('UNOEvaluacionesBundle:Subcategory','sub', 'WITH', 'qu.subcategorySubcategoryid = sub.subcategoryid')
-            ->where('qxs.surveySurveyid = :surveyId')
-            ->andWhere('ans.personPersonid = :personId')
-            ->orderBy('qxs.order')
-            ->setParameters(array(
-                'personId' => $personId,
-                'surveyId' => $surveyId,
-            ))
-            ->getQuery()
-            ->getResult();
-
-        return $results;
-    }
-
-    /**
-     *
-     * Obtengo las opciones de las preguntas para manejar las estadísticas
-     *
-     * @param $surveyId
-     * @return mixed
-     */
-
-    private function getAnswerOptions($surveyId) {
-
-        $em = $this->getDoctrine()->getManager();
-        $qb = $em->createQueryBuilder();
-
-        $opts = $qb->select('opc.option as name')
-            ->from('UNOEvaluacionesBundle:Option','opc')
-            ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','oxq', 'WITH', 'opc.optionid = oxq.optionOptionid')
-            ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','qxs', 'WITH', 'oxq.questionxsurvey = qxs.questionxsurveyId')
-            ->where('qxs.surveySurveyid = :surveyId')
-            ->groupBy('opc.option')
-            ->orderBy('oxq.order')
-           ->setParameters(array(
-                'surveyId' => $surveyId
-            ))
-            ->getQuery()
-            ->getResult();
-
-        return $opts;
-    }
-
-    /**
-     *
-     * Obtengo las estadísticas por respuestas, (funciona con cualquier tipo de respuesta de opción multiple)
-     *
-     * @param $results
-     * @param $options
-     * @return array
-     */
-    private function getStatsByAnswer($results, $options){
-
-        $total = count(array_column($results,'answer'));
-        $countByAnswer = array_count_values(array_column($results,'answer'));
-        $pieStats = array();
-
-        foreach($options as $k => $val){
-
-            array_push($pieStats,array(
-                'name' => $val['name'],
-                'y' => ($total > 0 && array_key_exists($val['name'],$countByAnswer) ? round((($countByAnswer[$val['name']] * 100) / $total),2) : 0)
-            ));
-        }
-        return $pieStats;
-    }
-
-    private function getStatsByCategory($categories, $options, $results){
-
-        $siStr = '';
-        $noStr = '';
-        $noseStr = '';
-        foreach($categories as $valCat){
-            $si = 0;
-            $no = 0;
-            $nose = 0;
-            foreach($results as $valRes){
-                if($valCat == $valRes['subcategory']) {
-                    switch ($valRes['answer']):
-                        case 'Sí':
-                            $si ++;
-                            break;
-                        case 'No':
-                            $no ++;
-                            break;
-                        default:
-                            $nose ++;
-                    endswitch;
-                }
-            }
-            $siStr .= $si.',';
-            $noStr .= $no.',';
-            $noseStr .= $nose.',';
+            array_push($statsbyCat['categories'],$cat);
+            array_push($si_serie['data'],count(array_filter($questions, function($ar) use($cat){ return ($ar['category'] == $cat AND $ar['answers'][0]['answer'] == 'Sí'); })));
+            array_push($no_serie['data'],count(array_filter($questions, function($ar) use($cat){ return ($ar['category'] == $cat AND $ar['answers'][0]['answer'] == 'No'); })));
+            array_push($nose_serie['data'],count(array_filter($questions, function($ar) use($cat){ return ($ar['category'] == $cat AND !in_array($ar['answers'][0]['answer'],array('No','Sí'))); })));
         }
 
-        return '["'.implode('","',$categories).'"]|'.
-        '[{"name": "Sí", "data": ['.trim($siStr,",").'], "stack": "good"},'.
-        '{"name": "No", "data": ['.trim($noStr,",").'], "stack": "bad"},'.
-        '{"name": "No sé", "data": ['.trim($noseStr,",").'], "stack": "bad"}]';
+        array_push($statsbyCat['series'],$si_serie);
+        array_push($statsbyCat['series'],$no_serie);
+        array_push($statsbyCat['series'],$nose_serie);
+
+        return $statsbyCat;
     }
 
-    private function getTasksByCategory($results, $categories) {
+    private function getTasksByCategory($survey, $categories) {
+
+        $questions = $survey['persons'][0]['surveys'][0]['questions'];
 
         $tasks = array();
         foreach($categories as $cat) {
 
-            $tasks[$cat] = array();
-            foreach($results as $r) {
-
-                if(strcasecmp($cat,$r['subcategory']) == 0 && in_array(strtolower($r['answer']),array('no', 'no sé'))) {
-
-                    array_push($tasks[$cat],$r['question']);
-                }
-            }
+            $tasks[$cat] = array_filter($questions, function($ar) use($cat){ return ($ar['category'] == $cat AND $ar['answers'][0]['answer'] != 'Sí'); });
         }
         return $tasks;
+    }
+
+    private function getStatsByOptions($surveyId, $personId){
+
+        return json_decode(file_get_contents($this->generateUrl('APIStatsResultsBySurveyPerson',array(
+            'surveyid' => $surveyId,
+            'personid' => $personId
+        ),true),false),true);
     }
 }

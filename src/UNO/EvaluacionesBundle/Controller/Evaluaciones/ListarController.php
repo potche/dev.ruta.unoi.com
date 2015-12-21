@@ -32,14 +32,17 @@ class ListarController extends Controller
         // Si no se tiene iniciada una sesión, se redirige al login
         if (!Utils::isUserLoggedIn($session)) {
 
-            return $this->redirectToRoute('login');
+            return $this->redirectToRoute('login',array(
+                'redirect' => 'listar',
+                'with' => 'none'
+            ));
+            //return $this->redirectToRoute('login');
         }
 
         $personID = $session->get('personIdS');
         $response = json_decode(file_get_contents($this->generateUrl('APISurveysPerson',array('personid'=>$personID),true), false), true);
 
         $countToBeAnswered = array_count_values(array_column($response,'actioncode'))['0'];
-        $session->set('authorized_in',base64_encode(json_encode(array_column($response,'id'))));
 
         $statistics = Utils::fetchStats(count($response),$countToBeAnswered);
 

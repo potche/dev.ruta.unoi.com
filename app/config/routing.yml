@@ -208,3 +208,32 @@ APIStatsResultsBySurveyPerson:
 APIResults:
     path: /api/v0/results
     defaults: {_controller: UNOEvaluacionesBundle:API/APIResults:results}
+APIResultBySurveyPerson:
+  path: /api/v0/result/survey/{surveyId}/person/{personId}
+  defaults: {_controller: UNOEvaluacionesBundle:API/APIResults:resultSurveyPerson, personId = null}
+  requirements:
+              surveyId: \d+
+              personId: \d+
+MailTest:
+  path: /mailing/test
+  defaults: {_controller: UNOEvaluacionesBundle:Notifications/Notifications:test}
+APINotificationsNewSurveys:
+  path: /api/v0/notifications/newsurveys/daysago/{daysago}
+  defaults: {_controller: UNOEvaluacionesBundle:API/APINotifications:newsurveys}
+  requirements:
+              daysago: \d+
+APINotificationsTopPersons:
+  path: /api/v0/notifications/topPersons/school/{schoolid}
+  defaults: {_controller: UNOEvaluacionesBundle:API/APINotifications:toppersonsbyschol}
+  requirements:
+              schoolid: \d+
+ajaxMailingStatus:
+    path:   /mailing/setstatus
+    defaults: {_controller: UNOEvaluacionesBundle:Notifications/Notifications:mailingstatus}
+    methods: [POST]
+urlDisableNotifications:
+    path: /mailing/disable/{personid}
+    defaults: {_controller: UNOEvaluacionesBundle:Notifications/Notifications:urldisablemailing, personid = null}
+    requirements:
+                  personid: \d+
+

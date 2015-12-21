@@ -1,0 +1,122 @@
+{% extends '::base2.mail.html.twig' %}
+{% block body %}
+    <style>
+        .widget .widget-icon{
+            background: #46b7bf;
+        }
+
+        .widget .widget-extra {
+            background: #4b89dc;
+        }
+    </style>
+
+    <h3>Hola, <b>{{ name }}</b></h3>
+    <br>
+    <p>Te presentamos un resumen semanal de tus acciones en la Plataforma de Diagnóstico Instucional de UNOi:</p>
+    <br>
+    <div class="row">
+        <div class="widget">
+            <div class="widget-extra text-center themed-background-dark-night">
+                <h3 class="widget-content-light"><i class="fa fa-bar-chart animation-floating"></i> <strong>Estadísticas</strong></h3>
+            </div>
+            <div class="widget-simple">
+                <div class="row text-center">
+                    <div class="col-xs-6">
+                        <a href="javascript:void(0)" class="widget-icon themed-background-spring">
+                            <i class="fa fa-university"></i>
+                        </a>
+                        <h3 class="remove-margin-bottom"> <strong>{{ progressSchool['global']['Stats'][0]['y'] ~ '%' }}</strong><br><small>Avance de mi colegio</small></h3>
+                    </div>
+                    <div class="col-xs-6">
+                        <a href="javascript:void(0)" class="widget-icon themed-background-fire">
+                            <i class="fa fa-graduation-cap"></i>
+                        </a>
+                        <h3 class="remove-margin-bottom"> <strong>{{ progressPerson['global']['Stats'][0]['y'] ~ '%' }}</strong><br><small>Avance personal</small></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="widget">
+            <div class="widget-extra text-center themed-background-dark-night">
+                <h3 class="widget-content-light"><i class="fa fa-dashboard animation-floating"></i> <strong>Avance del colegio por evaluación</strong></h3>
+            </div>
+            <div class="widget-simple">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th class="text-center"><b>Título</b></th>
+                        <th class="text-center"><b>Progreso</b></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for survey in progressSchool['bySurvey']%}
+                        <tr>
+                            <td class="text-left">
+                                <h5>{{ survey['Titulo'] }}</h5>
+                            </td>
+                            <td class="text-center">
+                                <div class="progress progress-striped active">
+                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{ survey['Stats'][0]['y'] }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ survey['Stats'][0]['y'] }}%;">
+                                    </div>
+                                </div>
+                                {{ survey['Stats'][0]['y'] ~ '%' }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="widget">
+            <div class="widget-extra text-center themed-background-dark-night">
+                <h3 class="widget-content-light"><i class="fa fa-trophy animation-floating"></i> <strong>Top 5 de cumplimiento en tu colegio</strong></h3>
+            </div>
+            <div class="widget-simple">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th class="text-center">{{ " " }}</th>
+                        <th class="text-center"><b>Nombre</b></th>
+                        <th class="text-center"><b>Porcentaje de avance</b></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for top in top5 %}
+                        <tr>
+                            <td class="text-center">
+                                <img src="{{ absolute_url(asset('public/assets/images/login/icon_niño1.png')) }}" alt="avatar" class="img-circle" style="width: 50%">
+                            </td>
+                            <td class="text-left">
+                                <h5><b>{{ top['nombre'] }}</b></h5>
+                            </td>
+                            <td class="text-center">
+                                <div class="progress progress-striped active">
+                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{ top['avance'] }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ top['avance'] }}%;">
+                                    </div>
+                                </div>
+                                {{ top['avance'] ~ '%' }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="row text-center">
+        <h5>{{ "Haz click en el botón para ver más estadísticas de tu colegio" }}</h5>
+        <a href="{{ absolute_url(path('estadisticas')) }}" class="btn btn-sm btn-info"> {{ "Ver más estadísticas" }}</a>
+    </div>
+    <br>
+{% endblock %}
+{% block unsuscribe %}
+    <div class="row text-center">
+        <h6>{{ "Si deseas dejar de recibir mensajes, haz click en el siguiente botón" }}</h6>
+        <a href="{{ absolute_url(path('urlDisableNotifications',{'personid': persona})) }}" class="btn btn-sm btn-danger"> {{ "Dejar de recibir mensajes" }}</a>
+    </div>
+{% endblock %}

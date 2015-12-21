@@ -1,9 +1,10 @@
+var chart_general;
 var Charts = function() {
 
     return {
         init: function (stats_general) {
 
-            var chart_general = new Highcharts.Chart({
+            chart_general = new Highcharts.Chart({
                 chart: {
                     type: 'pie',
                     renderTo: 'pie-general'
@@ -36,6 +37,7 @@ var Charts = function() {
             }, function (chart) {
 
                 chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();
+                chart.reflow();
             });
         }
     };

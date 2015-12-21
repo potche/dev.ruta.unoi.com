@@ -42,7 +42,7 @@ class StatsController extends Controller{
     private $_andSurvey = "S.surveyid != ''";
 
     /**
-     * @Route("/estadisticas")
+     * @Route("/estadistica")
      *
      * Muestra las estadisticas
      */
@@ -102,7 +102,10 @@ class StatsController extends Controller{
                 }
             }return $this->redirect("/inicio");
         }else{
-            return $this->redirect("/");
+            return $this->redirectToRoute('login',array(
+                'redirect' => 'estadisticas',
+                'with' => 'none'
+            ));
         }
     }
 
