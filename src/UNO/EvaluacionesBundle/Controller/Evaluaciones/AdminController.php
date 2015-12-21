@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\CssSelector\Exception\InternalErrorException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class AdminController extends Controller {
@@ -62,28 +63,33 @@ class AdminController extends Controller {
 
         $surveyId = $request->request->get('surveyid');
         $status = $request->request->get('surveyStatus');
+        $response = new JsonResponse();
+
 
         if (!$surveyId || !$status) {
 
-            $response = json_encode(array('message' => 'Petición malformada'));
-            return new Response($response, 500, array(
-                'Content-Type' => 'application/json'
+            $response->setData(array(
+                'status' => '400',
+                'message' => 'Petición malformada'
+            ));
+
+        }else{
+
+            $em = $this->getDoctrine()->getManager();
+            $survey = $this->getDoctrine()
+                ->getRepository('UNOEvaluacionesBundle:Survey')
+                ->findOneBy(array(
+                    'surveyid' => $surveyId
+                ));
+
+            $survey->setActive($status === 'true');
+            $em->flush();
+
+            $response->setData(array(
+                'status' => '200',
+                'message' => 'Se ha modificado el estatus de la evaluación'
             ));
         }
-
-        $em = $this->getDoctrine()->getManager();
-        $survey = $this->getDoctrine()
-            ->getRepository('UNOEvaluacionesBundle:Survey')
-            ->findOneBy(array(
-                'surveyid' => $surveyId
-            ));
-
-        $survey->setActive($status === 'true');
-        $em->flush();
-
-        $response = json_encode(array('message' => 'Se ha actualizado con exito'));
-        return new Response($response, 200, array(
-            'Content-Type' => 'application/json'
-        ));
+        return $response;
     }
 }

@@ -119,9 +119,13 @@
                                 <td class="text-center">
                                     <div class="btn-group btn-group-xs">
                                         {% if survey['activa'] %}
+<<<<<<< HEAD
+                                        <a href="#" id="{{ survey['id'] }}" class="disable-survey btn btn-xs btn-danger" style="display: block; width: 85px;"> Inactivar</a>
+=======
                                         <a href="#" id="{{ survey['id'] }}" class="disable-survey btn btn-xs btn-danger" style="display: block; width: 85px;" data-toggle="modal" data-target="#disable_confirm" data-placement="top"> Inactivar</a>
+>>>>>>> 4e638d5e6b2298e16560ff0b0cb76baba3cbace2
                                         {% else %}
-                                        <a href="#" id="{{ survey['id'] }}" class="enable-survey btn btn-xs btn-success" style="display: block; width: 85px;" data-toggle="modal" data-target="#disable_confirm" data-placement="top"> Activar</a>
+                                        <a href="#" id="{{ survey['id'] }}" class="enable-survey btn btn-xs btn-success" style="display: block; width: 85px;"> Activar</a>
                                         {% endif %}
                                     </div>
                                 </td>
@@ -132,24 +136,6 @@
                 </div>
             </div>
             <br>
-        </div>
-    </div>
-
-    <div id="disable_confirm" class="modal fade in" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-primary">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title"><i class="fa fa-info-circle"></i> Cambiar estatus de evaluación</h4>
-                </div>
-                <div class="modal-body">
-                    <p><b>Para confirmar el cambio de estatus de esta evaluación, presiona Aceptar</b></p>
-                </div>
-                <div class="modal-footer">
-                    <a href="#" class="btn btn-default" data-dismiss="modal">Cancelar</a>
-                    <a href="#" id="confInactivar" class="btn btn-success success">Aceptar</a>
-                </div>
-            </div>
         </div>
     </div>
 
