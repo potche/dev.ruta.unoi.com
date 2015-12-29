@@ -108,6 +108,11 @@ APISurveysPerson:
 APIStatsProgress:
     path: /api/v0/stats/progress
     defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progress}
+APIStatsProgressBySurvey:
+    path: /api/v0/stats/progress/survey/{surveyid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progressbysurvey}
+    requirements:
+          surveyid: \d+
 APIStatsProgressBySchool:
     path: /api/v0/stats/progress/school/{schoolid}
     defaults: {_controller: UNOEvaluacionesBundle:API/APIStats:progressbyschool}
@@ -236,4 +241,6 @@ urlDisableNotifications:
     defaults: {_controller: UNOEvaluacionesBundle:Notifications/Notifications:urldisablemailing, personid = null}
     requirements:
                   personid: \d+
-
+tutorials:
+    path: /tutorials
+    defaults: {_controller: UNOEvaluacionesBundle:Tutorial/Tutorial:index}

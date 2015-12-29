@@ -10,16 +10,16 @@
             background: #4b89dc;
         }
     </style>
+
     <div class="content-header content-header-media">
         <div class="header-section" style="height: 185px;">
             <h1>
-                <i class="fa fa-bookmark-o" onclick="showVideo();"></i>
                 Bienvenid@, <strong>{{ app.session.get('nameS') }}</strong>
                 <br/><small>a la Plataforma de Diagnóstico Institucional de UNO Internacional</small>
             </h1>
         </div>
         <!-- For best results use an image with a resolution of 2560x248 pixels (You can also use a blurred image with ratio 10:1 - eg: 1000x100 pixels - it will adjust and look great!) -->
-        <img src="{{ asset('public/assets/images/listar/camino2.png') }}" alt="header image" class="animation-pulseSlow" style="height: 180px; width: auto;">
+        <img src="{{ asset('public/assets/images/login/bgbanner.png') }}" alt="header image" class="animation-pulseSlow" style="height: 180px;">
     </div>
     <!-- END Dashboard Header -->
 
@@ -33,7 +33,6 @@
     {% if colegios != null and coaches != null and personas != null%}
     <!-- Simple Stats Widgets Row -->
     <div class="row">
-
         <div class="col-md-6">
             <!-- Widget -->
             <div class="widget">
@@ -46,13 +45,13 @@
                             <a href="javascript:void(0)" class="widget-icon themed-background-spring">
                                 <i class="fa fa-university"></i>
                             </a>
-                            <h3 class="remove-margin-bottom"> <strong>{{ colegios| raw }}</strong><br><small>Colegios registrados en la plataforma</small></h3>
+                            <h3 class="remove-margin-bottom"> <strong>{{ colegios| raw }}</strong><br><small><b>Colegios</b> registrados</small></h3>
                         </div>
                         <div class="col-xs-6">
                             <a href="javascript:void(0)" class="widget-icon themed-background-fire">
                                 <i class="fa fa-graduation-cap"></i>
                             </a>
-                            <h3 class="remove-margin-bottom"> <strong>{{ coaches[0]['cuenta']| raw }}</strong><br><small>Coaches registrados en el sistema</small></h3>
+                            <h3 class="remove-margin-bottom"> <strong>{{ coaches[0]['cuenta']| raw }}</strong><br><small><b>Coaches</b> registrados</small></h3>
                         </div>
                     </div>
                 </div>
@@ -71,19 +70,19 @@
                             <a href="javascript:void(0)" class="widget-icon themed-background-fire">
                                 <i class="fa fa-users"></i>
                             </a>
-                            <h3 class="remove-margin-bottom"> <strong>{{ personas['total']| raw }}</strong><br><small>Personas registradas en la plataforma</small></h3>
+                            <h3 class="remove-margin-bottom"> <strong>{{ personas['total']| raw }}</strong><br><small><b>Registrados</b></small></h3>
                         </div>
                         <div class="col-xs-4">
                             <a href="javascript:void(0)" class="widget-icon themed-background-spring">
                                 <i class="fa fa-user-plus"></i>
                             </a>
-                            <h3 class="remove-margin-bottom"> <strong>{{ personas['answered']| raw }}</strong><br><small>Personas que han atendido alguna evaluación</small></h3>
+                            <h3 class="remove-margin-bottom"> <strong>{{ personas['answered']| raw }}</strong><br><small><b>Han atendido</b> evaluaciones</small></h3>
                         </div>
                         <div class="col-xs-4">
                             <a href="javascript:void(0)" class="widget-icon themed-background-spring">
                                 <i class="fa fa-user-times"></i>
                             </a>
-                            <h3 class="remove-margin-bottom"> <strong>{{ personas['pending']| raw }}</strong><br><small>Personas que no han atendido alguna evaluación</small></h3>
+                            <h3 class="remove-margin-bottom"> <strong>{{ personas['pending']| raw }}</strong><br><small><b>Sin atender</b> evaluaciones</small></h3>
                         </div>
                     </div>
                 </div>

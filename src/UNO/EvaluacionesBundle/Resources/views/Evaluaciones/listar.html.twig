@@ -4,12 +4,12 @@
         <div class="header-section" style="height: 185px;">
             <div class="row">
                 <div id ="welcome-title" class="col-md-4 col-lg-6 hidden-xs">
-                    <h1>Bienvenido, <strong>{{ app.session.get('nameS') }}</strong><br></h1>
+                    <h1>Mis<strong> evaluaciones</strong><br></h1>
                     <br>
                 </div>
                 <!-- Main Title (hidden on small devices for the statistics to fit) -->
                 <div id ="welcome-title-2" class="col-md-4 col-lg-6" style="text-align: center;">
-                    <h1>Bienvenido, <strong>{{ app.session.get('nameS') }}</strong><br></h1>
+                    <h1>Mis<strong> evaluaciones</strong><br></h1>
                     <br>
                 </div>
                 <!-- END Main Title -->
@@ -44,7 +44,7 @@
             </div>
         </div>
         <!-- For best results use an image with a resolution of 2560x248 pixels (You can also use a blurred image with ratio 10:1 - eg: 1000x100 pixels - it will adjust and look great!) -->
-        <img src="{{ asset('public/assets/images/listar/camino2.png') }}" alt="header image" class="animation-pulseSlow" style="height: 180px; width: auto;">
+        <img src="{{ asset('public/assets/images/login/bgbanner.png') }}" alt="header image" class="animation-pulseSlow" style="height: 180px;">
 
     </div>
     <!-- END Dashboard Header -->
@@ -59,7 +59,7 @@
                         <i class="fa fa-pencil"></i>
                     </div>
                     <h3 class="widget-content text-left animation-pullDown">
-                        Mis <strong>Evaluaciones</strong><br>
+                        Lista de mis <strong>evaluaciones</strong><br>
                         <small class="visible-xs"><i class="fa fa-info-circle text-primary"></i> Presiona el título para verlo completo</small>
                     </h3>
                     {% if surveyList|length == 0 %}

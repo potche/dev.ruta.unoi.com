@@ -27,6 +27,8 @@ function parseInfo(privilege, profile){
             ;
         }
     });
+    menu += "<li><a href='/tutorials'><i class='fa fa-question-circle'></i> Ayuda</a></li>";
+
     $('#menuInicio').html(menu);
 
     //-----------------------------------------------
