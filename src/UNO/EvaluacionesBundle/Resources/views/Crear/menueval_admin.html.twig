@@ -100,12 +100,12 @@
                                         </tbody>
                                     </table>
                                 </td>
-                                <td class="text-center">
-                                    <div class="progress progress-striped active">
-                                        <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{stats['bySurvey'][survey['id']]['Stats'][0]['y']}}" aria-valuemin="0" aria-valuemax="100" style="width: {{stats['bySurvey'][survey['id']]['Stats'][0]['y']}}%;">
+                                <td id="progress-{{ survey['id'] }}" class="text-center">
+                                    {#<div class="progress progress-striped active">
+                                        <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{stats['bySurvey'][survey['id']]}}" aria-valuemin="0" aria-valuemax="100" style="width: {{stats['bySurvey'][survey['id']]}}%;">
                                         </div>
                                     </div>
-                                    {{ stats['bySurvey'][survey['id']]['Stats'][0]['y']|round ~ '%' }}
+                                    {{ stats['bySurvey'][survey['id']]|round ~ '%' }}#}
                                 </td>
                                 <td class="text-center hidden-sm hidden-xs">
                                     {{ survey['creada']|date('j/M/Y \@ g:i a') }}
@@ -119,11 +119,7 @@
                                 <td class="text-center">
                                     <div class="btn-group btn-group-xs">
                                         {% if survey['activa'] %}
-<<<<<<< HEAD
                                         <a href="#" id="{{ survey['id'] }}" class="disable-survey btn btn-xs btn-danger" style="display: block; width: 85px;"> Inactivar</a>
-=======
-                                        <a href="#" id="{{ survey['id'] }}" class="disable-survey btn btn-xs btn-danger" style="display: block; width: 85px;" data-toggle="modal" data-target="#disable_confirm" data-placement="top"> Inactivar</a>
->>>>>>> 4e638d5e6b2298e16560ff0b0cb76baba3cbace2
                                         {% else %}
                                         <a href="#" id="{{ survey['id'] }}" class="enable-survey btn btn-xs btn-success" style="display: block; width: 85px;"> Activar</a>
                                         {% endif %}
@@ -169,7 +165,24 @@
     <script src="{{ asset('public/assets/js/menu_crear_charts.js') }}"></script>
     <script src="{{ asset('public/assets/js/surveystatus.js') }}"></script>
     <script>$(function(){ TablesDatatables.init(); });</script>
-    <script>$(function(){ Charts.init('{{ stats['global']['Stats']|json_encode()|raw }}'); });</script>
-    <script>$(function(){ SurveyTable.init('{{ url('ajaxSurveyStatus') }}','{{ url('evaluaciones') }}'); });</script>
+    <script>
+        $(function(){
+
+            var ids = $.parseJSON('{{ surveyids|json_encode()|raw }}');
+            $.each(ids, function(i,item){
+
+                $.get("api/v0/stats/progress/survey/"+item).done(function (data) {
+
+                    var html = '<div class="progress progress-striped active">' +
+                            '<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="'+data.global.Stats[0].y+'" aria-valuemin="0" aria-valuemax="100" style="width: '+data.global.Stats[0].y+'%;"> </div></div>'+
+                            data.global.Stats[0].y+'%';
+
+                    $('#progress-'+item).html(html);
+                });
+            });
+        });
+    </script>
+    <script>$(function(){ Charts.init(); });</script>
+    <script>$(function(){ SurveyTable.init('{{ url('ajaxSurveyStatus') }}'); });</script>
 
 {% endblock %}
