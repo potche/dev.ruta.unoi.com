@@ -366,6 +366,7 @@ class LoginController extends Controller{
         $session->set('privilegeS', $this->getPrivilege());
         $session->set('profileS', $this->getProfile());
         $session->set('schoolIdS', $this->getSchoolId());
+        $session->set('mailing', $this->_personDB->getMailing());
         $this->setCookie();
         $this->setSurveys($this->_personDB->getPersonid(),$session);
         return true;

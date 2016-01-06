@@ -18,7 +18,7 @@ class APIStatsController extends Controller
     public function progressAction(Request $request){
 
         $response = new JsonResponse();
-        $response->setData($this->getAll());
+        $response->setData($this->getGlobal());
         return $response;
     }
 
@@ -112,7 +112,26 @@ class APIStatsController extends Controller
         return $all ? $this->buildResponse($all) : APIUtils::getErrorResponse('404');
     }
 
-    private function buildResponse($all){
+    private function getGlobal(){
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQuerybuilder();
+        $q = $qb->select("su.surveyid as id, p.personid as persona, COALESCE(a.idaction,0) as estatus")
+            ->from('UNOEvaluacionesBundle:Surveyxprofile','sxp')
+            ->innerJoin('UNOEvaluacionesBundle:Survey','su','WITH','su.surveyid = sxp.surveySurveyid')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.profileid = sxp.profileProfileid AND ps.schoollevelid = sxp.schoollevelid')
+            ->innerJoin('UNOEvaluacionesBundle:Person','p','WITH','p.personid = ps.personid')
+            ->leftJoin('UNOEvaluacionesBundle:Log','l', 'WITH','l.personPersonid = p.personid AND l.surveySurveyid = sxp.surveySurveyid')
+            ->leftJoin('UNOEvaluacionesBundle:Action','a','WITH','l.actionaction = a.idaction')
+            ->where('su.surveyid > 1')
+            ->groupBy('id, persona, estatus')
+            ->getQuery()
+            ->getResult();
+
+        return $q ? $this->buildResponse($q,true) : APIUtils::getErrorResponse('404');
+    }
+
+    private function buildResponse($all,$global = false){
 
         $esperadas = count($all);
         $respondidas = count(array_filter($all, function($ar) { return ($ar['estatus'] == '4'); }));
@@ -136,6 +155,11 @@ class APIStatsController extends Controller
             'name' => 'Pendiente',
             'y' => 100 - $porc_cumplimiento
         ));
+
+        if($global){
+
+            return $response['global'];
+        }
 
         foreach (array_unique(array_column($all,'id')) as $a) {
 

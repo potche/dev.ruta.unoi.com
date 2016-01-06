@@ -23,6 +23,13 @@ class APINotificationsController extends Controller
         return $response;
     }
 
+    public function toppersonsbyscholAction(Request $request, $schoolid){
+
+        $response = new JsonResponse();
+        $response->setData($this->getTop5BySchool($schoolid));
+        return $response;
+    }
+
     protected function getNewSurveys($daysago){
 
         if($daysago > 7 && $daysago != 0){
@@ -43,13 +50,58 @@ class APINotificationsController extends Controller
             ->where($qb->expr()->between('su.creationdate',':daysago','CURRENT_TIMESTAMP()'))
             ->andWhere('p.mailing = 1')
             ->andWhere('p.active = 1')
-            ->andWhere('p.personid IN (1,2)')
+            ->andWhere('su.active = 1')
+            ->andWhere('p.personid IN (1,2)') //Borrar
             ->groupBy('id, persona')
             ->setParameter('daysago',$date1)
             ->getQuery()
             ->getResult();
 
         return $all ? $this->parseArray($all) : APIUtils::getErrorResponse('404');
+    }
+
+    protected function getTop5BySchool($schoolid){
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $all = $qb->select("p.personid as persona, p.email as email, CONCAT(p.name,' ',p.surname) as nombre, COUNT(DISTINCT(l.surveySurveyid)) as respondidas, COUNT(DISTINCT (sxp.surveySurveyid)) AS esperadas")
+            ->from('UNOEvaluacionesBundle:Surveyxprofile','sxp')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.profileid = sxp.profileProfileid AND ps.schoollevelid = sxp.schoollevelid')
+            ->innerJoin('UNOEvaluacionesBundle:Person','p','WITH','p.personid = ps.personid')
+            ->leftJoin('UNOEvaluacionesBundle:Log','l','WITH','l.personPersonid = p.personid AND sxp.surveySurveyid = l.surveySurveyid')
+            ->where('ps.schoolid = :schoolId')
+            ->groupBy('p.personid')
+            ->add('orderBy', 'respondidas DESC')
+            ->setMaxResults( 5 )
+            ->setParameter('schoolId',$schoolid)
+            ->getQuery()
+            ->getResult();
+
+        $top = array();
+
+        if($all){
+
+            foreach ($all as $a){
+
+                array_push($top,array(
+                    'persona' => $a['persona'],
+                    'email' => $a['email'],
+                    'nombre' => $a['nombre'],
+                    'avance' => $a['esperadas'] > 0 ? round(($a['respondidas'] / $a['esperadas']) * 100, 2) : 0
+                ));
+            }
+
+            usort($top, function ($a,$b){
+                if ($a['avance'] == $b['avance']) {
+
+                    return 0;
+                }
+                return ($a['avance'] > $b['avance']) ? -1 : 1;
+            });
+        }
+
+        return $all ? $top : APIUtils::getErrorResponse('404');
     }
 
     private function parseArray($all){

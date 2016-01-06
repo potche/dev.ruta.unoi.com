@@ -1,37 +1,41 @@
-var SurveyTable = function(){
+var NotifStatus = function(){
 
     return{
 
-        init: function(urlPost, redirectUrl){
+        init: function(urlPost){
 
             var accion = '';
-            var survey = '';
+            var person = '';
 
-            //Asigno variables al dar click en inactivar para manejar evento de inactivación
-            $('.disable-survey, .enable-survey').click(function(){
+            $('.disable-notif, .enable-notif').click(function(){
 
-                accion = $(this).hasClass('enable-survey');
-                survey = $(this).attr('id');
+                accion = $(this).hasClass('enable-notif');
+                person = $(this).attr('id');
+
+                console.log(accion);
 
                 $.ajax({
 
                     url: urlPost,
                     type: 'POST',
                     data: {
-                        'surveyid': survey,
-                        'surveyStatus': accion
+                        'personid': person,
+                        'status': accion
                     }
+
                 }).done(function (data){
 
                     if(data.status == 200){
 
                         if (accion == true ){
 
-                            $("#"+survey).attr( "class","disable-survey btn btn-xs btn-danger").html("Inactivar")
+                            $("#"+person).attr( "class","disable-notif btn btn-xs btn-danger").html("Desactivar")
+                            $("#currentMailing").attr("class","fa fa-check-circle text-success");
 
                         }else{
 
-                            $("#"+survey).attr( "class","enable-survey btn btn-xs btn-success").html("Activar");
+                            $("#"+person).attr( "class","enable-notif btn btn-xs btn-success").html("Activar");
+                            $("#currentMailing").attr("class","fa fa-times-circle text-danger");
                         }
 
                         $.bootstrapGrowl("<h4>Cambio exitoso</h4><p>"+data.message+"</p>", {
@@ -49,14 +53,6 @@ var SurveyTable = function(){
                         });
                     }
                 });
-            });
-
-            // Manejo evento para mostrar matríz de perfiles y niveles
-            $('.btn-matriz').click(function(event){
-
-                event.preventDefault();
-                $('#modal_perfiles').modal();
-                $('#matriz-perfiles').html($(this).next().html());
             });
         }
     }

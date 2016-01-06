@@ -51,7 +51,7 @@ class StatsWithAjaxController extends Controller{
 
         $session = $request->getSession();
         $session->start();
-        $baseUrl = "http://dev.evaluaciones.unoi.com".$this->container->get('router')->getContext()->getBaseUrl();
+        $baseUrl = "https://pre-ruta.unoi.com".$this->container->get('router')->getContext()->getBaseUrl();
 
         //valida usuario con session iniciada
         if ($session->get('logged_in')) {
@@ -60,6 +60,7 @@ class StatsWithAjaxController extends Controller{
             if (array_intersect(array('SuperAdmin','Director','COACH'), $this->_profile)) {
                 if (array_intersect(array('SuperAdmin','COACH'), $this->_profile)) {
                     #vista para SuperAdmin y COACH
+                    //echo "$baseUrl/api/v0/catalog/schools";
                     $schoolListAPI = $this->getAPI("$baseUrl/api/v0/catalog/schools");
                     $schoolList = $this->createSchoolList($schoolListAPI);
 
@@ -111,11 +112,18 @@ class StatsWithAjaxController extends Controller{
     }
 
     public function getAPI($service_url){
-        $curl = curl_init($service_url);
+        
+        /*$curl = curl_init($service_url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         $curl_response = curl_exec($curl);
         curl_close($curl);
-        return($curl_response);
+
+        var_dump('url: '.$service_url);
+        var_dump('respuesta: '.$curl_response);
+        return($curl_response);*/
+
+        return file_get_contents($service_url, false);
+
     }
 
     private function createSchoolList($schoolList){
@@ -128,6 +136,7 @@ class StatsWithAjaxController extends Controller{
     }
 
     private function createSurveyList($surveyList){
+
         $arraySurvey = array();
         foreach(json_decode($surveyList) as $value){
             array_push( $arraySurvey, $value->surveyid .'-'. $value->title );

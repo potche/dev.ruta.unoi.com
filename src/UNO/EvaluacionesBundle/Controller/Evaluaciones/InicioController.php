@@ -21,7 +21,6 @@ class InicioController extends Controller{
     public function indexAction(Request $request) {
 
         $session = $request->getSession();
-        $session->start();
 
         if(!Utils::isUserLoggedIn($session)){
 
@@ -29,13 +28,11 @@ class InicioController extends Controller{
                 'redirect' => 'inicio',
                 'with' => 'none'
             ));
-            //return $this->redirect("/");
         }
 
         $this->_personId = $session->get('personIdS');
         $this->setProfile($session->get('profileS'));
 
-        $global = null;
         $colegios = null;
         $colegio = null;
         $personas = null;
@@ -44,7 +41,6 @@ class InicioController extends Controller{
 
         if(in_array('SuperAdmin',$this->_profile)){
 
-            $global = json_decode(file_get_contents($this->generateUrl('APIStatsProgress',array(),true),false),true)['global']['Stats'][0]["y"];
             $colegios = $this->getColegiosCount();
             $personas = $this->getPersonsCount();
             $coaches = $this->getCoachesCount();
@@ -57,7 +53,6 @@ class InicioController extends Controller{
         }
 
         return $this->render('UNOEvaluacionesBundle:Evaluaciones:inicio.html.twig', array(
-            'global' => $global,
             'colegios'=> $colegios,
             'colegio' => $colegio,
             'personas'=> $personas,
@@ -95,13 +90,10 @@ class InicioController extends Controller{
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 
-        $coachesCount = $qb->select("COUNT(DISTINCT(p.personid)) as cuenta")
-            ->from('UNOEvaluacionesBundle:Person','p')
-            ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.personid = p.personid')
-            ->innerJoin('UNOEvaluacionesBundle:Profile','pr','WITH','pr.profileid = ps.profileid')
-            ->where(" pr.profilecode = :profile ")
-            ->groupBy('p.personid')
-            ->setParameter('profile','COACH')
+        $coachesCount = $qb->select("COUNT(DISTINCT(ps.personid)) as cuenta")
+            ->from('UNOEvaluacionesBundle:Personschool','ps')
+            ->where(" ps.profileid = :profile ")
+            ->setParameter('profile',2)
             ->getQuery()
             ->getResult();
 
