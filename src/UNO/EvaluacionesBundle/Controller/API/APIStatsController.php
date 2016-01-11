@@ -177,7 +177,7 @@ class APIStatsController extends Controller
                     'Esperadas' => $esperadas,
                     'Respondidas' => $respondidas,
                     'Stats' => array()
-                    );
+                );
 
                 array_push($response['bySurvey'][$a]['Stats'],array(
                     'name' => 'Completado',
