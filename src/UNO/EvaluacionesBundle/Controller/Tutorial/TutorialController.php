@@ -2,9 +2,9 @@
 
 namespace UNO\EvaluacionesBundle\Controller\Tutorial;
 
-use \Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use \UNO\EvaluacionesBundle\Controller\Evaluaciones\Utils;
+use UNO\EvaluacionesBundle\Controller\Evaluaciones\Utils;
 
 class TutorialController extends Controller {
 
