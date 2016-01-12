@@ -27,6 +27,9 @@
             <script src="https://staticmx.unoi.com/global/js/vendor/modernizr-respond.min.js"></script>
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
             <!-- END Stylesheets -->
+
+            <link rel="stylesheet" href="{{ asset('public/assets/css/bootstrap-tour.min.css') }}"> EN LOS JS:
+
         {% endblock %}
         <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1.0">
         <!-- Icons -->
@@ -206,25 +209,26 @@
 
     <!-- Modal About -->
     <div id="aboutM" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header" style="border-bottom: 0px; background: #4689dc">
+                <div class="modal-header" style="border-bottom: 0px; background: #4689dc; color: #FFFFFF;">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
-                <div class="modal-body" style="background: #4689dc">
-                    <div class="row">
-                        <div class="col-xs-4">
-                            <img src="{{ asset('public/assets/images/login/logoUno.png') }}" alt="avatar" style="width: 100%; margin-top: 5px;">
-                        </div>
-                        <div class="col-xs-8" style="line-height: 55px; font-size: 14px; font-weight: bold; text-align: center;">
-                            <h1>Plataforma de Diagnóstico Institucional</h1>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <h1>Bla bla bla....</h1>
-                        </div>
-
+                <div class="modal-body" style="background: #4689dc; color: #FFFFFF;">
+                    <table>
+                        <tr>
+                            <td style="width: 50%; text-align: center">
+                                <img src="{{ asset('public/assets/images/login/logoUno.png') }}" alt="avatar" style="width: 50%;">
+                            </td>
+                            <td style="text-align: left">
+                                <h2>Plataforma de Diagnóstico Institucional <span id="version"></span></h2>
+                            </td>
+                        </tr>
+                    </table>
+                    <hr/>
+                    <h3 class="container">
+                        <h3 class="text-center">Lo nuevo en esta versión</h3>
+                        <table id="nuevo"></table>
                     </div>
                 </div>
             </div>
@@ -258,6 +262,8 @@
         <script src="https://staticmx.unoi.com/global/js/vendor/modernizr-respond.min.js"></script>
         <script src="https://staticmx.unoi.com/global/js/vendor/modernizr-respond.min.js"></script>
         <script src="{{ asset('public/assets/js/notificationStatus.js') }}"></script>
+        <script src="{{ asset('public/assets/js/bootstrap-tour.min.js')}}"></script>
+        <script src="{{ asset('public/assets/js/tour.js')}}"></script>
         <script src="{{ asset('public/assets/js/base.js')}}"></script>
         <script>
             //-- Load and execute javascript code used only in this page
@@ -267,7 +273,18 @@
 
             //--- obtiene los Json de session
             $(document).ready(function() {
-                parseInfo('{{ app.session.get('privilegeS') | raw }}', '{{ app.session.get('profileS') | raw }}')
+                parseInfo('{{ app.session.get('privilegeS') | raw }}', '{{ app.session.get('profileS') | raw }}');
+                var versionArray = $.parseJSON('{{ app.session.get('versionS') | raw }}');
+
+                $('#version').append(versionArray.version);
+                var link = '';
+                $.each(versionArray.nuevo, function(i, item) {
+                    link += "<tr>"+
+                                "<th width='25%' style='vertical-align: top;'><i class='fa fa-check-circle-o'></i> " + item.title + ": </th>"+
+                                "<td>"+ item.description +"</td>"+
+                            "</tr>";
+                });
+                $('#nuevo').append(link);
             });
             //--- Evento para mostar el video de Bienvenida al sistema
             function showVideo(){
