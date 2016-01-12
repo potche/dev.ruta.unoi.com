@@ -32,6 +32,8 @@ use UNO\EvaluacionesBundle\Entity\Optionapplication;
 use UNO\EvaluacionesBundle\Entity\School;
 use UNO\EvaluacionesBundle\Entity\Uservalidationemail;
 use UNO\EvaluacionesBundle\Entity\Userhttpsession;
+use UNO\EvaluacionesBundle\Entity\Cversion;
+use UNO\EvaluacionesBundle\Entity\Feature;
 
 DEFINE('logged_in', 'logged_in');
 DEFINE('login_user', 'login-user');
@@ -352,6 +354,32 @@ class LoginController extends Controller{
     }
 
     /**
+     * @return string
+     * obtiene del sistema y lo envia como json
+     */
+    private function getVersion(){
+        $json = array();
+        $nuevo = array();
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+        $q = $qb->select('V.version, V.releaseDate, F.title, F.description')
+            ->from('UNOEvaluacionesBundle:Cversion', 'V')
+            ->innerJoin('UNOEvaluacionesBundle:Feature','F','WITH', 'V.idCversion = F.idVersion')
+            ->where('V.currentVersion = 1')
+            ->orderBy('F.title')
+            ->getQuery()
+            ->getResult();
+
+        $json['version'] = $q[0]['version'];
+        $json['releaseDate'] = $q[0]['releaseDate'];
+        foreach($q as $value){
+            array_push( $nuevo, array('title' => $value['title'], 'description' => $value['description']) );
+        }
+        $json['nuevo'] = $nuevo;
+        return json_encode($json);
+    }
+
+    /**
      * @return bool
      * inicializa las variables de session e invoca a metodo setCookie
      */
@@ -366,6 +394,7 @@ class LoginController extends Controller{
         $session->set('privilegeS', $this->getPrivilege());
         $session->set('profileS', $this->getProfile());
         $session->set('schoolIdS', $this->getSchoolId());
+        $session->set('versionS', $this->getVersion());
         $session->set('mailing', $this->_personDB->getMailing());
         $this->setCookie();
         $this->setSurveys($this->_personDB->getPersonid(),$session);
