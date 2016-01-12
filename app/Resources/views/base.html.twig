@@ -26,6 +26,7 @@
             <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/themes/modern.css">
             <script src="https://staticmx.unoi.com/global/js/vendor/modernizr-respond.min.js"></script>
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+            <link rel="stylesheet" href="{{ asset('public/assets/css/bootstrap-tour.min.css') }}">
             <!-- END Stylesheets -->
         {% endblock %}
         <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1.0">
@@ -135,7 +136,7 @@
                         <!-- User Dropdown -->
                         <li class="dropdown" style="width: 100%;">
 
-                            <a href="javascript:void(0)" class="dropdown-toggle pull-right" data-toggle="dropdown">
+                            <a id="panel-usuario" href="javascript:void(0)" class="dropdown-toggle pull-right" data-toggle="dropdown">
                                 {{ app.session.get('nameS') }}
                                 <img src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar"> <i class="fa fa-angle-down"></i>
                                 <!-- <img src="https://staticmx.unoi.com/global/logos/gris_fondoblanco_sin.png" alt="avatar"> <i class="fa fa-angle-down"></i>-->
@@ -225,8 +226,11 @@
         <script src="https://staticmx.unoi.com/global/js/app.js"></script>
         <script src="https://staticmx.unoi.com/global/js/vendor/modernizr-respond.min.js"></script>
         <script src="https://staticmx.unoi.com/global/js/vendor/modernizr-respond.min.js"></script>
+        <script src="{{ asset('public/assets/js/bootstrap-tour.min.js') }}"></script>
         <script src="{{ asset('public/assets/js/notificationStatus.js') }}"></script>
         <script src="{{ asset('public/assets/js/base.js')}}"></script>
+        <script src="{{ asset('public/assets/js/tour.js')}}"></script>
+
         <script>
             //-- Load and execute javascript code used only in this page
             $(window).load(function() {
@@ -243,6 +247,30 @@
             }
         </script>
             <script>$(function(){ NotifStatus.init('{{ url('ajaxMailingStatus') }}'); });</script>
+            <script>$(function(){ TourInicio.init(); });</script>
+            {#<script>
+                $(function(){
+
+                    var tour = new Tour({
+                        steps: [
+                            {
+                                element: "#panel-usuario",
+                                title: "Menu de usuario",
+                                content: "Este es tu menu de usuario"
+                            },
+                            {
+                                element: "#page-content",
+                                title: "Contenido de la plataforma",
+                                content: "Este es el contenido de la plataforma"
+                            }
+                        ]
+                    });
+
+                    tour.init();
+                    tour.start();
+                });
+            </script>#}
     {% endblock %}
+
     </body>
 </html>
