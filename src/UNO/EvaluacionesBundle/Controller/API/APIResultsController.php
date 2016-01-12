@@ -208,7 +208,7 @@ class APIResultsController extends Controller{
             ->innerJoin('UNOEvaluacionesBundle:Option','O', 'WITH', 'OQ.optionOptionid = O.optionid')
             ->where('S.active = 1')
             ->andWhere('PS.personid > 1')
-            ->andWhere('S.closingdate >= CURRENT_DATE()')
+            //->andWhere('S.closingdate >= CURRENT_DATE()')
             ->andWhere("Ac.actioncode  = '004'")
             ->andWhere($where)
             ->setParameters($parameters)
