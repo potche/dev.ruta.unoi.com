@@ -13,18 +13,38 @@ var TourInicio = function(){
                 steps: [
                     {
                         animation: "true",
-                        element: "#page-content",
-                        container: "#page-content",
-                        title: "Contenido de la plataforma",
-                        content: "Este es el contenido de la plataforma",
+                        element: "#menuInicio",
+                        title: "<i class='fa fa-bars'></i> Menú de opciones",
+                        content: "Estas son todas las secciones que puedes visitar en tu Plataforma de Diagnóstico",
                         placement: "left"
                     },
                     {
                         animation: "true",
+                        element: "#sidebar",
+                        title: "<i class='fa fa-bars'></i> Lista de opciones",
+                        content: "De igual manera, también puedes ver tus opciones aquí",
+                        placement: "right"
+                    },
+/*                    {
+                        animation: "true",
                         element: "#panel-usuario",
                         container: "#panel-usuario",
                         title: "Menu de usuario",
-                        content: "Este es tu menu de usuario",
+                        content: "Este es tu menu de usuario. Aquí podrás ver los perfiles del LMS con los que cuentas, así como ver información de la plataforma y activar/inactivar notificaciones via mail.",
+                        placement: "left"
+                    },*/
+                    {
+                        animation: "true",
+                        element: "#page-content",
+                        title: "<i class='fa fa-pie-chart'></i> Panel de inicio",
+                        content: "Este es tu panel de inicio. Aquí podrás ver las estadísticas más relevantes sobre tu proceso de diagnóstico.",
+                        placement: "left"
+                    },
+                    {
+                        animation: "true",
+                        element: "#ayuda-btn",
+                        title: "<i class='fa fa-question-circle'></i> Centro de ayuda",
+                        content: "Ahora puedes apoyarte de videotutoriales diseñados para ayudarte a utilizar esta plataforma.",
                         placement: "left"
                     }
                 ],
@@ -34,10 +54,10 @@ var TourInicio = function(){
                 "<div class='popover-content'></div>"+
                 "<div class='popover-navigation'>"+
                 "<nav>"+
-                "<button class='btn btn-info' data-role='prev'><i class='fa fa-chevron-left'></i> </button>"+
+                "<button class='btn btn-sm btn-info' data-role='prev'><i class='fa fa-chevron-left'></i> </button>"+
                 "<span data-role='separator'> </span>"+
-                "<button class='btn btn-info' data-role='next'><i class='fa fa-chevron-right'></i></button>"+
-                "<button class='btn btn-info' data-role='end'>Terminar</button>"+
+                "<button class='btn btn-sm btn-info' data-role='next'><i class='fa fa-chevron-right'></i></button>"+
+                "<button class='btn btn-sm btn-info' data-role='end'>Terminar</button>"+
                 "</nav>"+
                 "</div>"
             });
