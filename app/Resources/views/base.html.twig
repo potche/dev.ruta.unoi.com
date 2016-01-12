@@ -162,6 +162,10 @@
                                 </li>
                                 <li class="divider"></li>
                                 <li>
+                                    <a href="" data-toggle="modal" data-target="#aboutM"><i class="fa fa-plus-circle pull-right" style="opacity: 0.8;"></i> Acerca del Sistema</a>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
                                     <a href="{{ path('logout') }}"><i class="fa fa-sign-out pull-right" style="opacity: 0.8;"></i> Cerrar sesión</a>
                                 </li>
                             </ul>
@@ -199,6 +203,34 @@
         <!-- END Page Container -->
     </div>
     <!-- END Page Wrapper -->
+
+    <!-- Modal About -->
+    <div id="aboutM" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="border-bottom: 0px; background: #4689dc">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body" style="background: #4689dc">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <img src="{{ asset('public/assets/images/login/logoUno.png') }}" alt="avatar" style="width: 100%; margin-top: 5px;">
+                        </div>
+                        <div class="col-xs-8" style="line-height: 55px; font-size: 14px; font-weight: bold; text-align: center;">
+                            <h1>Plataforma de Diagnóstico Institucional</h1>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <h1>Bla bla bla....</h1>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal About -->
 
 
     <!-- Modal loading -->
