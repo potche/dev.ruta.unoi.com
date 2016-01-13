@@ -137,15 +137,18 @@
                     <ul class="nav navbar-nav-custom pull-right" style="width: 50%;">
 
                         <!-- User Dropdown -->
-                        <li id="panel-usuario-list" class="dropdown" style="width: 100%;">
-
+                        <li id="listusuario" class="dropdown" style="width: 100%;">
                             <a id="panel-usuario" href="javascript:void(0)" class="dropdown-toggle pull-right" data-toggle="dropdown">
                                 {{ app.session.get('nameS') }}
                                 <img src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar"> <i class="fa fa-angle-down"></i>
                                 <!-- <img src="https://staticmx.unoi.com/global/logos/gris_fondoblanco_sin.png" alt="avatar"> <i class="fa fa-angle-down"></i>-->
                             </a>
+                            <!-- Span para posicionar tour de modo que no tape el contenido del dropdown-->
+                            <span id="separator-usuario" href="javascript:void(0)" class="dropdown-toggle pull-right" style="width: 100px;">
+                                <p>{{ " " }}</p>
+                            </span>
                             <ul class="dropdown-menu dropdown-custom dropdown-menu-right">
-                                <li class="dropdown-header text-center">
+                                <li id="profile-header" class="dropdown-header text-center">
                                     Perfil
                                 </li>
                                 <li id="profile">
@@ -304,15 +307,24 @@
             <script>$(function(){
 
                     var tourEnabled = '{{ app.session.get('tourEnabled') }}';
+                    var name = '{{ app.session.get('nameS') }}';
 
                     var steps = [
                         {
-                            path: "/inicio",
+                            path: "/app_dev.php/inicio",
+                            animation: "true",
+                            element: "#page-content",
+                            title: "<i class='fa fa-bell'></i> ¡Hola, "+name+"!",
+                            content: "Te damos la bienvenida a tu Plataforma de Diagnóstico institucional, regalanos un minuto para explicarte brevemente lo sencillo que es utilizarla",
+                            placement: "top",
+                            backdrop: true
+                        },
+                        {
                             animation: "true",
                             element: "#menuInicio",
                             title: "<i class='fa fa-bars'></i> Menú de opciones",
                             content: "Estas son todas las secciones que puedes visitar en tu Plataforma de Diagnóstico",
-                            placement: "left",
+                            placement: "top",
                             backdrop: true
                         },
                         {
@@ -321,7 +333,7 @@
                             title: "<i class='fa fa-bars'></i> Lista de opciones",
                             content: "De igual manera, también puedes ver tus opciones aquí",
                             placement: "right",
-                            backdrop: true,
+                            backdrop: false,
                             onShow: function(tour){
 
                                 App.sidebar('toggle-sidebar');
@@ -329,14 +341,14 @@
                         },
                         {
                             animation: "true",
-                            element: "#panel-usuario",
+                            element: "#separator-usuario",
                             title: "<i class='fa fa-user'></i> Tu menú",
-                            content: "Este es tu menu de usuario. Aquí podrás ver los perfiles del LMS con los que cuentas, así como ver información de la plataforma y activar/inactivar notificaciones via mail.",
+                            content: "Este es tu menu de usuario. Aquí podrás ver los perfiles del LMS con los que cuentas, opciones de tu cuenta, y ver información Acerca del sistema.",
                             placement: "left",
                             backdrop: false,
-                            onShow: function(tour){
+                            onShown: function(tour){
 
-                                //Cambiar clase de panel
+                                $("#listusuario").attr("class","dropdown open");
                             }
                         },
                         {
