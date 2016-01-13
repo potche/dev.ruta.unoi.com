@@ -22,7 +22,8 @@
                         {{ survey['fechacierre']['date']|date('j/M/Y \@ g:i a') }}
                     </td>
                     <td class="text-center">
-                        <a href="{{ absolute_url(path('responder',{'id': survey['id']})) }}" class="btn btn-xs btn-success has-tip" style="width: 85px;">Responder</a>
+                        {#<a href="{{ absolute_url(path('responder',{'id': survey['id']})) }}" class="btn btn-xs btn-success has-tip" style="width: 85px;">Responder</a>#}
+                        <a href="{{ scheme~'://'~host~'/responder/'~survey['id'] }}" class="btn btn-xs btn-success has-tip" style="width: 85px;">Responder</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -31,13 +32,16 @@
     <br>
     <div class="row text-center">
         <h5>Para responderla ahora, haz click en el botón de responder de una evaluación, o si lo prefieres, ingresa a <a href="//ruta.unoi.com/listar">Ruta UNOi</a> para ver tu lista de evaluaciones</h5>
-        <a href="{{ absolute_url(path('listar')) }}" class="btn btn-sm btn-info"> {{ "Ver mi lista" }}</a>
+        {#<a href="{{ absolute_url(path('listar')) }}" class="btn btn-sm btn-info"> {{ "Ver mi lista" }}</a>#}
+        <a href="{{ scheme~'://'~host~'/listar' }}" class="btn btn-sm btn-info"> {{ "Ver mi lista" }}</a>
+
     </div>
     <br>
 {% endblock %}
 {% block unsuscribe %}
     <div class="row text-center">
         <h5>{{ "Si deseas dejar de recibir mensajes, haz click en el siguiente botón" }}</h5>
-        <a href="{{ absolute_url(path('urlDisableNotifications',{'personid': persona})) }}" class="btn btn-sm btn-danger"> {{ "Dejar de recibir mensajes" }}</a>
+        {#<a href="{{ absolute_url(path('urlDisableNotifications',{'personid': persona})) }}" class="btn btn-sm btn-danger"> {{ "Dejar de recibir mensajes" }}</a>#}
+        <a href="{{ scheme~'://'~host~'/mailing/disable/'~persona }}" class="btn btn-sm btn-danger"> {{ "Dejar de recibir mensajes" }}</a>
     </div>
 {% endblock %}
