@@ -110,6 +110,12 @@ UNO\EvaluacionesBundle\Entity\Person:
             nullable: false
             options:
                 default: '1'
+        tourenabled:
+            type: boolean
+            nullable: false
+            options:
+                default: '1'
+            column: tourEnabled
         lastLogin:
             type: datetime
             nullable: false

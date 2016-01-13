@@ -15,6 +15,14 @@ function parseInfo(privilege, profile){
             "</a>"+
             "</li>";
     });
+
+    link +="<li id='ayuda-link'>"+
+        "<a href='/tutorials'>"+
+        "<i class=' fa fa-question-circle sidebar-nav-icon'></i>"+
+        "<span class='sidebar-nav-mini-hide'> Ayuda</span>"+
+        "</a>"+
+        "</li>";
+
     $('#privilege').html(link);
 
     //-----------------------------------------------
@@ -27,7 +35,7 @@ function parseInfo(privilege, profile){
             ;
         }
     });
-    menu += "<li><a href='/tutorials'><i class='fa fa-question-circle'></i> Ayuda</a></li>";
+    menu += "<li id='ayuda-btn'><a href='/tutorials'><i class='fa fa-question-circle'></i> Ayuda</a></li>";
 
     $('#menuInicio').html(menu);
 

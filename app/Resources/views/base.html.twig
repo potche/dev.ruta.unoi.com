@@ -26,9 +26,10 @@
             <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/themes/modern.css">
             <script src="https://staticmx.unoi.com/global/js/vendor/modernizr-respond.min.js"></script>
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+            <link rel="stylesheet" href="{{ asset('public/assets/css/bootstrap-tour.min.css') }}">
             <!-- END Stylesheets -->
 
-            <link rel="stylesheet" href="{{ asset('public/assets/css/bootstrap-tour.min.css') }}"> EN LOS JS:
+            <link rel="stylesheet" href="{{ asset('public/assets/css/bootstrap-tour.min.css') }}">
 
         {% endblock %}
         <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1.0">
@@ -92,7 +93,7 @@
                     <div class="sidebar-content">
                         <!-- Brand -->
 
-                        <a href="{{ path('login') }}" class="sidebar-brand" style="height: 100px;">
+                        <a id="sidebar-trigger" href="{{ path('login') }}" class="sidebar-brand" style="height: 100px;">
                             <img src="{{ asset('public/assets/images/login/logoUno.png') }}" alt="avatar" style="width: 60%; margin-left: 20%; margin-top: 5px;">
                         </a>
                         <!-- END Brand -->
@@ -136,15 +137,18 @@
                     <ul class="nav navbar-nav-custom pull-right" style="width: 50%;">
 
                         <!-- User Dropdown -->
-                        <li class="dropdown" style="width: 100%;">
-
-                            <a href="javascript:void(0)" class="dropdown-toggle pull-right" data-toggle="dropdown">
+                        <li id="listusuario" class="dropdown" style="width: 100%;">
+                            <a id="panel-usuario" href="javascript:void(0)" class="dropdown-toggle pull-right" data-toggle="dropdown">
                                 {{ app.session.get('nameS') }}
                                 <img src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar"> <i class="fa fa-angle-down"></i>
                                 <!-- <img src="https://staticmx.unoi.com/global/logos/gris_fondoblanco_sin.png" alt="avatar"> <i class="fa fa-angle-down"></i>-->
                             </a>
+                            <!-- Span para posicionar tour de modo que no tape el contenido del dropdown-->
+                            <span id="separator-usuario" href="javascript:void(0)" class="dropdown-toggle pull-right" style="width: 100px;">
+                                <p>{{ " " }}</p>
+                            </span>
                             <ul class="dropdown-menu dropdown-custom dropdown-menu-right">
-                                <li class="dropdown-header text-center">
+                                <li id="profile-header" class="dropdown-header text-center">
                                     Perfil
                                 </li>
                                 <li id="profile">
@@ -162,6 +166,12 @@
                                     {% else %}
                                         <a href="#" id="{{ app.session.get('personIdS') }}" class="enable-notif btn btn-xs btn-success" style="display: block; width: 85px;"> Activar</a>
                                     {% endif %}
+                                </li>
+                                <li class="dropdown-header text-center">
+                                    <i class="fa fa-rocket"></i>{{ " Tour" }}
+                                </li>
+                                <li class="text-center">
+                                    <a href="#" id="tour-trigger" class="btn btn-xs btn-success" style="display: block; width: 85px;"> Iniciar tour</a>
                                 </li>
                                 <li class="divider"></li>
                                 <li>
@@ -233,7 +243,6 @@
                 </div>
             </div>
         </div>
-    </div>
     <!-- END Modal About -->
 
 
@@ -261,10 +270,13 @@
         <script src="https://staticmx.unoi.com/global/js/app.js"></script>
         <script src="https://staticmx.unoi.com/global/js/vendor/modernizr-respond.min.js"></script>
         <script src="https://staticmx.unoi.com/global/js/vendor/modernizr-respond.min.js"></script>
+        <script src="{{ asset('public/assets/js/bootstrap-tour.min.js') }}"></script>
         <script src="{{ asset('public/assets/js/notificationStatus.js') }}"></script>
         <script src="{{ asset('public/assets/js/bootstrap-tour.min.js')}}"></script>
         <script src="{{ asset('public/assets/js/tour.js')}}"></script>
         <script src="{{ asset('public/assets/js/base.js')}}"></script>
+        <script src="{{ asset('public/assets/js/tourStatus.js')}}"></script>
+
         <script>
             //-- Load and execute javascript code used only in this page
             $(window).load(function() {
@@ -292,6 +304,80 @@
             }
         </script>
             <script>$(function(){ NotifStatus.init('{{ url('ajaxMailingStatus') }}'); });</script>
+            <script>$(function(){
+
+                    var tourEnabled = '{{ app.session.get('tourEnabled') }}';
+                    var name = '{{ app.session.get('nameS') }}';
+
+                    var steps = [
+                        {
+                            path: "/app_dev.php/inicio",
+                            animation: "true",
+                            element: "#page-content",
+                            title: "<i class='fa fa-bell'></i> ¡Hola, "+name+"!",
+                            content: "Te damos la bienvenida a tu Plataforma de Diagnóstico institucional, regalanos un minuto para explicarte brevemente lo sencillo que es utilizarla",
+                            placement: "top",
+                            backdrop: true
+                        },
+                        {
+                            animation: "true",
+                            element: "#menuInicio",
+                            title: "<i class='fa fa-bars'></i> Menú de opciones",
+                            content: "Estas son todas las secciones que puedes visitar en tu Plataforma de Diagnóstico",
+                            placement: "top",
+                            backdrop: true
+                        },
+                        {
+                            animation: "true",
+                            element: "#sidebar-trigger",
+                            title: "<i class='fa fa-bars'></i> Lista de opciones",
+                            content: "De igual manera, también puedes ver tus opciones aquí",
+                            placement: "right",
+                            backdrop: false,
+                            onShow: function(tour){
+
+                                App.sidebar('toggle-sidebar');
+                            }
+                        },
+                        {
+                            animation: "true",
+                            element: "#separator-usuario",
+                            title: "<i class='fa fa-user'></i> Tu menú",
+                            content: "Este es tu menu de usuario. Aquí podrás ver los perfiles del LMS con los que cuentas, opciones de tu cuenta, y ver información Acerca del sistema.",
+                            placement: "left",
+                            backdrop: false,
+                            onShown: function(tour){
+
+                                $("#listusuario").attr("class","dropdown open");
+                            }
+                        },
+                        {
+                            animation: "true",
+                            element: "#page-content",
+                            title: "<i class='fa fa-pie-chart'></i> Panel de inicio",
+                            content: "Este es tu panel de inicio. Aquí podrás ver las estadísticas más relevantes sobre tu proceso de diagnóstico.",
+                            placement: "left",
+                            backdrop: true
+                        },
+                        {
+                            animation: "true",
+                            element: "#ayuda-btn",
+                            title: "<i class='fa fa-question-circle'></i> Centro de ayuda",
+                            content: "Ahora puedes apoyarte de videotutoriales diseñados para ayudarte a utilizar esta plataforma.",
+                            placement: "left",
+                            backdrop: true,
+                            onShown: function(tour){
+
+                                TourStatus.init('{{ url('ajaxTourStatus') }}','{{ app.session.get('personIdS') }}','0');
+                            }
+                        }
+                    ];
+
+                    TourInicio.init('{{ url('ajaxTourStatus') }}','{{ app.session.get('personIdS') }}',steps,'{{ app.session.get('tourEnabled') }}');
+                });
+            </script>
+
     {% endblock %}
+
     </body>
 </html>
