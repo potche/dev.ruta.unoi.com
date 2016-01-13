@@ -29,7 +29,7 @@ var NotifStatus = function(){
 
                         if (accion == true ){
 
-                            $("#"+person).attr( "class","disable-notif btn btn-xs btn-danger").html("Desactivar")
+                            $("#"+person).attr( "class","disable-notif btn btn-xs btn-danger").html("Desactivar");
                             $("#currentMailing").attr("class","fa fa-check-circle text-success");
 
                         }else{

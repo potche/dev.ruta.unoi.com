@@ -21,6 +21,8 @@ var TourInicio = function(){
                          delay: 5000,
                          allow_dismiss: true
                      });
+
+                     $("#aboutM").modal('show');
                  },
                  template:
                     "<div class='popover tour' style='z-index: 1000000;'>"+
