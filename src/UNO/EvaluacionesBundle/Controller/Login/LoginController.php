@@ -358,24 +358,36 @@ class LoginController extends Controller{
      * obtiene del sistema y lo envia como json
      */
     private function getVersion(){
-        $json = array();
-        $nuevo = array();
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
         $q = $qb->select('V.version, V.releaseDate, F.title, F.description')
             ->from('UNOEvaluacionesBundle:Cversion', 'V')
             ->innerJoin('UNOEvaluacionesBundle:Feature','F','WITH', 'V.idCversion = F.idVersion')
-            ->where('V.currentVersion = 1')
-            ->orderBy('F.title')
+            ->orderBy('V.version', 'DESC')
+            ->addOrderBy('F.title', 'ASC')
             ->getQuery()
             ->getResult();
 
-        $json['version'] = $q[0]['version'];
-        $json['releaseDate'] = $q[0]['releaseDate'];
-        foreach($q as $value){
-            array_push( $nuevo, array('title' => $value['title'], 'description' => $value['description']) );
+        $v = array();
+        $json = array();
+        $versions = array_unique(array_column($q,'version'));
+
+        foreach($versions as $val){
+            $subQuery = array_filter($q, function($ar) use($val){
+                return ($ar['version'] == $val);
+            });
+
+            $nuevo = array();
+            foreach($subQuery as $value){
+                $v['version'] = $value['version'];
+                $v['releaseDate'] = $value['releaseDate'];
+
+                array_push( $nuevo, array('title' => $value['title'], 'description' => $value['description']) );
+            }
+            $v['nuevo'] = $nuevo;
+            array_push($json, $v);
         }
-        $json['nuevo'] = $nuevo;
+
         return json_encode($json);
     }
 
