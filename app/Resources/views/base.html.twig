@@ -225,24 +225,55 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
                 <div class="modal-body" style="background: #4689dc; color: #FFFFFF;">
-                    <table>
-                        <tr>
-                            <td style="width: 50%; text-align: center">
-                                <img src="{{ asset('public/assets/images/login/logoUno.png') }}" alt="avatar" style="width: 50%;">
-                            </td>
-                            <td style="text-align: left">
-                                <h2>Plataforma de Diagnóstico Institucional <span id="version"></span></h2>
-                            </td>
-                        </tr>
-                    </table>
-                    <hr/>
-                    <h3 class="container">
-                        <h3 class="text-center">Lo nuevo en esta versión</h3>
-                        <table id="nuevo"></table>
+                    <div class="row">
+                        <div class="col-md-5 text-center">
+                            <img src="{{ asset('public/assets/images/login/logoUno.png') }}" alt="avatar" style="width: 50%;">
+                        </div>
+                        <div class="col-md-7">
+                            <table>
+                                <tr>
+                                    <td style="text-align: left">
+                                        <h2>Plataforma de Diagnóstico Institucional <span id="version"></span></h2>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sx-12">
+                            <hr/>
+                            <div>
+                                <h3 class="text-center"><b>Lo nuevo en esta versión</b></h3>
+                                <table id="nuevo"></table>
+                            </div>
+                            <!-- Interactive Block -->
+                            <div class="block" style="background: #dae8f2;">
+                                <!-- Interactive Title -->
+                                <div class="block-title text-info">
+                                    <!-- Interactive block controls (initialized in js/app.js -> interactiveBlocks()) -->
+                                    <div class="block-options pull-right">
+                                        <a href="javascript:void(0)" class="btn btn-alt btn-sm btn-primary active" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
+                                    </div>
+                                    <h2><i class="fa fa-info-circle"></i> <strong>Versiones Anteriores</strong></h2>
+                                </div>
+                                <!-- END Interactive Title -->
+
+                                <!-- Interactive Content -->
+                                <!-- The content you will put inside div.block-content, will be toggled -->
+                                <div class="block-content alert alert-info alert-dismissable text-justify" style="display: none; background-color: #dae8f2; border-color: #dae8f2;">
+                                    <!-- Info Alert Content -->
+                                    <div class="last"></div>
+                                </div>
+                                <!-- END Interactive Content -->
+                            </div>
+                            <!-- END Interactive Block -->
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     <!-- END Modal About -->
 
 
@@ -287,16 +318,45 @@
             $(document).ready(function() {
                 parseInfo('{{ app.session.get('privilegeS') | raw }}', '{{ app.session.get('profileS') | raw }}');
                 var versionArray = $.parseJSON('{{ app.session.get('versionS') | raw }}');
+                console.log(versionArray);
+                $('#version').append(versionArray[0].version);
+                var actualV = '';
+                var anteriorV = '';
+                var i = 0;
+                var months = ['Enero','Febrero','Marzo','Abril','Maoy','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+                $.each(versionArray, function(i, versions) {
+                    if(i != 0) {
+                        var d = new Date(versions.releaseDate.date)
+                        anteriorV += '<div class="text-right"><h3>Version: '+versions.version+'</h3>' +
+                                '<h4>Fecha: '+d.getDate()  + "/" + months[d.getMonth()] + "/" + d.getFullYear() +'</h4></div>' +
+                                '<table>';
+                    }
+                    $.each(versions.nuevo, function (j, item) {
+                        if(i == 0) {
+                            actualV += "<tr>" +
+                                    "<th width='25%' style='vertical-align: top;'><i class='fa fa-check-circle-o'></i> " + item.title + ": </th>" +
+                                    "<td width='5%'> </td>"+
+                                    "<td style='padding-bottom: 2%'>" + item.description + "</td>" +
+                                    "</tr>"+
+                                    "<tr><td></td></tr>";
+                        }else{
 
-                $('#version').append(versionArray.version);
-                var link = '';
-                $.each(versionArray.nuevo, function(i, item) {
-                    link += "<tr>"+
-                                "<th width='25%' style='vertical-align: top;'><i class='fa fa-check-circle-o'></i> " + item.title + ": </th>"+
-                                "<td>"+ item.description +"</td>"+
-                            "</tr>";
+                            anteriorV += "<tr>" +
+                                    "<th width='25%' style='vertical-align: top;'><i class='fa fa-check-circle-o'></i> " + item.title + ": </th>" +
+                                    "<td width='5%'> </td>"+
+                                    "<td style='padding-bottom: 2%'>" + item.description + "</td>" +
+                                    "</tr>"+
+                                    "<tr><td></td></tr>";
+                        }
+                    });
+                    i++;
+                    if(i != 0) {
+                        anteriorV += '</table>';
+                    }
                 });
-                $('#nuevo').append(link);
+
+                $('#nuevo').append(actualV);
+                $('.last').html(anteriorV);
             });
             //--- Evento para mostar el video de Bienvenida al sistema
             function showVideo(){
