@@ -8,6 +8,17 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class CleanDatabaseCommand
+ * @package UNO\EvaluacionesBundle\Command
+ * @author jbravo
+ *
+ * Esta clase se realizó de manera emergente debido a que se requería limpiar la bd de respuestas duplicadas y evaluaciones incompletas,
+ * por tanto, este comando no debería ser ejecutado sin previa autorización o sin la necesidad de hacerlo.
+ *
+ *
+ */
+
 class CleanDatabaseCommand extends ContainerAwareCommand
 {
     protected function configure()
@@ -17,6 +28,20 @@ class CleanDatabaseCommand extends ContainerAwareCommand
             ->setDescription('Remove duplicates')
         ;
     }
+
+    /**
+     *
+     * Método de ejecución del comando. Se consulta la bd para obtener las evaluaciones que quedaron truncas o de las cuales se repitieron
+     * respuestas, y con base en los resultados, se eliminan los duplicados y se resetea el estatus de respondido al usuario para que pueda
+     * responder nuevamente.
+     *
+     * Como se puede ver, hay redundancia de código y está escrito de manera bastante arcáica, no me hubiese gustado hacerlo así :(, pero
+     * así pasa cuando surge un "bomberazo".
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @throws \Doctrine\DBAL\DBALException
+     */
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -50,9 +75,6 @@ class CleanDatabaseCommand extends ContainerAwareCommand
 	            ON Q.questionId = QXS.Question_questionId
             GROUP BY questionId, surveyId, Person_personId, AnswerId";
 
-        //$statement = $connection->prepare($q);
-        //$statement->execute();
-        //$results = $statement->fetchAll();
         $results = $connection->fetchAll($qs);
 
         $output->writeln("Consulta: ".count($results));

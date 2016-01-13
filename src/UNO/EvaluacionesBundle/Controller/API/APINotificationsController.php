@@ -13,9 +13,27 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+/**
+ * Class APINotificationsController
+ * @package UNO\EvaluacionesBundle\Controller\API
+ * @author jbravo
+ *
+ * En esta clase se manejan diversas llamadas a consultas que entregan información necesaria para la construcción de mensajes
+ * de notificación para ser empleados en la misma aplicación o por medio de mail.
+ *
+ */
 class APINotificationsController extends Controller
 {
 
+    /**
+     *
+     * Búsqueda de evaluaciones nuevas dado el número de días antes de hoy
+     *
+     * @param Request $request
+     * @param $daysago "Dias atrás para buscar notificaciones"
+     * @return JsonResponse "Respuesta en formato JSON"
+     * @throws \Exception
+     */
     public function newsurveysAction(Request $request, $daysago){
 
         $response = new JsonResponse();
@@ -23,12 +41,30 @@ class APINotificationsController extends Controller
         return $response;
     }
 
+    /**
+     *
+     * Obtención de Top 5 de cumplimiento de usuarios dado un id de colegio
+     *
+     * @param Request $request
+     * @param $schoolid
+     * @return JsonResponse
+     * @throws \Exception
+     */
+
     public function toppersonsbyscholAction(Request $request, $schoolid){
 
         $response = new JsonResponse();
         $response->setData($this->getTop5BySchool($schoolid));
         return $response;
     }
+
+    /**
+     *
+     * Método interno para consultar evaluaciones nuevas dado cierto número de días antes de hoy
+     *
+     * @param $daysago
+     * @return array "Arreglo con respuesta en formato JSON"
+     */
 
     protected function getNewSurveys($daysago){
 
@@ -59,6 +95,14 @@ class APINotificationsController extends Controller
 
         return $all ? $this->parseArray($all) : APIUtils::getErrorResponse('404');
     }
+
+    /**
+     *
+     * Método interno para consultar top 5 de cumnplimiento de usuarios de acuerdo un colegio dado
+     *
+     * @param $schoolid
+     * @return array "Arreglo con respuesta en formato JSON"
+     */
 
     protected function getTop5BySchool($schoolid){
 
@@ -103,6 +147,13 @@ class APINotificationsController extends Controller
 
         return $all ? $top : APIUtils::getErrorResponse('404');
     }
+
+    /**
+     * Método interno auxiliar para parsear un arreglo que contiene las personas y sus nuevas evaluaciones
+     *
+     * @param $all
+     * @return array "Arreglo con campos Persona: int, Nombre: string, Email: string, NewSurveys: array"
+     */
 
     private function parseArray($all){
 

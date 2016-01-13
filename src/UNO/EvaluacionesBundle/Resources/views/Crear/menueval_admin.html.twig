@@ -18,7 +18,18 @@
             <div class="row">
                 <div class="block-content">
                     <div class="col-sm-12">
-                        <div id="pie-general"></div>
+                        <div id="pie-general">
+                            <div id="container">
+                                <div class="text-center">
+                                    <button class="btn btn-lg">
+                                        <i class="fa fa-refresh fa-spin fa-3x"></i>
+                                        <br/>
+                                        Cargando, por favor espere...
+                                    </button>
+                                    <br/>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -101,11 +112,15 @@
                                     </table>
                                 </td>
                                 <td id="progress-{{ survey['id'] }}" class="text-center">
-                                    {#<div class="progress progress-striped active">
-                                        <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{stats['bySurvey'][survey['id']]}}" aria-valuemin="0" aria-valuemax="100" style="width: {{stats['bySurvey'][survey['id']]}}%;">
+                                    <div id="container">
+                                        <div class="text-center">
+                                            <button class="btn btn-lg">
+                                                <i class="fa fa-refresh fa-spin"></i>
+                                                <br/>
+                                            </button>
+                                            <br/>
                                         </div>
                                     </div>
-                                    {{ stats['bySurvey'][survey['id']]|round ~ '%' }}#}
                                 </td>
                                 <td class="text-center hidden-sm hidden-xs">
                                     {{ survey['creada']|date('j/M/Y \@ g:i a') }}
