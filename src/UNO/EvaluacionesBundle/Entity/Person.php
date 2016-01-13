@@ -125,6 +125,13 @@ class Person
     private $mailing = 1;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="tourEnabled", type="boolean", nullable=false)
+     */
+    private $tourenabled = 1;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="lastLogin", type="datetime", nullable=false)
@@ -524,6 +531,30 @@ class Person
     public function getMailing()
     {
         return $this->mailing;
+    }
+
+    /**
+     * Set tourenabled
+     *
+     * @param boolean $tourenabled
+     *
+     * @return Person
+     */
+    public function setTourenabled($tourenabled)
+    {
+        $this->tourenabled = $tourenabled;
+
+        return $this;
+    }
+
+    /**
+     * Get tourenabled
+     *
+     * @return boolean
+     */
+    public function getTourenabled()
+    {
+        return $this->tourenabled;
     }
 
     /**

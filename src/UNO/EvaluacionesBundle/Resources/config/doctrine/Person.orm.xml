@@ -84,6 +84,11 @@
         <option name="default">1</option>
       </options>
     </field>
+    <field name="tourenabled" type="boolean" column="tourEnabled" nullable="false">
+      <options>
+        <option name="default">1</option>
+      </options>
+    </field>
     <field name="lastLogin" type="datetime" column="lastLogin" nullable="false">
     </field>
   </entity>

@@ -396,6 +396,7 @@ class LoginController extends Controller{
         $session->set('schoolIdS', $this->getSchoolId());
         $session->set('versionS', $this->getVersion());
         $session->set('mailing', $this->_personDB->getMailing());
+        $session->set('tourEnabled', $this->_personDB->getTourenabled());
         $this->setCookie();
         $this->setSurveys($this->_personDB->getPersonid(),$session);
         return true;
@@ -427,6 +428,7 @@ class LoginController extends Controller{
         $session->remove('nameS');
         $session->remove('authorized_in');
         $session->remove('compliance');
+        $session->remove('tourEnabled');
         $session->invalidate();
         unset($session);
 
