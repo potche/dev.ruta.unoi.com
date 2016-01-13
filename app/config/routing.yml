@@ -236,6 +236,10 @@ ajaxMailingStatus:
     path:   /mailing/setstatus
     defaults: {_controller: UNOEvaluacionesBundle:Notifications/Notifications:mailingstatus}
     methods: [POST]
+ajaxTourStatus:
+        path:   /tour/setstatus
+        defaults: {_controller: UNOEvaluacionesBundle:Tutorial/Tutorial:ajaxtour}
+        methods: [POST]
 urlDisableNotifications:
     path: /mailing/disable/{personid}
     defaults: {_controller: UNOEvaluacionesBundle:Notifications/Notifications:urldisablemailing, personid = null}
