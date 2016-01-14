@@ -149,7 +149,7 @@ class MailingCommand extends ContainerAwareCommand{
                 $progressSchool = json_decode(file_get_contents($this->getContainer()->get('router')->generate('APIStatsProgressBySchool',array('schoolid'=>$d['idescuela']),true), false), true);
                 $progressPerson = json_decode(file_get_contents($this->getContainer()->get('router')->generate('APIStatsProgressByPerson',array('personid'=>$d['persona']),true), false), true);
 
-                if($d['email'] != '' && $d['email'] != null){
+                if($d['email'] != '' && $d['email'] != null && !isset($progressPerson['Error']) && !isset($progressSchool['Error'])){
 
                     $mesg = $this->buildMessage(
                         'Resumen semanal',
