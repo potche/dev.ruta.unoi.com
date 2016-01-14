@@ -159,7 +159,9 @@ class MailingCommand extends ContainerAwareCommand{
                             'name' => $d['nombre'],
                             'top5' => $top5,
                             'progressSchool' => $progressSchool,
-                            'progressPerson' => $progressPerson
+                            'progressPerson' => $progressPerson,
+                            'host' => HOST,
+                            'scheme' => SCHEME
                         ),
                         $d['email'],
                         TAG_WEEKLY_BRIEF);

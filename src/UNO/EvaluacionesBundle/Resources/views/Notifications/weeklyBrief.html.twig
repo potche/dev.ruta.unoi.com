@@ -80,7 +80,6 @@
                 <table class="table table-bordered">
                     <thead>
                     <tr>
-                        <th class="text-center">{{ " " }}</th>
                         <th class="text-center"><b>Nombre</b></th>
                         <th class="text-center"><b>Porcentaje de avance</b></th>
                     </tr>
@@ -88,9 +87,6 @@
                     <tbody>
                     {% for top in top5 %}
                         <tr>
-                            <td class="text-center">
-                                <img src="{{ absolute_url(asset('public/assets/images/login/icon_niño1.png')) }}" alt="avatar" class="img-circle" style="width: 50%">
-                            </td>
                             <td class="text-left">
                                 <h5><b>{{ top['nombre'] }}</b></h5>
                             </td>
@@ -110,13 +106,13 @@
     </div>
     <div class="row text-center">
         <h5>{{ "Haz click en el botón para ver más estadísticas de tu colegio" }}</h5>
-        <a href="{{ absolute_url(path('estadisticas')) }}" class="btn btn-sm btn-info"> {{ "Ver más estadísticas" }}</a>
+        <a href="{{ scheme~'://'~host~'/estadisticas' }}" class="btn btn-sm btn-info"> {{ "Ver mi lista" }}</a>
     </div>
     <br>
 {% endblock %}
 {% block unsuscribe %}
     <div class="row text-center">
         <h6>{{ "Si deseas dejar de recibir mensajes, haz click en el siguiente botón" }}</h6>
-        <a href="{{ absolute_url(path('urlDisableNotifications',{'personid': persona})) }}" class="btn btn-sm btn-danger"> {{ "Dejar de recibir mensajes" }}</a>
+        <a href="{{ scheme~'://'~host~'/mailing/disable/'~persona }}" class="btn btn-sm btn-danger"> {{ "Dejar de recibir mensajes" }}</a>
     </div>
 {% endblock %}
