@@ -191,9 +191,12 @@ class MailingCommand extends ContainerAwareCommand{
 
     private function buildMessage($title, $view, $params, $recipient,$tag){
 
+        setlocale(LC_ALL,"es_MX.utf8");
+        $sendDate = strftime("%d %B %Y");
+
         $message = \Swift_Message::newInstance()
-            ->setSubject($title)
-            ->setFrom('noreplymx@unoi.com')
+            ->setSubject($title.' '.$sendDate)
+            ->setFrom(array('noreplymx@unoi.com' => 'Diagnóstico UNOi'))
             ->setTo($recipient)
             ->setBody(
                 $this->getContainer()->get('templating')->render($view, $params),
