@@ -107,8 +107,8 @@
         var answered = 0;
         var survId = {{ surveyData.surveyid }};
         var totalQ = {{ x - 1 }};
-        var urlSave = "{{ url('salvarResp') }}";
-        var urlRedirect = "{{ url('listar') }}";
+        var urlSave = "/responder/salvar";
+        var urlRedirect = "/listar";
     </script>
     <script src="{{ asset('public/assets/js/responder.js') }}"></script>
 {% endblock %}

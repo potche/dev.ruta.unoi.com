@@ -9,7 +9,6 @@ var TourInicio = function(){
                  path: "/inicio",
                  container: "#page-wrapper",
                  keyboard: true,
-                 debug: true,
                  autoscroll: true,
                  steps: steps,
                  onEnd: function(tour){

@@ -6,8 +6,9 @@
         <div class="content-header">
             <div class="header-section">
                 <h1>
-                    {#app.request.basepath#}
-                    {#app.request.baseurl#}
+                    {# app.request.getSchemeAndHttpHost() #}
+                    {# app.request.basepath #}
+                    {# app.request.baseurl #}
                     {# app.request.uri #}
                     <i class="fa fa-line-chart"></i><b>Estad&iacute;sticas</b>
                     <small><br/><span class="label label-primary"><span class="nameSchool"></span> </span></small>
@@ -251,12 +252,12 @@
         var nameSchool = 'Todas las Escuelas';
         var nameSurvey = 'Todas las Evaluaciones';
 
-        var serverAllAPI = "{{ app.request.getSchemeAndHttpHost() }}{{ app.request.getBaseURL() }}/api/v0/stats/results";
-        var serverSchoolSurveyAPI = "{{ app.request.getSchemeAndHttpHost() }}{{ app.request.getBaseURL() }}/api/v0/stats/results/survey/3/school/";
-        var serverSchoolAPI = "{{ app.request.getSchemeAndHttpHost() }}{{ app.request.getBaseURL() }}/api/v0/stats/results/school/";
-        var serverSurveyAPI = "{{ app.request.getSchemeAndHttpHost() }}{{ app.request.getBaseURL() }}/api/v0/stats/results/survey/";
-        var serverPersonSurveyAPI = "{{ app.request.getSchemeAndHttpHost() }}{{ app.request.getBaseURL() }}/api/v0/stats/results/person/";
-        var serverSurveyUserAPI = "{{ app.request.getSchemeAndHttpHost() }}{{ app.request.getBaseURL() }}/api/v0/result/survey/";
+        var serverAllAPI = "http://dev.ruta.unoi.com{{ app.request.getBaseURL() }}/api/v0/stats/results";
+        var serverSchoolSurveyAPI = "http://dev.ruta.unoi.com{{ app.request.getBaseURL() }}/api/v0/stats/results/survey/3/school/";
+        var serverSchoolAPI = "http://dev.ruta.unoi.com{{ app.request.getBaseURL() }}/api/v0/stats/results/school/";
+        var serverSurveyAPI = "http://dev.ruta.unoi.com{{ app.request.getBaseURL() }}/api/v0/stats/results/survey/";
+        var serverPersonSurveyAPI = "http://dev.ruta.unoi.com{{ app.request.getBaseURL() }}/api/v0/stats/results/person/";
+        var serverSurveyUserAPI = "http://dev.ruta.unoi.com{{ app.request.getBaseURL() }}/api/v0/result/survey/";
 
         $(function() {
 
