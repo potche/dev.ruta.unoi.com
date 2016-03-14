@@ -12,8 +12,6 @@ var NotifStatus = function(){
                 accion = $(this).hasClass('enable-notif');
                 person = $(this).attr('id');
 
-                console.log(accion);
-
                 $.ajax({
 
                     url: urlPost,

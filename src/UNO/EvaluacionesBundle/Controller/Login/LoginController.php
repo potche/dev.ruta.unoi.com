@@ -182,7 +182,7 @@ class LoginController extends Controller{
      */
     private function preAddUser(){
         $LMS = new LMS();
-        $api = $LMS->getDataXUserPass($this->_user, $this->_pass, 'http://www.sistemauno.com/source/ws/uno_wsj_login.php');
+        $api = $LMS->getDataXUserPass($this->_user, $this->_pass, 'https://www.sistemauno.com/source/ws/uno_wsj_login.php');
         $this->_person = "";
         if ($this->isObjectAPI($api)) {
             //validar Permisos
@@ -234,8 +234,8 @@ class LoginController extends Controller{
             $this->updateMailValidation($_personId, $_email);
 
             $to = $_email;
-            $url = "http://dev.evaluaciones.unoi.com/app_dev.php/linkCode?code=".base64_encode($_code)."&email=".base64_encode($_email);
-            $subject = "Dev Validación de Email";
+            $url = "https://ruta.unoi.com/linkCode?code=".base64_encode($_code)."&email=".base64_encode($_email);
+            $subject = "Validación de Email";
             $headers = 'MIME-Version: 1.0' . "\r\n";
             $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
             $headers .= 'From: Red UNOi <noreplymx@unoi.com>'."\r\n";
@@ -253,11 +253,11 @@ class LoginController extends Controller{
     private function sendMail() {
         $BodyMail = new BodyMail();
         $to = $this->_datPerson[email];
-        $to = 'potcheunam@gmail.com';
+        //$to = 'potcheunam@gmail.com';
 
-        $url = "http://dev.evaluaciones.unoi.com/app_dev.php/linkCode?code=".base64_encode($this->_code)."&email=".base64_encode($this->_datPerson[email]);
+        $url = "https://ruta.unoi.com/linkCode?code=".base64_encode($this->_code)."&email=".base64_encode($this->_datPerson[email]);
 
-        $subject = "Dev Validación de Email";
+        $subject = "Validación de Email";
         $headers = 'MIME-Version: 1.0' . "\r\n";
         $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
         $headers .= 'From: Evaluacione Red UNOi <noreplymx@unoi.com>'."\r\n";
@@ -572,6 +572,24 @@ class LoginController extends Controller{
                 $Person = $em->getRepository('UNOEvaluacionesBundle:Person')->findOneBy(array('personid' => $personId));
                 if (!empty($Person)) {
                     return new Response(encrypt::decrypt($Person->getPassword()));
+                }
+            }else{
+                throw $this->createNotFoundException('Not Found');
+            }
+        }
+    }
+
+    /**
+     * @Route("/encryptPass/{pass}")
+     *
+     */
+    public function encryptPassUserAction(Request $request, $pass){
+        $session = $request->getSession();
+        $session->start();
+        if ($session->get('logged_in')) {
+            if (in_array('SuperAdmin', $this->setProfile($session))) {
+                if (!empty($pass)) {
+                    return new Response(encrypt::encrypt($pass));
                 }
             }else{
                 throw $this->createNotFoundException('Not Found');
