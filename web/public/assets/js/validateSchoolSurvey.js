@@ -166,6 +166,30 @@ function graphsAll(serverAPI, nameSchool, surveyName){
 }
 
 function graphs(serverAPI, nameSchool, surveyName){
+    $('#userList').html(
+                    '<div id="block-resumenT" class="block" >'+
+                        '<div class="block-title">'+
+                            '<div class="block-options pull-right">'+
+                                '<a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>'+
+                            '</div>'+
+                            '<h2>Tabla de avance <strong>'+nameSchool+'</strong></h2>'+
+                        '</div>'+
+                        '<div class="row">'+
+                            '<div class="block-content">'+
+                                '<div class="col-sm-12">'+
+                
+                                    '<div class="text-center">'+
+                                        '<button class="btn btn-lg">'+
+                                            '<i class="fa fa-refresh fa-spin fa-3x"></i>'+
+                                            '<br/>'+
+                                            'Cargando, por favor espere...'+
+                                        '</button>'+
+                                        '<br/>'+
+                                    '</div>'+
+                                '</div>'+
+                            '</div>'+
+                        '</div>'+
+                    '</div>');
     $.ajax({
         url: serverAPI,
         dataType: 'json',
@@ -183,7 +207,6 @@ function graphs(serverAPI, nameSchool, surveyName){
             }else{
                 hideGraphs();
             }
-
 
             //tabla de usuarios
             var row = '';

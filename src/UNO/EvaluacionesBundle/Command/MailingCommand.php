@@ -15,7 +15,7 @@ DEFINE('TAG_DAILY_NOTIFICATION', 'diario-diagnostico-notif');
 //Número de días antes de hoy que se revisan para buscar nuevas evaluaciones
 DEFINE('DAYS_SINCE_NEW_SURVEY','1');
 //Parámetros requeridos por el comando para reconocimiento de host y rutas de recursos
-DEFINE('HOST','dev.evaluaciones.unoi.com');
+DEFINE('HOST','dev.ruta.unoi.com');
 DEFINE('SCHEME','http');
 
 /**
@@ -61,7 +61,6 @@ class MailingCommand extends ContainerAwareCommand{
         $context = $this->getContainer()->get('router')->getContext();
         $context->setHost(HOST);
         $context->setScheme(SCHEME);
-        //$context->setBaseUrl('/');
 
         $frequency = $input->getArgument('frequency');
 
@@ -94,9 +93,7 @@ class MailingCommand extends ContainerAwareCommand{
 
     protected function dailyBriefNewNotifications($output){
 
-
         $response = json_decode(file_get_contents($this->getContainer()->get('router')->generate('APINotificationsNewSurveys',array('daysago'=>DAYS_SINCE_NEW_SURVEY),true), false), true);
-        //$response = json_decode(file_get_contents(BASE_URL_API.'notifications/newsurveys/daysago/'.DAYS_SINCE_NEW_SURVEY, false), true);
 
         if(!isset ($response['Error'])){
 
@@ -121,7 +118,7 @@ class MailingCommand extends ContainerAwareCommand{
 
                 } else{
 
-                    $output->writeln("El contacto ".$p['Nombre']." carece de E-mail, no se ha enviado nada");
+                    $output->writeln("El contacto ".$p['Nombre']." carece de información a presentar, no se ha enviado nada");
                 }
             }
         }
@@ -139,7 +136,7 @@ class MailingCommand extends ContainerAwareCommand{
 
         if(!$dirs){
 
-            $output->writeln('No se encontraron directores registrados en la plataforma');
+            $output->writeln('No se encontraron usuarios con notificaciones activas para el envío de mensaje');
 
         }else{
 
@@ -149,7 +146,7 @@ class MailingCommand extends ContainerAwareCommand{
                 $progressSchool = json_decode(file_get_contents($this->getContainer()->get('router')->generate('APIStatsProgressBySchool',array('schoolid'=>$d['idescuela']),true), false), true);
                 $progressPerson = json_decode(file_get_contents($this->getContainer()->get('router')->generate('APIStatsProgressByPerson',array('personid'=>$d['persona']),true), false), true);
 
-                if($d['email'] != '' && $d['email'] != null){
+                if($d['email'] != '' && $d['email'] != null && !isset($progressPerson['Error']) && !isset($progressSchool['Error'])){
 
                     $mesg = $this->buildMessage(
                         'Resumen semanal',
@@ -159,7 +156,9 @@ class MailingCommand extends ContainerAwareCommand{
                             'name' => $d['nombre'],
                             'top5' => $top5,
                             'progressSchool' => $progressSchool,
-                            'progressPerson' => $progressPerson
+                            'progressPerson' => $progressPerson,
+                            'host' => HOST,
+                            'scheme' => SCHEME
                         ),
                         $d['email'],
                         TAG_WEEKLY_BRIEF);
@@ -189,9 +188,12 @@ class MailingCommand extends ContainerAwareCommand{
 
     private function buildMessage($title, $view, $params, $recipient,$tag){
 
+        setlocale(LC_ALL,"es_MX.utf8");
+        $sendDate = strftime("%d %B %Y");
+
         $message = \Swift_Message::newInstance()
-            ->setSubject($title)
-            ->setFrom('noreplymx@unoi.com')
+            ->setSubject($title.' '.$sendDate)
+            ->setFrom(array('noreplymx@unoi.com' => 'Diagnóstico UNOi'))
             ->setTo($recipient)
             ->setBody(
                 $this->getContainer()->get('templating')->render($view, $params),
@@ -218,8 +220,7 @@ class MailingCommand extends ContainerAwareCommand{
             ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.schoolid = s.schoolid')
             ->innerJoin('UNOEvaluacionesBundle:Profile','pr','WITH','ps.profileid = pr.profileid AND pr.profilecode = :profile')
             ->innerJoin('UNOEvaluacionesBundle:Person','p','WITH','p.personid = ps.personid AND p.mailing = 1')
-            ->where('p.personid = 2') // Borrar
-            ->setParameter('profile', 'COACH') //Cambiar por DIR
+            ->setParameter('profile', 'DIR')
             ->groupBy('p.personid')
             ->getQuery()
             ->getResult();

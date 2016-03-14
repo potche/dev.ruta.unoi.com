@@ -51,7 +51,7 @@ class StatsWithAjaxController extends Controller{
 
         $session = $request->getSession();
         $session->start();
-        $baseUrl = "https://pre-ruta.unoi.com".$this->container->get('router')->getContext()->getBaseUrl();
+        $baseUrl = "http://dev.ruta.unoi.com".$this->container->get('router')->getContext()->getBaseUrl();
 
         //valida usuario con session iniciada
         if ($session->get('logged_in')) {

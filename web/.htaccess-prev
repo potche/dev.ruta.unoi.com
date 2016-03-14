@@ -1,0 +1,5 @@
+DirectoryIndex index.html
+RewriteEngine on 
+RewriteCond %{REQUEST_URI} !^/(index.html)?$ 
+RewriteCond %{REQUEST_URI} !.(gif|jpeg|png|css|js|php)$ 
+RewriteRule .* / [L,R=302]
