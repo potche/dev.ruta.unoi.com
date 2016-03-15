@@ -16,6 +16,8 @@ $('#closeSurvey').click(function(){
 
     graphs(serverSchoolAPI+nameSchoolArray[0], nameSchool, nameSurvey);
     showGraphs();
+    $('#block-detalle').hide();
+    console.log("block-detalle - hide");
     $('#todo').prop('disabled', true);
     $('#userList').html('');
 
@@ -30,7 +32,8 @@ function findFilter(){
         $('#divSurvey').hide();
         setNameSurvey(nameSurvey);
         $('#divContentSurvey').show();
-
+        console.log("block-detalle - show");
+        $('#block-detalle').show();
         graphs(serverSurveyAPI+nameSurveyArray[0]+'/school/'+nameSchoolArray[0], nameSchool, nameSurvey);
 
     }
@@ -49,6 +52,8 @@ function resetFilter(){
     graphs(serverSchoolAPI+nameSchoolArray[0], nameSchool, nameSurvey);
     $('#todo').prop('disabled', true);
 
+    $('#block-detalle').hide();
+    console.log("block-detalle - hide");
     $('#userList').html('');
 
 }
