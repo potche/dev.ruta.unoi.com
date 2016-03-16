@@ -23,7 +23,8 @@ $('#closeSchool').click(function(){
         $('#userList').html('');
     }
     showGraphs();
-
+    $('#block-detalle').hide();
+    console.log("block-detalle - hide");
     switchButtonTodo();
 
 });
@@ -46,6 +47,8 @@ $('#closeSurvey').click(function(){
         graphs(serverSchoolAPI+nameSchoolArray[0], nameSchool, nameSurvey);
     }
     showGraphs();
+    $('#block-detalle').hide();
+    console.log("block-detalle - hide");
     switchButtonTodo();
 
 });
@@ -75,6 +78,8 @@ function findFilter(){
         setNameSurvey(nameSurvey);
         $('#divContentSurvey').show();
 
+        $('#block-detalle').show();
+        console.log("block-detalle - show");
         graphs(serverSurveyAPI+nameSurveyArray[0]+'/school/'+nameSchoolArray[0], nameSchool, nameSurvey);
 
     }else if( ($('#schoolIdFrm').val() != '') && ($('#surveyIdFrm').val() == '') ){
@@ -121,6 +126,8 @@ function resetFilter(){
     $('#todo').prop('disabled', true);
 
     $('#userList').html('');
+    console.log("block-detalle - hide");
+    $('#block-detalle').hide();
 
 }
 
@@ -206,6 +213,8 @@ function graphs(serverAPI, nameSchool, surveyName){
                 showGraphs();
             }else{
                 hideGraphs();
+                console.log("block-detalle - hide");
+                $('#block-detalle').hide();
             }
 
             //tabla de usuarios
