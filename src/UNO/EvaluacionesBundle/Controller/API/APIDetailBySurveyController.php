@@ -12,7 +12,6 @@ class APIDetailBySurveyController extends Controller{
      *
      * Esta función despacha a la ruta /api/v0/detail/{surveyId}/{schoolId}
      *
-     *
      * @param Request $request
      * @return JsonResponse
      * @throws \Exception
@@ -50,6 +49,13 @@ class APIDetailBySurveyController extends Controller{
         return $all ? $this->parseResults($all) : APIUtils::getErrorResponse('404');
     }
 
+    /**
+     *
+     * Parseo de resultados de query
+     *
+     * @param $results
+     * @return array
+     */
 
     private function parseResults($results){
 
@@ -64,12 +70,12 @@ class APIDetailBySurveyController extends Controller{
         foreach($numQuestions as $num){
 
             $numRes = array_filter($results, function($ar) use($num){ return ($ar['ord'] == $num); });
-
-            var_dump($numRes);
+            $orden = array_unique(array_column($numRes,'ord'));
+            $pregunta = array_unique(array_column($numRes,'pregunta'));
 
             $pregunta = array(
-                'orden' =>  $numRes[0]['ord'],
-                'pregunta' =>  $numRes[0]['pregunta'],
+                'orden' =>  $orden,
+                'pregunta' =>  $pregunta,
                 'opciones' => array()
             );
 
@@ -78,16 +84,22 @@ class APIDetailBySurveyController extends Controller{
             foreach($options as $o){
 
                 $optRes = array_filter($numRes, function($ar) use($o){ return ($ar['opcion'] == $o); });
+                $personas = array();
+
+                foreach ($optRes as $per){
+
+                    array_push($personas, array('nombre'=>$per['nombre'], 'comentario' => $per['comentario']));
+                }
 
                 $opcion = array(
                     'opcion' => $o,
-                    'personas' => array()
+                    'personas' => $personas
                 );
 
-                $o = array_push($parsed['preguntas'][$p-1]['opciones'],$opcion);
+                array_push($parsed['preguntas'][$p-1]['opciones'],$opcion);
             }
         }
 
-        return $results;
+        return $parsed;
     }
 }
