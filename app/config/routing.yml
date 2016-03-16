@@ -232,6 +232,12 @@ APINotificationsTopPersons:
   defaults: {_controller: UNOEvaluacionesBundle:API/APINotifications:toppersonsbyschol}
   requirements:
               schoolid: \d+
+APIDetailBySurvey:
+  path: /api/v0/result/detail/{surveyId}/{schoolId}
+  defaults: {_controller: UNOEvaluacionesBundle:API/APIDetailBySurvey:detail}
+  requirements:
+              surveyId: \d+
+              schoolId: \d+
 ajaxMailingStatus:
     path:   /mailing/setstatus
     defaults: {_controller: UNOEvaluacionesBundle:Notifications/Notifications:mailingstatus}
