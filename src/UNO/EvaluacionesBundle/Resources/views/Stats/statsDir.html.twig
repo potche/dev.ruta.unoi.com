@@ -138,30 +138,95 @@
                 <h2>Detalle por Indicador <strong><span class="nameSchool"></span></strong></h2>
             </div>
 
-            <div id="withOutGraphs" class="row" style="display: none">
+            <div class="row">
                 <div class="block-content">
-                    <div class="col-sm-12 text-center">
-                        <div class="block">
-                            <h1>No se ha realizado ninguna <strong>evaluación</strong>.</h1>
-                            <div class="carousel slide" data-ride="carousel">
-                                <div class="carousel-inner" role="listbox">
-                                    <div class="item active">
-                                        <h2 class="text-center"><span class="fa fa-bed fa-2x"></span></h2>
-                                    </div>
-                                    <div class="item">
-                                        <h2 class="text-center"><span class="fa fa-thumbs-down fa-2x"></span></h2>
-                                    </div>
-                                    <div class="item">
-                                        <h2 class="text-center"><span class="fa fa-hourglass-end fa-2x"></span></h2>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="block">
+                        <div id="surveyDetalle">
+
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div id="myPopoverContent">
+            <div class="media">
+                <div class="media-body">
+                    <table border="0" style="width:100%">
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Comentario</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Silvia Denisse Espejel Chapa</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Juanita Montalvo Amaya</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>YESENIA DIAZ PUENTE</td>
+                            <td>Si.
+                                yesenia.diaz.puente@gmail.com</td>
+                        </tr>
+                        <tr>
+                            <td>Janneth Fernandez</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Erandi Madrid Mendoza</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>KAREN ILIANA VILLAGOMEZ ALEJOS</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>David Rocha Salcido</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Roberto Guzman Adriano</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Rosalba Vergara Marmolejo</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Cesar Hernandez Serrato</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Marisol García González</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Miriam Martinez  Gutierrez</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Claudia Espejel Chapa</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Alejandra Rodriguez Fernandez</td>
+                            <td></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="divContentDetalle">
 
         </div>
+
 
     </div>
     <!-- END Page Content -->
@@ -255,6 +320,13 @@
     </div>
     <!-- END Modal loading -->
 
+    <style>
+        .popover-content {
+            height: 100px;
+            width: 100%;
+            overflow-y: scroll;
+        }
+    </style>
 
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <!-- Load and execute javascript code used only in this page -->
@@ -314,6 +386,9 @@
         });
 
 
+
     </script>
+
+
 
 {% endblock %}
