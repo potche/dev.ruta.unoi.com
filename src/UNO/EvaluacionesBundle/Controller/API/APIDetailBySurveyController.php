@@ -74,8 +74,8 @@ class APIDetailBySurveyController extends Controller{
             $pregunta = array_unique(array_column($numRes,'pregunta'));
 
             $pregunta = array(
-                'orden' =>  $orden,
-                'pregunta' =>  $pregunta,
+                'orden' =>  $orden[0],
+                'pregunta' =>  $pregunta[0],
                 'opciones' => array()
             );
 
@@ -88,7 +88,7 @@ class APIDetailBySurveyController extends Controller{
 
                 foreach ($optRes as $per){
 
-                    array_push($personas, array('nombre'=>$per['nombre'], 'comentario' => $per['comentario']));
+                    array_push($personas, array('id'=>$per['pid'],'nombre'=>$per['nombre'], 'comentario' => $per['comentario']));
                 }
 
                 $opcion = array(
