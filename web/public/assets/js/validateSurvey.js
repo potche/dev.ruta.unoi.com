@@ -11,13 +11,11 @@ $('#closeSurvey').click(function(){
     $('#surveyIdFrm').val('');
     var nameSurvey = 'Todas las Evaluaciones';
     setNameSurvey( nameSurvey );
-    //var nameSchool = $('.nameSchool').html();
     $('#divSurvey').toggle();
 
     graphs(serverSchoolAPI+nameSchoolArray[0], nameSchool, nameSurvey);
     showGraphs();
     $('#block-detalle').hide();
-    console.log("block-detalle - hide");
     $('#todo').prop('disabled', true);
     $('#userList').html('');
 
@@ -32,7 +30,6 @@ function findFilter(){
         $('#divSurvey').hide();
         setNameSurvey(nameSurvey);
         $('#divContentSurvey').show();
-        console.log("block-detalle - show");
         $('#block-detalle').show();
         graphs(serverSurveyAPI+nameSurveyArray[0]+'/school/'+nameSchoolArray[0], nameSchool, nameSurvey);
 
@@ -53,7 +50,6 @@ function resetFilter(){
     $('#todo').prop('disabled', true);
 
     $('#block-detalle').hide();
-    console.log("block-detalle - hide");
     $('#userList').html('');
 
 }
@@ -89,7 +85,6 @@ function hideGraphs(){
 }
 
 function graphs(serverAPI, nameSchool, surveyName){
-    console.log(serverAPI +'|'+ nameSchool +'|'+ surveyName);
     $('#userList').html(
                     '<div id="block-resumenT" class="block" >'+
                         '<div class="block-title">'+
@@ -135,7 +130,6 @@ function graphs(serverAPI, nameSchool, surveyName){
                         url: "http://dev.ruta.unoi.com/api/v0/result/detail/"+surveyArr[0]+"/"+schoolArr[0],
                         dataType: 'json',
                         success: function (res) {
-                            console.log(res.preguntas);
                             var row = '';
                             var div = '';
                             $.each( res.preguntas, function( key, value ) {
@@ -145,12 +139,15 @@ function graphs(serverAPI, nameSchool, surveyName){
                                         '<td>' + value.pregunta+'</td>';
 
                                 $.each( value.opciones, function( key2, option ) {
-                                    var idD = value.pregunta.replace(' ', '_')+'_'+option.opcion.replace(' ', '_');
+                                    var idD = '_'+value.orden+'_'+option.opcion.replace(/ /g, '_');
                                     div += '<div class="media" id="' + idD +'">'+
                                         '<div class="media-body">'+
-                                        '<table border="1" style="width:100%">';
+                                            '<div class="block">'+
+                                                '<div class="table-responsive">'+
+                                                    '<table class="table table-vcenter table-striped">' +
+                                                        '<thead><tr><th><i class="fa fa-user"> NOMBRE</th><th><i class="fa fa-comments-o"> COMENTARIO</th></tr></thead>';
                                     if(option.personas.length !== 0){
-                                        row += '<td> <a href="javascript:void(0)" id="'+idD+'" data-toggle="popover" data-trigger="focus" data-placement="bottom"  >' + option.personas.length+'</a> </td>';
+                                        row += '<td> <a href="javascript:void(0)" id="'+idD+'" class="detalle">' + option.personas.length+'</a> </td>';
                                     }else{
                                         row += '<td>' + option.personas.length+'</td>';
                                     }
@@ -158,8 +155,11 @@ function graphs(serverAPI, nameSchool, surveyName){
                                     $.each( option.personas, function( key3, person ) {
                                         div += '<tr><td>'+person.nombre+'</td><td>'+person.comentario+'</td></tr>';
                                     });
-                                    div += '</table>'+
-                                        '</div>'+
+                                    div +=
+                                                    '</table>'+
+                                                    '</div>'+
+                                                '</div>'+
+                                            '</div>'+
                                         '</div>';
                                 });
                                 row += '</tr>';
@@ -197,15 +197,22 @@ function graphs(serverAPI, nameSchool, surveyName){
                             $('#surveyDetalle').html(divDetalle);
 
 
-                            $('[data-toggle=popover]').popover({
+                            $('.detalle').click(function(event){
+                                var id = event.target.id;
+                                var title = id.split('_');
+                                var valores=[];
+                                $(this).parents("tr").find("td").each(function(){
+                                    valores.push($(this).html());
+                                });
 
-                                content: $('#myPopoverContent').html(),
-                                html: true,
-                                title : 'User Info <a href="#" class="close" data-dismiss="alert">&times;</a>',
-                                //content: $('#popper-content').html()
-
+                                $('.titleModalDS').html('<em>'+valores[1]+'</em> <strong>"'+title[2]+'"</strong>');
+                                $('.bodyModalDS').html($('div#'+id).html());
+                                $('#detalleSurveyM').modal();
                             });
 
+                            $('#right').click(function(){
+
+                            });
                             TablesDatatables3.init();
                         }
                     });
