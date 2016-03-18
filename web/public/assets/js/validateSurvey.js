@@ -145,7 +145,8 @@ function graphs(serverAPI, nameSchool, surveyName){
                                             '<div class="block">'+
                                                 '<div class="table-responsive">'+
                                                     '<table class="table table-vcenter table-striped">' +
-                                                        '<thead><tr><th><i class="fa fa-user"> NOMBRE</th><th><i class="fa fa-comments-o"> COMENTARIO</th></tr></thead>';
+                                                        '<thead><tr><th><i class="fa fa-user"></i> <span>NOMBRE </span></th>'+
+                                                        '<th class="hidden-xs"><i class="fa fa-comments-o"></i> <span class="hidden-xs">COMENTARIO </span></th></tr></thead>';
                                     if(option.personas.length !== 0){
                                         row += '<td> <a href="javascript:void(0)" id="'+idD+'" class="detalle">' + option.personas.length+'</a> </td>';
                                     }else{
@@ -153,7 +154,7 @@ function graphs(serverAPI, nameSchool, surveyName){
                                     }
 
                                     $.each( option.personas, function( key3, person ) {
-                                        div += '<tr><td>'+person.nombre+'</td><td>'+person.comentario+'</td></tr>';
+                                        div += '<tr><td>'+person.nombre+'</td><td class="hidden-xs">'+person.comentario+'</td></tr>';
                                     });
                                     div +=
                                                     '</table>'+
@@ -176,16 +177,13 @@ function graphs(serverAPI, nameSchool, surveyName){
                                                                 '<th class="text-center">#</th>'+
                                                                 '<th class="text-center">Indicador</th>'+
                                                                 '<th class="text-center">'+
-                                                                    '<span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>Sí</b></span>'+
-                                                                    '<span class="visible-xs-inline"><b><i class="fa fa-pencil-square-o"></i></b></span>'+
+                                                                    '<span><b>Sí</b></span>'+
                                                                 '</th>'+
                                                                 '<th class="text-center">'+
-                                                                    '<span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>No</b></span>'+
-                                                                    '<span class="visible-xs-inline"><b><i class="fa fa-commenting-o"></i></b></span>'+
+                                                                    '<span><b>No</b></span>'+
                                                                 '</th>'+
                                                                 '<th class="text-center">'+
-                                                                    '<span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>No sé</b></span>'+
-                                                                    '<span class="visible-xs-inline"><b><i class="fa fa-commenting-o"></i></b></span>'+
+                                                                    '<span><b>No sé</b></span>'+
                                                                 '</th>'+
                                                             '</tr>'+
                                                         '</thead>'+
@@ -500,7 +498,7 @@ var TablesDatatables3 = function() {
 
             /* Initialize Datatables */
             $('#datatable-detalle').dataTable({
-                columnDefs: [ { orderable: false, targets: [ 0, 4 ] } ],
+                columnDefs: [ { orderable: true, targets: [ 0, 4 ] } ],
                 pageLength: 10,
                 lengthMenu: [[10, 20, 30, -1], [10, 20, 30, 'All']]
             });
