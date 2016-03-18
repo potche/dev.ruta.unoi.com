@@ -11,13 +11,11 @@ $('#closeSurvey').click(function(){
     $('#surveyIdFrm').val('');
     var nameSurvey = 'Todas las Evaluaciones';
     setNameSurvey( nameSurvey );
-    //var nameSchool = $('.nameSchool').html();
     $('#divSurvey').toggle();
 
     graphs(serverSchoolAPI+nameSchoolArray[0], nameSchool, nameSurvey);
     showGraphs();
     $('#block-detalle').hide();
-    console.log("block-detalle - hide");
     $('#todo').prop('disabled', true);
     $('#userList').html('');
 
@@ -32,7 +30,6 @@ function findFilter(){
         $('#divSurvey').hide();
         setNameSurvey(nameSurvey);
         $('#divContentSurvey').show();
-        console.log("block-detalle - show");
         $('#block-detalle').show();
         graphs(serverSurveyAPI+nameSurveyArray[0]+'/school/'+nameSchoolArray[0], nameSchool, nameSurvey);
 
@@ -53,7 +50,6 @@ function resetFilter(){
     $('#todo').prop('disabled', true);
 
     $('#block-detalle').hide();
-    console.log("block-detalle - hide");
     $('#userList').html('');
 
 }
@@ -127,6 +123,101 @@ function graphs(serverAPI, nameSchool, surveyName){
                 pieGrl(results.global, nameSchool, surveyName);
                 columnGrl(results.global, nameSchool, surveyName);
                 showGraphs();
+                if(surveyName !== "Todas las Evaluaciones"){
+                    var surveyArr = surveyName.split('-');
+                    var schoolArr = nameSchool.split('-');
+                    $.ajax({
+                        url: "http://dev.ruta.unoi.com/api/v0/result/detail/"+surveyArr[0]+"/"+schoolArr[0],
+                        dataType: 'json',
+                        success: function (res) {
+                            var row = '';
+                            var div = '';
+                            $.each( res.preguntas, function( key, value ) {
+                                row +=
+                                    '<tr>' +
+                                        '<td>' + value.orden+'</td>' +
+                                        '<td>' + value.pregunta+'</td>';
+
+                                $.each( value.opciones, function( key2, option ) {
+                                    var idD = '_'+value.orden+'_'+option.opcion.replace(/ /g, '_');
+                                    div += '<div class="media" id="' + idD +'">'+
+                                        '<div class="media-body">'+
+                                            '<div class="block">'+
+                                                '<div class="table-responsive">'+
+                                                    '<table class="table table-vcenter table-striped">' +
+                                                        '<thead><tr><th><i class="fa fa-user"> NOMBRE</th><th><i class="fa fa-comments-o"> COMENTARIO</th></tr></thead>';
+                                    if(option.personas.length !== 0){
+                                        row += '<td> <a href="javascript:void(0)" id="'+idD+'" class="detalle">' + option.personas.length+'</a> </td>';
+                                    }else{
+                                        row += '<td>' + option.personas.length+'</td>';
+                                    }
+
+                                    $.each( option.personas, function( key3, person ) {
+                                        div += '<tr><td>'+person.nombre+'</td><td>'+person.comentario+'</td></tr>';
+                                    });
+                                    div +=
+                                                    '</table>'+
+                                                    '</div>'+
+                                                '</div>'+
+                                            '</div>'+
+                                        '</div>';
+                                });
+                                row += '</tr>';
+
+                            });
+                            $('#divContentDetalle').html(div);
+
+                            var divDetalle =
+                                                '<div class="table-responsive">'+
+                                                    '<p><em>Detalle de la evaluación.</em></p>'+
+                                                    '<table id="datatable-detalle" class="table table-vcenter table-condensed table-bordered">'+
+                                                        '<thead>'+
+                                                            '<tr>'+
+                                                                '<th class="text-center">#</th>'+
+                                                                '<th class="text-center">Indicador</th>'+
+                                                                '<th class="text-center">'+
+                                                                    '<span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>Sí</b></span>'+
+                                                                    '<span class="visible-xs-inline"><b><i class="fa fa-pencil-square-o"></i></b></span>'+
+                                                                '</th>'+
+                                                                '<th class="text-center">'+
+                                                                    '<span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>No</b></span>'+
+                                                                    '<span class="visible-xs-inline"><b><i class="fa fa-commenting-o"></i></b></span>'+
+                                                                '</th>'+
+                                                                '<th class="text-center">'+
+                                                                    '<span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>No sé</b></span>'+
+                                                                    '<span class="visible-xs-inline"><b><i class="fa fa-commenting-o"></i></b></span>'+
+                                                                '</th>'+
+                                                            '</tr>'+
+                                                        '</thead>'+
+                                                        '<tbody>'+
+                                                            row+
+                                                        '</tbody>'+
+                                                    '</table>'+
+                                                '</div>';
+                            $('#surveyDetalle').html(divDetalle);
+
+
+                            $('.detalle').click(function(event){
+                                var id = event.target.id;
+                                var title = id.split('_');
+                                var valores=[];
+                                $(this).parents("tr").find("td").each(function(){
+                                    valores.push($(this).html());
+                                });
+
+                                $('.titleModalDS').html('<em>'+valores[1]+'</em> <strong>"'+title[2]+'"</strong>');
+                                $('.bodyModalDS').html($('div#'+id).html());
+                                $('#detalleSurveyM').modal();
+                            });
+
+                            $('#right').click(function(){
+
+                            });
+                            TablesDatatables3.init();
+                        }
+                    });
+                }
+
             }else{
                 hideGraphs();
             }
@@ -391,6 +482,25 @@ var TablesDatatables2 = function() {
             /* Initialize Datatables */
             $('#example-datatable').dataTable({
                 columnDefs: [ { orderable: false, targets: [ 0, 3 ] } ],
+                pageLength: 10,
+                lengthMenu: [[10, 20, 30, -1], [10, 20, 30, 'All']]
+            });
+
+            /* Add placeholder attribute to the search input */
+            $('.dataTables_filter input').attr('placeholder', 'buscar');
+        }
+    };
+}();
+
+var TablesDatatables3 = function() {
+    return {
+        init: function() {
+            /* Initialize Bootstrap Datatables Integration */
+            App.datatables();
+
+            /* Initialize Datatables */
+            $('#datatable-detalle').dataTable({
+                columnDefs: [ { orderable: false, targets: [ 0, 4 ] } ],
                 pageLength: 10,
                 lengthMenu: [[10, 20, 30, -1], [10, 20, 30, 'All']]
             });

@@ -138,30 +138,17 @@
                 <h2>Detalle por Indicador <strong><span class="nameSchool"></span></strong></h2>
             </div>
 
-            <div id="withOutGraphs" class="row" style="display: none">
+            <div class="row">
                 <div class="block-content">
-                    <div class="col-sm-12 text-center">
-                        <div class="block">
-                            <h1>No se ha realizado ninguna <strong>evaluación</strong>.</h1>
-                            <div class="carousel slide" data-ride="carousel">
-                                <div class="carousel-inner" role="listbox">
-                                    <div class="item active">
-                                        <h2 class="text-center"><span class="fa fa-bed fa-2x"></span></h2>
-                                    </div>
-                                    <div class="item">
-                                        <h2 class="text-center"><span class="fa fa-thumbs-down fa-2x"></span></h2>
-                                    </div>
-                                    <div class="item">
-                                        <h2 class="text-center"><span class="fa fa-hourglass-end fa-2x"></span></h2>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="block">
+                        <div id="surveyDetalle">
+
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
+
 
     </div>
     <!-- END Page Content -->
@@ -242,6 +229,41 @@
     </div>
     <!-- END Modal Stats User -->
 
+    <!-- Modal Stats DetalleSurvey -->
+    <div id="detalleSurveyM" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-file-text"></i> <span class="titleModalDS"></span></h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-sm-1">
+                            <br/><br/>
+                            <i id="left" class="fa fa-arrow-circle-left fa-2x hidden"></i>
+                        </div>
+                        <div class="col-sm-10">
+                            <div class="bodyModalDS"></div>
+                        </div>
+                        <div class="col-sm-1">
+                            <br/><br/>
+                            <i id="right" class="fa fa-arrow-circle-right fa-2x hidden"></i>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal Stats User -->
+
+    <div id="divContentDetalle" class="hidden">
+    </div>
 
     <!-- Modal loading -->
     <div id="loadingStats" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
@@ -254,7 +276,6 @@
         </div>
     </div>
     <!-- END Modal loading -->
-
 
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <!-- Load and execute javascript code used only in this page -->
@@ -314,6 +335,9 @@
         });
 
 
+
     </script>
+
+
 
 {% endblock %}
