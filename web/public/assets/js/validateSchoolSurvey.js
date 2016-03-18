@@ -287,8 +287,14 @@ function graphs(serverAPI, nameSchool, surveyName){
                                 $(this).parents("tr").find("td").each(function(){
                                     valores.push($(this).html());
                                 });
+                                var t= '';
+                                if(title[3]){
+                                    t = title[2]+' '+title[3];
+                                }else{
+                                    t = title[2]
+                                }
 
-                                $('.titleModalDS').html('<em>'+valores[1]+'</em> <strong>"'+title[2]+'"</strong>');
+                                $('.titleModalDS').html('<em>'+valores[1]+'</em> <strong>"'+t+'"</strong>');
                                 $('.bodyModalDS').html($('div#'+id).html());
                                 $('#detalleSurveyM').modal();
                             });
