@@ -9,5 +9,12 @@
         <option name="fixed"/>
       </options>
     </field>
+    <field name="coordinador" type="integer" column="coordinador" nullable="false">
+    </field>
+    <field name="zona" type="string" column="zona" length="25" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
   </entity>
 </doctrine-mapping>
