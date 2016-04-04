@@ -28,6 +28,19 @@ class Ccoach
      */
     private $user;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="coordinador", type="integer")
+     */
+    private $coordinador;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="zona", type="string", length=25)
+     */
+    private $zona;
 
     /**
      * Get id
@@ -59,6 +72,54 @@ class Ccoach
      * @return string
      */
     public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * Set coordinador
+     *
+     * @param integer $coordinador
+     *
+     * @return Ccoach
+     */
+    public function setCoordinador($coordinador)
+    {
+        $this->coordinador = $coordinador;
+
+        return $this;
+    }
+
+    /**
+     * Get coordinador
+     *
+     * @return integer
+     */
+    public function getCoordinador()
+    {
+        return $this->user;
+    }
+
+    /**
+     * Set zona
+     *
+     * @param string $zona
+     *
+     * @return Ccoach
+     */
+    public function setZona($zona)
+    {
+        $this->zona = $zona;
+
+        return $this;
+    }
+
+    /**
+     * Get zona
+     *
+     * @return string
+     */
+    public function getZona()
     {
         return $this->user;
     }
