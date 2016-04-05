@@ -87,7 +87,6 @@ class APINotificationsController extends Controller
             ->andWhere('p.mailing = 1')
             ->andWhere('p.active = 1')
             ->andWhere('su.active = 1')
-            ->andWhere('p.personid IN (1,2)') //Borrar
             ->groupBy('id, persona')
             ->setParameter('daysago',$date1)
             ->getQuery()
@@ -98,7 +97,7 @@ class APINotificationsController extends Controller
 
     /**
      *
-     * Método interno para consultar top 5 de cumnplimiento de usuarios de acuerdo un colegio dado
+     * Método interno para consultar top de cumnplimiento de usuarios de acuerdo un colegio dado
      *
      * @param $schoolid
      * @return array "Arreglo con respuesta en formato JSON"
@@ -116,36 +115,12 @@ class APINotificationsController extends Controller
             ->leftJoin('UNOEvaluacionesBundle:Log','l','WITH','l.personPersonid = p.personid AND sxp.surveySurveyid = l.surveySurveyid')
             ->where('ps.schoolid = :schoolId')
             ->groupBy('p.personid')
-            ->add('orderBy', 'respondidas DESC')
-            ->setMaxResults( 5 )
+            ->add('orderBy', 'esperadas DESC')
             ->setParameter('schoolId',$schoolid)
             ->getQuery()
             ->getResult();
 
-        $top = array();
-
-        if($all){
-
-            foreach ($all as $a){
-
-                array_push($top,array(
-                    'persona' => $a['persona'],
-                    'email' => $a['email'],
-                    'nombre' => $a['nombre'],
-                    'avance' => $a['esperadas'] > 0 ? round(($a['respondidas'] / $a['esperadas']) * 100, 2) : 0
-                ));
-            }
-
-            usort($top, function ($a,$b){
-                if ($a['avance'] == $b['avance']) {
-
-                    return 0;
-                }
-                return ($a['avance'] > $b['avance']) ? -1 : 1;
-            });
-        }
-
-        return $all ? $top : APIUtils::getErrorResponse('404');
+        return $all ? $this->parseForTop($all) : APIUtils::getErrorResponse('404');
     }
 
     /**
@@ -173,4 +148,42 @@ class APINotificationsController extends Controller
         return $parsedArray;
     }
 
+    private function parseForTop($all){
+
+        $top = array();
+        $pending = array();
+
+        foreach ($all as $a){
+
+            $avance = $a['esperadas'] > 0 ? round(($a['respondidas'] / $a['esperadas']) * 100, 2) : 0;
+            $p = array(
+                'persona' => $a['persona'],
+                'email' => $a['email'],
+                'nombre' => $a['nombre'],
+                'progreso' => $a['respondidas'].'/'.$a['esperadas'],
+                'avance' => $avance
+            );
+
+            if($p['avance'] < 100.00){
+
+                array_push($pending,$p);
+            }
+            else if ($p['avance'] == 100.00){
+
+                array_push($top,$p);
+            }
+        }
+
+        usort($pending, function ($a,$b){
+
+            if ($a['avance'] == $b['avance']) {
+
+                return 0;
+            }
+
+            return ($a['avance'] > $b['avance']) ? -1 : 1;
+        });
+
+        return array('pendiente'=>$pending,'terminado'=>$top);
+    }
 }
