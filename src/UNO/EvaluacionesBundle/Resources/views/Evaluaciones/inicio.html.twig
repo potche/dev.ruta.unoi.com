@@ -129,6 +129,64 @@
 
     </div>
 
+    <!-- Form Example with Blocks in the Grid -->
+    <div class="row">
+        <div class="col-sm-12">
+            <a href="javascript:void(0)" class="widget widget-hover-effect1">
+                <div class="widget-extra text-center themed-background-dark-autumn">
+                    <h3 class="widget-content-light">Coaches <strong>Coaches</strong></h3>
+                </div>
+                <div class="widget-extra-full ">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="optionZone" class="col-sm-1 control-label">Zonas:</label>
+                            <div class="col-sm-11">
+                                <select id="optionZone" class="form-control">
+
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="table-responsive">
+                        <table class="table table-borderless table-condensed text-center">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">
+                                        Zona
+                                    </th>
+                                    <th class="text-center">
+                                        Coordinador
+                                    </th>
+                                    <th class="text-center">
+                                        Coach
+                                    </th>
+                                    <th class="text-center">
+                                        Plataforma
+                                    </th>
+                                    <th class="text-center">
+                                        Navegador
+                                    </th>
+                                    <th class="text-center">
+                                        # de Seciones
+                                    </th>
+                                    <th class="text-center">
+                                        Ultimo Ingreso
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="coachesTable">
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </a>
+        </div>
+
+    </div>
+
 
     <!-- END Form Example with Blocks in the Grid -->
     <!-- Modal Video -->
@@ -152,5 +210,44 @@
     <!-- END Modal Video -->
 
     <script src="{{ asset('public/assets/js/jquery-1.11.3.min.js') }}"></script>
+    <script>
+        var uri = 'http://dev.ruta.unoi.com/app_dev.php';
+        $.getJSON( uri+"/api/v0/statsCoaches/zoneCoaches", {
+            format: "json"
+        })
+                .done(function(json) {
+                    var option = "<option>Todas</option>";
+                    $.each(json, function( index, value ) {
+                        option += "<option>" + value +"</option>";
+                    });
+                    $('#optionZone').append(option);
+                })
+                .fail(function(error) {
+                    console.log( "error: "+error );
+                })
+                .always(function() {
+                    console.log( "complete" );
+                });
 
+        $.getJSON( uri+"/api/v0/statsCoaches", {
+            format: "json"
+        })
+                .done(function(json) {
+                    var row = "";
+                    $.each(json, function( index, value ) {
+                        row += "<tr><td>" + value['zona'] +"</td><td>" + value['coordinador'] +"</td><td>" + value['coach'] +"</td><td>" + value['platform'] +"</td><td>" + value['browser'] +"</td><td>" + value['numSession'] +"</td><td>"+ value['lastLogin'].date+"</td></tr>";
+                    });
+                    $('#coachesTable').append(row);
+                })
+                .fail(function(error) {
+                    console.log( "error: "+error );
+                })
+                .always(function() {
+                    console.log( "complete" );
+                });
+
+        $('#optionZone').change(function () {
+            console.log($('#optionZone').val());
+        });
+    </script>
 {% endblock %}
