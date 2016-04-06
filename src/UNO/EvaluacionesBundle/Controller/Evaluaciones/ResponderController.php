@@ -28,8 +28,6 @@ class ResponderController extends Controller
                 'redirect' => 'responder',
                 'with' => $id
             ));
-
-            //return $this->redirectToRoute('login');
         }
 
         if(!Utils::isSurveyAuthorized($session,$surveyID)){
@@ -38,6 +36,12 @@ class ResponderController extends Controller
         }
 
         $personId = $session->get('personIdS');
+
+        if($this->getLog($personId,$surveyID)){
+
+            throw new AccessDeniedHttpException('Ya has respondido a esta evaluación, revisa el resúmen generado');
+        };
+
         $questions = $this->getQuestions($surveyID,$personId);
         $_survey = $this->getCurrentSurvey($surveyID);
         $surveyJson = $this->creaJson($_survey, $questions);
@@ -150,6 +154,14 @@ class ResponderController extends Controller
                     $em->flush();
                     $i++;
                 }
+
+                if($this->getLog($personId,$survey->getSurveyid())){
+
+                    return new Response(json_encode(array('message' => 'No se almacenó nada puesto que ya has respondido esta evaluación')),403,array(
+                        'Content-Type' => 'application/json'
+                    ));
+                };
+
                 $em->getConnection()->commit();
                 $response = json_encode(array('message' => 'Se guardaron ' .  $i . ' preguntas'));
                 $this->createLog('004',$survey, $personId);
@@ -182,5 +194,15 @@ class ResponderController extends Controller
         $newLog->setActionaction( $newAction );
         $em->persist( $newLog );
         $em->flush();
+    }
+
+    private function getLog($personId, $surveyId){
+
+        $log = $this->getDoctrine()->getRepository('UNOEvaluacionesBundle:Log')->findOneBy(array(
+            "personPersonid"=>$personId,
+            "surveySurveyid"=>$surveyId
+        ));
+
+        return $log;
     }
 }
