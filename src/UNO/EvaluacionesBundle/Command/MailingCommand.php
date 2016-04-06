@@ -193,7 +193,7 @@ class MailingCommand extends ContainerAwareCommand{
 
         $message = \Swift_Message::newInstance()
             ->setSubject($title.' '.$sendDate)
-            ->setFrom(array('noreplymx@unoi.com' => 'Diagnóstico UNOi'))
+            ->setFrom(array('noreplymx@unoi.com' => 'Diagnóstico UNOi (DEMO)'))
             ->setTo($recipient)
             ->setBody(
                 $this->getContainer()->get('templating')->render($view, $params),
@@ -215,7 +215,9 @@ class MailingCommand extends ContainerAwareCommand{
         $em = $this->getContainer()->get('doctrine')->getManager();
         $qb = $em->createQueryBuilder();
 
-        $directores = $qb->select("p.personid as persona, p.email as email, CONCAT(p.name,' ',p.surname) as nombre, s.schoolid as idescuela, s.school as escuela")
+        //ToDo: descomentar esta parte cuando se terminen de hacer simulaciones
+
+        /*$directores = $qb->select("p.personid as persona, p.email as email, CONCAT(p.name,' ',p.surname) as nombre, s.schoolid as idescuela, s.school as escuela")
             ->from('UNOEvaluacionesBundle:School','s')
             ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.schoolid = s.schoolid')
             ->innerJoin('UNOEvaluacionesBundle:Profile','pr','WITH','ps.profileid = pr.profileid AND pr.profilecode = :profile')
@@ -223,7 +225,17 @@ class MailingCommand extends ContainerAwareCommand{
             ->setParameter('profile', 'DIR')
             ->groupBy('p.personid')
             ->getQuery()
-            ->getResult();
+            ->getResult();*/
+
+        $directores = array();
+
+        array_push($directores,array(
+            'persona'=>'3882669',
+            'email'=>'bovarbj90@gmail.com',
+            'nombre'=>'Julio Bravo',
+            'idescuela' => '3902',
+            'escuela'=>'SOLUCIONES DIGITALES'
+            ));
 
         return $directores;
     }

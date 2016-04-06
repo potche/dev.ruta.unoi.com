@@ -17,17 +17,23 @@
     <div class="row">
         <div class="widget">
             <div class="widget-extra text-center themed-background-dark-night">
-                <h3 class="widget-content-light"><i class="fa fa-bar-chart animation-floating"></i> <strong>Estadísticas</strong></h3>
+                <h3 class="widget-content-light"><i class="fa fa-bar-chart animation-floating"></i> <strong>Estadísticas globales</strong></h3>
             </div>
             <div class="widget-simple">
                 <div class="row text-center">
-                    <div class="col-xs-6">
+                    <div class="col-xs-4">
                         <a href="javascript:void(0)" class="widget-icon themed-background-spring">
-                            <i class="fa fa-university"></i>
+                            <i class="fa fa-thumbs-up"></i>
                         </a>
                         <h3 class="remove-margin-bottom"> <strong>{{ progressSchool['global']['Stats'][0]['y'] ~ '%' }}</strong><br><small>Avance de mi colegio</small></h3>
                     </div>
-                    <div class="col-xs-6">
+                    <div class="col-xs-4">
+                        <a href="javascript:void(0)" class="widget-icon themed-background-spring">
+                            <i class="fa fa-thumbs-down"></i>
+                        </a>
+                        <h3 class="remove-margin-bottom"> <strong>{{ progressSchool['global']['Stats'][1]['y'] ~ '%' }}</strong><br><small>Avance pendiente de mi colegio</small></h3>
+                    </div>
+                    <div class="col-xs-4">
                         <a href="javascript:void(0)" class="widget-icon themed-background-fire">
                             <i class="fa fa-graduation-cap"></i>
                         </a>
@@ -37,6 +43,12 @@
             </div>
         </div>
     </div>
+
+    <div class="row text-center">
+        <a href="{{ scheme~'://'~host~'/estadisticas' }}" class="btn btn-sm btn-info"> {{ "Ver más" }}</a>
+    </div>
+    <br>
+
     <div class="row">
         <div class="widget">
             <div class="widget-extra text-center themed-background-dark-night">
@@ -71,31 +83,94 @@
         </div>
     </div>
 
+    <div class="row text-center">
+        <a href="{{ scheme~'://'~host~'/estadisticas' }}" class="btn btn-sm btn-info"> {{ "Ver más" }}</a>
+    </div>
+    <br>
+
     <div class="row">
         <div class="widget">
             <div class="widget-extra text-center themed-background-dark-night">
-                <h3 class="widget-content-light"><i class="fa fa-trophy animation-floating"></i> <strong>Top 5 de cumplimiento en tu colegio</strong></h3>
+                <h3 class="widget-content-light"><i class="fa fa-thumbs-down animation-floating"></i> <strong>{{ progressSchool['global']['Stats'][1]['y'] ~ '%' }} de avance por completar</strong></h3>
             </div>
             <div class="widget-simple">
                 <table class="table table-bordered">
                     <thead>
                     <tr>
                         <th class="text-center"><b>Nombre</b></th>
+                        <th class="text-center"><b>Progreso</b></th>
                         <th class="text-center"><b>Porcentaje de avance</b></th>
+                        <th class="text-center"><b>Email de contacto</b></th>
                     </tr>
                     </thead>
                     <tbody>
-                    {% for top in top5 %}
+                    {% for pend in top5['pendiente'] %}
                         <tr>
-                            <td class="text-left">
-                                <h5><b>{{ top['nombre'] }}</b></h5>
+                            <td class="text-center">
+                                <h5>{{ pend['nombre'] }}</h5>
+                            </td>
+                            <td class="text-center">
+                                <h5>{{ pend['progreso'] }}</h5>
                             </td>
                             <td class="text-center">
                                 <div class="progress progress-striped active">
-                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{ top['avance'] }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ top['avance'] }}%;">
+                                    <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="{{ pend['avance'] }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ pend['avance'] }}%;">
+                                    </div>
+                                </div>
+                                {{ pend['avance'] ~ '%' }}
+                            </td>
+                            <td class="text-center">
+                                <h5>{{ pend['email'] }}</h5>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="row text-center">
+        <a href="{{ scheme~'://'~host~'/estadisticas' }}" class="btn btn-sm btn-info"> {{ "Ver más" }}</a>
+    </div>
+    <br>
+
+    <div class="row">
+        <div class="widget">
+            <div class="widget-extra text-center themed-background-dark-night">
+                <h3 class="widget-content-light"><i class="fa fa-thumbs-up animation-floating"></i> <strong>¡Felicidades! Estas personas ya completaron su proceso</strong></h3>
+            </div>
+            <div class="widget-simple">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th class="text-center"><b>Nombre</b></th>
+                        <th class="text-center"><b>Progreso</b></th>
+                        <th class="text-center"><b>Porcentaje de avance</b></th>
+                        <th class="text-center"><b>Email de contacto</b></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for top in top5['terminado'] %}
+                        <tr>
+                            <td class="text-center">
+                                <h5>{{ top['nombre'] }}</h5>
+                            </td>
+                            <td class="text-center">
+                                <div class="text-warning">
+                                    <i class="fa fa-trophy"></i>
+                                </div>
+                                <h5>{{ top['progreso'] }}</h5>
+                            </td>
+                            <td class="text-center">
+                                <div class="progress progress-striped active">
+                                    <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{ top['avance'] }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ top['avance'] }}%;">
                                     </div>
                                 </div>
                                 {{ top['avance'] ~ '%' }}
+                            </td>
+                            <td class="text-center">
+                                <h5>{{ top['email'] }}</h5>
                             </td>
                         </tr>
                     {% endfor %}
@@ -106,7 +181,7 @@
     </div>
     <div class="row text-center">
         <h5>{{ "Haz click en el botón para ver más estadísticas de tu colegio" }}</h5>
-        <a href="{{ scheme~'://'~host~'/estadisticas' }}" class="btn btn-sm btn-info"> {{ "Ver mi lista" }}</a>
+        <a href="{{ scheme~'://'~host~'/estadisticas' }}" class="btn btn-sm btn-info"> {{ "Ver más estadísticas" }}</a>
     </div>
     <br>
 {% endblock %}
