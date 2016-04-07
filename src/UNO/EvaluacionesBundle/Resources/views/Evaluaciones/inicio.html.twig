@@ -222,7 +222,7 @@
     </div>
 
     <!-- Form Example with Blocks in the Grid -->
-    <div class="row">
+    <div class="row" id="Coaches">
         <div class="col-sm-12">
             <div class="widget">
                 <div class="widget-extra text-center themed-background-dark-autumn">
@@ -290,6 +290,27 @@
     <script>
         var uri = 'http://dev.ruta.unoi.com/app_dev.php';
         var filter = '';
+        var Admin = false;
+        var profileArray = $.parseJSON('{{ app.session.get('profileS') | raw }}');
+
+        $('#Coaches').hide();
+        $.each(profileArray, function(i, item) {
+            if(profileArray[i].profileid === 1){
+                Admin = true;
+            }
+        });
+
+
+        $( document ).ready(function() {
+            if(Admin){
+                $('#Coaches').show();
+                getZone();
+                filter = "/api/v0/statsCoaches";
+                getStatsCoaches(filter);
+            }
+
+
+        });
 
         function getZone(){
             $.getJSON( uri+"/api/v0/statsCoaches/zoneCoaches")
@@ -381,13 +402,6 @@
                 }
             };
         }();
-
-        $( document ).ready(function() {
-            getZone();
-            filter = "/api/v0/statsCoaches";
-            getStatsCoaches(filter);
-
-        });
 
         $('#optionZone').change(function () {
             var optionZone = $('#optionZone').val();
