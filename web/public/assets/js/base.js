@@ -45,6 +45,7 @@ function parseInfo(privilege, profile){
     var profileStr = '';
     //console.log(profileArray);
     $.each(profileArray, function(i, item) {
+
         profileStr +=   "<a href=''>"+
                             "<i class='fa fa-user fa-fw pull-right'></i>"+
                                 profileArray[i].profile+

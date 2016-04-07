@@ -136,10 +136,19 @@ class LoginController extends Controller{
                 //user existente
                 $this->valUserExisting();
             }else if( !empty($this->existsUserInDB()) ){
-                $this->_response = '105';
+                if($this->valPassLMS()){
+                    $this->existsUserPassInDB();
+                    if(!empty($this->_personDB)) {
+                        //user existente
+                        $this->valUserExisting();
+                    }
+                }else{
+                    $this->_response = '105';
+                }
             }else{
                 $this->preAddUser();
             }
+
             return new response($this->_response);
         }else{
             return new response($request->getMethod());
@@ -274,6 +283,33 @@ class LoginController extends Controller{
     private function existsUserInDB(){
         $em = $this->getDoctrine()->getManager();
         return $em->getRepository(PersonDB_L)->findOneBy(array('user' => $this->_user));
+    }
+
+    /**
+     * prepara los datos para la alta del usuario
+     */
+    private function valPassLMS(){
+        $LMS = new LMS();
+
+        $apiUser = $LMS->getDataXUserPass($this->_user, $this->_pass, 'https://www.sistemauno.com/source/ws/uno_wsj_login.php');
+
+        $datUser = json_decode($apiUser);
+        if($datUser->person->personId){
+            //update pass Local
+            $pass = encrypt::encrypt($this->_pass);
+
+            $em = $this->getDoctrine()->getManager();
+            $personDB = $em->getRepository(PersonDB_L)->findOneBy(array('user' => $this->_user));
+            if($personDB){
+                $personDB->setPassword($pass);
+                $em->flush();
+            }
+
+            return true;
+        }else{
+            return false;
+        }
+
     }
 
     /**
