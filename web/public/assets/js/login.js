@@ -112,12 +112,13 @@ var Login = function() {
                         data: $(form).serialize(),
                         url: base_path+"/ajax/autentication",
                         success: function (result) {
-                            $('#loading').slideUp("fast");
+
                             var rs = result.split("|");
                             var mailOrig = rs[1];
                             limpia();
                             switch (rs[0]) {
                                 case '1':
+                                    $('#loading').slideUp("fast");
                                     $('#ValidaMailM').modal();
                                     $('.titleM').html('Validaci&oacute;n de email');
                                     $('.bodyM').html(
@@ -143,34 +144,42 @@ var Login = function() {
                                     */
                                     break;
                                 case '97':
+                                    $('#loading').slideUp("fast");
                                     $('#errorM').modal();
                                     $('.bodyError').html(rs[1]);
                                     break;
                                 case '98':
+                                    $('#loading').slideUp("fast");
                                     $('#errorM').modal();
                                     $('.bodyError').html(rs[1]);
                                     break;
                                 case '100':
+                                    $('#loading').slideUp("fast");
                                     $('#errorM').modal();
                                     $('.bodyError').html('No se pudo autenticar exitosamente, inténtelo de nuevo');
                                     break;
                                 case '101':
+                                    $('#loading').slideUp("fast");
                                     $('#errorM').modal();
                                     $('.bodyError').html('No cuenta con el perfil adecuado para ingresar');
                                     break;
                                 case '102':
+                                    $('#loading').slideUp("fast");
                                     $('#errorM').modal();
                                     $('.bodyError').html('No cuenta con ningún periodo activo');
                                     break;
                                 case '103':
+                                    $('#loading').slideUp("fast");
                                     $('#errorM').modal();
                                     $('.bodyError').html('No pertenece a la Regi&oacute;n');
                                     break;
                                 case '104':
+                                    $('#loading').slideUp("fast");
                                     $('#errorM').modal();
                                     $('.bodyError').html('Su cuenta no esta Activa, contacte a su Coordinador para mayor informaci&oacute;n');
                                     break;
                                 case '105':
+                                    $('#loading').slideUp("fast");
                                     $('#errorM').modal();
                                     $('.bodyError').html('Su password es incorrecto, por favor intentelo de nuevo');
                                     break;
@@ -191,6 +200,7 @@ var Login = function() {
                                     login(base_path+"/inicio");
                                     break;
                                 default :
+                                    $('#loading').slideUp("fast");
                                     $('#errorM').modal();
                                     $('.bodyError').html(rs);
                                     break

@@ -226,7 +226,7 @@
         <div class="col-sm-12">
             <div class="widget">
                 <div class="widget-extra text-center themed-background-dark-autumn">
-                    <h3 class="widget-content-light">Coaches <strong>Coaches</strong></h3>
+                    <h3 class="widget-content-light">Coaches <strong>UNOi</strong></h3>
                 </div>
                 <div class="widget-extra-full ">
                     <form class="form-horizontal">
@@ -313,16 +313,17 @@
             $.getJSON(uri + filter)
                     .done(function (json) {
                         var row =
-                                '<table id="datatableC" class="table table-vcenter table-condensed table-bordered">'+
+                                '<table id="datatableC" class="table table-vcenter table-condensed table-bordered" style="width: 100%">'+
                                     '<thead>'+
                                         '<tr>'+
-                                            '<th colspan="2" class="text-center">Coach</th>'+
-                                            '<th class="text-center">Zona</th>'+
-                                            '<th class="text-center">Coordinador</th>'+
-                                            '<th class="text-center">Ultimo Ingreso</th>'+
-                                            '<th class="text-center">Plataforma</th>'+
-                                            '<th class="text-center">Navegador</th>'+
-                                            '<th class="text-center"># de Sesiones</th>'+
+                                            '<th></th>'+
+                                            '<th>Coach</th>'+
+                                            '<th>Zona</th>'+
+                                            '<th>Coordinador</th>'+
+                                            '<th>Ultimo Ingreso</th>'+
+                                            '<th>Plataforma</th>'+
+                                            '<th>Navegador</th>'+
+                                            '<th># de Sesiones</th>'+
                                         '</tr>'+
                                     '</thead>' +
                                     '<tbody>'+
@@ -347,7 +348,7 @@
 
                             var dateTime= day +'/'+ monthNames[monthIndex]+'/'+ year +' @ '+ hours +':'+ minutes+ ' ' + ampm;
 
-                            row += "<tr><td class='text-center'><img src='/public/assets/images/coaches/"+ value['img'] +"' class='img-circle' alt='avatar' style='width: 50%;'></td><td>" + value['coach'] + "</td><td>" + value['zona'] + "</td><td>" + value['coordinador'] + "</td><td>" + dateTime + "</td><td>" + value['platform'] + "</td><td>" + value['browser'] + "</td><td>" + value['numSession'] + "</td></tr>";
+                            row += "<tr><td class='text-center' style='width: 10%;'><img src='/public/assets/images/coaches/"+ value['img'] +"' class='img-circle' alt='avatar' style='width: 50%;'></td><td>" + value['coach'] + "</td><td>" + value['zona'] + "</td><td>" + value['coordinador'] + "</td><td>" + dateTime + "</td><td>" + value['platform'] + "</td><td>" + value['browser'] + "</td><td>" + value['numSession'] + "</td></tr>";
                         });
                         row += '</tbody>'+
                                 '</table>';
@@ -370,7 +371,7 @@
 
                     /* Initialize Datatables */
                     $('#datatableC').dataTable({
-                        columnDefs: [ { orderable: true, targets: [ 0, 6 ] } ],
+                        columnDefs: [ { orderable: false, targets: [ 0, 0 ] } ],
                         pageLength: 10,
                         lengthMenu: [[10, 20, 30, -1], [10, 20, 30, 'All']]
                     });
