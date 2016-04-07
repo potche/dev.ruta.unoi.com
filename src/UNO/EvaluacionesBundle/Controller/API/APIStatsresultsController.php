@@ -119,14 +119,14 @@ class APIStatsresultsController extends Controller {
             ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.profileid = sxp.profileProfileid AND ps.schoollevelid = sxp.schoollevelid')
             ->innerJoin('UNOEvaluacionesBundle:Person','p','WITH','p.personid = ps.personid')
             ->innerJoin('UNOEvaluacionesBundle:Survey','su','WITH','su.surveyid = sxp.surveySurveyid')
-            ->leftJoin('UNOEvaluacionesBundle:Log','l', 'WITH','l.personPersonid = ps.personid AND l.surveySurveyid = su.surveyid')
-            ->leftJoin('UNOEvaluacionesBundle:Action','a','WITH','l.actionaction = a.idaction')
+            ->innerJoin('UNOEvaluacionesBundle:Log','l', 'WITH','l.personPersonid = ps.personid AND l.surveySurveyid = su.surveyid')
+            ->innerJoin('UNOEvaluacionesBundle:Action','a','WITH','l.actionaction = a.idaction AND a.idaction = 4')
             ->leftJoin('UNOEvaluacionesBundle:Questionxsurvey','qxs','WITH','su.surveyid = qxs.surveySurveyid')
             ->leftJoin('UNOEvaluacionesBundle:Optionxquestion','oxq','WITH','oxq.questionxsurvey = qxs.questionxsurveyId')
             ->leftJoin('UNOEvaluacionesBundle:Option','o','WITH','o.optionid = oxq.optionOptionid')
             ->leftJoin('UNOEvaluacionesBundle:Answer','ans','WITH','ans.optionxquestion = oxq.optionxquestionId AND ans.personPersonid = ps.personid')
             ->where($condition)
-            ->groupBy('persona, nombre, id, titulo, estatus, fecharespuesta, oxq.optionOptionid')
+            ->groupBy('nombre, id, titulo, estatus, fecharespuesta, oxq.optionOptionid')
             ->getQuery()
             ->getResult();
 
