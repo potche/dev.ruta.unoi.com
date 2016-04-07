@@ -135,6 +135,7 @@ class APIStatsCoachesController extends Controller{
                                 c.coordinador AS coordId,
                                 CONCAT(p2.name, ' ', p2.surname) AS coordinador,
                                 p.personid,
+                                c.img,
                                 CONCAT(p.name, ' ', p.surname) AS coach,
                                 u.browser,
                                 u.platform,

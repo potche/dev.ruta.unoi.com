@@ -9,6 +9,98 @@
         .widget .widget-extra {
             background: #4b89dc;
         }
+
+        #slider output {
+            display: initial;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            margin: 0 0;
+            width: 100%;
+        }
+        input[type=range]:focus {
+            outline: none;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 5px;
+            cursor: pointer;
+            animate: 0.2s;
+            box-shadow: 0px 0px 0px #000000;
+            background: #2497E3;
+            border-radius: 1px;
+            border: 0px solid #000000;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            box-shadow: 0px 0px 0px #000000;
+            border: 1px solid #2497E3;
+            height: 18px;
+            width: 18px;
+            border-radius: 25px;
+            background: #A1D0FF;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -7px;
+        }
+        input[type=range]:focus::-webkit-slider-runnable-track {
+            background: #2497E3;
+        }
+        input[type=range]::-moz-range-track {
+            width: 100%;
+            height: 5px;
+            cursor: pointer;
+            animate: 0.2s;
+            box-shadow: 0px 0px 0px #000000;
+            background: #2497E3;
+            border-radius: 1px;
+            border: 0px solid #000000;
+        }
+        input[type=range]::-moz-range-thumb {
+            box-shadow: 0px 0px 0px #000000;
+            border: 1px solid #2497E3;
+            height: 18px;
+            width: 18px;
+            border-radius: 25px;
+            background: #A1D0FF;
+            cursor: pointer;
+        }
+        input[type=range]::-ms-track {
+            width: 100%;
+            height: 5px;
+            cursor: pointer;
+            animate: 0.2s;
+            background: transparent;
+            border-color: transparent;
+            color: transparent;
+        }
+        input[type=range]::-ms-fill-lower {
+            background: #2497E3;
+            border: 0px solid #000000;
+            border-radius: 2px;
+            box-shadow: 0px 0px 0px #000000;
+        }
+        input[type=range]::-ms-fill-upper {
+            background: #2497E3;
+            border: 0px solid #000000;
+            border-radius: 2px;
+            box-shadow: 0px 0px 0px #000000;
+        }
+        input[type=range]::-ms-thumb {
+            box-shadow: 0px 0px 0px #000000;
+            border: 1px solid #2497E3;
+            height: 18px;
+            width: 18px;
+            border-radius: 25px;
+            background: #A1D0FF;
+            cursor: pointer;
+        }
+        input[type=range]:focus::-ms-fill-lower {
+            background: #2497E3;
+        }
+        input[type=range]:focus::-ms-fill-upper {
+            background: #2497E3;
+        }
     </style>
 
     <div class="content-header content-header-media">
@@ -132,7 +224,7 @@
     <!-- Form Example with Blocks in the Grid -->
     <div class="row">
         <div class="col-sm-12">
-            <a href="javascript:void(0)" class="widget widget-hover-effect1">
+            <div class="widget">
                 <div class="widget-extra text-center themed-background-dark-autumn">
                     <h3 class="widget-content-light">Coaches <strong>Coaches</strong></h3>
                 </div>
@@ -140,53 +232,38 @@
                     <form class="form-horizontal">
                         <div class="form-group">
                             <label for="optionZone" class="col-sm-1 control-label">Zonas:</label>
-                            <div class="col-sm-11">
+                            <div class="col-sm-5">
                                 <select id="optionZone" class="form-control">
 
                                 </select>
+                            </div>
+
+                            <div id="slider" class="col-sm-6">
+
+                                <div class="form-group">
+                                    <fieldset class="col-sm-2 control-label">
+                                        <label for="amount-mobile">Dias </label>
+                                        <output id="rangevalue" >7</output>
+                                    </fieldset>
+
+
+                                    <div class="col-sm-10">
+                                        <input class="form-control" type="range" id="rangeinput" min="1" max="30" value="7" onchange="sendRange(this.value);" />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>
 
                     <div class="table-responsive">
-                        <table class="table table-borderless table-condensed text-center">
-                            <thead>
-                                <tr>
-                                    <th class="text-center">
-                                        Zona
-                                    </th>
-                                    <th class="text-center">
-                                        Coordinador
-                                    </th>
-                                    <th class="text-center">
-                                        Coach
-                                    </th>
-                                    <th class="text-center">
-                                        Plataforma
-                                    </th>
-                                    <th class="text-center">
-                                        Navegador
-                                    </th>
-                                    <th class="text-center">
-                                        # de Seciones
-                                    </th>
-                                    <th class="text-center">
-                                        Ultimo Ingreso
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody id="coachesTable">
+                        <div id="coachesTable"></div>
 
-                            </tbody>
-                        </table>
+
                     </div>
-
                 </div>
-            </a>
+            </div>
         </div>
-
     </div>
-
 
     <!-- END Form Example with Blocks in the Grid -->
     <!-- Modal Video -->
@@ -212,42 +289,127 @@
     <script src="{{ asset('public/assets/js/jquery-1.11.3.min.js') }}"></script>
     <script>
         var uri = 'http://dev.ruta.unoi.com/app_dev.php';
-        $.getJSON( uri+"/api/v0/statsCoaches/zoneCoaches", {
-            format: "json"
-        })
-                .done(function(json) {
-                    var option = "<option>Todas</option>";
-                    $.each(json, function( index, value ) {
-                        option += "<option>" + value +"</option>";
-                    });
-                    $('#optionZone').append(option);
-                })
-                .fail(function(error) {
-                    console.log( "error: "+error );
-                })
-                .always(function() {
-                    console.log( "complete" );
-                });
+        var filter = '';
 
-        $.getJSON( uri+"/api/v0/statsCoaches", {
-            format: "json"
-        })
-                .done(function(json) {
-                    var row = "";
-                    $.each(json, function( index, value ) {
-                        row += "<tr><td>" + value['zona'] +"</td><td>" + value['coordinador'] +"</td><td>" + value['coach'] +"</td><td>" + value['platform'] +"</td><td>" + value['browser'] +"</td><td>" + value['numSession'] +"</td><td>"+ value['lastLogin'].date+"</td></tr>";
+        function getZone(){
+            $.getJSON( uri+"/api/v0/statsCoaches/zoneCoaches")
+                    .done(function(json) {
+                        var option = '<option>Todas</option>';
+                        $.each(json, function( index, value ) {
+                            option += "<option>" + value +"</option>";
+                        });
+
+                        $('#optionZone').append(option);
+                    })
+                    .fail(function(error) {
+                        console.log( "error: "+error );
+                    })
+                    .always(function() {
+
                     });
-                    $('#coachesTable').append(row);
-                })
-                .fail(function(error) {
-                    console.log( "error: "+error );
-                })
-                .always(function() {
-                    console.log( "complete" );
-                });
+        }
+
+        function getStatsCoaches(filter) {
+            $.getJSON(uri + filter)
+                    .done(function (json) {
+                        var row =
+                                '<table id="datatableC" class="table table-vcenter table-condensed table-bordered">'+
+                                    '<thead>'+
+                                        '<tr>'+
+                                            '<th colspan="2" class="text-center">Coach</th>'+
+                                            '<th class="text-center">Zona</th>'+
+                                            '<th class="text-center">Coordinador</th>'+
+                                            '<th class="text-center">Ultimo Ingreso</th>'+
+                                            '<th class="text-center">Plataforma</th>'+
+                                            '<th class="text-center">Navegador</th>'+
+                                            '<th class="text-center"># de Sesiones</th>'+
+                                        '</tr>'+
+                                    '</thead>' +
+                                    '<tbody>'+
+                                        '<option>Todas</option>';
+                        $.each(json, function (index, value) {
+                            var d = value['lastLogin'].date;
+                            var monthNames = [
+                                "Ene", "Feb", "Mar","Apr", "May", "Jun", "Jul","Ago", "Sep", "Oct", "Nov", "Dic"
+                            ];
+
+                            var date = new Date(d);
+                            var day = date.getDate();
+                            var monthIndex = date.getMonth();
+                            var year = date.getFullYear();
+                            var hours = date.getHours();
+                            var minutes = date.getMinutes();
+
+                            var ampm = hours >= 12 ? 'pm' : 'am';
+                            hours = hours % 12;
+                            hours = hours ? hours : 12; // the hour '0' should be '12'
+                            minutes = minutes < 10 ? '0'+minutes : minutes;
+
+                            var dateTime= day +'/'+ monthNames[monthIndex]+'/'+ year +' @ '+ hours +':'+ minutes+ ' ' + ampm;
+
+                            row += "<tr><td class='text-center'><img src='/public/assets/images/coaches/"+ value['img'] +"' class='img-circle' alt='avatar' style='width: 50%;'></td><td>" + value['coach'] + "</td><td>" + value['zona'] + "</td><td>" + value['coordinador'] + "</td><td>" + dateTime + "</td><td>" + value['platform'] + "</td><td>" + value['browser'] + "</td><td>" + value['numSession'] + "</td></tr>";
+                        });
+                        row += '</tbody>'+
+                                '</table>';
+                        $('#coachesTable').html(row);
+                    })
+                    .fail(function (error) {
+                        console.log("error: " + error);
+                    })
+                    .always(function () {
+                        TablesDatatables.init();
+                    });
+        }
+
+        var TablesDatatables = function() {
+
+            return {
+                init: function() {
+                    /* Initialize Bootstrap Datatables Integration */
+                    App.datatables();
+
+                    /* Initialize Datatables */
+                    $('#datatableC').dataTable({
+                        columnDefs: [ { orderable: true, targets: [ 0, 6 ] } ],
+                        pageLength: 10,
+                        lengthMenu: [[10, 20, 30, -1], [10, 20, 30, 'All']]
+                    });
+
+                    /* Add placeholder attribute to the search input */
+                    $('.dataTables_filter input').attr('placeholder', 'Search');
+                }
+            };
+        }();
+
+        $( document ).ready(function() {
+            getZone();
+            filter = "/api/v0/statsCoaches";
+            getStatsCoaches(filter);
+
+        });
 
         $('#optionZone').change(function () {
-            console.log($('#optionZone').val());
+            var optionZone = $('#optionZone').val();
+
+            if(optionZone === 'Todas'){
+                filter = "/api/v0/statsCoaches";
+            }else{
+                filter = "/api/v0/statsCoaches/zone/"+optionZone;
+            }
+
+            getStatsCoaches(filter);
         });
+
+        function sendRange(val){
+            var optionZone = $('#optionZone').val();
+            rangevalue.value=val;
+
+            if(optionZone === 'Todas'){
+                filter = "/api/v0/statsCoaches/day/"+val;
+            }else{
+                filter = "/api/v0/statsCoaches/zoneDay/"+optionZone+"/"+val;
+            }
+            getStatsCoaches(filter);
+        }
     </script>
 {% endblock %}
