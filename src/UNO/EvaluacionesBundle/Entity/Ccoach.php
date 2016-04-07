@@ -43,6 +43,13 @@ class Ccoach
     private $zona;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="img", type="string", length=65)
+     */
+    private $img;
+
+    /**
      * Get id
      *
      * @return integer
@@ -122,6 +129,30 @@ class Ccoach
     public function getZona()
     {
         return $this->user;
+    }
+
+    /**
+     * Set img
+     *
+     * @param string $img
+     *
+     * @return Ccoach
+     */
+    public function setImg($img)
+    {
+        $this->img = $img;
+
+        return $this;
+    }
+
+    /**
+     * Get img
+     *
+     * @return string
+     */
+    public function getImg()
+    {
+        return $this->img;
     }
 }
 

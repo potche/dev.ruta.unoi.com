@@ -29,4 +29,10 @@ UNO\EvaluacionesBundle\Entity\Ccoach:
             length: 25
             options:
                 fixed: false
+        img:
+            type: string
+            nullable: true
+            length: 65
+            options:
+                fixed: false
     lifecycleCallbacks: {  }
