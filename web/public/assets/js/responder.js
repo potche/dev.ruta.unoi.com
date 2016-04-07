@@ -119,7 +119,7 @@ function getAnswers(){
  */
 function saveEvaluacion(){
 
-    $("div.modal-body").html("<p><b>Se están enviando tus respuestas, por favor no recarges esta página</b></p>");
+    $("div.modal-body").html("<p><b>Se están enviando tus respuestas, por favor no recargues esta página</b></p>");
     $(".modal-footer").remove();
 
     var postData = getAnswers();
