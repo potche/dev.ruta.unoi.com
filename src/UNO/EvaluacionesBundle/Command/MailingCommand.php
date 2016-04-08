@@ -230,10 +230,10 @@ class MailingCommand extends ContainerAwareCommand{
         $directores = array();
 
         array_push($directores,array(
-            'persona'=>'3882669',
+            'persona'=>'1151123',
             'email'=>'bovarbj90@gmail.com',
             'nombre'=>'Carlos Blé',
-            'idescuela' => '3902',
+            'idescuela' => '1087',
             'escuela'=>'SOLUCIONES DIGITALES'
             ));
 
