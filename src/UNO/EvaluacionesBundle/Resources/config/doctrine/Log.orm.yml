@@ -1,0 +1,51 @@
+UNO\EvaluacionesBundle\Entity\Log:
+    type: entity
+    table: Log
+    indexes:
+        fk_action_idx:
+            columns:
+                - Action_idAction
+        Person_personId:
+            columns:
+                - Person_personId
+        Survey_surveyId:
+            columns:
+                - Survey_surveyId
+    id:
+        logid:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: logId
+            generator:
+                strategy: IDENTITY
+    fields:
+        personPersonid:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: Person_personId
+        surveySurveyid:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: Survey_surveyId
+        date:
+            type: datetime
+            nullable: false
+    manyToOne:
+        actionaction:
+            targetEntity: Action
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                Action_idAction:
+                    referencedColumnName: idAction
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

@@ -39,6 +39,7 @@ class APIDetailBySurveyController extends Controller{
             ->leftJoin('UNOEvaluacionesBundle:Answer','ans','WITH','ans.optionxquestion = oxq.optionxquestionId')
             ->innerJoin('UNOEvaluacionesBundle:Person','p','WITH','p.personid = ans.personPersonid')
             ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.personid = p.personid')
+            ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile','sxp','WITH','ps.profileid = sxp.profileProfileid AND ps.schoollevelid = sxp.schoollevelid AND sxp.surveySurveyid = su.surveyid')
             ->innerJoin('UNOEvaluacionesBundle:Log','l', 'WITH','l.personPersonid = ps.personid AND l.surveySurveyid = su.surveyid')
             ->innerJoin('UNOEvaluacionesBundle:Action','a', 'WITH','a.idaction = l.actionaction AND a.idaction = 4')
             ->where('su.surveyid = '.$params['surveyId'])
