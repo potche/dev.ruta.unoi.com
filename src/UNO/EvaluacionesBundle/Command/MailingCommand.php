@@ -23,7 +23,7 @@ DEFINE('SCHEME','http');
  * @package UNO\EvaluacionesBundle\Command
  * @author jbravo
  *
- * Clase que contiene los métodos para el envío de correos de la Plataforma de Diagóstico Institucional, hereda los métodos de ContanierAwareCommando,
+ * Clase que contiene los métodos para el envío de correos de la Plataforma de Diagóstico Institucional, hereda los métodos de ContanierAwareCommand,
  * la clase de Symfony para la ejecución de comandos via consola.
  *
  * Se requiere hacerlo de esta forma para facilitar la ejecución de envío de mensajes a través de tareas del cron.
@@ -232,7 +232,7 @@ class MailingCommand extends ContainerAwareCommand{
         array_push($directores,array(
             'persona'=>'3882669',
             'email'=>'bovarbj90@gmail.com',
-            'nombre'=>'Julio Bravo',
+            'nombre'=>'Carlos Blé',
             'idescuela' => '3902',
             'escuela'=>'SOLUCIONES DIGITALES'
             ));

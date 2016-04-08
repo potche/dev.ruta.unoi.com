@@ -118,7 +118,10 @@ function getAnswers(){
  * Salvamos la evaluación
  */
 function saveEvaluacion(){
-    $("#create_confirm").modal("hide");
+
+    $("div.modal-body").html("<p><b>Se están enviando tus respuestas, por favor no recargues esta página</b></p>");
+    $(".modal-footer").remove();
+
     var postData = getAnswers();
     $.ajax({
         url: urlSave,
@@ -142,6 +145,14 @@ function saveEvaluacion(){
 
 //Inicializamos las funciones y eventos, mostramos la primera pregunta.
 $(document).ready(function() {
+
+    $("*").dblclick(function(e){
+
+        console.log("Did nothing");
+        e.stopPropagation();
+        e.preventDefault();
+    });
+
     setProgress(0);
     setCurrentQ(1);
     $("#prevButton").click(function(){
