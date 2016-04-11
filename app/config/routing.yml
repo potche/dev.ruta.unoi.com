@@ -174,6 +174,25 @@ APIStatsResultsBySchool:
     defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:statsbyschool}
     requirements:
             schoolid: \d+
+APIStatsGlobalBySchool:
+    path: /api/v0/stats/global/school/{schoolid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:globalbyschool}
+    requirements:
+            schoolid: \d+
+APIStatsGlobalBySurvey:
+    path: /api/v0/stats/global/survey/{surveyid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:globalbysurvey}
+    requirements:
+            surveyid: \d+
+APIStatsGlobalBySchoolSurvey:
+    path: /api/v0/stats/global/survey/{surveyid}/school/{schoolid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:globalbyschoolsurvey}
+    requirements:
+                schoolid: \d+
+                surveyid: \d+
+APIStatsGlobalGeneral:
+    path: /api/v0/stats/global
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:globalgeneral}
 APIStatsResultsByPerson:
     path: /api/v0/stats/results/person/{personid}
     defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:statsbyperson}

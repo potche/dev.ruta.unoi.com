@@ -36,6 +36,34 @@ class APIStatsresultsController extends Controller {
         return $response;
     }
 
+    public function globalgeneralAction(Request $request){
+
+        $response = new JsonResponse();
+        $response->setData($this->getCountGlobal());
+        return $response;
+    }
+
+    public function globalbyschoolAction(Request $request, $schoolid){
+
+        $response = new JsonResponse();
+        $response->setData($this->getCountGlobal($schoolid));
+        return $response;
+    }
+
+    public function globalbysurveyAction(Request $request, $surveyid){
+
+        $response = new JsonResponse();
+        $response->setData($this->getCountGlobal(null,$surveyid));
+        return $response;
+    }
+
+    public function globalbyschoolsurveyAction(Request $request, $surveyid, $schoolid){
+
+        $response = new JsonResponse();
+        $response->setData($this->getCountGlobal($schoolid, $surveyid));
+        return $response;
+    }
+
     public function statsbypersonAction(Request $request, $personid){
 
         $response = new JsonResponse();
@@ -94,6 +122,8 @@ class APIStatsresultsController extends Controller {
             ->leftJoin('UNOEvaluacionesBundle:Optionxquestion','oxq','WITH','oxq.questionxsurvey = qxs.questionxsurveyId')
             ->leftJoin('UNOEvaluacionesBundle:Option','o','WITH','o.optionid = oxq.optionOptionid')
             ->leftJoin('UNOEvaluacionesBundle:Answer','ans','WITH','ans.optionxquestion = oxq.optionxquestionId')
+            ->innerJoin('UNOEvaluacionesBundle:Log','l', 'WITH','l.personPersonid = ans.personPersonid AND l.surveySurveyid = su.surveyid')
+            ->innerJoin('UNOEvaluacionesBundle:Action','a','WITH','l.actionaction = a.idaction AND a.idaction = 4')
             ->where($condition)
             ->groupBy('id, titulo, oxq.optionOptionid')
             ->getQuery()
@@ -119,6 +149,34 @@ class APIStatsresultsController extends Controller {
             ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.profileid = sxp.profileProfileid AND ps.schoollevelid = sxp.schoollevelid')
             ->innerJoin('UNOEvaluacionesBundle:Person','p','WITH','p.personid = ps.personid')
             ->innerJoin('UNOEvaluacionesBundle:Survey','su','WITH','su.surveyid = sxp.surveySurveyid')
+            ->leftJoin('UNOEvaluacionesBundle:Log','l', 'WITH','l.personPersonid = ps.personid AND l.surveySurveyid = su.surveyid')
+            ->leftJoin('UNOEvaluacionesBundle:Action','a','WITH','l.actionaction = a.idaction AND a.idaction = 4')
+            ->leftJoin('UNOEvaluacionesBundle:Questionxsurvey','qxs','WITH','su.surveyid = qxs.surveySurveyid')
+            ->leftJoin('UNOEvaluacionesBundle:Optionxquestion','oxq','WITH','oxq.questionxsurvey = qxs.questionxsurveyId')
+            ->leftJoin('UNOEvaluacionesBundle:Option','o','WITH','o.optionid = oxq.optionOptionid')
+            ->leftJoin('UNOEvaluacionesBundle:Answer','ans','WITH','ans.optionxquestion = oxq.optionxquestionId AND ans.personPersonid = ps.personid')
+            ->where($condition)
+            ->groupBy('nombre, id, titulo, estatus, fecharespuesta, oxq.optionOptionid')
+            ->getQuery()
+            ->getResult();
+
+        return $byParams ? $this->parseByParams($byParams) : APIUtils::getErrorResponse('404');
+    }
+
+    private function getCountGlobal($schoolId = null, $surveyId = null){
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQuerybuilder();
+
+        $condition = 'su.surveyid IS NOT NULL';
+        $condition = $schoolId != null ? $condition.' AND ps.schoolid = '.$schoolId : $condition;
+        $condition = $surveyId != null ? $condition.' AND su.surveyid = '.$surveyId : $condition;
+
+        $bySchool = $qb->select("su.surveyid as id, su.title as titulo, ps.personid as persona, CONCAT(p.name,' ',p.surname) as nombre, COALESCE(a.idaction,0) as estatus, l.date as fecharespuesta, o.option as opcion, COUNT(DISTINCT(ans.answerid)) as resp")
+            ->from('UNOEvaluacionesBundle:Surveyxprofile','sxp')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.profileid = sxp.profileProfileid AND ps.schoollevelid = sxp.schoollevelid')
+            ->innerJoin('UNOEvaluacionesBundle:Person','p','WITH','p.personid = ps.personid')
+            ->innerJoin('UNOEvaluacionesBundle:Survey','su','WITH','su.surveyid = sxp.surveySurveyid')
             ->innerJoin('UNOEvaluacionesBundle:Log','l', 'WITH','l.personPersonid = ps.personid AND l.surveySurveyid = su.surveyid')
             ->innerJoin('UNOEvaluacionesBundle:Action','a','WITH','l.actionaction = a.idaction AND a.idaction = 4')
             ->leftJoin('UNOEvaluacionesBundle:Questionxsurvey','qxs','WITH','su.surveyid = qxs.surveySurveyid')
@@ -130,7 +188,10 @@ class APIStatsresultsController extends Controller {
             ->getQuery()
             ->getResult();
 
-        return $byParams ? $this->parseByParams($byParams) : APIUtils::getErrorResponse('404');
+        $options = array_unique(array_column($bySchool,'opcion'));
+        $ret = array('global' => $bySchool ? $this->getGlobal($bySchool, $options) : null);
+
+        return $ret['global'] != null ? $ret : APIUtils::getErrorResponse('404');
     }
 
     private function parseGeneral($all){
