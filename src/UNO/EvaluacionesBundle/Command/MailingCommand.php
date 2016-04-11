@@ -215,9 +215,7 @@ class MailingCommand extends ContainerAwareCommand{
         $em = $this->getContainer()->get('doctrine')->getManager();
         $qb = $em->createQueryBuilder();
 
-        //ToDo: descomentar esta parte cuando se terminen de hacer simulaciones
-
-        /*$directores = $qb->select("p.personid as persona, p.email as email, CONCAT(p.name,' ',p.surname) as nombre, s.schoolid as idescuela, s.school as escuela")
+        $directores = $qb->select("p.personid as persona, p.email as email, CONCAT(p.name,' ',p.surname) as nombre, s.schoolid as idescuela, s.school as escuela")
             ->from('UNOEvaluacionesBundle:School','s')
             ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.schoolid = s.schoolid')
             ->innerJoin('UNOEvaluacionesBundle:Profile','pr','WITH','ps.profileid = pr.profileid AND pr.profilecode = :profile')
@@ -225,17 +223,7 @@ class MailingCommand extends ContainerAwareCommand{
             ->setParameter('profile', 'DIR')
             ->groupBy('p.personid')
             ->getQuery()
-            ->getResult();*/
-
-        $directores = array();
-
-        array_push($directores,array(
-            'persona'=>'1151123',
-            'email'=>'bovarbj90@gmail.com',
-            'nombre'=>'Carlos Blé',
-            'idescuela' => '1087',
-            'escuela'=>'SOLUCIONES DIGITALES'
-            ));
+            ->getResult();
 
         return $directores;
     }
