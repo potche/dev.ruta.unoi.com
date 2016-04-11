@@ -1,6 +1,6 @@
 {% extends '::base.mail.html.twig' %}
 {% block logo %}
-    <img src="{{ 'https://pre-ruta.unoi.com'~asset('public/assets/images/mail/logo_mail.png') }}" alt="UNO Internacional" width="170" height="170" style="display:block;" />
+    <img src="{{ scheme~'://'~host~asset('public/assets/images/mail/logo_mail.png') }}" alt="UNO Internacional" width="170" height="170" style="display:block;" />
 {% endblock %}
 {% block body %}
     <tr>
@@ -19,7 +19,7 @@
             <table align="left" border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
                 <tr>
                     <td height="96">
-                        <img src="{{ 'https://pre-ruta.unoi.com'~asset('public/assets/images/mail/progress.png') }}" width="48" height="48" style="display: inline-block;" />
+                        <img src="{{ scheme~'://'~host~asset('public/assets/images/mail/progress.png') }}" width="48" height="48" style="display: inline-block;" />
                     </td>
                     <td height="96" style="color: #555555; font-family: Arial, sans-serif; font-size: 20px; text-align: left;">
                         Avance de mi colegio: <b>{{ progressSchool['global']['Stats'][0]['y'] ~ '%' }}</b>
@@ -27,7 +27,7 @@
                 </tr>
                 <tr>
                     <td height="96">
-                        <img src="{{ 'https://pre-ruta.unoi.com'~asset('public/assets/images/mail/pending.png') }}" width="48" height="48" style="display: inline-block;" />
+                        <img src="{{ scheme~'://'~host~asset('public/assets/images/mail/pending.png') }}" width="48" height="48" style="display: inline-block;" />
                     </td>
                     <td height="96" style="color: #555555; font-family: Arial, sans-serif; font-size: 20px; text-align: left;">
                         Avance pendiente de mi colegio: <b>{{ progressSchool['global']['Stats'][1]['y'] ~ '%' }}</b>
@@ -35,7 +35,7 @@
                 </tr>
                 <tr>
                     <td height="96">
-                        <img src="{{ 'https://pre-ruta.unoi.com'~asset('public/assets/images/mail/personalProgress.png') }}" width="48" height="48" style="display: inline-block;" />
+                        <img src="{{ scheme~'://'~host~asset('public/assets/images/mail/personalProgress.png') }}" width="48" height="48" style="display: inline-block;" />
                     </td>
                     <td height="96" style="color: #555555; font-family: Arial, sans-serif; font-size: 20px; text-align: left;">
                         Avance personal: <b>{{ progressPerson['global']['Stats'][0]['y'] ~ '%' }}</b>
