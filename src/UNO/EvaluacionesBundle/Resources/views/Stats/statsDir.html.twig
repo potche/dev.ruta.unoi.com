@@ -41,10 +41,10 @@
 
                         <div id="errorBuscar" class="alert alert-danger col-sm-12 text-center" style="display: none">
                             <div id="mensajeSchool" style="display: none">
-                                <h5><i class="fa fa-times"></i> Ingrese una <strong>Escuela Valida</strong></h5>
+                                <h5><i class="fa fa-times"></i> Ingrese una escuela v&aacute;lida</h5>
                             </div>
                             <div id="mensajeSurvey" style="display: none">
-                                <h5><i class="fa fa-times"></i> Ingrese una <strong>Evaluación Valida</strong></h5>
+                                <h5><i class="fa fa-times"></i> Ingrese una evaluación v&aacute;lida</h5>
                             </div>
                         </div>
 
@@ -292,13 +292,21 @@
         var nameSchool = '{{ nameSchool }}';
         var nameSchoolArray = nameSchool.split("-");
         var nameSurvey = 'Todas las Evaluaciones';
+        var baseUri = "http://dev.ruta.unoi.com";
 
-        var serverAllAPI = "http://dev.ruta.unoi.com{{ app.request.getBaseURL() }}/api/v0/stats/results";
-        var serverSchoolSurveyAPI = "http://dev.ruta.unoi.com{{ app.request.getBaseURL() }}/api/v0/stats/results/survey/3/school/";
-        var serverSchoolAPI = "http://dev.ruta.unoi.com{{ app.request.getBaseURL() }}/api/v0/stats/results/school/";
-        var serverSurveyAPI = "http://dev.ruta.unoi.com{{ app.request.getBaseURL() }}/api/v0/stats/results/survey/";
-        var serverPersonSurveyAPI = "http://dev.ruta.unoi.com{{ app.request.getBaseURL() }}/api/v0/stats/results/person/";
-        var serverSurveyUserAPI = "http://dev.ruta.unoi.com{{ app.request.getBaseURL() }}/api/v0/result/survey/";
+        var serverAllAPI = baseUri+"{{ app.request.getBaseURL() }}/api/v0/stats/results";
+        var serverSchoolSurveyAPI = baseUri+"{{ app.request.getBaseURL() }}/api/v0/stats/results/survey/3/school/";
+        var serverSchoolAPI = baseUri+"{{ app.request.getBaseURL() }}/api/v0/stats/results/school/";
+        var serverSurveyAPI = baseUri+"{{ app.request.getBaseURL() }}/api/v0/stats/results/survey/";
+        var serverPersonSurveyAPI = baseUri+"{{ app.request.getBaseURL() }}/api/v0/stats/results/person/";
+        var serverSurveyUserAPI = baseUri+"{{ app.request.getBaseURL() }}/api/v0/result/survey/";
+
+        <!-- graphs -->
+        var graphSchoolAPI = baseUri+"{{ app.request.getBaseURL() }}/api/v0/stats/global/school/";
+        var graphSurveyAPI = baseUri+"{{ app.request.getBaseURL() }}/api/v0/stats/global/survey/";
+        var graphSurveySchoolAPI = baseUri+"{{ app.request.getBaseURL() }}/api/v0/stats/global/survey/";
+
+        var detail = baseUri+"{{ app.request.getBaseURL() }}/api/v0/result/detail/";
 
         $(function() {
             
@@ -306,7 +314,7 @@
             setNameSurvey(nameSurvey);
             $('.input-typeaheadSurvey').typeahead({ source: surveyListJS });
 
-            graphs(serverSchoolAPI+nameSchoolArray[0], nameSchool, nameSurvey);
+            graphs(graphSchoolAPI+nameSchoolArray[0], serverSchoolAPI+nameSchoolArray[0], nameSchool, nameSurvey);
 
             var mensajeSurvey = $('#mensajeSurvey');
             var errorBuscar = $('#errorBuscar');
@@ -331,13 +339,8 @@
                     showErrorBuscar(okSurvey, surveyIdFrm);
                 }
             });
-
         });
 
-
-
     </script>
-
-
 
 {% endblock %}

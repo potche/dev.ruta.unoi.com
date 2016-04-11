@@ -257,7 +257,7 @@ class AltaController extends Controller{
             $Person->setBirthday($this->_datPerson->birthDay);
             $Person->setBirthmonth($this->_datPerson->birthMonth);
             $Person->setBirthyear($this->_datPerson->birthYear);
-            $Person->setEmail(trim($this->_datPerson->email,'--'));
+            $Person->setEmail($this->_email);
             $Person->setLanguageid($this->_datPerson->languageId);
             $Person->setLanguageCode($this->_datPerson->languageCode);
             $Person->setLanguage($this->_datPerson->language);
