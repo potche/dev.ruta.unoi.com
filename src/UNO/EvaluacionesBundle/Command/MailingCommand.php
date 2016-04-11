@@ -150,7 +150,7 @@ class MailingCommand extends ContainerAwareCommand{
 
                     $mesg = $this->buildMessage(
                         'Resumen semanal',
-                        'UNOEvaluacionesBundle:Notifications:weeklyBrief.html.twig',
+                        'UNOEvaluacionesBundle:Notifications:weeklyBrief2.html.twig',
                         array(
                             'persona' => $d['persona'],
                             'name' => $d['nombre'],
