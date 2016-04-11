@@ -123,7 +123,7 @@ var Login = function() {
                                     $('.titleM').html('Validaci&oacute;n de email');
                                     $('.bodyM').html(
                                         'Se le ha enviado un Email al correo: <br/> <br/>' +
-                                        '<span id="email" class="email"><b>'+mailOrig+'</b></span>' +
+                                        '<span id="email" class="email" type="email"><b>'+mailOrig+'</b></span>' +
                                         ' | <a id="edit" style="cursor: pointer" onclick="changeEmail();">Cambiar</a><br/> ' +
                                         'Verifique que este sea su correo.<br/><br/>' +
                                         '<br/>' +
@@ -142,6 +142,18 @@ var Login = function() {
                                         '<button type="button" class="btn btn-primary" onclick="checkCode(\''+base_path+'\');">Activar</button>'
                                     );
                                     */
+                                    break;
+                                case '2':
+                                    $('#loading').slideUp("fast");
+                                    $('#ValidaMailM').modal();
+                                    $('.titleM').html('Validaci&oacute;n de email');
+                                    $('.bodyM').html(
+                                        '<h4>El correo <b>'+mailOrig+'</b> ya esta registrado por un usuario en el sistema, ' +
+                                        'por favor ingrese otro, ya que el correo debe de ser único. </h4> <br/>' +
+                                        'Email: <input id="email" class="email" type="email" onkeyup="valNewMail();"><br/> ' +
+                                        '<br/>' +
+                                        '<button disabled type="button" id="enviaCorreo" class="btn btn-primary" onclick="enviaEmail(\''+base_path+'\',\''+mailOrig+'\',\''+rs[2]+'\',\''+rs[3]+'\',\''+rs[4]+'\');">Enviar Email</button>'
+                                    );
                                     break;
                                 case '97':
                                     $('#loading').slideUp("fast");
@@ -341,13 +353,13 @@ function changeEmail(){
 
 function enviaEmail(base_path, mailOrig, personId, code, name){
     var email = $('#email').val();
-
     if(email == ''){
         email = mailOrig;
     }
 
     $.post( base_path+"/forwardMail", { email: email, personId: personId, code: code, name: name })
         .done(function( data ) {
+            $('#enviaCorreo').html('Reenviar');
             $('#successM').modal();
             $('.titleSuccessM').html('Validaci&oacute;n de correo');
             $('.bodySuccessM').html('Se te ha enviado el c&oacute;digo a tu correo, recuerda revisar en los correos no deseados');
@@ -378,4 +390,14 @@ function checkCode(base_path){
 
 function login(base_path){
     window.location.replace(base_path);
+}
+
+function valNewMail(){
+    var email = $('#email').val();
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if(re.test(email)){
+        $("#enviaCorreo").prop('disabled', false);
+    }else{
+        $("#enviaCorreo").prop('disabled', true);
+    }
 }

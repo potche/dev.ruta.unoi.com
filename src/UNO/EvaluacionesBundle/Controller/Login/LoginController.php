@@ -41,6 +41,7 @@ DEFINE('personId', 'personId');
 DEFINE('email', 'email');
 DEFINE('PersonDB_L', 'UNOEvaluacionesBundle:Person');
 DEFINE('success', 'success');
+DEFINE('baseUri', 'http://dev.ruta.unoi.com/');
 
 /**
  * Class LoginController
@@ -200,8 +201,12 @@ class LoginController extends Controller{
             if (is_array($this->_datPerson)) {
                 //si el usuario cuenta con un perfil apropiado se le pide que valide sus coreo
                 $this->validateEmailUser();
-                $this->sendMail();
-                $this->_response = "1|" . $this->_datPerson[email] . "|" . $this->_datPerson[personId] . "|" . $this->_code . "|" . $this->_datPerson['name'];
+                if($this->validUniqueMail()){
+                    $this->sendMail();
+                    $this->_response = "1|" . $this->_datPerson[email] . "|" . $this->_datPerson[personId] . "|" . $this->_code . "|" . $this->_datPerson['name'];
+                }else{
+                    $this->_response = "2|" . $this->_datPerson[email] . "|" . $this->_datPerson[personId] . "|" . $this->_code . "|" . $this->_datPerson['name'];
+                }
             } else {
                 $this->_response = $this->_datPerson;
             }
@@ -243,8 +248,8 @@ class LoginController extends Controller{
             $this->updateMailValidation($_personId, $_email);
 
             $to = $_email;
-            $url = "https://ruta.unoi.com/linkCode?code=".base64_encode($_code)."&email=".base64_encode($_email);
-            $subject = "Validación de Email";
+            $url = baseUri."linkCode?code=".base64_encode($_code)."&email=".base64_encode($_email);
+            $subject = "DEV-Validación de Email";
             $headers = 'MIME-Version: 1.0' . "\r\n";
             $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
             $headers .= 'From: Red UNOi <noreplymx@unoi.com>'."\r\n";
@@ -261,12 +266,12 @@ class LoginController extends Controller{
      */
     private function sendMail() {
         $BodyMail = new BodyMail();
-        $to = $this->_datPerson[email];
-        //$to = 'potcheunam@gmail.com';
+        //$to = $this->_datPerson[email];
+        $to = 'potcheunam@gmail.com';
 
-        $url = "https://ruta.unoi.com/linkCode?code=".base64_encode($this->_code)."&email=".base64_encode($this->_datPerson[email]);
+        $url = baseUri."linkCode?code=".base64_encode($this->_code)."&email=".base64_encode($this->_datPerson[email]);
 
-        $subject = "Validación de Email";
+        $subject = "DEV-Validación de Email";
         $headers = 'MIME-Version: 1.0' . "\r\n";
         $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
         $headers .= 'From: Evaluacione Red UNOi <noreplymx@unoi.com>'."\r\n";
@@ -517,6 +522,21 @@ class LoginController extends Controller{
     private function isObjectAPI($api){
         $dat = json_decode($api);
         return is_object($dat);
+    }
+
+    /**
+     * busca que el mail que tiene el usuario no lo tenga otro usuario
+     */
+    public function validUniqueMail() {
+        $em = $this->getDoctrine()->getManager();
+        $Person = $em->getRepository('UNOEvaluacionesBundle:Person')->findOneBy(array('email' => $this->_datPerson[email]));
+        if ($Person) {
+            #si existe el mail, por lo que hay q pedirle q ingrece otro
+            return false;
+        }else{
+            return true;
+        }
+
     }
 
     /**
