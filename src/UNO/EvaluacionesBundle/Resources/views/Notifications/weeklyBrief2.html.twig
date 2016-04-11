@@ -1,0 +1,119 @@
+{% extends '::base.mail.html.twig' %}
+{% block logo %}
+    <img src="{{ 'https://pre-ruta.unoi.com'~asset('public/assets/images/mail/logo_mail.png') }}" alt="UNO Internacional" width="170" height="170" style="display:block;" />
+{% endblock %}
+{% block body %}
+    <tr>
+        <td bgcolor="#ffffff" style="padding: 20px 40px 10px 40px; color: #555555; font-family: Arial, sans-serif; font-size: 20px; line-height: 30px; text-align: justify;">
+            <b>Hola, {{ name }}</b><br>
+            <p>Te presentamos un resumen semanal de tus acciones en la Plataforma de Diagnóstico Institucional de UNOi:</p>
+        </td>
+    </tr>
+    <tr>
+        <td bgcolor="#1ec1b8" style="padding: 0; color: #ffffff; font-family: Arial, sans-serif; font-size: 20px; line-height: 50px; text-align: center;">
+            <b>Estadísticas generales</b>
+        </td>
+    </tr>
+    <tr>
+        <td bgcolor="#ffffff" style="padding: 10px 40px 0 40px;">
+            <table align="left" border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
+                <tr>
+                    <td height="96">
+                        <img src="{{ 'https://pre-ruta.unoi.com'~asset('public/assets/images/mail/progress.png') }}" width="48" height="48" style="display: inline-block;" />
+                    </td>
+                    <td height="96" style="color: #555555; font-family: Arial, sans-serif; font-size: 20px; text-align: left;">
+                        Avance de mi colegio: <b>{{ progressSchool['global']['Stats'][0]['y'] ~ '%' }}</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td height="96">
+                        <img src="{{ 'https://pre-ruta.unoi.com'~asset('public/assets/images/mail/pending.png') }}" width="48" height="48" style="display: inline-block;" />
+                    </td>
+                    <td height="96" style="color: #555555; font-family: Arial, sans-serif; font-size: 20px; text-align: left;">
+                        Avance pendiente de mi colegio: <b>{{ progressSchool['global']['Stats'][1]['y'] ~ '%' }}</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td height="96">
+                        <img src="{{ 'https://pre-ruta.unoi.com'~asset('public/assets/images/mail/personalProgress.png') }}" width="48" height="48" style="display: inline-block;" />
+                    </td>
+                    <td height="96" style="color: #555555; font-family: Arial, sans-serif; font-size: 20px; text-align: left;">
+                        Avance personal: <b>{{ progressPerson['global']['Stats'][0]['y'] ~ '%' }}</b>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <br>
+    <tr>
+        <td bgcolor="#1ec1b8" style="padding: 0; color: #ffffff; font-family: Arial, sans-serif; font-size: 20px; line-height: 50px; text-align: center;">
+            <b>Avance por evaluación</b>
+        </td>
+    </tr>
+    <tr>
+        <td bgcolor="#ffffff" style="padding: 10px 40px 0 40px;">
+            <table align="left" style="padding: 10px; width: 100%; text-align: left;">
+                {% for survey in progressSchool['bySurvey']%}
+                    <tr>
+                        <td height="48" style="color: #555555; font-family: Arial, sans-serif; font-size: 15px; border-bottom: 1px solid #ddd;">
+                            <b>{{ survey['Titulo'] }}</b>
+                        </td>
+                        <td height="48" style="color: #555555; font-family: Arial, sans-serif; font-size: 17px; border-bottom: 1px solid #ddd; text-align: center;">
+                            {{ survey['Stats'][0]['y'] ~ '%' }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </td>
+    </tr>
+    <br>
+    {% if top5['pendiente']|length > 0 %}
+        <tr>
+            <td bgcolor="#1ec1b8" style="padding: 0; color: #ffffff; font-family: Arial, sans-serif; font-size: 20px; line-height: 50px; text-align: center;">
+                <b>Progreso pendiente por persona</b>
+            </td>
+        </tr>
+        <tr>
+            <td bgcolor="#ffffff" style="padding: 10px 40px 0 40px;">
+                <table align="left" style="padding: 10px; width: 100%; text-align: left; margin-right: 10px">
+                    {% for pend in top5['pendiente']%}
+                        <tr>
+                            <td height="48" style="color: #555555; font-family: Arial, sans-serif; font-size: 15px; border-bottom: 1px solid #ddd;">
+                                <b>{{ pend['nombre'] | title }}</b>
+                            </td>
+                            <td height="48" style="color: #555555; font-family: Arial, sans-serif; font-size: 15px; border-bottom: 1px solid #ddd; text-align: center;">
+                                {{ (100-pend['avance']) ~ '%' }}
+                            </td>
+                            <td height="48" style="color: #555555; font-family: Arial, sans-serif; font-size: 15px; border-bottom: 1px solid #ddd; margin-left: 10px">
+                                {{ pend['email'] ? pend['email'] : 'No disponible' }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </td>
+        </tr>
+    {% endif %}
+    <br>
+    <tr>
+        <td align="center" bgcolor="#f9f9f9" style="padding: 30px 20px 30px 20px; font-family: Arial, sans-serif;">
+            <table bgcolor="#1ec1b8" border="0" cellspacing="0" cellpadding="0" class="buttonwrapper">
+                <tr>
+                    <td align="center" height="50" style=" padding: 0 25px 0 25px; font-family: Arial, sans-serif; font-size: 16px; font-weight: bold;" class="button">
+                        <a href="{{ scheme~'://'~host~'/estadisticas' }}" style="color: #ffffff; text-align: center; text-decoration: none;">Ver más detalles</a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+{% endblock %}
+{% block unsuscribe %}
+    <td align="center" bgcolor="#dddddd" style="padding: 30px 20px 30px 20px; font-family: Arial, sans-serif;">
+        <table bgcolor="#bbbbbb" border="0" cellspacing="0" cellpadding="0" class="buttonwrapper">
+            <tr>
+                <td align="center" height="50" style=" padding: 0 25px 0 25px; font-family: Arial, sans-serif; font-size: 16px; font-weight: bold;" class="button">
+                    <a href="{{ scheme~'://'~host~'/mailing/disable/'~persona }}" style="color: #ffffff; text-align: center; text-decoration: none;">Dejar de recibir</a>
+                </td>
+            </tr>
+        </table>
+    </td>
+{% endblock %}
