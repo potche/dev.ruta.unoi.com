@@ -153,6 +153,9 @@
                                 </li>
                                 <li id="profile">
                                 </li>
+                                <li class="text-center">
+                                    <a href="#" class="btn btn-sm btn-primary" onclick="updateProfile('{{ app.session.get('personIdS') }}')"> <i class="fa fa-refresh fa-spin pull-right" aria-hidden="true"></i> Actualizar perfil</a>
+                                </li>
                                 <li class="dropdown-header text-center">
                                     {% if app.session.get('mailing') == 1 %}
                                         <i id="currentMailing" class="fa fa-check-circle text-success"></i>
@@ -372,6 +375,16 @@
             //--- Evento para mostar el video de Bienvenida al sistema
             function showVideo(){
                 $('#videoWellcome').modal();
+            }
+            //solicitud para actualizar perfil
+            function updateProfile(personId){
+                $.ajax({
+                    type: "GET",
+                    url: "http://dev.ruta.unoi.com/app_dev.php/api/v0/profile/"+personId,
+                    success: function (result) {
+                        console.log(result);
+                    }
+                });
             }
         </script>
             <script>$(function(){ NotifStatus.init('/mailing/setstatus'); });</script>
