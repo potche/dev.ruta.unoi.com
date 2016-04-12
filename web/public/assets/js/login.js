@@ -357,13 +357,31 @@ function enviaEmail(base_path, mailOrig, personId, code, name){
         email = mailOrig;
     }
 
-    $.post( base_path+"/forwardMail", { email: email, personId: personId, code: code, name: name })
-        .done(function( data ) {
-            $('#enviaCorreo').html('Reenviar');
-            $('#successM').modal();
-            $('.titleSuccessM').html('Validaci&oacute;n de correo');
-            $('.bodySuccessM').html('Se te ha enviado el c&oacute;digo a tu correo, recuerda revisar en los correos no deseados');
-        });
+    var uri = base_path+"/api/v0/catalog/validUniqueMail/"+email;
+
+    $.ajax({
+        url: uri,
+        dataType: 'json',
+        success: function (results) {
+            if(results.status == '1'){
+                $.post( base_path+"/forwardMail", { email: email, personId: personId, code: code, name: name })
+                    .done(function( data ) {
+                        $('#enviaCorreo').html('Reenviar');
+                        $('#successM').modal();
+                        $('.titleSuccessM').html('Validaci&oacute;n de correo');
+                        $('.bodySuccessM').html('Se te ha enviado el c&oacute;digo a tu correo, recuerda revisar en los correos no deseados');
+                    });
+            }else{
+                $('#successM').modal();
+                $('.titleSuccessM').html('Validaci&oacute;n de correo');
+                $('.bodySuccessM').html('<h4>El correo <b>'+email+'</b> ya esta registrado por un usuario en el sistema, por favor ingrese otro, ya que el correo debe de ser único. </h4>');
+                $('#email').val('');
+                $("#enviaCorreo").prop('disabled', true);
+            }
+
+        }
+    });
+
 };
 
 function checkCode(base_path){
