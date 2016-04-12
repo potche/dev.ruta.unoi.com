@@ -116,4 +116,24 @@ class APICatalogoController extends Controller{
         return $_schoolId;
     }
 
+    /**
+     * @Route("/validUniqueMail/{email}")
+     * busca que el mail que tiene el usuario no lo tenga otro usuario
+     */
+    public function validUniqueMailAction($email) {
+        $em = $this->getDoctrine()->getManager();
+        $Person = $em->getRepository('UNOEvaluacionesBundle:Person')->findOneBy(array('email' => $email));
+        if ($Person) {
+            #si existe el mail, por lo que hay q pedirle q ingrece otro
+            $status = array("status" => 0);
+        }else{
+            $status = array("status" => 1);
+        }
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($status);
+        return $response;
+    }
+
 }
