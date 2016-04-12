@@ -25,7 +25,7 @@
             <!-- The themes stylesheet of this template (for using specific theme color in individual elements - must included last) -->
             <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/themes/modern.css">
             <script src="https://staticmx.unoi.com/global/js/vendor/modernizr-respond.min.js"></script>
-            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
             <link rel="stylesheet" href="{{ asset('public/assets/css/bootstrap-tour.min.css') }}">
             <!-- END Stylesheets -->
 
@@ -149,11 +149,11 @@
                             </span>
                             <ul class="dropdown-menu dropdown-custom dropdown-menu-right">
                                 <li id="profile-header" class="dropdown-header text-center">
-                                    Perfil
+                                    <i class="fa fa-male" aria-hidden="true"></i> Perfil
                                 </li>
                                 <li id="profile">
                                 </li>
-                                <li class="text-center">
+                                <li id="uProfile" class="text-center hidden">
                                     <a href="#" class="btn btn-sm btn-primary" onclick="updateProfile('{{ app.session.get('personIdS') }}')"> <i class="fa fa-refresh fa-spin pull-right" aria-hidden="true"></i> Actualizar perfil</a>
                                 </li>
                                 <li class="dropdown-header text-center">
@@ -292,6 +292,55 @@
     </div>
     <!-- END Modal loading -->
 
+    <!-- Modal loading -->
+    <div id="loadingProfile" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-body bg-primary text-center">
+                    <h4 class="modal-title"><i class="fa fa-refresh fa-spin"></i> Actualizando perfil, <strong>por favor espere...</strong> <i class="fa fa-universal-access" aria-hidden="true"></i></h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal loading -->
+
+    <!-- Modal relogin -->
+    <div id="relogin" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog ">
+            <div class="modal-content">
+
+                <div class="modal-body" style="background: #4689dc; color: #FFFFFF;">
+                    <div class="row">
+                        <div class="col-md-5 text-center">
+                            <img src="{{ asset('public/assets/images/login/logoUno.png') }}" alt="avatar" style="width: 50%;">
+                        </div>
+                        <div class="col-md-7">
+                            <table>
+                                <tr>
+                                    <td style="text-align: left">
+                                        <h2>Plataforma de Diagnóstico Institucional <span id="version"></span></h2>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sx-12">
+                            <div class="text-center" style="padding: 5% 0;">
+                                <h1>Tu Perfil se ha actualizado, ahora re-inicia sesión para ver los cambios</h1>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background: #4689dc; color: #FFFFFF;">
+                    <a href="{{ path('logout') }}" type="button" class="btn btn-default" >Aceptar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal relogin -->
 
     <!-- Scroll to top link, initialized in js/app.js - scrollToTop() -->
     <a href="#" id="to-top"><i class="fa fa-angle-double-up"></i></a>
@@ -378,11 +427,13 @@
             }
             //solicitud para actualizar perfil
             function updateProfile(personId){
+                $('#loadingProfile').modal();
                 $.ajax({
                     type: "GET",
                     url: "http://dev.ruta.unoi.com/app_dev.php/api/v0/profile/"+personId,
                     success: function (result) {
-                        console.log(result);
+                        $('#loadingProfile').modal('hide');
+                        $('#relogin').modal();
                     }
                 });
             }
