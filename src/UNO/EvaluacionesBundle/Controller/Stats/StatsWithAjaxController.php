@@ -93,7 +93,7 @@ class StatsWithAjaxController extends Controller{
         }else{
 
             return $this->redirectToRoute('login',array(
-                'redirect' => 'estadistica',
+                'redirect' => 'estadisticas',
                 'withParams' => 'none'
             ));
         }

@@ -45,7 +45,7 @@ evaluaciones:
     defaults: {_controller: UNOEvaluacionesBundle:Evaluaciones/Admin:index}
 estadisticas:
     path:   /estadisticas
-    defaults: {_controller: UNOEvaluacionesBundle:Stats\Stats:index}
+    defaults: {_controller: UNOEvaluacionesBundle:Stats/StatsWithAjax:index}
 ajaxstats:
     path:     /ajax/stats
     defaults: { _controller: UNOEvaluacionesBundle:Stats\AjaxStats:index }
