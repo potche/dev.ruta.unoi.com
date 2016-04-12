@@ -44,13 +44,21 @@ function parseInfo(privilege, profile){
     var profileArray = $.parseJSON(profile);
     var profileStr = '';
     //console.log(profileArray);
+    var adminBase = false;
     $.each(profileArray, function(i, item) {
-
+        if(profileArray[i].profileid === 1){
+            adminBase = true;
+        }
         profileStr +=   "<a href=''>"+
                             "<i class='fa fa-user fa-fw pull-right'></i>"+
                                 profileArray[i].profile+
                         "</a>";
     });
+
+    if(!adminBase){
+        $('#uProfile').removeClass('hidden');
+    }
+
     //console.log(profileStr);
     //var profileStrF = profileStr.replace(/ \| +$/g, '');
     $('#profile').html(profileStr);
