@@ -288,87 +288,91 @@ function graphs(graphAPI, serverAPI, nameSchool, surveyName){
                 });
             }
 
-            //tabla de usuarios
-            var row = '';
-            $.each( results.byPerson, function( key, value ) {
-                var realizadas = 0;
-                var pendientes = 0;
-                //console.log( value.nombre );
-                $.each( value.evaluaciones, function( key2, value2 ) {
-                    //console.log( value2.estatus );
-                    if(value2.estatus == '4'){
-                        realizadas++;
-                    }else{
-                        pendientes++;
+            if(!results.Error){
+                //tabla de usuarios
+                var row = '';
+                $.each( results.byPerson, function( key, value ) {
+                    var realizadas = 0;
+                    var pendientes = 0;
+                    //console.log( value.nombre );
+                    $.each( value.evaluaciones, function( key2, value2 ) {
+                        //console.log( value2.estatus );
+                        if(value2.estatus == '4'){
+                            realizadas++;
+                        }else{
+                            pendientes++;
+                        }
+                    });
+
+
+                    var total = (realizadas+pendientes);
+                    var avance = (realizadas/total)*100;
+                    if( avance == 0 ){
+                        var eventoDetalle = '';
+                        var colorEye = '#d4d4d4';
+                        var colorAlert = 'style="color: red;"';
+                    }else {
+                        var eventoDetalle = 'onclick="detalle( ' + value.persona + ', \'' + value.nombre + '\', ' + avance.toFixed(2) + ', \''+surveyName+'\')" style="cursor: pointer"';
+                        var colorEye = '#46B7BF'
+                        var colorAlert = '';
                     }
+                    row += '<tr '+eventoDetalle+'>'+
+                        '<td class="text-center">'+
+                        '<img src="/public/assets/images/login/icon_niño1.png" alt="avatar" class="img-circle">'+
+                        '</td>'+
+                        '<td>'+
+                        value.nombre+
+                        '<div class="progress progress-striped active">'+
+                        '<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:'+avance+'%;">'+
+                        avance.toFixed(2)+' %'+
+                        '</div>'+
+                        '</div>'+
+                        '</td>'+
+                        '<td class="text-center" '+colorAlert+' >'+
+                        realizadas +'/'+ total+
+                        '</td>'+
+                        '<td class="text-center"><i class="fa fa-eye fa-2x" style="color: '+colorEye+'"> </i></td>'+
+                        '</tr>';
                 });
 
-
-                var total = (realizadas+pendientes);
-                var avance = (realizadas/total)*100;
-                if( avance == 0 ){
-                    var eventoDetalle = '';
-                    var colorEye = '#d4d4d4';
-                    var colorAlert = 'style="color: red;"';
-                }else {
-                    var eventoDetalle = 'onclick="detalle( ' + value.persona + ', \'' + value.nombre + '\', ' + avance.toFixed(2) + ', \''+surveyName+'\')" style="cursor: pointer"';
-                    var colorEye = '#46B7BF'
-                    var colorAlert = '';
-                }
-                row += '<tr '+eventoDetalle+'>'+
-                    '<td class="text-center">'+
-                    '<img src="/public/assets/images/login/icon_niño1.png" alt="avatar" class="img-circle">'+
-                    '</td>'+
-                    '<td>'+
-                    value.nombre+
-                    '<div class="progress progress-striped active">'+
-                    '<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:'+avance+'%;">'+
-                    avance.toFixed(2)+' %'+
+                var divUsers =
+                    '<div id="block-resumenT" class="block" >'+
+                    '<div class="block-title">'+
+                    '<div class="block-options pull-right">'+
+                    '<a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>'+
+                    '</div>'+
+                    '<h2>Tabla de avance <strong>'+nameSchool+'</strong></h2>'+
+                    '</div>'+
+                    '<div class="row">'+
+                    '<div class="block-content">'+
+                    '<div class="col-sm-12">'+
+                    '<small class="visible-xs"><i class="fa fa-info-circle text-primary"></i> Puedes navegar horizontalmente para ver las demás columnas</small>'+
+                    '<div class="table-responsive">'+
+                    '<p>Estad&iacute;sticas de usuarios que han realizado por lo menos una evaluación. <em>Da <b>click</b> sobre un usuario para ver su detalle</em></p>'+
+                    '<table id="userList-datatable" class="table table-vcenter table-condensed table-bordered">'+
+                    '<thead>'+
+                    '<tr>'+
+                    '<th style="width: 150px;" class="text-center"><i class="fa fa-users"></i></th>'+
+                    '<th>Nombre</th>'+
+                    '<th style="width: 150px;" class="text-center">Progreso</th>'+
+                    '<th class="text-center">Detalle</th>'+
+                    '</tr>'+
+                    '</thead>'+
+                    '<tbody>'+
+                    row+
+                    '</tbody>'+
+                    '</table>'+
+                    '<br/>'+
                     '</div>'+
                     '</div>'+
-                    '</td>'+
-                    '<td class="text-center" '+colorAlert+' >'+
-                    realizadas +'/'+ total+
-                    '</td>'+
-                    '<td class="text-center"><i class="fa fa-eye fa-2x" style="color: '+colorEye+'"> </i></td>'+
-                    '</tr>';
-            });
-
-            var divUsers =
-                '<div id="block-resumenT" class="block" >'+
-                '<div class="block-title">'+
-                '<div class="block-options pull-right">'+
-                '<a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>'+
-                '</div>'+
-                '<h2>Tabla de avance <strong>'+nameSchool+'</strong></h2>'+
-                '</div>'+
-                '<div class="row">'+
-                '<div class="block-content">'+
-                '<div class="col-sm-12">'+
-                '<small class="visible-xs"><i class="fa fa-info-circle text-primary"></i> Puedes navegar horizontalmente para ver las demás columnas</small>'+
-                '<div class="table-responsive">'+
-                '<p>Estad&iacute;sticas de usuarios que han realizado por lo menos una evaluación. <em>Da <b>click</b> sobre un usuario para ver su detalle</em></p>'+
-                '<table id="userList-datatable" class="table table-vcenter table-condensed table-bordered">'+
-                '<thead>'+
-                '<tr>'+
-                '<th style="width: 150px;" class="text-center"><i class="fa fa-users"></i></th>'+
-                '<th>Nombre</th>'+
-                '<th style="width: 150px;" class="text-center">Progreso</th>'+
-                '<th class="text-center">Detalle</th>'+
-                '</tr>'+
-                '</thead>'+
-                '<tbody>'+
-                row+
-                '</tbody>'+
-                '</table>'+
-                '<br/>'+
-                '</div>'+
-                '</div>'+
-                '</div>'+
-                '</div>'+
-                '</div>';
-            $('#userList').html(divUsers);
-            TablesDatatables.init();
+                    '</div>'+
+                    '</div>'+
+                    '</div>';
+                $('#userList').html(divUsers);
+                TablesDatatables.init();
+            }else{
+                $('#userList').html('');
+            }
         }
     });
 }
