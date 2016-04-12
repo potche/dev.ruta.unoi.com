@@ -306,36 +306,18 @@
 
     <!-- Modal relogin -->
     <div id="relogin" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
-        <div class="modal-dialog ">
+        <div class="modal-dialog modal-sm">
             <div class="modal-content">
-
-                <div class="modal-body" style="background: #4689dc; color: #FFFFFF;">
-                    <div class="row">
-                        <div class="col-md-5 text-center">
-                            <img src="{{ asset('public/assets/images/login/logoUno.png') }}" alt="avatar" style="width: 50%;">
-                        </div>
-                        <div class="col-md-7">
-                            <table>
-                                <tr>
-                                    <td style="text-align: left">
-                                        <h2>Plataforma de Diagnóstico Institucional <span id="version"></span></h2>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sx-12">
-                            <div class="text-center" style="padding: 5% 0;">
-                                <h1>Tu Perfil se ha actualizado, ahora re-inicia sesión para ver los cambios</h1>
-                            </div>
-
-                        </div>
+                <div class="modal-header bg-success">
+                    <h4 class="modal-title"><i class="fa fa-universal-access" aria-hidden="true"></i> Perfil</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center" style="padding: 5% 0;">
+                        <span>Tu Perfil se ha actualizado, ahora re-inicia sesión para ver los cambios</span>
                     </div>
                 </div>
-                <div class="modal-footer" style="background: #4689dc; color: #FFFFFF;">
-                    <a href="{{ path('logout') }}" type="button" class="btn btn-default" >Aceptar</a>
+                <div class="modal-footer" >
+                    <a href="{{ path('logout') }}" type="button" class="btn btn-primary" >Aceptar</a>
                 </div>
             </div>
         </div>

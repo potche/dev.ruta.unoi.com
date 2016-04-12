@@ -49,6 +49,8 @@ function pieGrl(jsonTotalResponsePie, nameSchool, nameSurvey) {
             chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();
         }
     );
+
+    chartGrl.reflow();
 }
 
 //---------------------------------------------
@@ -112,6 +114,8 @@ function columnGrl(jsonTotalResponseColumn, nameSchool, nameSurvey) {
             chart.renderer.image('https://staticmx.unoi.com/global/logos/color_trans_sin.png', 10, 0, 50, 50).add();
         }
     );
+
+    chartColoumnGrl.reflow();
 }
 
 
