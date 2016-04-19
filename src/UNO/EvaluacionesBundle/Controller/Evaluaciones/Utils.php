@@ -101,4 +101,9 @@ class Utils{
             'compliance' => $compliancePercentage,
         );
     }
+
+    public static function isMailRegexValid($mailString){
+
+        return filter_var($mailString,FILTER_VALIDATE_EMAIL);
+    }
 }

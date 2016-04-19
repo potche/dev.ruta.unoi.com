@@ -5,8 +5,8 @@
 {% block body %}
     <tr>
         <td bgcolor="#ffffff" style="padding: 20px 40px 10px 40px; color: #555555; font-family: Arial, sans-serif; font-size: 20px; line-height: 30px; text-align: justify;">
-            <b>Hola, {{ name }}</b><br>
-            <p>Te presentamos un resumen semanal de tus acciones en la Plataforma de Diagnóstico Institucional de UNOi:</p>
+            <b>Hola, {{ name|title }}</b><br>
+            <p>Te presentamos un resumen semanal de tus acciones y las de tu colegio <b>{{ escuela|title }}</b> en la Plataforma de Diagnóstico Institucional de UNOi.</p><br>
         </td>
     </tr>
     <tr>
@@ -22,7 +22,7 @@
                         <img src="{{ scheme~'://'~host~asset('public/assets/images/mail/progress.png') }}" width="48" height="48" style="display: inline-block;" />
                     </td>
                     <td height="96" style="color: #555555; font-family: Arial, sans-serif; font-size: 20px; text-align: left;">
-                        Avance de mi colegio: <b>{{ progressSchool['global']['Stats'][0]['y'] ~ '%' }}</b>
+                        <b>Avance de mi colegio:</b> <b style="color: #1ec1b8;">{{ progressSchool['global']['Stats'][0]['y'] ~ '%' }}</b>
                     </td>
                 </tr>
                 <tr>
@@ -30,7 +30,7 @@
                         <img src="{{ scheme~'://'~host~asset('public/assets/images/mail/pending.png') }}" width="48" height="48" style="display: inline-block;" />
                     </td>
                     <td height="96" style="color: #555555; font-family: Arial, sans-serif; font-size: 20px; text-align: left;">
-                        Avance pendiente de mi colegio: <b>{{ progressSchool['global']['Stats'][1]['y'] ~ '%' }}</b>
+                        <b>Avance pendiente de mi colegio:</b> <b style="color: #1ec1b8;">{{ progressSchool['global']['Stats'][1]['y'] ~ '%' }}</b>
                     </td>
                 </tr>
                 <tr>
@@ -38,7 +38,7 @@
                         <img src="{{ scheme~'://'~host~asset('public/assets/images/mail/personalProgress.png') }}" width="48" height="48" style="display: inline-block;" />
                     </td>
                     <td height="96" style="color: #555555; font-family: Arial, sans-serif; font-size: 20px; text-align: left;">
-                        Avance personal: <b>{{ progressPerson['global']['Stats'][0]['y'] ~ '%' }}</b>
+                        <b>Avance personal:</b> <b style="color: #1ec1b8;">{{ progressPerson['global']['Stats'][0]['y'] ~ '%' }}</b>
                     </td>
                 </tr>
             </table>
@@ -52,14 +52,17 @@
     </tr>
     <tr>
         <td bgcolor="#ffffff" style="padding: 10px 40px 0 40px;">
-            <table align="left" style="padding: 10px; width: 100%; text-align: left;">
+            <table align="left" style="padding: 10px 0 10px 0; width: 100%; text-align: left;">
                 {% for survey in progressSchool['bySurvey']%}
-                    <tr>
-                        <td height="48" style="color: #555555; font-family: Arial, sans-serif; font-size: 15px; border-bottom: 1px solid #ddd;">
-                            <b>{{ survey['Titulo'] }}</b>
+                    <tr style="padding: 10px 0 10px 0; margin-bottom: 10px; margin-top: 10px;">
+                        <td height="54" style="color: #555555; font-family: Arial, sans-serif; font-size: 15px;">
+                            <b>{{ survey['Titulo'] }}</b><br><br>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="{{ survey['Stats'][0]['y'] }}" aria-valuemin="0" aria-valuemax="100" style="width:{{ survey['Stats'][0]['y']}}% "></div>
+                            </div>
                         </td>
-                        <td height="48" style="color: #555555; font-family: Arial, sans-serif; font-size: 17px; border-bottom: 1px solid #ddd; text-align: center;">
-                            {{ survey['Stats'][0]['y'] ~ '%' }}
+                        <td height="54" style="color: #555555; font-family: Arial, sans-serif; font-size: 15px; text-align: center;">
+                            <br>{{ survey['Stats'][0]['y'] ~ '%'}}
                         </td>
                     </tr>
                 {% endfor %}
@@ -81,8 +84,8 @@
                             <td height="48" style="color: #555555; font-family: Arial, sans-serif; font-size: 15px; border-bottom: 1px solid #ddd;">
                                 <b>{{ pend['nombre'] | title }}</b>
                             </td>
-                            <td height="48" style="color: #555555; font-family: Arial, sans-serif; font-size: 15px; border-bottom: 1px solid #ddd; text-align: center;">
-                                {{ (100-pend['avance']) ~ '%' }}
+                            <td height="48" style="color: #555555; font-family: Arial, sans-serif; font-size: 15px; border-bottom: 1px solid #ddd; text-align: left;">
+                                {{ (100-pend['avance'])|round(1,'floor') ~ '%' }}
                             </td>
                             <td height="48" style="color: #555555; font-family: Arial, sans-serif; font-size: 15px; border-bottom: 1px solid #ddd; margin-left: 10px">
                                 {{ pend['email'] ? pend['email'] : 'No disponible' }}
