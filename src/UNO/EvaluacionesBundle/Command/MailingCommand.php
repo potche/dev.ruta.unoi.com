@@ -13,6 +13,8 @@ DEFINE('TAG_WEEKLY_BRIEF', 'semanal-diagnostico-dir');
 //Tag utilizado en Mandrill para notificaciones diarias
 DEFINE('TAG_DAILY_NOTIFICATION', 'diario-diagnostico-notif');
 //Número de días antes de hoy que se revisan para buscar nuevas evaluaciones
+DEFINE('TAG_PENDING_NOTIFICATION', 'semanal-diagnostico-pendiente');
+//Número de días antes de hoy que se revisan para buscar nuevas evaluaciones
 DEFINE('DAYS_SINCE_NEW_SURVEY','1');
 //Parámetros requeridos por el comando para reconocimiento de host y rutas de recursos
 DEFINE('HOST','dev.ruta.unoi.com');
@@ -33,7 +35,7 @@ DEFINE('SCHEME','http');
 class MailingCommand extends ContainerAwareCommand{
 
     /**
-     * Configuración del comando
+     * Configuración del comando para envío de correos
      */
     protected function configure()
     {
@@ -76,6 +78,11 @@ class MailingCommand extends ContainerAwareCommand{
                 $this->weeklyBriefDirector($output);
                 break;
 
+            case 'testing':
+
+                $this->weeklyPendingReminder($output);
+                break;
+
             default:
 
                 $output->writeln('Opción no disponible');
@@ -86,7 +93,7 @@ class MailingCommand extends ContainerAwareCommand{
     }
 
     /**
-     * Construcción de resumen diario de nuevas notificaciones para cualquier usuario registrado
+     * Construcción de notificaciones diarias de nuevas evaluaciones para cualquier usuario registrado
      *
      * @param $output "Objeto de Comando de Symfony para mandar a consola el resultado de ejecución"
      */
@@ -154,6 +161,7 @@ class MailingCommand extends ContainerAwareCommand{
                         array(
                             'persona' => $d['persona'],
                             'name' => $d['nombre'],
+                            'escuela' => $d['escuela'],
                             'top5' => $top5,
                             'progressSchool' => $progressSchool,
                             'progressPerson' => $progressPerson,
@@ -169,6 +177,41 @@ class MailingCommand extends ContainerAwareCommand{
 
                     $output->writeln("El contacto ".$d['nombre']." carece de E-mail, no se ha enviado nada");
                 }
+            }
+        }
+    }
+
+    /**
+     *
+     * Mensaje de notificación de progreso pendiente
+     *
+     * @param $output "Objeto de salida de mensajes"
+     */
+
+    protected function weeklyPendingReminder($output){
+
+        $persons = $this->obtenPendientes();
+
+        if(!$persons || isset($persons['Error'])){
+
+            $output->writeln('No se han encontrado destinatarios para el envío de esta notificación');
+        }
+        else{
+
+            foreach($persons as $p){
+
+                $mesg = $this->buildMessage(
+                    'Notificación de progreso pendiente',
+                    'UNOEvaluacionesBundle:Notifications:pendingNotification.html.twig',
+                    array(
+                        'persona' => $p,
+                        'host' => HOST,
+                        'scheme' => SCHEME
+                    ),
+                    $p['email'],
+                    TAG_PENDING_NOTIFICATION);
+
+                $output->writeln("Se envió ".$mesg." mensaje a ".$p['nombre']." : ".$p['email']);
             }
         }
     }
@@ -193,7 +236,7 @@ class MailingCommand extends ContainerAwareCommand{
 
         $message = \Swift_Message::newInstance()
             ->setSubject($title.' '.$sendDate)
-            ->setFrom(array('noreplymx@unoi.com' => 'Diagnóstico UNOi (DEMO)'))
+            ->setFrom(array('noreplymx@unoi.com' => 'Diagnóstico Institucional UNOi'))
             ->setTo($recipient)
             ->setBody(
                 $this->getContainer()->get('templating')->render($view, $params),
@@ -206,25 +249,23 @@ class MailingCommand extends ContainerAwareCommand{
     }
 
     /**
-     * Obtención de personas con perfil de director y que tengan habilitado el envío de notificaciones
+     * Llamada a endpoint para obtención de directores
      * @return mixed "Devuelve un arreglo con los directores encontrados"
      */
 
     private function obtenDirectores(){
 
-        $em = $this->getContainer()->get('doctrine')->getManager();
-        $qb = $em->createQueryBuilder();
+        return json_decode(file_get_contents($this->getContainer()->get('router')->generate('APINotificationsPrincipals',array(),true), false), true);
+    }
 
-        $directores = $qb->select("p.personid as persona, p.email as email, CONCAT(p.name,' ',p.surname) as nombre, s.schoolid as idescuela, s.school as escuela")
-            ->from('UNOEvaluacionesBundle:School','s')
-            ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.schoolid = s.schoolid')
-            ->innerJoin('UNOEvaluacionesBundle:Profile','pr','WITH','ps.profileid = pr.profileid AND pr.profilecode = :profile')
-            ->innerJoin('UNOEvaluacionesBundle:Person','p','WITH','p.personid = ps.personid AND p.mailing = 1')
-            ->setParameter('profile', 'DIR')
-            ->groupBy('p.personid')
-            ->getQuery()
-            ->getResult();
+    /**
+     *
+     * Llamada a endpoint para obtención de personas con progreso pendiente
+     * @return mixed "Devuelve el resultado de la llamada"
+     */
 
-        return $directores;
+    private function obtenPendientes(){
+
+        return json_decode(file_get_contents($this->getContainer()->get('router')->generate('APINotificationsPendingPersons',array(),true), false), true);
     }
 }
