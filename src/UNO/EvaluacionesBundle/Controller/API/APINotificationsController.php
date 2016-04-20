@@ -166,7 +166,7 @@ class APINotificationsController extends Controller
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 
-        /*$all = $qb->select("p.personid as persona, p.email as email, CONCAT(p.name,' ',p.surname) as nombre, COUNT(DISTINCT(l.surveySurveyid)) as respondidas, COUNT(DISTINCT (sxp.surveySurveyid)) AS esperadas, (COUNT(DISTINCT(l.surveySurveyid))/COUNT(DISTINCT (sxp.surveySurveyid))*100) AS perc")
+        $all = $qb->select("p.personid as persona, p.email as email, CONCAT(p.name,' ',p.surname) as nombre, COUNT(DISTINCT(l.surveySurveyid)) as respondidas, COUNT(DISTINCT (sxp.surveySurveyid)) AS esperadas, (COUNT(DISTINCT(l.surveySurveyid))/COUNT(DISTINCT (sxp.surveySurveyid))*100) AS perc")
             ->from('UNOEvaluacionesBundle:Surveyxprofile','sxp')
             ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.profileid = sxp.profileProfileid AND ps.schoollevelid = sxp.schoollevelid')
             ->innerJoin('UNOEvaluacionesBundle:Person','p','WITH','p.personid = ps.personid')
@@ -176,19 +176,7 @@ class APINotificationsController extends Controller
             ->add('having', 'perc < 100')
             ->add('orderBy', 'perc')
             ->getQuery()
-            ->getResult();*/
-
-        $all = array();
-
-        array_push($all,array(
-            'persona' => 3882669,
-            'email' => 'bovarbj90@gmail.com',
-            'nombre' => 'Julio Bravo',
-            'respondidas' => 3,
-            'esperadas' => 9,
-            'perc' => 33.3333
-
-        ));
+            ->getResult();
 
         return $all ? $this->removeInvalidItems($all) : APIUtils::getErrorResponse('404');
     }
@@ -204,7 +192,7 @@ class APINotificationsController extends Controller
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 
-        /*$principals = $qb->select("p.personid as persona, p.email as email, CONCAT(p.name,' ',p.surname) as nombre, s.schoolid as idescuela, s.school as escuela")
+        $principals = $qb->select("p.personid as persona, p.email as email, CONCAT(p.name,' ',p.surname) as nombre, s.schoolid as idescuela, s.school as escuela")
             ->from('UNOEvaluacionesBundle:School','s')
             ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.schoolid = s.schoolid')
             ->innerJoin('UNOEvaluacionesBundle:Profile','pr','WITH','ps.profileid = pr.profileid AND pr.profilecode = :profile')
@@ -213,17 +201,7 @@ class APINotificationsController extends Controller
             ->setParameter('profile', 'DIR')
             ->groupBy('p.personid')
             ->getQuery()
-            ->getResult();*/
-
-        $principals = array();
-
-        array_push($principals,array(
-            'persona' => 3882669,
-            'email' => 'bovarbj90@gmail.com',
-            'nombre' => 'Julio Bravo',
-            'idescuela' => 3902,
-            'escuela' => 'SOLUCIONES DIGITALES UNO'
-        ));
+            ->getResult();
 
         return $principals ? $this->removeInvalidItems($principals): APIUtils::getErrorResponse('404');
     }
