@@ -338,7 +338,7 @@ function graphs(graphAPI, serverAPI, nameSchool, surveyName){
                                 row += '</tr>';
 
                             });
-                            //$('#divContentDetalle').html(div);
+                            $('#divContentDetalle').html(div);
 
                             var divDetalle =
                                 '<div class="table-responsive">' +
@@ -689,3 +689,16 @@ var TablesDatatables3 = function() {
         }
     };
 }();
+
+
+$('#divContentSchool').click(function(){
+    $('#schoolIdFrm').val('');
+    $('#divContentSchool').hide();
+    $('#divSchool').show();
+});
+
+$('#divContentSurvey').click(function(){
+    $('#surveyIdFrm').val('');
+    $('#divContentSurvey').hide();
+    $('#divSurvey').show();
+});

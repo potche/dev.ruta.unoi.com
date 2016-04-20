@@ -580,3 +580,10 @@ var TablesDatatables3 = function() {
         }
     };
 }();
+
+
+$('#divContentSurvey').click(function(){
+    $('#surveyIdFrm').val('');
+    $('#divContentSurvey').hide();
+    $('#divSurvey').show();
+});
