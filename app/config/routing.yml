@@ -251,6 +251,14 @@ APINotificationsTopPersons:
   defaults: {_controller: UNOEvaluacionesBundle:API/APINotifications:toppersonsbyschol}
   requirements:
               schoolid: \d+
+APINotificationsPendingPersons:
+  path: /api/v0/notifications/generalPending
+  defaults: {_controller: UNOEvaluacionesBundle:API/APINotifications:generalpending}
+  methods: [GET]
+APINotificationsPrincipals:
+  path: /api/v0/notifications/principals
+  defaults: {_controller: UNOEvaluacionesBundle:API/APINotifications:principals}
+  methods: [GET]
 APIDetailBySurvey:
   path: /api/v0/result/detail/{surveyId}/{schoolId}
   defaults: {_controller: UNOEvaluacionesBundle:API/APIDetailBySurvey:detail}

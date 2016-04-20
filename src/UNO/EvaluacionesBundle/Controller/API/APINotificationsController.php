@@ -12,6 +12,7 @@ namespace UNO\EvaluacionesBundle\Controller\API;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use UNO\EvaluacionesBundle\Controller\Evaluaciones\Utils;
 
 /**
  * Class APINotificationsController
@@ -55,6 +56,38 @@ class APINotificationsController extends Controller
 
         $response = new JsonResponse();
         $response->setData($this->getTop5BySchool($schoolid));
+        return $response;
+    }
+
+    /**
+     *
+     * Obtención de las personas que tienen progreso incompleto de evaluaciones
+     *
+     * @param Request $request
+     * @return JsonResponse
+     * @throws \Exception
+     */
+
+    public function generalpendingAction(Request $request){
+
+        $response = new JsonResponse();
+        $response->setData($this->getGeneralPending());
+        return $response;
+    }
+
+    /**
+     *
+     * Obtención de directores para el resúmen semanal
+     *
+     * @param Request $request
+     * @return JsonResponse
+     * @throws \Exception
+     */
+
+    public function principalsAction(Request $request){
+
+        $response = new JsonResponse();
+        $response->setData($this->getPrincipals());
         return $response;
     }
 
@@ -124,6 +157,56 @@ class APINotificationsController extends Controller
     }
 
     /**
+     * Obtiene los usuarios con progreso pendiente que estén activos en el sistema y que tengan habilitadas las notificaciones
+     * @return array
+     */
+
+    protected function getGeneralPending(){
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $all = $qb->select("p.personid as persona, p.email as email, CONCAT(p.name,' ',p.surname) as nombre, COUNT(DISTINCT(l.surveySurveyid)) as respondidas, COUNT(DISTINCT (sxp.surveySurveyid)) AS esperadas, (COUNT(DISTINCT(l.surveySurveyid))/COUNT(DISTINCT (sxp.surveySurveyid))*100) AS perc")
+            ->from('UNOEvaluacionesBundle:Surveyxprofile','sxp')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.profileid = sxp.profileProfileid AND ps.schoollevelid = sxp.schoollevelid')
+            ->innerJoin('UNOEvaluacionesBundle:Person','p','WITH','p.personid = ps.personid')
+            ->leftJoin('UNOEvaluacionesBundle:Log','l','WITH','l.personPersonid = p.personid AND sxp.surveySurveyid = l.surveySurveyid')
+            ->groupBy('p.personid')
+            ->where('p.mailing = 1 AND p.active = 1')
+            ->add('having', 'perc < 100')
+            ->add('orderBy', 'perc')
+            ->getQuery()
+            ->getResult();
+
+        return $all ? $this->removeInvalidItems($all) : APIUtils::getErrorResponse('404');
+    }
+
+    /**
+     *
+     * Obtener directores activos y con notificaciones activas de todos los colegios registrados.
+     * @return mixed
+     */
+
+    protected function getPrincipals(){
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $principals = $qb->select("p.personid as persona, p.email as email, CONCAT(p.name,' ',p.surname) as nombre, s.schoolid as idescuela, s.school as escuela")
+            ->from('UNOEvaluacionesBundle:School','s')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','ps','WITH','ps.schoolid = s.schoolid')
+            ->innerJoin('UNOEvaluacionesBundle:Profile','pr','WITH','ps.profileid = pr.profileid AND pr.profilecode = :profile')
+            ->innerJoin('UNOEvaluacionesBundle:Person','p','WITH','p.personid = ps.personid AND p.mailing = 1')
+            ->where('p.mailing = 1 AND p.active = 1')
+            ->setParameter('profile', 'DIR')
+            ->groupBy('p.personid')
+            ->getQuery()
+            ->getResult();
+
+        return $principals ? $this->removeInvalidItems($principals): APIUtils::getErrorResponse('404');
+    }
+
+    /**
      * Método interno auxiliar para parsear un arreglo que contiene las personas y sus nuevas evaluaciones
      *
      * @param $all
@@ -147,6 +230,14 @@ class APINotificationsController extends Controller
         }
         return $parsedArray;
     }
+
+    /**
+     *
+     * Tratamiento para los usuarios que han respondido o no todas sus evaluaciones
+     *
+     * @param $all
+     * @return array
+     */
 
     private function parseForTop($all){
 
@@ -185,5 +276,26 @@ class APINotificationsController extends Controller
         });
 
         return array('pendiente'=>$pending,'terminado'=>$top);
+    }
+
+    /**
+     *
+     * Función para remover de la lista a usuarios que no tienen correo electrónico
+     *
+     * @param $items
+     * @return mixed
+     */
+
+    private function removeInvalidItems($items){
+
+        foreach($items as $k => $item){
+
+            if(!Utils::isMailRegexValid($item['email'])){
+
+                unset($item[$k]);
+            }
+        }
+
+        return $items;
     }
 }
