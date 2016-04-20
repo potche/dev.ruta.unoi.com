@@ -229,6 +229,10 @@
                     <h3 class="widget-content-light">Coaches <strong>UNOi</strong></h3>
                 </div>
                 <div class="widget-extra-full ">
+                    <div style="padding: 11px 10px 19px;">
+                        <span style="color: #777777;"><i class="fa fa-info-circle text-primary" aria-hidden="true"></i> <em>En esta sección puedes Filtrar por zona y Seleccionar un rango de fechas para saber cuantos coaches han ingresado en esa cantidad de tiempo.</em></span>
+                    </div>
+
                     <form class="form-horizontal">
                         <div class="form-group">
                             <label for="optionZone" class="col-sm-1 control-label">Zonas:</label>
@@ -247,8 +251,8 @@
                                     </fieldset>
 
 
-                                    <div class="col-sm-10">
-                                        <input class="form-control" type="range" id="rangeinput" min="1" max="30" value="7" onchange="sendRange(this.value);" />
+                                    <div class="col-sm-9">
+                                        <input type="text" id="slider-hor" name="slider-hor" class="form-control input-slider" data-slider-min="1" data-slider-max="30" data-slider-step="1" data-slider-value="7" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="show" onchange="sendRange($('#slider-hor').slider('getValue'));">
                                     </div>
                                 </div>
                             </div>
@@ -350,12 +354,16 @@
                                     '<tbody>'+
                                         '<option>Todas</option>';
                         $.each(json, function (index, value) {
-                            var d = value['lastLogin'].date;
+                            var d = value['lastLogin'].date.split(' ');
+
+                            var dateArray = d[0].split("-");
+                            var timeArray = d[1].split(":");
+
                             var monthNames = [
-                                "Ene", "Feb", "Mar","Apr", "May", "Jun", "Jul","Ago", "Sep", "Oct", "Nov", "Dic"
+                                "Ene", "Feb", "Mar","Abr", "May", "Jun", "Jul","Ago", "Sep", "Oct", "Nov", "Dic"
                             ];
 
-                            var date = new Date(d);
+                            var date = new Date(dateArray[0],dateArray[1]-1,dateArray[2],timeArray[0],timeArray[1],timeArray[2]);
                             var day = date.getDate();
                             var monthIndex = date.getMonth();
                             var year = date.getFullYear();
