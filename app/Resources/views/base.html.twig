@@ -292,7 +292,7 @@
     </div>
     <!-- END Modal loading -->
 
-    <!-- Modal loading -->
+    <!-- Modal loadingProfile -->
     <div id="loadingProfile" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
         <div class="modal-dialog modal-md">
             <div class="modal-content">
@@ -302,7 +302,7 @@
             </div>
         </div>
     </div>
-    <!-- END Modal loading -->
+    <!-- END Modal loadingProfile -->
 
     <!-- Modal relogin -->
     <div id="relogin" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
@@ -323,6 +323,57 @@
         </div>
     </div>
     <!-- END Modal relogin -->
+
+    <!-- Modal Assigned -->
+    <div id="assigned" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h4 class="modal-title"><i class="fa fa-info-circle" aria-hidden="true"></i> <strong>Blaa blaa blaa blaa!</strong></h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Grado</th>
+                                    <th>Grupo</th>
+                                    <th>Programa</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <select id="val_gradp" name="val_grado" class="form-control" required>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="val_grupo" name="val_grupo" class="form-control input-typeaheadGroup" autocomplete="off" placeholder="Grupos..." required>
+                                    </td>
+                                    <td>
+                                        <select id="val_programa" name="val_programa" class="form-control" required>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <submit type="submit" class="btn btn-sm btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"></i> Añadir</submit>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <hr/>
+                    <div class="row">
+                        <div class="col-md-12">
+                            hola
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal Assigned -->
 
     <!-- Scroll to top link, initialized in js/app.js - scrollToTop() -->
     <a href="#" id="to-top"><i class="fa fa-angle-double-up"></i></a>
@@ -351,6 +402,7 @@
         <script src="{{ asset('public/assets/js/tour.js')}}"></script>
         <script src="{{ asset('public/assets/js/base.js')}}"></script>
         <script src="{{ asset('public/assets/js/tourStatus.js')}}"></script>
+        <script src="{{ asset('public/assets/js/assignedWizard.js')}}"></script>
 
         <script>
 
@@ -361,6 +413,8 @@
 
             //--- obtiene los Json de session
             $(document).ready(function() {
+
+                assigned("{{ app.session.get('personIdS') | raw}}");
 
                 parseInfo('{{ app.session.get('privilegeS') | raw }}', '{{ app.session.get('profileS') | raw }}');
                 var versionArray = $.parseJSON('{{ app.session.get('versionS') | raw }}');
@@ -412,7 +466,7 @@
                 $('#loadingProfile').modal();
                 $.ajax({
                     type: "GET",
-                    url: "http://dev.ruta.unoi.com/app_dev.php/api/v0/profile/"+personId,
+                    url:"/api/v0/profile/"+personId,
                     success: function (result) {
                         $('#loadingProfile').modal('hide');
                         $('#relogin').modal();
@@ -420,79 +474,81 @@
                 });
             }
         </script>
-            <script>$(function(){ NotifStatus.init('/mailing/setstatus'); });</script>
-            <script>$(function(){
+        <script>$(function(){ AssignedWizard.init(); });</script>
 
-                    var tourEnabled = '{{ app.session.get('tourEnabled') }}';
-                    var name = '{{ app.session.get('nameS') }}';
+        <script>$(function(){ NotifStatus.init('/mailing/setstatus'); });</script>
+        <script>$(function(){
 
-                    var steps = [
-                        {
-                            path: "/inicio",
-                            animation: "true",
-                            element: "#page-content",
-                            title: "<i class='fa fa-bell'></i> ¡Hola, "+name+"!",
-                            content: "Te damos la bienvenida a tu Plataforma de Diagnóstico Institucional, regálanos un minuto y descubre las novedades de esta versión",
-                            placement: "top",
-                            backdrop: true
-                        },
-                        {
-                            animation: "true",
-                            element: "#menuInicio",
-                            title: "<i class='fa fa-bars'></i> Menú de opciones",
-                            content: "Estas son todas las secciones que puedes visitar en tu Plataforma de Diagnóstico Institucional",
-                            placement: "top",
-                            backdrop: true
-                        },
-                        {
-                            animation: "true",
-                            element: "#sidebar-trigger",
-                            title: "<i class='fa fa-bars'></i> Lista de opciones",
-                            content: "De igual manera, también puedes ver tus opciones aquí",
-                            placement: "right",
-                            backdrop: false,
-                            onShow: function(tour){
+                var tourEnabled = '{{ app.session.get('tourEnabled') }}';
+                var name = '{{ app.session.get('nameS') }}';
 
-                                App.sidebar('toggle-sidebar');
-                            }
-                        },
-                        {
-                            animation: "true",
-                            element: "#separator-usuario",
-                            title: "<i class='fa fa-user'></i> Tu menú",
-                            content: "Ahora puedes sincronizar tus perfiles de usuario con los del LMS haciendo click en Actualizar Perfil, ver opciones de tu cuenta e información acerca del sistema.",
-                            placement: "left",
-                            backdrop: false,
-                            onShown: function(tour){
+                var steps = [
+                    {
+                        path: "/inicio",
+                        animation: "true",
+                        element: "#page-content",
+                        title: "<i class='fa fa-bell'></i> ¡Hola, "+name+"!",
+                        content: "Te damos la bienvenida a tu Plataforma de Diagnóstico Institucional, regálanos un minuto y descubre las novedades de esta versión",
+                        placement: "top",
+                        backdrop: true
+                    },
+                    {
+                        animation: "true",
+                        element: "#menuInicio",
+                        title: "<i class='fa fa-bars'></i> Menú de opciones",
+                        content: "Estas son todas las secciones que puedes visitar en tu Plataforma de Diagnóstico Institucional",
+                        placement: "top",
+                        backdrop: true
+                    },
+                    {
+                        animation: "true",
+                        element: "#sidebar-trigger",
+                        title: "<i class='fa fa-bars'></i> Lista de opciones",
+                        content: "De igual manera, también puedes ver tus opciones aquí",
+                        placement: "right",
+                        backdrop: false,
+                        onShow: function(tour){
 
-                                $("#listusuario").attr("class","dropdown open");
-                            }
-                        },
-                        {
-                            animation: "true",
-                            element: "#page-content",
-                            title: "<i class='fa fa-pie-chart'></i> Panel de inicio",
-                            content: "Este es tu panel de inicio. Aquí podrás ver las estadísticas más relevantes sobre tu proceso de diagnóstico.",
-                            placement: "left",
-                            backdrop: true
-                        },
-                        {
-                            animation: "true",
-                            element: "#ayuda-btn",
-                            title: "<i class='fa fa-question-circle'></i> Centro de ayuda",
-                            content: "Ahora puedes apoyarte de videotutoriales diseñados para ayudarte a utilizar esta plataforma.",
-                            placement: "left",
-                            backdrop: true,
-                            onShown: function(tour){
-
-                                TourStatus.init('/tour/setstatus','{{ app.session.get('personIdS') }}','0');
-                            }
+                            App.sidebar('toggle-sidebar');
                         }
-                    ];
+                    },
+                    {
+                        animation: "true",
+                        element: "#separator-usuario",
+                        title: "<i class='fa fa-user'></i> Tu menú",
+                        content: "Ahora puedes sincronizar tus perfiles de usuario con los del LMS haciendo click en Actualizar Perfil, ver opciones de tu cuenta e información acerca del sistema.",
+                        placement: "left",
+                        backdrop: false,
+                        onShown: function(tour){
 
-                    TourInicio.init('/tour/setstatus','{{ app.session.get('personIdS') }}',steps,'{{ app.session.get('tourEnabled') }}');
-                });
-            </script>
+                            $("#listusuario").attr("class","dropdown open");
+                        }
+                    },
+                    {
+                        animation: "true",
+                        element: "#page-content",
+                        title: "<i class='fa fa-pie-chart'></i> Panel de inicio",
+                        content: "Este es tu panel de inicio. Aquí podrás ver las estadísticas más relevantes sobre tu proceso de diagnóstico.",
+                        placement: "left",
+                        backdrop: true
+                    },
+                    {
+                        animation: "true",
+                        element: "#ayuda-btn",
+                        title: "<i class='fa fa-question-circle'></i> Centro de ayuda",
+                        content: "Ahora puedes apoyarte de videotutoriales diseñados para ayudarte a utilizar esta plataforma.",
+                        placement: "left",
+                        backdrop: true,
+                        onShown: function(tour){
+
+                            TourStatus.init('/tour/setstatus','{{ app.session.get('personIdS') }}','0');
+                        }
+                    }
+                ];
+
+                TourInicio.init('/tour/setstatus','{{ app.session.get('personIdS') }}',steps,'{{ app.session.get('tourEnabled') }}');
+            });
+        </script>
 
     {% endblock %}
 

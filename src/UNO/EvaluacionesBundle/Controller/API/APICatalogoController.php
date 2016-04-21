@@ -136,4 +136,124 @@ class APICatalogoController extends Controller{
         return $response;
     }
 
+    /**
+     * @Route("/programs")
+     */
+    public function programAction(){
+
+        $result = $this->getResQueryProgram();
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * obtiene una lista con los programas
+     * la almacena en el atributo $this->_program
+     */
+    private function getResQueryProgram() {
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        return $qb->select("CP.programId, CP.nameProgram")
+            ->from('UNOEvaluacionesBundle:Cprogram','CP')
+            ->getQuery()
+            ->getResult();
+
+    }
+
+    /**
+     * @Route("/grades")
+     */
+    public function gradeAction(){
+
+        $result = $this->getResQueryGrade();
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * obtiene una lista con los grados
+     */
+    private function getResQueryGrade() {
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        return $qb->select("CG.gradeId, CG.nameGrade")
+            ->from('UNOEvaluacionesBundle:Cgrade','CG')
+            ->getQuery()
+            ->getResult();
+
+    }
+
+    /**
+     * @Route("/groups")
+     */
+    public function groupAction(){
+
+        $result = $this->getResQueryGroup();
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * obtiene una lista con los grupos
+     */
+    private function getResQueryGroup() {
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $groupIdArray = array();
+
+        $_groupId = $qb->select("concat(CG.groupId, '-' ,CG.nameGroup) as g")
+            ->from('UNOEvaluacionesBundle:Cgroup','CG')
+            ->getQuery()
+            ->getResult();
+
+        foreach($_groupId as $value){
+            array_push($groupIdArray, $value['g']);
+        }
+
+        return $groupIdArray;
+    }
+
+    /**
+     * @Route("/personAssigned/{personId}")
+     */
+    public function personAssignedAction($personId){
+
+        $result = $this->getResQuerypersonAssigned($personId);
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * Valida si el usuario tiene asignado grupo y grado
+     */
+    private function getResQueryPersonAssigned($personId) {
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        return $qb->select("PA.personAssignedId, PA.schoolLevelId, PA.gradeId, PA.programId, PA.personId")
+            ->from('UNOEvaluacionesBundle:Personassigned','PA')
+            ->where('PA.personId = :personId')
+            ->setParameter('personId', $personId)
+            ->getQuery()
+            ->getResult();
+    }
 }
