@@ -166,11 +166,11 @@ class APICatalogoController extends Controller{
     }
 
     /**
-     * @Route("/grades")
+     * @Route("/grades/{schoolLevelId}")
      */
-    public function gradeAction(){
+    public function gradeAction($schoolLevelId){
 
-        $result = $this->getResQueryGrade();
+        $result = $this->getResQueryGrade($schoolLevelId);
 
         #-----envia la respuesta en JSON-----#
         $response = new JsonResponse();
@@ -182,12 +182,14 @@ class APICatalogoController extends Controller{
     /**
      * obtiene una lista con los grados
      */
-    private function getResQueryGrade() {
+    private function getResQueryGrade($schoolLevelId) {
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 
         return $qb->select("CG.gradeId, CG.nameGrade")
             ->from('UNOEvaluacionesBundle:Cgrade','CG')
+            ->where("CG.schoolLevelId in ($schoolLevelId)")
+            ->orderBy('CG.schoolLevelId')
             ->getQuery()
             ->getResult();
 
@@ -216,13 +218,13 @@ class APICatalogoController extends Controller{
 
         $groupIdArray = array();
 
-        $_groupId = $qb->select("concat(CG.groupId, '-' ,CG.nameGroup) as g")
+        $_groupId = $qb->select("CG.groupId")
             ->from('UNOEvaluacionesBundle:Cgroup','CG')
             ->getQuery()
             ->getResult();
 
         foreach($_groupId as $value){
-            array_push($groupIdArray, $value['g']);
+            array_push($groupIdArray, $value['groupId']);
         }
 
         return $groupIdArray;
@@ -249,10 +251,47 @@ class APICatalogoController extends Controller{
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 
-        return $qb->select("PA.personAssignedId, PA.schoolLevelId, PA.gradeId, PA.programId, PA.personId")
+        return $qb->select("PA.personAssignedId, SL.schoollevel, CG.nameGrade, Cg.groupId, CP.nameProgram")
             ->from('UNOEvaluacionesBundle:Personassigned','PA')
+            ->innerjoin('UNOEvaluacionesBundle:Schoollevel','SL','WITH', 'PA.schoolLevelId = SL.schoollevelid')
+            ->innerjoin('UNOEvaluacionesBundle:Cgrade','CG','WITH', 'PA.gradeId = CG.gradeId')
+            ->innerjoin('UNOEvaluacionesBundle:Cgroup','Cg','WITH', 'PA.groupId = Cg.groupId')
+            ->innerjoin('UNOEvaluacionesBundle:Cprogram','CP','WITH', 'PA.programId = CP.programId')
             ->where('PA.personId = :personId')
             ->setParameter('personId', $personId)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @Route("/personProfile/{personId}")
+     */
+    public function personProfileAction($personId){
+
+        $result = $this->getResQuerypersonProfile($personId);
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * @return string
+     * obtiene el Id del schoolLevel(kinder, primaria, secundaria) si es profesor
+     */
+    private function getResQuerypersonProfile($personId){
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+        return $qb->select('PS.schoollevelid, SL.schoollevel, CASE WHEN (PA.personAssignedId IS NULL) THEN false ELSE true END as Ok ')
+            ->from('UNOEvaluacionesBundle:Personschool', 'PS')
+            ->innerJoin('UNOEvaluacionesBundle:Schoollevel','SL','WITH', 'PS.schoollevelid = SL.schoollevelid')
+            ->leftJoin('UNOEvaluacionesBundle:Personassigned','PA','WITH', 'PS.personid = PA.personId AND PS.schoollevelid = PA.schoolLevelId')
+            ->where('PS.personid = :personId')
+            ->andWhere('PS.profileid = 18')
+            ->setParameter('personId', $personId)
+            ->groupBy('PS.schoollevelid')
             ->getQuery()
             ->getResult();
     }

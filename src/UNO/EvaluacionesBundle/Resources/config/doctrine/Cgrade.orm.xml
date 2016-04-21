@@ -14,5 +14,10 @@
         <option name="fixed"/>
       </options>
     </field>
+    <field name="schoolLevelId" type="integer" column="schoolLevelId" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
   </entity>
 </doctrine-mapping>

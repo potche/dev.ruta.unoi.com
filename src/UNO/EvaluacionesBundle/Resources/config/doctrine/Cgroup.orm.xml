@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
   <entity name="UNO\EvaluacionesBundle\Entity\Cgroup" table="Cgroup">
-    <id name="groupId" type="integer" column="groupId">
-      <generator strategy="AUTO"/>
+    <id name="groupId" type="string" column="groupId" length="65">
+      <generator strategy="IDENTITY"/>
     </id>
-    <field name="nameGroup" type="string" column="nameGroup" length="65" nullable="false">
-      <options>
-        <option name="fixed"/>
-      </options>
-    </field>
-    <field name="descGroup" type="string" column="descGroup" length="255" nullable="false">
+    <field name="nameGroup" type="string" column="nameGroup" length="255" nullable="false">
       <options>
         <option name="fixed"/>
       </options>
