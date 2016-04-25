@@ -2,22 +2,32 @@
 <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
   <entity name="UNO\EvaluacionesBundle\Entity\Personassigned" table="PersonAssigned">
     <id name="personAssignedId" type="integer" column="personAssignedId">
-      <generator strategy="AUTO"/>
+      <generator strategy="IDENTITY"/>
     </id>
-    <id name="schoolLevelId" type="integer" column="schoolLevelId">
-      <generator strategy="NONE"/>
-    </id>
-    <id name="gradeId" type="string" column="gradeId" length="2">
-      <generator strategy="NONE"/>
-    </id>
-    <id name="groupId" type="integer" column="groupId">
-      <generator strategy="NONE"/>
-    </id>
-    <id name="programId" type="integer" column="programId">
-      <generator strategy="NONE"/>
-    </id>
-    <id name="personId" type="integer" column="personId">
-      <generator strategy="NONE"/>
-    </id>
+    <field name="schoolLevelId" type="integer" column="schoolLevelId">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="gradeId" type="string" column="gradeId" length="2">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="groupId" type="integer" column="groupId">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="programId" type="integer" column="programId">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="personId" type="integer" column="personId">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
   </entity>
 </doctrine-mapping>

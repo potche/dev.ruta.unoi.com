@@ -38,29 +38,140 @@ grupo.change(function(){
 
 function activeButton(){
     if(gradoOk && programaOk && grupoOk){
-        console.log('ok');
         $('#add').removeClass('disabled');
     }else{
-        console.log('booo');
         $('#add').addClass('disabled');
     }
 }
 
-$('#add').click(function () {
+function addAssigned(personIdS) {
+
     var gradoArr = grado.val().split('|');
-    var grupoArr = programa.val().split('|');
-    console.log(gradoArr[1]+' Grupo: '+grupo.val()+' Programa: '+grupoArr[1]);
-});
+
+    $.post( "/api/v0/assigned/add", { schoolLevelId: gradoArr[0], gradeId: gradoArr[1], groupId: grupo.val(), programId: programa.val(), personId: personIdS })
+        .done(function( data ) {
+            if(data.status == 'ok' ){
+                grado.val('');
+                grupo.val('');
+                programa.val('');
+                $('#add').addClass('disabled');
+                getAssigned(personIdS);
+            }
+        })
+        .fail(function(error) {
+            console.log( error );
+        })
+        .always(function() {
+            console.log("addAssigned finished")
+        });
+}
+
+function deleteAssigned($personAssignedId, personIdS) {
+    console.log($personAssignedId);
+
+    $.post( "/api/v0/assigned/remove", { personAssignedId: $personAssignedId })
+        .done(function( data ) {
+            if(data.status == 'ok' ){
+                grupo.val('');
+                grado.val('');
+                programa.val('');
+                $('#add').addClass('disabled');
+                getAssigned(personIdS);
+            }
+        })
+        .fail(function(error) {
+            console.log( error );
+        })
+        .always(function() {
+            console.log("addAssigned finished")
+        });
+
+}
 
 $('#closeAssigned').click(function() {
     $('#divContentAssigned').toggle();
 });
 
+function valGroup(personIdS){
+
+    var $groupId = grupo.val().toUpperCase();
+    $.ajax({
+        type: "JSON",
+        url: "/api/v0/assigned/groups",
+        success: function (resp) {
+            if (resp.length !== 0) {
+                if($.inArray($groupId, resp) !== -1){
+                }else{
+                    addGroup($groupId);
+                }
+
+                addAssigned(personIdS);
+                assignedOk(personIdS);
+            }
+        }
+    });
+
+}
+
+function addGroup($groupId){
+    $.post( "/api/v0/assigned/addGroup", { groupId: $groupId })
+        .done(function( data ) {
+            console.log(data.status);
+            if(data.status === 'ok'){
+                $.ajax({
+                    type: "JSON",
+                    url: "/api/v0/assigned/groups",
+                    success: function (resp) {
+                        if (resp.length !== 0) {
+                            $('.input-typeaheadGroup').typeahead('destroy');
+                            $('.input-typeaheadGroup').typeahead({source: resp});
+                        }
+                    }
+                });
+            }
+        })
+        .fail(function(error) {
+            console.log( error );
+        })
+        .always(function() {
+            console.log("addGroup finished")
+        });
+}
+
+function assignedOk(personIdS){
+    $.ajax({
+        type: "JSON",
+        url: "/api/v0/assigned/personProfile/" + personIdS,
+        success: function (res) {
+            if (res.length !== 0) {
+                var ok = false;
+                $.each(res, function (j, item) {
+                    if (item['Ok'] === '0') {
+                        ok = false;
+                        return false;
+                    }else{
+                        ok = true;
+                    }
+                });
+
+                if(ok === true){
+                    $.post( "/api/v0/assigned/ok", { personId: personIdS })
+                        .done(function( data ) {
+                            if (data.status === 'ok') {
+                                $('#assigned').modal('hide');
+                            }
+                        });
+                }
+            }
+        }
+    });
+}
+
 function assigned(personIdS) {
 
     $.ajax({
         type: "JSON",
-        url: "/api/v0/catalog/personProfile/" + personIdS,
+        url: "/api/v0/assigned/personProfile/" + personIdS,
         success: function (res) {
             if (res.length !== 0) {
                 var level = '';
@@ -74,48 +185,10 @@ function assigned(personIdS) {
                     }
                 });
 
-                $.ajax({
-                    type: "JSON",
-                    url: "/api/v0/catalog/grades/"+schoollevelid.slice(0, -1),
-                    success: function (resp) {
-                        if (resp.length !== 0) {
-                            var grade = '<option value="0">Selecciona un Grado...</option>';
-                            $.each(resp, function (j, item) {
-                                grade += "<option value = '" + item['gradeId'] + "|" + item['nameGrade'] +"'>" +
-                                    item['nameGrade'] +
-                                    "</option>";
-                            });
-                            $('#val_grado').html(grade);
-                        }
-                    }
-                });
+                gradesHTML(schoollevelid.slice(0, -1));
+                groupsHTML();
+                programsHTML();
 
-                $.ajax({
-                    type: "JSON",
-                    url: "/api/v0/catalog/groups",
-                    success: function (resp) {
-                        if (resp.length !== 0) {
-                            $('.input-typeaheadGroup').typeahead({source: resp});
-                        }
-                    }
-                });
-
-                $.ajax({
-                    type: "JSON",
-                    url: "/api/v0/catalog/programs",
-                    success: function (respu) {
-                        if (respu.length !== 0) {
-                            var option = '<option value="0">Selecciona un Programa...</option>';
-                            $.each(respu, function (j, item) {
-                                option += "<option value = '" + item['programId'] + "|"+item['nameProgram'] +"'>" +
-                                    item['nameProgram'] +
-                                    "</option>";
-                            });
-
-                            $('#val_programa').html(option);
-                        }
-                    }
-                });
                 $('#titleAssigned').html(level.slice(0, -2));
                 $('#titleAssignedF').html(levelF.slice(0, -2));
                 getAssigned(personIdS);
@@ -124,16 +197,66 @@ function assigned(personIdS) {
         }
     });
 
-};
+}
+
+function gradesHTML(schoollevelid){
+    $.ajax({
+        type: "JSON",
+        url: "/api/v0/assigned/grades/"+schoollevelid,
+        success: function (resp) {
+            if (resp.length !== 0) {
+                var grade = '<option value="0">Selecciona un Grado...</option>';
+                $.each(resp, function (j, item) {
+                    grade += "<option value = '" + item['schoolLevelId'] +"|" + item['gradeId'] +"'>" +
+                        item['nameGrade'] +
+                        "</option>";
+                });
+                $('#val_grado').html(grade);
+            }
+        }
+    });
+}
+
+function groupsHTML(){
+    $.ajax({
+        type: "JSON",
+        url: "/api/v0/assigned/groups",
+        success: function (resp) {
+
+            if (resp.length !== 0) {
+                $('.input-typeaheadGroup').typeahead({source: resp});
+            }
+        }
+    });
+}
+
+function programsHTML(){
+    $.ajax({
+        type: "JSON",
+        url: "/api/v0/assigned/programs",
+        success: function (respu) {
+            if (respu.length !== 0) {
+                var option = '<option value="0">Selecciona un Programa...</option>';
+                $.each(respu, function (j, item) {
+                    option += "<option value = '" + item['programId'] +"'>" +
+                        item['nameProgram'] +
+                        "</option>";
+                });
+
+                $('#val_programa').html(option);
+            }
+        }
+    });
+}
 
 function getAssigned(personIdS){
     $.ajax({
         type: "JSON",
-        url: "/api/v0/catalog/personAssigned/" + personIdS,
+        url: "/api/v0/assigned/personById/" + personIdS,
         success: function (res) {
             var row = '';
             $.each(res, function (j, item) {
-                row += "<tr><td>"+item['nameGrade'] + "</td><td>"+item['groupId'] + "</td><td>"+item['nameProgram'] + "</td><td><button class='btn btn-danger' value='"+item['personAssignedId'] + "'><i class='fa fa-times'></i></button></td></tr>";
+                row += "<tr><td>"+item['nameGrade'] + "</td><td>"+item['groupId'] + "</td><td>"+item['nameProgram'] + "</td><td><button class='btn btn-danger' onclick='deleteAssigned("+item['personAssignedId'] + ",\""+ personIdS +"\")'><i class='fa fa-times'></i></button></td></tr>";
             });
             $('#rowAssigned').html(row);
         }

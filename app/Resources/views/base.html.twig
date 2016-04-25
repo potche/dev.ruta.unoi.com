@@ -325,10 +325,11 @@
     <!-- END Modal relogin -->
 
     <!-- Modal Assigned -->
-    <div id="assigned" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+    <div id="assigned" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-info">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title"><i class="fa fa-info-circle"></i> Complementa tu Perfil</h4>
                 </div>
 
@@ -360,7 +361,7 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <submit type="submit" class="btn btn-sm btn-primary disabled" id="add" ><i class="fa fa-plus" aria-hidden="true"></i> Añadir</submit>
+                                        <submit type="submit" class="btn btn-sm btn-primary disabled" id="add" onclick="valGroup('{{ app.session.get('personIdS') | raw}}')"><i class="fa fa-plus" aria-hidden="true"></i> Añadir</submit>
                                     </td>
                                 </tr>
                             </tbody>
@@ -437,8 +438,8 @@
 
             //--- obtiene los Json de session
             $(document).ready(function() {
-
-                assigned("{{ app.session.get('personIdS') | raw}}");
+                var personIdS = "{{ app.session.get('personIdS') | raw}}";
+                assigned(personIdS);
 
                 parseInfo('{{ app.session.get('privilegeS') | raw }}', '{{ app.session.get('profileS') | raw }}');
                 var versionArray = $.parseJSON('{{ app.session.get('versionS') | raw }}');

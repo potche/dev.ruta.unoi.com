@@ -1,0 +1,46 @@
+UNO\EvaluacionesBundle\Entity\Personassigned:
+    type: entity
+    table: PersonAssigned
+    id:
+        personAssignedId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            column: personAssignedId
+            generator:
+                strategy: IDENTITY
+    fields:
+        schoolLevelId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: schoolLevelId
+        gradeId:
+            type: string
+            nullable: false
+            options:
+                unsigned: false
+            column: gradeId
+        groupId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: groupId
+        programId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: programId
+        personId:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: personId
+    fields:{}
+    lifecycleCallbacks: {  }

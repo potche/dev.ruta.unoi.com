@@ -17,7 +17,7 @@ class Cgroup
      *
      * @ORM\Column(name="groupId", type="string", length=65)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     private $groupId;
 
@@ -29,11 +29,25 @@ class Cgroup
     private $nameGroup;
 
     /**
+     * Set groupId
+     *
+     * @param string $groupId
+     *
+     * @return Cgroup
+     */
+    public function setGroupId($groupId)
+    {
+        $this->groupId = $groupId;
+
+        return $this;
+    }
+
+    /**
      * Get groupId
      *
-     * @return integer
+     * @return string
      */
-    public function getGorupId()
+    public function getGroupId()
     {
         return $this->groupId;
     }

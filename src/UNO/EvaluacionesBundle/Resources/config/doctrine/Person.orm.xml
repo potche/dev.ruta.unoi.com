@@ -89,6 +89,11 @@
         <option name="default">1</option>
       </options>
     </field>
+    <field name="assigned" type="boolean" column="assigned" nullable="false">
+      <options>
+        <option name="default">0</option>
+      </options>
+    </field>
     <field name="lastLogin" type="datetime" column="lastLogin" nullable="false">
     </field>
   </entity>
