@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Personassigned
  *
- * @ORM\Table(name="Personassigned")
+ * @ORM\Table(name="PersonAssigned")
  * @ORM\Entity
  */
 class Personassigned
@@ -17,7 +17,7 @@ class Personassigned
      *
      * @ORM\Column(name="personAssignedId", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $personAssignedId;
 
@@ -57,7 +57,7 @@ class Personassigned
     private $personId;
 
     /**
-     * Get programId
+     * Get personAssignedId
      *
      * @return integer
      */

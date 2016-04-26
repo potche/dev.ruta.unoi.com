@@ -15,33 +15,39 @@ class Cgroup
     /**
      * @var integer
      *
-     * @ORM\Column(name="groupId", type="integer")
+     * @ORM\Column(name="groupId", type="string", length=65)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     private $groupId;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="nameGroup", type="string", length=65)
+     * @ORM\Column(name="nameGroup", type="string", length=255)
      */
     private $nameGroup;
 
     /**
-     * @var string
+     * Set groupId
      *
-     * @ORM\Column(name="descGroup", type="string", length=255)
+     * @param string $groupId
+     *
+     * @return Cgroup
      */
-    private $descGroup;
+    public function setGroupId($groupId)
+    {
+        $this->groupId = $groupId;
 
+        return $this;
+    }
 
     /**
      * Get groupId
      *
-     * @return integer
+     * @return string
      */
-    public function getGorupId()
+    public function getGroupId()
     {
         return $this->groupId;
     }
@@ -68,30 +74,6 @@ class Cgroup
     public function getNameGroup()
     {
         return $this->nameGroup;
-    }
-
-    /**
-     * Set descGroup
-     *
-     * @param string $descGroup
-     *
-     * @return Cgroup
-     */
-    public function setDescProgram($descGroup)
-    {
-        $this->descGroup = $descGroup;
-
-        return $this;
-    }
-
-    /**
-     * Get descGroup
-     *
-     * @return string
-     */
-    public function getDescGroup()
-    {
-        return $this->descGroup;
     }
 
 }

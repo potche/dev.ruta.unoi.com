@@ -132,6 +132,13 @@ class Person
     private $tourenabled = 1;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="assigned", type="boolean", nullable=false)
+     */
+    private $assigned = 0;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="lastLogin", type="datetime", nullable=false)
@@ -555,6 +562,30 @@ class Person
     public function getTourenabled()
     {
         return $this->tourenabled;
+    }
+
+    /**
+     * Set assigned
+     *
+     * @param boolean $assigned
+     *
+     * @return Person
+     */
+    public function setAssigned($assigned)
+    {
+        $this->assigned = $assigned;
+
+        return $this;
+    }
+
+    /**
+     * Get assigned
+     *
+     * @return boolean
+     */
+    public function getAssigned()
+    {
+        return $this->assigned;
     }
 
     /**

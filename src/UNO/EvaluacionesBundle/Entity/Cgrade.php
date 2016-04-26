@@ -35,6 +35,12 @@ class Cgrade
      */
     private $descGrade;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="schoolLevelId", type="integer")
+     */
+    private $schoolLevelId;
 
     /**
      * Get programId
@@ -92,6 +98,30 @@ class Cgrade
     public function getDescGrade()
     {
         return $this->descGrade;
+    }
+
+    /**
+     * Set schoolLevelId
+     *
+     * @param integer $schoolLevelId
+     *
+     * @return Cgrade
+     */
+    public function setSchoolLevelId($schoolLevelId)
+    {
+        $this->schoolLevelId = $schoolLevelId;
+
+        return $this;
+    }
+
+    /**
+     * Get schoolLevelId
+     *
+     * @return integer
+     */
+    public function getSchoolLevelId()
+    {
+        return $this->schoolLevelId;
     }
 
 }

@@ -325,14 +325,18 @@
     <!-- END Modal relogin -->
 
     <!-- Modal Assigned -->
-    <div id="assigned" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+    <div id="assigned" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-info">
-                    <h4 class="modal-title"><i class="fa fa-info-circle" aria-hidden="true"></i> <strong>Blaa blaa blaa blaa!</strong></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-info-circle"></i> Complementa tu Perfil</h4>
                 </div>
 
                 <div class="modal-body">
+                    <h5 class="modal-title text-justify">Hola {{ app.session.get('nameS') | raw}}, ayúdanos a completar tu perfil, eres profesor de <strong id="titleAssigned"></strong>.</h5>
+                    <h5 class="modal-title"><span class="text-justify">Selecciona los Grados, Grupos y Programas a los que estás asignado para <strong id="titleAssignedF"></strong></h5>
+                    <hr/>
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
@@ -346,7 +350,7 @@
                             <tbody>
                                 <tr>
                                     <td>
-                                        <select id="val_gradp" name="val_grado" class="form-control" required>
+                                        <select id="val_grado" name="val_grado" class="form-control" required>
                                         </select>
                                     </td>
                                     <td>
@@ -357,7 +361,7 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <submit type="submit" class="btn btn-sm btn-primary" id="add"><i class="fa fa-plus" aria-hidden="true"></i> Añadir</submit>
+                                        <submit type="submit" class="btn btn-sm btn-primary disabled" id="add" onclick="valGroup('{{ app.session.get('personIdS') | raw}}')"><i class="fa fa-plus" aria-hidden="true"></i> Añadir</submit>
                                     </td>
                                 </tr>
                             </tbody>
@@ -365,9 +369,30 @@
                     </div>
                     <hr/>
                     <div class="row">
-                        <div class="col-md-12">
-                            hola
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Grado</th>
+                                        <th>Grupo</th>
+                                        <th>Programa</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rowAssigned">
+
+                                </tbody>
+                            </table>
                         </div>
+                        <!-- Success Alert Content
+                        <div id="divContentAssigned" class="col-sm-6" >
+                            <div class="alert alert-success alert-dismissable">
+                                <button id="closeAssigned" type="button" class="close" >&times;</button>
+                                <h4><i class="fa fa-university"></i> <strong><span>Hola</span></strong></h4>
+                            </div>
+                        </div>
+                        <!-- END Success Alert Content -->
+
                     </div>
                 </div>
             </div>
@@ -413,8 +438,8 @@
 
             //--- obtiene los Json de session
             $(document).ready(function() {
-
-                assigned("{{ app.session.get('personIdS') | raw}}");
+                var personIdS = "{{ app.session.get('personIdS') | raw}}";
+                validAssigned(personIdS);
 
                 parseInfo('{{ app.session.get('privilegeS') | raw }}', '{{ app.session.get('profileS') | raw }}');
                 var versionArray = $.parseJSON('{{ app.session.get('versionS') | raw }}');
@@ -474,7 +499,6 @@
                 });
             }
         </script>
-        <script>$(function(){ AssignedWizard.init(); });</script>
 
         <script>$(function(){ NotifStatus.init('/mailing/setstatus'); });</script>
         <script>$(function(){
