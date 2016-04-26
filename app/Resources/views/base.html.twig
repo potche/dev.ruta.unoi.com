@@ -439,7 +439,7 @@
             //--- obtiene los Json de session
             $(document).ready(function() {
                 var personIdS = "{{ app.session.get('personIdS') | raw}}";
-                assigned(personIdS);
+                validAssigned(personIdS);
 
                 parseInfo('{{ app.session.get('privilegeS') | raw }}', '{{ app.session.get('profileS') | raw }}');
                 var versionArray = $.parseJSON('{{ app.session.get('versionS') | raw }}');

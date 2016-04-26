@@ -356,4 +356,45 @@ class APIAssignedController extends Controller{
 
         return $m;
     }
+
+    /**
+     * @Route("/validAssigned")
+     * @Method({"POST"})
+     */
+    public function validAssignedAction(Request $request){
+        $personId = $request->request->get('personId');
+
+        $result = $this->getResQueryValidAssigned($personId);
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * actualiza la bandera en Person
+     */
+    private function getResQueryValidAssigned($personId) {
+
+        $em = $this->getDoctrine()->getManager();
+        $person = $em->getRepository('UNOEvaluacionesBundle:Person')->findOneBy(
+            array('personid' => $personId)
+        );
+
+        if (!$person->getAssigned()) {
+            $m = array(
+                'status' => false
+            );
+        }else{
+            $m = array(
+                'status' => true
+            );
+        }
+
+
+
+        return $m;
+    }
 }
