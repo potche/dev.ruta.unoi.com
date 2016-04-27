@@ -302,6 +302,7 @@ class APIResultsController extends Controller{
                         'orderO' => $value['orderO'],
                         'optionid' => $value['optionid'],
                         'option' => $value['option'],
+                        'answerId' => $value['answerid'],
                         'answer' => $value['answer'],
                         'comment' => $value['comment'],
                         'schoolId' => $value['schoolid'],
@@ -332,6 +333,7 @@ class APIResultsController extends Controller{
                                             if( !empty($valOption['answer']) ){
                                                 array_push($answer, array(
                                                     'optionid' => $valOption['optionid'],
+                                                    'answerId' => $valOption['answerId'],
                                                     'answer' => $valOption['answer'],
                                                     'comment' => $valOption['comment']
                                                 ));
