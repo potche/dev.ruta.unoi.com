@@ -67,6 +67,9 @@
             </div>
 
             <div id="cont-respuestas" class="block-content">
+                <div style="padding: 11px 10px 19px;">
+                    <span style="color: #777777;"><i class="fa fa-info-circle text-primary" aria-hidden="true"></i> <em>Da doble clic sobre una respuesta para editarla.</em></span>
+                </div>
                 <small class="visible-xs"><i class="fa fa-info-circle text-primary"></i> Puedes navegar horizontalmente para ver los demás campos</small>
                 <div class="table-responsive">
                     <table id="tbl-datatable" class="table table-bordered">
@@ -88,6 +91,7 @@
                         </thead>
                         <tbody>
                         {% for result in survey.questions %}
+
                             <tr>
                                 <td class="hidden-sm hidden-xs text-center">
                                     {{ result['orderQ'] }}
@@ -95,10 +99,10 @@
                                 <td class="text-left">
                                     {{ result['question'] }}
                                 </td>
-                                <td class="text-center answer-{{ result['orderQ'] }}" onclick="pop('answer-{{ result['orderQ'] }}')">
+                                <td class="text-center answer-{{ result['answers'][0]['answerId'] }}" style="cursor: pointer" onclick="pop('answer-{{ result['answers'][0]['answerId'] }}')">
                                     {{ result['answers'][0]['answer'] }}
                                 </td>
-                                <td class="text-left">
+                                <td class="text-left comment-{{ result['answers'][0]['answerId'] }}">
                                     {{ result['answers'][0]['comment'] }}
                                 </td>
                             </tr>
@@ -109,6 +113,7 @@
             </div>
         </div>
     </div>
+
     <!-- Popover hidden tittle -->
     <div id="popover-tittle" style="display: none">
         <div class="header text-center" ><h4>Editar Respuesta</h4></div>
@@ -117,21 +122,20 @@
 
     {% for result in survey.questions %}
         <!-- Popover hidden content -->
-        <div id="answer-{{ result['orderQ'] }}" style="display: none">
+        <div id="answer-{{ result['answers'][0]['answerId'] }}" style="display: none">
             Respuesta
-            <select class="form-control">
+            <select id="respuesta-{{ result['answers'][0]['answerId'] }}" class="form-control">
                 <option selected value="Sí">Sí</option>
                 <option value="No">No</option>
                 <option value="No sé">No sé</option>
             </select>
             <br/>
             Comentario
-            <input type="text" class="form-control"/>
+            <input type="text" id="comment-{{ result['answers'][0]['answerId'] }}" class="form-control"/>
 
-            <input type="hidden" id="idsurvey" value="{{ result['orderQ'] }}"/>
             <br/>
             <div class="form-group form-actions">
-                <button type="submit" class="btn btn-sm btn-primary" onclick="updateAnswer('answer-{{ result['orderQ'] }}')"> Aceptar</button>
+                <button type="submit" class="btn btn-sm btn-primary" onclick="updateAnswer('{{ result['answers'][0]['answerId'] }}')"> Aceptar</button>
             </div>
 
         </div>
@@ -158,8 +162,10 @@
         });
 
         function pop(id){
+            $('.popover').not(this).hide();
+
             $("."+id).popover({
-                placement: "top",
+                placement: "right",
                 title: function () {
                     return $('#popover-tittle').html();
                 },
@@ -168,10 +174,29 @@
                     return $('#'+id).html();
                 }
             });
+
         }
 
         function updateAnswer(id){
             console.log(id);
+
+            var res = $('#respuesta-'+id).val();
+            var comment = $('#comment-'+id).val();
+
+            $.post( "/api/v0/answerHistory/add", { answerId: id, answer: res, comment: comment })
+                    .done(function( data ) {
+                        $(".answer-"+id).text(res);
+                        $(".comment-"+id).text(comment);
+
+                        $(".answer-"+id).popover('hide');
+                    })
+                    .fail(function(error) {
+                        console.log( error );
+                    })
+                    .always(function() {
+                        console.log("valid Assigned finished")
+                    });
+
         }
 
     </script>
