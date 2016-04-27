@@ -266,7 +266,6 @@ function getAssigned(personIdS){
 function validAssigned($personIdS){
     $.post( "/api/v0/assigned/validAssigned", { personId: $personIdS })
         .done(function( data ) {
-            console.log(data.status);
             if(data.status === false){
                 assigned($personIdS);
             }

@@ -95,7 +95,7 @@
                                 <td class="text-left">
                                     {{ result['question'] }}
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center answer-{{ result['orderQ'] }}" onclick="pop('answer-{{ result['orderQ'] }}')">
                                     {{ result['answers'][0]['answer'] }}
                                 </td>
                                 <td class="text-left">
@@ -109,7 +109,39 @@
             </div>
         </div>
     </div>
+    <!-- Popover hidden tittle -->
+    <div id="popover-tittle" style="display: none">
+        <div class="header text-center" ><h4>Editar Respuesta</h4></div>
+    </div>
 
+
+    {% for result in survey.questions %}
+        <!-- Popover hidden content -->
+        <div id="answer-{{ result['orderQ'] }}" style="display: none">
+            Respuesta
+            <select class="form-control">
+                <option selected value="Sí">Sí</option>
+                <option value="No">No</option>
+                <option value="No sé">No sé</option>
+            </select>
+            <br/>
+            Comentario
+            <input type="text" class="form-control"/>
+
+            <input type="hidden" id="idsurvey" value="{{ result['orderQ'] }}"/>
+            <br/>
+            <div class="form-group form-actions">
+                <button type="submit" class="btn btn-sm btn-primary" onclick="updateAnswer('answer-{{ result['orderQ'] }}')"> Aceptar</button>
+            </div>
+
+        </div>
+    {% endfor %}
+
+    <style>
+        .popover-title {
+            background: #f7f7f7;
+        }
+    </style>
 
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
@@ -120,4 +152,27 @@
     <script>$(function(){ TablesDatatables.init(); });</script>
     <script>$(function(){ Charts.init('{{ pie_stats|json_encode()|raw }}','{{ bars_stats|json_encode()|raw }}');});</script>
 
+    <script>
+        $(function() {
+
+        });
+
+        function pop(id){
+            $("."+id).popover({
+                placement: "top",
+                title: function () {
+                    return $('#popover-tittle').html();
+                },
+                html: true,
+                content: function () {
+                    return $('#'+id).html();
+                }
+            });
+        }
+
+        function updateAnswer(id){
+            console.log(id);
+        }
+
+    </script>
 {% endblock %}
