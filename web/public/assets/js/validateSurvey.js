@@ -13,7 +13,7 @@ $('#closeSurvey').click(function(){
     setNameSurvey( nameSurvey );
     $('#divSurvey').toggle();
 
-    graphs(graphSchoolAPI+nameSchoolArray[0], serverSchoolAPI+nameSchoolArray[0], nameSchool, nameSurvey);
+    graphs(graphSchoolAPI, serverSchoolAPI, nameSchool, nameSurvey);
     showGraphs();
     $('#block-detalle').hide();
     $('#todo').prop('disabled', true);
@@ -31,7 +31,7 @@ function findFilter(){
         setNameSurvey(nameSurvey);
         $('#divContentSurvey').show();
         $('#block-detalle').show();
-        graphs(graphSurveyAPI+nameSurveyArray[0]+'/school/'+nameSchoolArray[0], serverSurveyAPI+nameSurveyArray[0]+'/school/'+nameSchoolArray[0], nameSchool, nameSurvey);
+        graphs(graphSurveyAPI+nameSurveyArray[0]+schoolLevel, serverSurveyAPI+nameSurveyArray[0]+schoolLevel, nameSchool, nameSurvey);
 
     }
 
@@ -46,7 +46,7 @@ function resetFilter(){
     $('#divSurvey').show();
     setNameSurvey('Todas las Evaluaciones');
     $('#divContentSurvey').hide();
-    graphs(graphSchoolAPI+nameSchoolArray[0], serverSchoolAPI+nameSchoolArray[0], nameSchool, nameSurvey);
+    graphs(graphSchoolAPI, serverSchoolAPI, nameSchool, nameSurvey);
     $('#todo').prop('disabled', true);
 
     $('#block-detalle').hide();
@@ -85,6 +85,7 @@ function hideGraphs(){
 }
 
 function graphs(graphAPI, serverAPI, nameSchool, surveyName){
+
     $( "div.highcharts-container" ).remove();
 
     $('#container').html('<div class="row">'+
