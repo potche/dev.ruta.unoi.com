@@ -190,6 +190,19 @@ APIStatsGlobalBySchoolSurvey:
     requirements:
                 schoolid: \d+
                 surveyid: \d+
+APIStatsGlobalBySchoolLevel:
+    path: /api/v0/stats/global/school/{schoolid}/level/{levelid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:globalbyschoollevel}
+    requirements:
+                schoolid: \d+
+                levelid: \d+
+APIStatsGlobalBySchoolSurveyLevel:
+    path: /api/v0/stats/global/survey/{surveyid}/school/{schoolid}/level/{levelid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:globalbyschoolsurveylevel}
+    requirements:
+                schoolid: \d+
+                surveyid: \d+
+                levelid: \d+
 APIStatsGlobalGeneral:
     path: /api/v0/stats/global
     defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:globalgeneral}
@@ -217,6 +230,13 @@ APIStatsResultsBySchoolRole:
                 schoolid: \d+
                 levelid: \d+
                 profileid: \d+
+APIStatsResultsBySurveySchoolLevel:
+    path: /api/v0/stats/results/survey/{surveyid}/school/{schoolid}/level/{levelid}
+    defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:statsbysurveyschoollevel}
+    requirements:
+                surveyid: \d+
+                schoolid: \d+
+                levelid: \d+
 APIStatsResultsBySurveySchool:
     path: /api/v0/stats/results/survey/{surveyid}/school/{schoolid}
     defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:statsbysurveyschool}

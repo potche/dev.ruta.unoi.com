@@ -60,7 +60,21 @@ class APIStatsresultsController extends Controller {
     public function globalbyschoolsurveyAction(Request $request, $surveyid, $schoolid){
 
         $response = new JsonResponse();
-        $response->setData($this->getCountGlobal($schoolid, $surveyid));
+        $response->setData($this->getCountGlobal($schoolid, $surveyid, null));
+        return $response;
+    }
+
+    public function globalbyschoollevelAction(Request $request, $schoolid, $levelid){
+
+        $response = new JsonResponse();
+        $response->setData($this->getCountGlobal($schoolid, null, $levelid));
+        return $response;
+    }
+
+    public function globalbyschoolsurveylevelAction(Request $request, $surveyid, $schoolid, $levelid){
+
+        $response = new JsonResponse();
+        $response->setData($this->getCountGlobal($schoolid, $surveyid, $levelid));
         return $response;
     }
 
@@ -76,6 +90,14 @@ class APIStatsresultsController extends Controller {
 
         $response = new JsonResponse();
         $response->setData($this->getByParams($schoolid,$surveyid));
+        return $response;
+
+    }
+
+    public function statsbysurveyschoollevelAction(Request $request, $surveyid, $schoolid, $levelid){
+
+        $response = new JsonResponse();
+        $response->setData($this->getByParams($schoolid,$surveyid,null,$levelid));
         return $response;
 
     }
@@ -163,7 +185,7 @@ class APIStatsresultsController extends Controller {
         return $byParams ? $this->parseByParams($byParams) : APIUtils::getErrorResponse('404');
     }
 
-    private function getCountGlobal($schoolId = null, $surveyId = null){
+    private function getCountGlobal($schoolId = null, $surveyId = null, $levelid = null){
 
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQuerybuilder();
@@ -171,6 +193,7 @@ class APIStatsresultsController extends Controller {
         $condition = 'su.surveyid IS NOT NULL';
         $condition = $schoolId != null ? $condition.' AND ps.schoolid = '.$schoolId : $condition;
         $condition = $surveyId != null ? $condition.' AND su.surveyid = '.$surveyId : $condition;
+        $condition = $levelid != null ? $condition.' AND ps.schoollevelid = '.$levelid : $condition;
 
         $bySchool = $qb->select("su.surveyid as id, su.title as titulo, ps.personid as persona, CONCAT(p.name,' ',p.surname) as nombre, COALESCE(a.idaction,0) as estatus, l.date as fecharespuesta, o.option as opcion, COUNT(DISTINCT(ans.answerid)) as resp")
             ->from('UNOEvaluacionesBundle:Surveyxprofile','sxp')
