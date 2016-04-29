@@ -285,6 +285,11 @@ APIDetailBySurvey:
   requirements:
               surveyId: \d+
               schoolId: \d+
+APIDetailSurvey:
+  path: /api/v0/result/detail/{surveyId}
+  defaults: {_controller: UNOEvaluacionesBundle:API/APIDetailBySurvey:detailForAdminGrl}
+  requirements:
+              surveyId: \d+
 ajaxMailingStatus:
     path:   /mailing/setstatus
     defaults: {_controller: UNOEvaluacionesBundle:Notifications/Notifications:mailingstatus}
