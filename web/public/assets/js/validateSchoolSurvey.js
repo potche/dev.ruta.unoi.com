@@ -198,6 +198,129 @@ function graphsAll(serverAPI, nameSchool, surveyName){
         success: function(results){
             pieGrl(results.global, nameSchool, surveyName);
             columnGrl(results.global, nameSchool, surveyName);
+
+            if(surveyName !== "Todas las Evaluaciones"){
+                var surveyArr = surveyName.split('-');
+                var schoolArr = nameSchool.split('-');
+
+                console.log('--------'+detail+surveyArr[0]+"/"+schoolArr[0]);
+
+                $.ajax({
+                    url: detail+surveyArr[0],
+                    dataType: 'json',
+                    success: function (res) {
+                        console.log(res);
+                        /*
+                        if(!res.Error) {
+                            $('#surveyDetalle').html('<div class="row">' +
+                                '<div class="block-content">' +
+                                '<div class="col-sm-12">' +
+
+                                '<div class="text-center">' +
+                                '<button class="btn btn-lg">' +
+                                '<i class="fa fa-refresh fa-spin fa-3x"></i>' +
+                                '<br/>' +
+                                'Cargando, por favor espere...' +
+                                '</button>' +
+                                '<br/>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>');
+
+                            var row = '';
+                            var div = '';
+                            $.each(res.preguntas, function (key, value) {
+                                row +=
+                                    '<tr>' +
+                                    '<td>' + value.orden + '</td>' +
+                                    '<td>' + value.pregunta + '</td>';
+
+                                $.each(value.opciones, function (key2, option) {
+                                    var idD = '_' + value.orden + '_' + option.opcion.replace(/ /g, '_');
+                                    div += '<div class="media" id="' + idD + '">' +
+                                        '<div class="media-body">' +
+                                        '<div class="block">' +
+                                        '<div class="table-responsive">' +
+                                        '<table class="table table-vcenter table-striped">' +
+                                        '<thead><tr><th><i class="fa fa-user"></i> <span>NOMBRE </span></th>' +
+                                        '<th class="hidden-xs"><i class="fa fa-comments-o"></i> <span class="hidden-xs">COMENTARIO </span></th></tr></thead>';
+                                    if (option.personas.length !== 0) {
+                                        row += '<td> <a href="javascript:void(0)" id="' + idD + '" class="detalle">' + option.personas.length + '</a> </td>';
+                                    } else {
+                                        row += '<td>' + option.personas.length + '</td>';
+                                    }
+
+                                    $.each(option.personas, function (key3, person) {
+                                        div += '<tr><td>' + person.nombre + '</td><td class="hidden-xs">' + person.comentario + '</td></tr>';
+                                    });
+                                    div +=
+                                        '</table>' +
+                                        '</div>' +
+                                        '</div>' +
+                                        '</div>' +
+                                        '</div>';
+                                });
+                                row += '</tr>';
+
+                            });
+                            $('#divContentDetalle').html(div);
+
+                            var divDetalle =
+                                '<div class="table-responsive">' +
+                                '<p><em>Detalle de la evaluación.</em></p>' +
+                                '<table id="datatable-detalle" class="table table-vcenter table-condensed table-bordered">' +
+                                '<thead>' +
+                                '<tr>' +
+                                '<th class="text-center">#</th>' +
+                                '<th class="text-center">Indicador</th>' +
+                                '<th class="text-center">' +
+                                '<span><b>Sí</b></span>' +
+                                '</th>' +
+                                '<th class="text-center">' +
+                                '<span><b>No</b></span>' +
+                                '</th>' +
+                                '<th class="text-center">' +
+                                '<span><b>No sé</b></span>' +
+                                '</th>' +
+                                '</tr>' +
+                                '</thead>' +
+                                '<tbody>' +
+                                row +
+                                '</tbody>' +
+                                '</table>' +
+                                '</div>';
+                            $('#surveyDetalle').html(divDetalle);
+
+
+                            $('.detalle').click(function (event) {
+                                var id = event.target.id;
+                                var title = id.split('_');
+                                var valores = [];
+                                $(this).parents("tr").find("td").each(function () {
+                                    valores.push($(this).html());
+                                });
+                                var t = '';
+                                if (title[3]) {
+                                    t = title[2] + ' ' + title[3];
+                                } else {
+                                    t = title[2]
+                                }
+
+                                $('.titleModalDS').html('<em>' + valores[1] + '</em> <strong>"' + t + '"</strong>');
+                                $('.bodyModalDS').html($('div#' + id).html());
+                                $('#detalleSurveyM').modal();
+                            });
+
+                            $('#right').click(function () {
+
+                            });
+                            TablesDatatables3.init();
+                        }
+                        */
+                    }
+                });
+            }
         }
     });
 
@@ -278,9 +401,13 @@ function graphs(graphAPI, serverAPI, nameSchool, surveyName){
                 }
             });
 
+
             if(surveyName !== "Todas las Evaluaciones"){
                 var surveyArr = surveyName.split('-');
                 var schoolArr = nameSchool.split('-');
+
+                console.log('--------'+detail+surveyArr[0]+"/"+schoolArr[0]);
+
                 $.ajax({
                     url: detail+surveyArr[0]+"/"+schoolArr[0],
                     dataType: 'json',
