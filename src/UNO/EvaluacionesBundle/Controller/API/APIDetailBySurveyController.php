@@ -128,7 +128,7 @@ class APIDetailBySurveyController extends Controller{
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQuerybuilder();
 
-        $all = $qb->select("su.surveyid as id, su.title as titulo, qxs.order as ord, q.question as pregunta, o.option as opcion, COUNT(p.personid) as suma")
+        $all = $qb->select("su.surveyid as id, su.title as titulo, qxs.order as ord, q.question as pregunta, o.option as opcion, COUNT(distinct(p.personid)) as suma")
             ->from('UNOEvaluacionesBundle:Survey','su')
             ->leftJoin('UNOEvaluacionesBundle:Questionxsurvey','qxs','WITH','su.surveyid = qxs.surveySurveyid')
             ->leftJoin('UNOEvaluacionesBundle:Question','q','WITH','q.questionid = qxs.questionQuestionid')
