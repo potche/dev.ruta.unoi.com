@@ -185,7 +185,7 @@ class APIStatsresultsController extends Controller {
         return $byParams ? $this->parseByParams($byParams) : APIUtils::getErrorResponse('404');
     }
 
-    private function getCountGlobal($schoolId = null, $surveyId = null, $levelid = null){
+    private function getCountGlobal($schoolId = null, $surveyId = null){
 
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQuerybuilder();
@@ -193,7 +193,6 @@ class APIStatsresultsController extends Controller {
         $condition = 'su.surveyid IS NOT NULL';
         $condition = $schoolId != null ? $condition.' AND ps.schoolid = '.$schoolId : $condition;
         $condition = $surveyId != null ? $condition.' AND su.surveyid = '.$surveyId : $condition;
-        $condition = $levelid != null ? $condition.' AND ps.schoollevelid = '.$levelid : $condition;
 
         $bySchool = $qb->select("su.surveyid as id, su.title as titulo, ps.personid as persona, CONCAT(p.name,' ',p.surname) as nombre, COALESCE(a.idaction,0) as estatus, l.date as fecharespuesta, o.option as opcion, COUNT(DISTINCT(ans.answerid)) as resp")
             ->from('UNOEvaluacionesBundle:Surveyxprofile','sxp')

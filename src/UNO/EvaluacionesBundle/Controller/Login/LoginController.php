@@ -450,6 +450,7 @@ class LoginController extends Controller{
         $session->set('versionS', $this->getVersion());
         $session->set('mailing', $this->_personDB->getMailing());
         $session->set('tourEnabled', $this->_personDB->getTourenabled());
+        $session->set('assignedS', $this->_personDB->getAssigned());
         $this->setCookie();
         $this->setSurveys($this->_personDB->getPersonid(),$session);
         return true;

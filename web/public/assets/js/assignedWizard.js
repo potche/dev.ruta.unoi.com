@@ -62,12 +62,12 @@ function addAssigned(personIdS) {
             console.log( error );
         })
         .always(function() {
-            console.log("addAssigned finished")
+            //console.log("addAssigned finished")
         });
 }
 
 function deleteAssigned($personAssignedId, personIdS) {
-    console.log($personAssignedId);
+    //console.log($personAssignedId);
 
     $.post( "/api/v0/assigned/remove", { personAssignedId: $personAssignedId })
         .done(function( data ) {
@@ -83,7 +83,7 @@ function deleteAssigned($personAssignedId, personIdS) {
             console.log( error );
         })
         .always(function() {
-            console.log("addAssigned finished")
+            //console.log("addAssigned finished")
         });
 
 }
@@ -116,7 +116,7 @@ function valGroup(personIdS){
 function addGroup($groupId){
     $.post( "/api/v0/assigned/addGroup", { groupId: $groupId })
         .done(function( data ) {
-            console.log(data.status);
+            //console.log(data.status);
             if(data.status === 'ok'){
                 $.ajax({
                     type: "JSON",
@@ -134,7 +134,7 @@ function addGroup($groupId){
             console.log( error );
         })
         .always(function() {
-            console.log("addGroup finished")
+            //console.log("addGroup finished")
         });
 }
 
@@ -274,6 +274,6 @@ function validAssigned($personIdS){
             console.log( error );
         })
         .always(function() {
-            console.log("valid Assigned finished")
+            //console.log("valid Assigned finished")
         });
 }
