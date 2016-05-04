@@ -67,7 +67,6 @@ function createDataTableRes(dat){
         console.log(value);
     });
 
-
     dataTable +=
                 '</tbody>'+
             '</table>'+
