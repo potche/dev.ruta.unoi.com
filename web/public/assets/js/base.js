@@ -49,7 +49,7 @@ function parseInfo(privilege, profile){
         if(profileArray[i].profileid === 1){
             adminBase = true;
         }
-        profileStr +=   "<a href=''>"+
+        profileStr +=   "<a>"+
                             "<i class='fa fa-user fa-fw pull-right'></i>"+
                                 profileArray[i].profile+
                         "</a>";

@@ -10,6 +10,33 @@
             </div>
         </div>
 
+        <div id = "block-tareas" class="block">
+            <div class="block-title">
+                <h2><strong>Tareas</strong> a realizar</h2>
+            </div>
+
+            {% for key, task in tasks %}
+                <table id="tbl-tareas-{{ key }}" class="table table-vcenter table-condensed table-bordered">
+                    <thead>
+                    <tr>
+                        <th>
+                            {{ key }}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for subtask in task %}
+                        <tr>
+                            <td>
+                                {{ subtask['question'] }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endfor %}
+        </div>
+
         <div id="block-resumen" class="block">
             <div class="block-title">
                 <div class="block-options pull-right">
@@ -29,33 +56,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div id = "block-tareas" class="block">
-            <div class="block-title">
-                <h2><strong>Tareas</strong> a realizar</h2>
-            </div>
-
-            {% for key, task in tasks %}
-                    <table id="tbl-tareas-{{ key }}" class="table table-vcenter table-condensed table-bordered">
-                        <thead>
-                            <tr>
-                                <th>
-                                    {{ key }}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for subtask in task %}
-                                <tr>
-                                    <td>
-                                        {{ subtask['question'] }}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-            {% endfor %}
         </div>
 
         <div id="block-respuestas" class="block">

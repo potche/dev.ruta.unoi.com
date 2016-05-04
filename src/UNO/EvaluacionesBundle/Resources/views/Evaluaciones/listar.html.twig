@@ -97,16 +97,16 @@
                                         {% if survey['actioncode']  == '0' %}
                                             {% if date(survey['fechacierre']) > date() and survey['activa'] == 1 %}
 
-                                                    <a href="{{ path('responder',{'id': survey['id']}) }}" data-tooltip aria-haspopup="true" data-options="disable_for_touch:true"  title="Responde esta evaluación" class="btn btn-xs btn-success has-tip" style="width: 85px;">Responder</a>
+                                                    <a href="{{ path('responder',{'id': survey['id']}) }}" data-tooltip aria-haspopup="true" data-options="disable_for_touch:true"  title="Responde esta evaluación" class="btn btn-xs btn-success has-tip" style="width: 100px;">Responder</a>
 
                                                 {% elseif date(survey['fechacierre']) < date() or survey['activa'] == 0 %}
 
-                                                    <button data-tooltip aria-haspopup="true" data-options="disable_for_touch:true"  title="La evaluación ya no se encuentra vigente o está inactiva" class="btn btn-xs btn-warning has-tip" style="width: 85px;" disabled>Responder</button>
+                                                    <button data-tooltip aria-haspopup="true" data-options="disable_for_touch:true"  title="La evaluación ya no se encuentra vigente o está inactiva" class="btn btn-xs btn-warning has-tip" style="width: 100px;" disabled>Responder</button>
 
                                             {% endif %}
                                         {% else %}
 
-                                                <a href="{{ path('resumen',{'surveyId': survey['id']}) }}"  data-tooltip aria-haspopup="true" data-options="disable_for_touch:true" title="Ver resumen de tus respuestas" class="btn btn-xs btn-info has-tip" style="width: 85px;">Resumen</a>
+                                                <a href="{{ path('resumen',{'surveyId': survey['id']}) }}"  data-tooltip aria-haspopup="true" data-options="disable_for_touch:true" title="Ver resumen de tus respuestas" class="btn btn-xs btn-info has-tip" style="width: 100px;">Plan de Trabajo</a>
 
                                         {% endif %}
                                     </div>

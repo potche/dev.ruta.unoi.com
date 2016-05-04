@@ -264,8 +264,10 @@ function getAssigned(personIdS){
                     row += "<tr><td>" + item['nameGrade'] + "</td><td>" + item['groupId'] + "</td><td>" + item['nameProgram'] + "</td><td><button class='btn btn-danger' onclick='deleteAssigned(" + item['personAssignedId'] + ",\"" + personIdS + "\")'><i class='fa fa-times'></i></button></td></tr>";
                 });
                 $('#rowAssigned').html(row);
+                $('#inactiveAssigned').addClass('hidden');
             }else{
-                $('#inactiveAssigned').modal();
+                $('#inactiveAssigned').removeClass('hidden');
+                $('#rowAssigned').html('');
                 $.post( "/api/v0/assigned/inactive", { personId: personIdS })
                     .done(function( data ) {
                         if (data.status === 'ok') {
