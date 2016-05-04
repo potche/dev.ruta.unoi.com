@@ -156,6 +156,9 @@
                                 <li id="uProfile" class="text-center hidden">
                                     <a href="#" class="btn btn-sm btn-primary" onclick="updateProfile('{{ app.session.get('personIdS') }}')"> <i class="fa fa-refresh fa-spin pull-right" aria-hidden="true"></i> Actualizar perfil</a>
                                 </li>
+                                <li>
+                                    <a href="#" class="btn btn-sm btn-info" onclick="assigned('{{ app.session.get('personIdS') | raw}}')"> <i class="fa fa-university pull-right" aria-hidden="true"></i> Mis Clases</a>
+                                </li>
                                 <li class="dropdown-header text-center">
                                     {% if app.session.get('mailing') == 1 %}
                                         <i id="currentMailing" class="fa fa-check-circle text-success"></i>
@@ -384,21 +387,32 @@
                                 </tbody>
                             </table>
                         </div>
-                        <!-- Success Alert Content
-                        <div id="divContentAssigned" class="col-sm-6" >
-                            <div class="alert alert-success alert-dismissable">
-                                <button id="closeAssigned" type="button" class="close" >&times;</button>
-                                <h4><i class="fa fa-university"></i> <strong><span>Hola</span></strong></h4>
-                            </div>
-                        </div>
-                        <!-- END Success Alert Content -->
-
                     </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="closeAssigned" class="btn btn-primary disabled" data-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
     </div>
     <!-- END Modal Assigned -->
+
+    <div id="inactiveAssigned" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Peligro</h4>
+                </div>
+                <div class="modal-body">
+                    <h3>Recuerda que debes tener asignada por lo menos una clase de cada nivel</h3>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Aceptar</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 
     <!-- Scroll to top link, initialized in js/app.js - scrollToTop() -->
     <a href="#" id="to-top"><i class="fa fa-angle-double-up"></i></a>
@@ -441,7 +455,7 @@
                 var personIdS = "{{ app.session.get('personIdS') | raw}}";
                 var assignedS = "{{ app.session.get('assignedS')}}";
                 if(assignedS !== "1"){
-                    validAssigned(personIdS);
+                    assigned(personIdS);
                 }
 
                 parseInfo('{{ app.session.get('privilegeS') | raw }}', '{{ app.session.get('profileS') | raw }}');
