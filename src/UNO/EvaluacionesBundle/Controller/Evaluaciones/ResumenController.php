@@ -49,23 +49,12 @@ class ResumenController extends Controller
         $survey = $this->getSurvey($surveyId,$personId);
 
         if(isset($survey['Error'])){
-
             throw new NotFoundHttpException('Resumen no encontrado para esta evaluación');
         }
 
-        $categories = array_unique(array_column($survey['persons'][0]['surveys'][0]['questions'],'category'));
-        $tasks = $this->getTasksByCategory($survey,$categories);
-        $statsbyCat = $this->getStatsByCategory($survey,$categories);
-        $statsbyOpt = $this->getStatsByOptions($surveyId,$personId)['global'];
-
-
         return $this->render('UNOEvaluacionesBundle:Evaluaciones:resumen.html.twig', array(
-
             'survey' => $survey['persons'][0]['surveys'][0],
-            'date' => $survey['persons'][0]['surveys'][0]['answerDate']['date'],
-            'tasks' => $tasks,
-            'pie_stats'=> $statsbyOpt,
-            'bars_stats' => $statsbyCat
+            'date' => $survey['persons'][0]['surveys'][0]['answerDate']['date']
         ));
     }
 
@@ -78,59 +67,5 @@ class ResumenController extends Controller
         ),true),false),true);
     }
 
-    private function getStatsByCategory($survey,$categories){
 
-        $questions = $survey['persons'][0]['surveys'][0]['questions'];
-        $si_serie = array(
-            'name' => 'Sí',
-            'data' => array()
-        );
-        $no_serie = array(
-            'name' => 'No',
-            'data' => array()
-        );
-        $nose_serie = array(
-            'name' => 'No sé',
-            'data' => array()
-        );
-
-        $statsbyCat = array(
-            'categories' => array(),
-            'series' => array(),
-        );
-
-        foreach($categories as $cat) {
-
-            array_push($statsbyCat['categories'],$cat);
-            array_push($si_serie['data'],count(array_filter($questions, function($ar) use($cat){ return ($ar['category'] == $cat AND $ar['answers'][0]['answer'] == 'Sí'); })));
-            array_push($no_serie['data'],count(array_filter($questions, function($ar) use($cat){ return ($ar['category'] == $cat AND $ar['answers'][0]['answer'] == 'No'); })));
-            array_push($nose_serie['data'],count(array_filter($questions, function($ar) use($cat){ return ($ar['category'] == $cat AND !in_array($ar['answers'][0]['answer'],array('No','Sí'))); })));
-        }
-
-        array_push($statsbyCat['series'],$si_serie);
-        array_push($statsbyCat['series'],$no_serie);
-        array_push($statsbyCat['series'],$nose_serie);
-
-        return $statsbyCat;
-    }
-
-    private function getTasksByCategory($survey, $categories) {
-
-        $questions = $survey['persons'][0]['surveys'][0]['questions'];
-
-        $tasks = array();
-        foreach($categories as $cat) {
-
-            $tasks[$cat] = array_filter($questions, function($ar) use($cat){ return ($ar['category'] == $cat AND $ar['answers'][0]['answer'] != 'Sí'); });
-        }
-        return $tasks;
-    }
-
-    private function getStatsByOptions($surveyId, $personId){
-
-        return json_decode(file_get_contents($this->generateUrl('APIStatsResultsBySurveyPerson',array(
-            'surveyid' => $surveyId,
-            'personid' => $personId
-        ),true),false),true);
-    }
 }
