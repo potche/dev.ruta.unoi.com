@@ -10,6 +10,52 @@
             </div>
         </div>
 
+        <div id="block-tareas" class="block">
+            <div class="block-title text-center">
+                <div class="block-options pull-right">
+                    <a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
+                </div>
+                <h2><strong>Tareas</strong> a realizar</h2>
+            </div>
+
+            <div id="cont-tareas" class="block-content">
+                <div style="padding: 11px 10px 19px;">
+                    <span style="color: #777777;"><i class="fa fa-info-circle text-primary" aria-hidden="true"></i> <em>Da doble clic sobre una respuesta para editarla.</em></span>
+                </div>
+                <small class="visible-xs"><i class="fa fa-info-circle text-primary"></i> Puedes navegar horizontalmente para ver los demás campos</small>
+                <div id="table-tareas">
+
+                </div>
+            </div>
+        </div>
+
+        <div id = "block-tareas" class="block">
+            <div class="block-title">
+                <h2><strong>Tareas</strong> a realizar</h2>
+            </div>
+
+            {% for key, task in tasks %}
+                <table id="tbl-tareas-{{ key }}" class="table table-vcenter table-condensed table-bordered">
+                    <thead>
+                    <tr>
+                        <th>
+                            {{ key }}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for subtask in task %}
+                        <tr>
+                            <td>
+                                {{ subtask['question'] }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endfor %}
+        </div>
+
         <div id="block-resumen" class="block">
             <div class="block-title">
                 <div class="block-options pull-right">
@@ -29,33 +75,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div id = "block-tareas" class="block">
-            <div class="block-title">
-                <h2><strong>Tareas</strong> a realizar</h2>
-            </div>
-
-            {% for key, task in tasks %}
-                    <table id="tbl-tareas-{{ key }}" class="table table-vcenter table-condensed table-bordered">
-                        <thead>
-                            <tr>
-                                <th>
-                                    {{ key }}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for subtask in task %}
-                                <tr>
-                                    <td>
-                                        {{ subtask['question'] }}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-            {% endfor %}
         </div>
 
         <div id="block-respuestas" class="block">
@@ -157,9 +176,15 @@
     <script>$(function(){ Charts.init('{{ pie_stats|json_encode()|raw }}','{{ bars_stats|json_encode()|raw }}');});</script>
 
     <script>
-        $(function() {
+        var baseUrl = "{{  app.request.baseurl }}";
+        var uri= "{{  app.request.uri }}";
+        var surveyId = getSurveyId(uri);
+        var personId = "{{ app.session.get('personIdS') | raw}}";
 
+        $(function() {
+            getResume(surveyId, personId);
         });
+
 
         function pop(id){
             $('.popover').not(this).hide();

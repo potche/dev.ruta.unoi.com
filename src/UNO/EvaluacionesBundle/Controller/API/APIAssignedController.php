@@ -340,7 +340,7 @@ class APIAssignedController extends Controller{
         if (!$person) {
             $m = array(
                 'status' => 'error',
-                'message' => 'No product found for id '.$personId
+                'message' => 'No person found for id '.$personId
             );
         }else{
             $person->setAssigned(1);
@@ -358,13 +358,13 @@ class APIAssignedController extends Controller{
     }
 
     /**
-     * @Route("/validAssigned")
+     * @Route("/inactive")
      * @Method({"POST"})
      */
-    public function validAssignedAction(Request $request){
+    public function inactiveAction(Request $request){
         $personId = $request->request->get('personId');
 
-        $result = $this->getResQueryValidAssigned($personId);
+        $result = $this->getResQueryInactive($personId);
 
         #-----envia la respuesta en JSON-----#
         $response = new JsonResponse();
@@ -376,25 +376,29 @@ class APIAssignedController extends Controller{
     /**
      * actualiza la bandera en Person
      */
-    private function getResQueryValidAssigned($personId) {
+    private function getResQueryInactive($personId) {
 
         $em = $this->getDoctrine()->getManager();
         $person = $em->getRepository('UNOEvaluacionesBundle:Person')->findOneBy(
             array('personid' => $personId)
         );
 
-        if (!$person->getAssigned()) {
+        if (!$person) {
             $m = array(
-                'status' => false
+                'status' => 'error',
+                'message' => 'No person found for id '.$personId
             );
         }else{
+            $person->setAssigned(0);
+            $em->flush();
+
             $m = array(
-                'status' => true
+                'status' => 'ok',
+                'message' => 'update personAssigned'
             );
         }
 
-
-
         return $m;
     }
+
 }

@@ -158,7 +158,7 @@ function assignedOk(personIdS){
                     $.post( "/api/v0/assigned/ok", { personId: personIdS })
                         .done(function( data ) {
                             if (data.status === 'ok') {
-                                $('#assigned').modal('hide');
+                                $('#closeAssigned').removeClass('disabled');
                             }
                         });
                 }
@@ -191,6 +191,10 @@ function assigned(personIdS) {
 
                 $('#titleAssigned').html(level.slice(0, -2));
                 $('#titleAssignedF').html(levelF.slice(0, -2));
+
+                if(levelF.slice(0, -2).length === 0){
+                    $('#closeAssigned').removeClass('disabled');
+                }
                 getAssigned(personIdS);
                 $('#assigned').modal();
             }
@@ -254,26 +258,23 @@ function getAssigned(personIdS){
         type: "JSON",
         url: "/api/v0/assigned/personById/" + personIdS,
         success: function (res) {
-            var row = '';
-            $.each(res, function (j, item) {
-                row += "<tr><td>"+item['nameGrade'] + "</td><td>"+item['groupId'] + "</td><td>"+item['nameProgram'] + "</td><td><button class='btn btn-danger' onclick='deleteAssigned("+item['personAssignedId'] + ",\""+ personIdS +"\")'><i class='fa fa-times'></i></button></td></tr>";
-            });
-            $('#rowAssigned').html(row);
+            if(res.length !== 0) {
+                var row = '';
+                $.each(res, function (j, item) {
+                    row += "<tr><td>" + item['nameGrade'] + "</td><td>" + item['groupId'] + "</td><td>" + item['nameProgram'] + "</td><td><button class='btn btn-danger' onclick='deleteAssigned(" + item['personAssignedId'] + ",\"" + personIdS + "\")'><i class='fa fa-times'></i></button></td></tr>";
+                });
+                $('#rowAssigned').html(row);
+                $('#inactiveAssigned').addClass('hidden');
+            }else{
+                $('#inactiveAssigned').removeClass('hidden');
+                $('#rowAssigned').html('');
+                $.post( "/api/v0/assigned/inactive", { personId: personIdS })
+                    .done(function( data ) {
+                        if (data.status === 'ok') {
+                            $('#closeAssigned').addClass('disabled');
+                        }
+                    });
+            }
         }
     });
-}
-
-function validAssigned($personIdS){
-    $.post( "/api/v0/assigned/validAssigned", { personId: $personIdS })
-        .done(function( data ) {
-            if(data.status === false){
-                assigned($personIdS);
-            }
-        })
-        .fail(function(error) {
-            console.log( error );
-        })
-        .always(function() {
-            //console.log("valid Assigned finished")
-        });
 }

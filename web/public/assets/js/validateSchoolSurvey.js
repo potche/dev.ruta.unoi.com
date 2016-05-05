@@ -235,7 +235,7 @@ function graphsAll(serverAPI, nameSchool, surveyName){
                                 '<td>' + value.pregunta + '</td>';
 
                             $.each(value.opciones, function (key2, option) {
-                                row += '<td>' + option.total + '</td>';
+                                row += '<td>' + numberWithCommas(option.total) + '</td>';
                             });
                             row += '</tr>';
 
@@ -396,9 +396,9 @@ function graphs(graphAPI, serverAPI, nameSchool, surveyName){
                                         '<thead><tr><th><i class="fa fa-user"></i> <span>NOMBRE </span></th>' +
                                         '<th class="hidden-xs"><i class="fa fa-comments-o"></i> <span class="hidden-xs">COMENTARIO </span></th></tr></thead>';
                                     if (option.personas.length !== 0) {
-                                        row += '<td> <a href="javascript:void(0)" id="' + idD + '" class="detalle">' + option.personas.length + '</a> </td>';
+                                        row += '<td> <a href="javascript:void(0)" id="' + idD + '" class="detalle">' + numberWithCommas(option.personas.length) + '</a> </td>';
                                     } else {
-                                        row += '<td>' + option.personas.length + '</td>';
+                                        row += '<td>' + numberWithCommas(option.personas.length) + '</td>';
                                     }
 
                                     $.each(option.personas, function (key3, person) {
@@ -778,3 +778,9 @@ $('#divContentSurvey').click(function(){
     $('#divContentSurvey').hide();
     $('#divSurvey').show();
 });
+
+function numberWithCommas(x) {
+    var parts = x.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join(".");
+}
