@@ -1,25 +1,3 @@
-var TablesDatatables = function() {
-
-    return {
-        init: function() {
-
-            /**
-             * Implementación de datatable para la tabla de respuestas
-             */
-
-            App.datatables();
-            $('#tbl-datatable').DataTable({
-                pageLength: -1,
-                lengthMenu: [[10, 20, 30, -1], [10, 20, 30, 'Ver Todo']]
-            });
-
-            $('.dataTables_filter input').attr('placeholder', 'Buscar');
-            $('#tbl-datatable_info').hide();
-        }
-    };
-}();
-
-
 function getResume(surveyId, personId){
 
     $.get( "/api/v0/result/survey/"+surveyId+"/person/"+personId)
@@ -106,7 +84,7 @@ function createDataTableRes(dat){
                     '<td class="hidden-sm hidden-xs text-center">'+orderQ+'</td>'+
                     '<td>'+question+'</td>'+
                     '<td>'+answer+'</td>'+
-                    '<td>'+comment+'</td>'+
+                    '<td>'+escapeHtml(comment)+'</td>'+
                 '</tr>';
         }else{
             //console.log(value.questionId);
@@ -156,10 +134,10 @@ function createDataTableRes(dat){
             dataTableTareas +=
                     '</td>'+
                     '<td>' +
-                        '<span id="'+answerId+'" class="col-xs-9 ">'+comment+'</span>' +
+                        '<span id="'+answerId+'" class="col-xs-9 ">'+escapeHtml(comment)+'</span>' +
                         '<div class="col-xs-3">' +
-                            '<button id="btnE-'+answerId+'" type="button" class="btn btn-alt btn-default pull-right" onclick="editComment(\''+answerId+'\',\''+comment+'\')"><i class="fa fa-pencil" aria-hidden="true"></i></button>' +
-                            '<button id="btnS-'+answerId+'" type="button" class="btn btn-alt btn-default pull-right hidden" onclick="saveComment(\''+answerId+'\',\''+comment+'\')"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>' +
+                            '<button id="btnE-'+answerId+'" type="button" class="btn btn-alt btn-default pull-right" data-toggle="tooltip" data-placement="top" title="Editar comentario" onclick="editComment(\''+answerId+'\',\''+escapeHtml(comment)+'\')"><i class="fa fa-pencil" aria-hidden="true"></i></button>' +
+                            '<button id="btnS-'+answerId+'" type="button" class="btn btn-alt btn-default pull-right hidden" data-toggle="tooltip" data-placement="top" title="Guardar comentario"  onclick="saveComment(\''+answerId+'\',\''+escapeHtml(comment)+'\')"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>' +
                         '</div>' +
                     '</td>'+
                 '</tr>';
@@ -208,7 +186,7 @@ function changeRes(btn, id, answer){
                 $(btn).addClass("active");
 
                 getResume(surveyId, personId);
-                notify.update({'type': 'success', 'message': 'Las <strong>grápficas</strong> han cambiado!', 'progress': 100});
+                notify.update({'type': 'success', 'message': 'Las <strong>gráficas</strong> han cambiado!', 'progress': 100});
             })
             .fail(function(error) {
                 console.log( error );
@@ -224,15 +202,14 @@ function changeRes(btn, id, answer){
 }
 
 function editComment(id, comment){
-    console.log('comment: '+comment);
     $('#btnS-'+id).removeClass('hidden');
     $('#btnE-'+id).addClass('hidden');
 
-    $('#'+id).html('<input type="text" value="'+comment+'" class="form-control"/>');
+    $('#'+id).html('<input type="text" value="'+escapeHtml(comment)+'" class="form-control"/>');
 }
 
 function saveComment(id, comment){
-    var commentNew = $('#'+id).find('input').val();
+    var commentNew = $('#'+id).find('input').val().replace(/'/g,"");
 
     if($.trim(commentNew) !== $.trim(comment)){
         $.post( "/api/v0/answerHistory/addComment", { answerId: id, comment: commentNew })
@@ -244,10 +221,10 @@ function saveComment(id, comment){
                 $('#'+id).text(commentNew);
             })
             .fail(function(error) {
-                console.log( error );
+                //console.log( error );
             })
             .always(function() {
-                console.log("valid Assigned finished")
+                //console.log("valid Assigned finished")
             });
     }else{
         $('#btnE-'+id).removeClass('hidden');
@@ -300,3 +277,17 @@ var ResumenDatatables = function() {
     };
 }();
 
+var entityMap = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': '&quot;',
+    "'": '',
+    "/": '&#x2F;'
+};
+
+function escapeHtml(string) {
+    return String(string).replace(/[&<>"'\/]/g, function (s) {
+        return entityMap[s];
+    });
+}
