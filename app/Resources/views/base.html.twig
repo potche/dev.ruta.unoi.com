@@ -58,6 +58,15 @@
                 z-index: 9999;
                 color: white;
             }
+
+            [data-notify="progressbar"] {
+                margin-bottom: 0px;
+                position: absolute;
+                bottom: 0px;
+                left: 0px;
+                width: 100%;
+                height: 5px;
+            }
         </style>
     </head>
     <body class="page-loading">
@@ -426,7 +435,7 @@
         <script src="https://staticmx.unoi.com/global/js/vendor/modernizr-respond.min.js"></script>
         <script src="{{ asset('public/assets/js/bootstrap-tour.min.js') }}"></script>
         <script src="{{ asset('public/assets/js/notificationStatus.js') }}"></script>
-        <script src="{{ asset('public/assets/js/bootstrap-tour.min.js')}}"></script>
+        <script src="{{ asset('public/assets/js/bootstrap-notify.js')}}"></script>
         <script src="{{ asset('public/assets/js/tour.js')}}"></script>
         <script src="{{ asset('public/assets/js/base.js')}}"></script>
         <script src="{{ asset('public/assets/js/tourStatus.js')}}"></script>
