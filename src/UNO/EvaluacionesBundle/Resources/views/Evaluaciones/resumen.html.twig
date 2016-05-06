@@ -19,13 +19,16 @@
             </div>
 
             <div id="cont-tareas" class="block-content">
-                <div style="padding: 11px 10px 19px;">
-                    <span style="color: #777777;"><i class="fa fa-info-circle text-primary" aria-hidden="true"></i> <em>Da doble clic sobre una respuesta para editarla.</em></span>
-                </div>
-                <small class="visible-xs"><i class="fa fa-info-circle text-primary"></i> Puedes navegar horizontalmente para ver los demás campos</small>
-                <div id="table-tareas">
 
+                <div style="padding: 11px 10px 19px;">
+                    <!-- <span style="color: #777777;"><i class="fa fa-info-circle text-primary" aria-hidden="true"></i> <em>Da doble clic sobre una respuesta para editarla.</em></span> -->
                 </div>
+
+                <small class="visible-xs"><i class="fa fa-info-circle text-primary"></i> Puedes navegar horizontalmente para ver los demás campos</small>
+
+                <div id="table-tareas">
+                </div>
+
             </div>
         </div>
 
@@ -69,9 +72,7 @@
             </div>
         </div>
 
-
     </div>
-
 
 
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -80,7 +81,6 @@
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="{{ asset('public/assets/js/resumen.js') }}"></script>
     <script src="{{ asset('public/assets/js/resumen_charts.js') }}"></script>
-    <script>$(function(){ TablesDatatables.init(); });</script>
 
     <script>
         var baseUrl = "{{  app.request.baseurl }}";
