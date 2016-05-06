@@ -5,12 +5,12 @@
         <div class="content-header">
             <div class="header-section">
                 <h1>
-                    <i class="fa fa-list-ol" style="color: #CCC;"></i><b>{{ survey.title }}</b><br><small><em>Respondida el {{ date|date("j/M/Y \@ g:i a") }}</em></small>
+                    <i class="fa fa-list-ol" style="color: #CCC;"></i><strong>{{ survey.title }}</strong><br><small><em>Respondida el {{ date|date("j/M/Y \@ g:i a") }}</em></small>
                 </h1>
             </div>
         </div>
 
-        <div id="block-tareas" class="block">
+        <div id="block-tareas" class="block full">
             <div class="block-title text-center">
                 <div class="block-options pull-right">
                     <a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
@@ -27,33 +27,6 @@
 
                 </div>
             </div>
-        </div>
-
-        <div id = "block-tareas" class="block">
-            <div class="block-title">
-                <h2><strong>Tareas</strong> a realizar</h2>
-            </div>
-
-            {% for key, task in tasks %}
-                <table id="tbl-tareas-{{ key }}" class="table table-vcenter table-condensed table-bordered">
-                    <thead>
-                    <tr>
-                        <th>
-                            {{ key }}
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for subtask in task %}
-                        <tr>
-                            <td>
-                                {{ subtask['question'] }}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            {% endfor %}
         </div>
 
         <div id="block-resumen" class="block">
@@ -77,94 +50,29 @@
             </div>
         </div>
 
-        <div id="block-respuestas" class="block">
+        <div id="block-resumen" class="block full">
             <div class="block-title text-center">
                 <div class="block-options pull-right">
                     <a href="javascript:void(0)" class="btn btn-info btn-sm btn-primary" data-toggle="block-toggle-content"><i class="fa fa-arrows-v"></i></a>
                 </div>
-                <h2>Ver mis <strong>Respuestas</strong></h2>
+                <h2>Ver mis <strong>respuestas</strong> </h2>
             </div>
 
-            <div id="cont-respuestas" class="block-content">
+            <div id="cont-resumen" class="block-content">
                 <div style="padding: 11px 10px 19px;">
                     <span style="color: #777777;"><i class="fa fa-info-circle text-primary" aria-hidden="true"></i> <em>Da doble clic sobre una respuesta para editarla.</em></span>
                 </div>
                 <small class="visible-xs"><i class="fa fa-info-circle text-primary"></i> Puedes navegar horizontalmente para ver los demás campos</small>
-                <div class="table-responsive">
-                    <table id="tbl-datatable" class="table table-bordered">
-                        <thead>
-                        <tr>
-                            <th class="hidden-sm hidden-xs"><b>#</b></th>
-                            <th class="text-center">
-                                <b>Pregunta</b>
-                            </th>
-                            <th class="text-center">
-                                <span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>Respuesta</b></span>
-                                <span class="visible-xs-inline"><b><i class="fa fa-pencil-square-o"></i></b></span>
-                            </th>
-                            <th class="text-center">
-                                <span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><b>Comentario</b></span>
-                                <span class="visible-xs-inline"><b><i class="fa fa-commenting-o"></i></b></span>
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for result in survey.questions %}
+                <div id="table-resumen">
 
-                            <tr>
-                                <td class="hidden-sm hidden-xs text-center">
-                                    {{ result['orderQ'] }}
-                                </td>
-                                <td class="text-left">
-                                    {{ result['question'] }}
-                                </td>
-                                <td class="text-center answer-{{ result['answers'][0]['answerId'] }}" style="cursor: pointer" onclick="pop('answer-{{ result['answers'][0]['answerId'] }}')">
-                                    {{ result['answers'][0]['answer'] }}
-                                </td>
-                                <td class="text-left comment-{{ result['answers'][0]['answerId'] }}">
-                                    {{ result['answers'][0]['comment'] }}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Popover hidden tittle -->
-    <div id="popover-tittle" style="display: none">
-        <div class="header text-center" ><h4>Editar Respuesta</h4></div>
+
     </div>
 
 
-    {% for result in survey.questions %}
-        <!-- Popover hidden content -->
-        <div id="answer-{{ result['answers'][0]['answerId'] }}" style="display: none">
-            Respuesta
-            <select id="respuesta-{{ result['answers'][0]['answerId'] }}" class="form-control">
-                <option selected value="Sí">Sí</option>
-                <option value="No">No</option>
-                <option value="No sé">No sé</option>
-            </select>
-            <br/>
-            Comentario
-            <input type="text" id="comment-{{ result['answers'][0]['answerId'] }}" class="form-control"/>
-
-            <br/>
-            <div class="form-group form-actions">
-                <button type="submit" class="btn btn-sm btn-primary" onclick="updateAnswer('{{ result['answers'][0]['answerId'] }}')"> Aceptar</button>
-            </div>
-
-        </div>
-    {% endfor %}
-
-    <style>
-        .popover-title {
-            background: #f7f7f7;
-        }
-    </style>
 
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
@@ -173,7 +81,6 @@
     <script src="{{ asset('public/assets/js/resumen.js') }}"></script>
     <script src="{{ asset('public/assets/js/resumen_charts.js') }}"></script>
     <script>$(function(){ TablesDatatables.init(); });</script>
-    <script>$(function(){ Charts.init('{{ pie_stats|json_encode()|raw }}','{{ bars_stats|json_encode()|raw }}');});</script>
 
     <script>
         var baseUrl = "{{  app.request.baseurl }}";
@@ -184,45 +91,6 @@
         $(function() {
             getResume(surveyId, personId);
         });
-
-
-        function pop(id){
-            $('.popover').not(this).hide();
-
-            $("."+id).popover({
-                placement: "right",
-                title: function () {
-                    return $('#popover-tittle').html();
-                },
-                html: true,
-                content: function () {
-                    return $('#'+id).html();
-                }
-            });
-
-        }
-
-        function updateAnswer(id){
-            console.log(id);
-
-            var res = $('#respuesta-'+id).val();
-            var comment = $('#comment-'+id).val();
-
-            $.post( "/api/v0/answerHistory/add", { answerId: id, answer: res, comment: comment })
-                    .done(function( data ) {
-                        $(".answer-"+id).text(res);
-                        $(".comment-"+id).text(comment);
-
-                        $(".answer-"+id).popover('hide');
-                    })
-                    .fail(function(error) {
-                        console.log( error );
-                    })
-                    .always(function() {
-                        console.log("valid Assigned finished")
-                    });
-
-        }
 
     </script>
 {% endblock %}

@@ -56,10 +56,10 @@ class APIAnswerHistoryController extends Controller{
     }
 
     /**
-     * @Route("/add")
+     * @Route("/addRes")
      * @Method({"POST"})
      */
-    public function AddAction(Request $request){
+    public function AddResAction(Request $request){
 
         $answerHistory = $this->findAnswer((int)$request->request->get('answerId'));
 
@@ -72,7 +72,35 @@ class APIAnswerHistoryController extends Controller{
             "dateHistory" => new \DateTime()
         );
 
-        $this->updateAnswer((int)$request->request->get('answerId'),$request->request->get('answer'), $request->request->get('comment'));
+        $this->updateAnswer((int)$request->request->get('answerId'),$request->request->get('answer'), null);
+
+        $result = $this->getResQueryAdd($post);
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * @Route("/addComment")
+     * @Method({"POST"})
+     */
+    public function AddCommentAction(Request $request){
+
+        $answerHistory = $this->findAnswer((int)$request->request->get('answerId'));
+
+        $post = array(
+            "answerId" => (int)$answerHistory[0]['answerid'],
+            "answer" => $answerHistory[0]['answer'],
+            "comment" => $answerHistory[0]['comment'],
+            "personPersonId" => (int)$answerHistory[0]['personid'],
+            "optionXquestionId" => (int)$answerHistory[0]['optionxquestionId'],
+            "dateHistory" => new \DateTime()
+        );
+
+        $this->updateAnswer((int)$request->request->get('answerId'), null, $request->request->get('comment'));
 
         $result = $this->getResQueryAdd($post);
 
@@ -100,15 +128,19 @@ class APIAnswerHistoryController extends Controller{
             ->getResult();
     }
 
-    private function updateAnswer($id, $answer, $comment){
+    private function updateAnswer($id, $answer = null, $comment = null){
         $em = $this->getDoctrine()->getManager();
         $Answer = $em->getRepository('UNOEvaluacionesBundle:Answer')->findOneBy(
             array('answerid' => $id)
         );
 
         if ($Answer) {
-            $Answer->setAnswer($answer);
-            $Answer->setComment($comment);
+
+            if($answer)
+                $Answer->setAnswer($answer);
+            if($comment)
+                $Answer->setComment($comment);
+
             $em->flush();
         }
     }
