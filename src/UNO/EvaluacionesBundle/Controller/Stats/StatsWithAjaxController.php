@@ -26,11 +26,13 @@ use UNO\EvaluacionesBundle\Entity\Optionxquestion;
 class StatsWithAjaxController extends Controller{
 
     private $_profile = array();
+    private $_levelId = 0;
+    private $_i = 0;
     private $_schoolId;
     private $_surveyId;
     private $_personId;
     private $_schoolIdFrm;
-    private $_schoolIdPerson;
+    private $_schoolIdPerson = '';
 
     private $_surveyResultsGral = array();
     private $_jsonTotalResponsePie = '';
@@ -55,7 +57,7 @@ class StatsWithAjaxController extends Controller{
 
         //valida usuario con session iniciada
         if ($session->get('logged_in')) {
-            print_r( $this->setProfile($session) );
+            $this->setProfile($session);
             //perfiles permitidos
             if (array_intersect(array('SuperAdmin','Director','COACH'), $this->_profile)) {
                 if (array_intersect(array('SuperAdmin','COACH'), $this->_profile)) {
@@ -76,8 +78,11 @@ class StatsWithAjaxController extends Controller{
                 }else {
                     #vista para Director
                     $this->setSchooIdPerson($session);
-
-                    $surveysListAPI = $this->getAPI("$baseUrl/api/v0/catalog/surveys");
+                    if($this->_i === 1 && $this->_levelId !== 0) {
+                        $surveysListAPI = $this->getAPI("$baseUrl/api/v0/catalog/survey/school/" . $this->_schoolIdPerson . "/level/" . $this->_levelId);
+                    }else{
+                        $surveysListAPI = $this->getAPI("$baseUrl/api/v0/catalog/surveys");
+                    }
                     $surveyList = $this->createSurveyList($surveysListAPI);
 
                     return $this->render('UNOEvaluacionesBundle:Stats:statsDir.html.twig',
@@ -105,9 +110,19 @@ class StatsWithAjaxController extends Controller{
      * inicializa el atributo $this->_profile con los perfiles del usuario de session
      */
     private function setProfile($session){
+        $_levelId = array();
         $profileJson = json_decode($session->get('profileS'));
         foreach($profileJson as $value){
             array_push($this->_profile, $value->profile);
+            array_push($_levelId, $value->schoollevelid);
+        }
+
+        $_levelId = array_unique($_levelId);
+        if(sizeof($_levelId) === 1){
+            //el usuario solo tiene un nivel, por lo que solo se le mostrara las listas de su nivel
+            $this->_levelId = $_levelId[0];
+        }else{
+            //el usuario tiene multiples niveles, por lo que se le mostrara todas las lista
         }
     }
 
@@ -151,14 +166,17 @@ class StatsWithAjaxController extends Controller{
      * filtra la escuela que puede ver el usuario
      */
     private function setSchooIdPerson($session){
+        $this->_i = 0;
         $schoolIdPerson = '';
         $_schoolIdPerson = json_decode($session->get('schoolIdS'));
         if (!array_intersect(array('SuperAdmin','COACH'), $this->_profile)) {
             foreach($_schoolIdPerson as $value){
+                $this->_i++;
                 $schoolIdPerson .= $value->schoolid. ', ';
                 $this->_nameSchool = $value->schoolid.'-'.$value->school;
             }
         }
+
         $this->_schoolIdPerson = rtrim($schoolIdPerson, ', ');
     }
 }
