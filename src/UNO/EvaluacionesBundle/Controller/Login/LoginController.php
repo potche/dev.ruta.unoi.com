@@ -364,10 +364,11 @@ class LoginController extends Controller{
     private function getProfile(){
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
-        $q = $qb->select('P2.profileid, P2.profilecode, P2.profile, P1.schoollevelid')
+        $q = $qb->select('P2.profileid, P2.profilecode, P2.profile, P1.schoollevelid, SL.schoollevel')
             ->from(PersonDB_L, 'P')
             ->innerJoin('UNOEvaluacionesBundle:Personschool','P1','WITH', 'P.personid = P1.personid')
             ->innerJoin('UNOEvaluacionesBundle:Profile','P2','WITH', 'P1.profileid = P2.profileid')
+            ->innerJoin('UNOEvaluacionesBundle:Schoollevel','SL','WITH', 'P1.schoollevelid = SL.schoollevelid')
             ->where('P.personid = :personId')
             ->setParameter('personId', $this->_personDB->getPersonid())
             ->groupBy('P2.profileid')

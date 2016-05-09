@@ -56,7 +56,7 @@ function parseInfo(privilege, profile){
     });
 
     if(!adminBase){
-        $('#uProfile').removeClass('hidden');
+        $('.uProfile').removeClass('hidden');
     }
 
     //console.log(profileStr);
