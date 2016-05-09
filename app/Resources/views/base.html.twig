@@ -162,11 +162,13 @@
                                 </li>
                                 <li id="profile">
                                 </li>
-                                <li id="uProfile" class="text-center hidden">
-                                    <a href="#" class="btn btn-sm btn-primary" onclick="updateProfile('{{ app.session.get('personIdS') }}')"> <i class="fa fa-refresh fa-spin pull-right" aria-hidden="true"></i> Actualizar perfil</a>
+                                <li class="divider uProfile hidden"></li>
+                                <li class="uProfile hidden">
+                                    <a href="#" onclick="$('#updateProfile').modal();"> <i class="fa fa-refresh fa-spin pull-right" aria-hidden="true" style="opacity: 0.8;"></i> Actualizar perfil</a>
                                 </li>
-                                <li>
-                                    <a href="#" class="btn btn-sm btn-info" onclick="assigned('{{ app.session.get('personIdS') | raw}}')"> <i class="fa fa-university pull-right" aria-hidden="true"></i> Mis Clases</a>
+                                <li class="divider uProfile hidden"></li>
+                                <li class="uProfile hidden">
+                                    <a href="#" onclick="assigned('{{ app.session.get('personIdS') | raw}}')"> <i class="fa fa-university pull-right" aria-hidden="true" style="opacity: 0.8;"></i> Mis Clases</a>
                                 </li>
                                 <li class="dropdown-header text-center">
                                     {% if app.session.get('mailing') == 1 %}
@@ -177,20 +179,18 @@
                                 </li>
                                 <li class="text-left">
                                     {% if app.session.get('mailing') == 1 %}
-                                        <a href="#" id="{{ app.session.get('personIdS') }}" class="disable-notif btn btn-xs btn-danger" style="display: block; width: 85px;"> Inactivar</a>
+                                        <a href="#" id="{{ app.session.get('personIdS') }}" class="disable-notif bg-danger" ><i class="fa fa-envelope-o pull-right" style="opacity: 0.8;"></i> Inactivar</a>
                                     {% else %}
-                                        <a href="#" id="{{ app.session.get('personIdS') }}" class="enable-notif btn btn-xs btn-success" style="display: block; width: 85px;"> Activar</a>
+                                        <a href="#" id="{{ app.session.get('personIdS') }}" class="enable-notif bg-success" ><i class="fa fa-envelope pull-right" style="opacity: 0.8;"></i> Activar</a>
                                     {% endif %}
-                                </li>
-                                <li class="dropdown-header text-center">
-                                    <i class="fa fa-rocket"></i>{{ " Tour" }}
-                                </li>
-                                <li class="text-center">
-                                    <a href="#" id="tour-trigger" class="btn btn-xs btn-success" style="display: block; width: 85px;"> Iniciar tour</a>
                                 </li>
                                 <li class="divider"></li>
                                 <li>
-                                    <a href="" data-toggle="modal" data-target="#aboutM"><i class="fa fa-plus-circle pull-right" style="opacity: 0.8;"></i> Acerca del Sistema</a>
+                                    <a href="#" id="tour-trigger"  ><i class="fa fa-rocket pull-right" style="opacity: 0.8;"></i> Iniciar tour</a>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <a href="#" data-toggle="modal" data-target="#aboutM"><i class="fa fa-plus-circle pull-right" style="opacity: 0.8;"></i> Acerca del Sistema</a>
                                 </li>
                                 <li class="divider"></li>
                                 <li>
@@ -316,6 +316,28 @@
     </div>
     <!-- END Modal loadingProfile -->
 
+    <!-- Modal update profile -->
+    <div id="updateProfile" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header bg-success">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-universal-access" aria-hidden="true"></i> Perfil</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center" style="padding: 5% 0;">
+                        <span>¿Deseas sincronizar tu perfil con el del LMS?</span>
+                    </div>
+                </div>
+                <div class="modal-footer" >
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="updateProfile('{{ app.session.get('personIdS') }}')" >Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal update profile -->
+
     <!-- Modal relogin -->
     <div id="relogin" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
         <div class="modal-dialog modal-sm">
@@ -347,7 +369,7 @@
 
                 <div class="modal-body">
                     <h5 class="modal-title text-justify">Hola {{ app.session.get('nameS') | raw}}, ayúdanos a completar tu perfil, eres profesor de <strong id="titleAssigned"></strong>.</h5>
-                    <h5 class="modal-title"><span class="text-justify">Selecciona los Grados, Grupos y Programas a los que estás asignado para <strong id="titleAssignedF"></strong></h5>
+                    <h5 class="modal-title text-justify">Selecciona los Grados, Grupos y Programas a los que estás asignado para <strong id="titleAssignedF"></strong>.</h5>
                     <hr/>
 
                     <div id="inactiveAssigned" class="alert alert-danger hidden">
@@ -503,6 +525,7 @@
             }
             //solicitud para actualizar perfil
             function updateProfile(personId){
+                $('#updateProfile').modal('hide');
                 $('#loadingProfile').modal();
                 $.ajax({
                     type: "GET",

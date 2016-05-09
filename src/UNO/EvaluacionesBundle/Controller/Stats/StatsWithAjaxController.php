@@ -28,21 +28,9 @@ class StatsWithAjaxController extends Controller{
     private $_profile = array();
     private $_levelId = 0;
     private $_i = 0;
-    private $_schoolId;
-    private $_surveyId;
-    private $_personId;
-    private $_schoolIdFrm;
+    private $_schoolLevel = array();
     private $_schoolIdPerson = '';
-
-    private $_surveyResultsGral = array();
-    private $_jsonTotalResponsePie = '';
-    private $_jsonTotalResponseColumn = '';
-    private $_userList = array();
     private $_nameSchool = 'General';
-
-    private $_surveyIdFrm;
-    private $_nameSurvey = 'Todas las Evaluaciones';
-    private $_andSurvey = "S.surveyid != ''";
 
     /**
      * @Route("/estadisticas")
@@ -88,7 +76,8 @@ class StatsWithAjaxController extends Controller{
                     return $this->render('UNOEvaluacionesBundle:Stats:statsDir.html.twig',
                         array(
                             'nameSchool' => $this->_nameSchool,
-                            'surveyList' => $surveyList
+                            'surveyList' => $surveyList,
+                            'schoolLevel' => $this->_schoolLevel
                         )
                     );
                 }
@@ -111,11 +100,15 @@ class StatsWithAjaxController extends Controller{
      */
     private function setProfile($session){
         $_levelId = array();
+        $_schoolLevel = array();
         $profileJson = json_decode($session->get('profileS'));
         foreach($profileJson as $value){
             array_push($this->_profile, $value->profile);
             array_push($_levelId, $value->schoollevelid);
+            array_push($_schoolLevel, $value->schoollevel);
         }
+        $_schoolLevel = array_unique($_schoolLevel);
+        $this->_schoolLevel = implode(', ',$_schoolLevel);
 
         $_levelId = array_unique($_levelId);
         if(sizeof($_levelId) === 1){
@@ -123,6 +116,7 @@ class StatsWithAjaxController extends Controller{
             $this->_levelId = $_levelId[0];
         }else{
             //el usuario tiene multiples niveles, por lo que se le mostrara todas las lista
+            $this->_schoolLevel = rtrim($this->_schoolLevel, ', ');
         }
     }
 

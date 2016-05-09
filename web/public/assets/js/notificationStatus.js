@@ -27,12 +27,12 @@ var NotifStatus = function(){
 
                         if (accion == true ){
 
-                            $("#"+person).attr( "class","disable-notif btn btn-xs btn-danger").html("Desactivar");
+                            $("#"+person).attr( "class","disable-notif bg-danger").html('<i class="fa fa-envelope-o pull-right" style="opacity: 0.8;"></i> Desactivar');
                             $("#currentMailing").attr("class","fa fa-check-circle text-success");
 
                         }else{
 
-                            $("#"+person).attr( "class","enable-notif btn btn-xs btn-success").html("Activar");
+                            $("#"+person).attr( "class","enable-notif bg-success").html('<i class="fa fa-envelope pull-right" style="opacity: 0.8;"></i> Activar');
                             $("#currentMailing").attr("class","fa fa-times-circle text-danger");
                         }
 
