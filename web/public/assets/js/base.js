@@ -49,10 +49,11 @@ function parseInfo(privilege, profile){
         if(profileArray[i].profileid === 1){
             adminBase = true;
         }
-        profileStr +=   "<a>"+
-                            "<i class='fa fa-user fa-fw pull-right'></i>"+
-                                profileArray[i].profile+
-                        "</a>";
+        profileStr +=   "<span>" +
+                            "<small>" +
+                                "<span style='color: #394263; font-size: 14px;'>&#9679; </span> "+ profileArray[i].profile.toUpperCase() +
+                            "</small>"+
+                        "</span><br/>";
     });
 
     if(!adminBase){
@@ -62,5 +63,64 @@ function parseInfo(privilege, profile){
     //console.log(profileStr);
     //var profileStrF = profileStr.replace(/ \| +$/g, '');
     $('#profile').html(profileStr);
+}
+
+function version(versionArray){
+
+    var actualV = '';
+    var anteriorV = '';
+    var i = 0;
+    var months = ['Enero','Febrero','Marzo','Abril','Maoy','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+    $('#version').append(versionArray[0].version);
+
+    $.each(versionArray, function(i, versions) {
+        if(i != 0) {
+            var d = new Date(versions.releaseDate.date)
+            anteriorV += '<div class="text-right"><h3>Version: '+versions.version+'</h3>' +
+                '<h4>Fecha: '+d.getDate()  + "/" + months[d.getMonth()] + "/" + d.getFullYear() +'</h4></div>' +
+                '<table>';
+        }
+        $.each(versions.nuevo, function (j, item) {
+            if(i == 0) {
+                actualV += "<tr>" +
+                    "<th width='25%' style='vertical-align: top;'><i class='fa fa-check-circle-o'></i> " + item.title + ": </th>" +
+                    "<td width='5%'> </td>"+
+                    "<td style='padding-bottom: 2%'>" + item.description + "</td>" +
+                    "</tr>"+
+                    "<tr><td></td></tr>";
+            }else{
+
+                anteriorV += "<tr>" +
+                    "<th width='25%' style='vertical-align: top;'><i class='fa fa-check-circle-o'></i> " + item.title + ": </th>" +
+                    "<td width='5%'> </td>"+
+                    "<td style='padding-bottom: 2%'>" + item.description + "</td>" +
+                    "</tr>"+
+                    "<tr><td></td></tr>";
+            }
+        });
+        i++;
+        if(i != 0) {
+            anteriorV += '</table>';
+        }
+    });
+
+    $('#nuevo').append(actualV);
+    $('.last').html(anteriorV);
+}
+
+var entityMap = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': '&quot;',
+    "'": '',
+    "/": '&#x2F;'
+};
+
+function escapeHtml(string) {
+    return String(string).replace(/[&<>"'\/]/g, function (s) {
+        return entityMap[s];
+    });
 }
 

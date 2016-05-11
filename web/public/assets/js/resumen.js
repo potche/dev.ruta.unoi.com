@@ -136,8 +136,8 @@ function createDataTableRes(dat){
                     '<td>' +
                         '<span id="'+answerId+'" class="col-xs-9 ">'+escapeHtml(comment)+'</span>' +
                         '<div class="col-xs-3">' +
-                            '<button id="btnE-'+answerId+'" type="button" class="btn btn-alt btn-default pull-right" data-toggle="tooltip" data-placement="top" title="Editar comentario" onclick="editComment(\''+answerId+'\',\''+escapeHtml(comment)+'\')"><i class="fa fa-pencil" aria-hidden="true"></i></button>' +
-                            '<button id="btnS-'+answerId+'" type="button" class="btn btn-alt btn-default pull-right hidden" data-toggle="tooltip" data-placement="top" title="Guardar comentario"  onclick="saveComment(\''+answerId+'\',\''+escapeHtml(comment)+'\')"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>' +
+                            '<button id="btnE-'+answerId+'" type="button" class="btn btn-alt btn-default pull-right" data-toggle="tooltip" data-placement="top" title="Editar comentario" onclick="editComment(\''+answerId+'\')"><i class="fa fa-pencil" aria-hidden="true"></i></button>' +
+                            '<button id="btnS-'+answerId+'" type="button" class="btn btn-alt btn-default pull-right hidden" data-toggle="tooltip" data-placement="top" title="Guardar comentario"  onclick="saveComment(\''+answerId+'\')"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>' +
                         '</div>' +
                     '</td>'+
                 '</tr>';
@@ -201,17 +201,20 @@ function changeRes(btn, id, answer){
 
 }
 
-function editComment(id, comment){
+var commentOld = '';
+
+function editComment(id){
     $('#btnS-'+id).removeClass('hidden');
     $('#btnE-'+id).addClass('hidden');
+    commentOld = escapeHtml($("#"+id).text());
 
-    $('#'+id).html('<input type="text" value="'+escapeHtml(comment)+'" class="form-control"/>');
+    $('#'+id).html('<input type="text" value="'+escapeHtml(commentOld)+'" class="form-control"/>');
 }
 
-function saveComment(id, comment){
+function saveComment(id){
     var commentNew = $('#'+id).find('input').val().replace(/'/g,"");
 
-    if($.trim(commentNew) !== $.trim(comment)){
+    if($.trim(commentNew) !== $.trim(commentOld)){
         $.post( "/api/v0/answerHistory/addComment", { answerId: id, comment: commentNew })
             .done(function( data ) {
 
@@ -230,7 +233,7 @@ function saveComment(id, comment){
         $('#btnE-'+id).removeClass('hidden');
         $('#btnS-'+id).addClass('hidden');
 
-        $('#'+id).text(comment);
+        $('#'+id).text(commentOld);
     }
 
 }
@@ -267,6 +270,27 @@ var ResumenDatatables = function() {
 
             App.datatables();
             $('#tbl-datatable-resumen').DataTable({
+                pageLength: -1,
+                lengthMenu: [[10, 20, 30, -1], [10, 20, 30, 'Ver Todo']]
+            });
+
+            $('.dataTables_filter input').attr('placeholder', 'Buscar');
+            $('#tbl-datatable_info').hide();
+        }
+    };
+}();
+
+var TablesDatatables = function() {
+
+    return {
+        init: function() {
+
+            /**
+             * Implementación de datatable para la tabla de respuestas
+             */
+
+            App.datatables();
+            $('#tbl-datatable').DataTable({
                 pageLength: -1,
                 lengthMenu: [[10, 20, 30, -1], [10, 20, 30, 'Ver Todo']]
             });
