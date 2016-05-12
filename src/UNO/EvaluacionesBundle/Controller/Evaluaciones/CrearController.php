@@ -41,7 +41,6 @@ class CrearController extends Controller {
 
         if (!Utils::isUserLoggedIn($session)) {
 
-            //return $this->redirectToRoute('login');
             return $this->redirectToRoute('login',array(
                 'redirect' => 'crear',
                 'with' => 'none'

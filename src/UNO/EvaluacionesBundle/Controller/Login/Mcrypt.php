@@ -15,7 +15,7 @@ namespace UNO\EvaluacionesBundle\Controller\Login;
  */
 DEFINE('ENCRYPTION_KEY', 'SomeRandomString');
 
-class Encrypt{
+class Mcrypt{
 
     static $_key = '31CE5FE894ECF46134FC1AA365FF6F6F';
 

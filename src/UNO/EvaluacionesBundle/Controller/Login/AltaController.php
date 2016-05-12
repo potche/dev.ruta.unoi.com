@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Cookie;
 use UNO\EvaluacionesBundle\Controller\Login\Browser;
 use UNO\EvaluacionesBundle\Controller\LMS\LMS;
-use UNO\EvaluacionesBundle\Controller\Login\Encrypt;
+use UNO\EvaluacionesBundle\Controller\Login\Mcrypt;
 use UNO\EvaluacionesBundle\Entity\Person;
 use UNO\EvaluacionesBundle\Entity\School;
 use UNO\EvaluacionesBundle\Entity\Schoolperiod;
@@ -29,15 +29,9 @@ use UNO\EvaluacionesBundle\Entity\Profile;
 use UNO\EvaluacionesBundle\Entity\Personschool;
 use UNO\EvaluacionesBundle\Entity\Ccoach;
 
-/**
- *
- */
-DEFINE('PersonDB', 'UNOEvaluacionesBundle:Person');
-/**
- *
- */
-DEFINE('ProfileDB', 'UNOEvaluacionesBundle:Profile');
-
+define('PERSONDB', 'UNOEvaluacionesBundle:Person');
+define('PROFILEDB', 'UNOEvaluacionesBundle:Profile');
+define('PERSONSCHOOLDB','UNOEvaluacionesBundle:Personschool');
 /**
  * Class AltaController
  * @package UNO\EvaluacionesBundle\Controller\Login
@@ -105,9 +99,9 @@ class AltaController extends Controller{
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
         $q = $qb->select('O.nameOptionApplication, O.ruteOptionApplication, O.iconOptionApplication')
-            ->from(PersonDB, 'P')
-            ->innerJoin('UNOEvaluacionesBundle:Personschool','P1','WITH', 'P.personid = P1.personid')
-            ->innerJoin(ProfileDB,'P2','WITH', 'P1.profileid = P2.profileid')
+            ->from(PERSONDB, 'P')
+            ->innerJoin(PERSONSCHOOLDB,'P1','WITH', 'P.personid = P1.personid')
+            ->innerJoin(PROFILEDB,'P2','WITH', 'P1.profileid = P2.profileid')
             ->innerJoin('UNOEvaluacionesBundle:Privilege','P3','WITH', 'P2.profileid = P3.profileId')
             ->innerJoin('UNOEvaluacionesBundle:Optionapplication','O','WITH', 'O.optionApplicationId = P3.optionApplicationId')
             ->where('P.personid = :personId')
@@ -127,10 +121,11 @@ class AltaController extends Controller{
     private function getProfile(){
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
-        $q = $qb->select('P2.profileid, P2.profilecode, P2.profile')
-            ->from(PersonDB, 'P')
+        $q = $qb->select('P2.profileid, P2.profilecode, P2.profile, P1.schoollevelid, SL.schoollevel')
+            ->from(PersonDB_L, 'P')
             ->innerJoin('UNOEvaluacionesBundle:Personschool','P1','WITH', 'P.personid = P1.personid')
-            ->innerJoin(ProfileDB,'P2','WITH', 'P1.profileid = P2.profileid')
+            ->innerJoin('UNOEvaluacionesBundle:Profile','P2','WITH', 'P1.profileid = P2.profileid')
+            ->innerJoin('UNOEvaluacionesBundle:Schoollevel','SL','WITH', 'P1.schoollevelid = SL.schoollevelid')
             ->where('P.personid = :personId')
             ->setParameter('personId', $this->_datPerson->personId)
             ->groupBy('P2.profileid')
@@ -147,7 +142,7 @@ class AltaController extends Controller{
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
         $q = $qb->select('P.schoolid')
-            ->from('UNOEvaluacionesBundle:Personschool', 'P')
+            ->from(PERSONSCHOOLDB, 'P')
             ->where('P.personid = :personId')
             ->setParameter('personId', $this->_datPerson->personId)
             ->groupBy('P.schoolid')
@@ -170,8 +165,25 @@ class AltaController extends Controller{
         $session->set('privilegeS', $this->getPrivilege());
         $session->set('profileS', $this->getProfile());
         $session->set('schoolIdS', $this->getSchoolId());
+        $session->set('versionS', $this->getVersion());
+        $session->set('mailing', 1);
+        $session->set('tourEnabled', 1);
+        $session->set('assignedS', 0);
         $this->setCookie();
+        $this->setSurveys($this->_datPerson->personId,$session);
         return true;
+    }
+
+    private function setSurveys($pid, $session){
+
+        $response = json_decode(file_get_contents($this->generateUrl('APISurveysPerson',array('personid'=>$pid),true), false), true);
+
+        if(isset ($response['Error'])){
+
+            $session->set('authorized_in',base64_encode(json_encode(array())));
+        }
+
+        $session->set('authorized_in',base64_encode(json_encode(array_column($response,'id'))));
     }
 
     /**
@@ -227,7 +239,7 @@ class AltaController extends Controller{
      */
     private function valPerson(){
         $em = $this->getDoctrine()->getManager();
-        return $em->getRepository(PersonDB)->findOneBy(array('personid' => $this->_datPerson->personId));
+        return $em->getRepository(PERSONDB)->findOneBy(array('personid' => $this->_datPerson->personId));
     }
 
     /**
@@ -244,7 +256,7 @@ class AltaController extends Controller{
      * inserta nueva person
      */
     private function addPerson(){
-        $encrypt = encrypt::encrypt($this->_datPerson->pass);
+        $encrypt = Mcrypt::encrypt($this->_datPerson->pass);
         $em = $this->getDoctrine()->getManager();
         try{
             $Person = new Person();
@@ -446,7 +458,7 @@ class AltaController extends Controller{
      */
     private function valProfile($profileId){
         $em = $this->getDoctrine()->getManager();
-        return $em->getRepository(ProfileDB)->findOneBy(array('profileid' => $profileId));
+        return $em->getRepository(PROFILEDB)->findOneBy(array('profileid' => $profileId));
     }
 
     /**
@@ -497,5 +509,43 @@ class AltaController extends Controller{
             print_r($e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * @return string
+     * obtiene del sistema y lo envia como json
+     */
+    private function getVersion(){
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+        $q = $qb->select('V.version, V.releaseDate, F.title, F.description')
+            ->from('UNOEvaluacionesBundle:Cversion', 'V')
+            ->innerJoin('UNOEvaluacionesBundle:Feature','F','WITH', 'V.idCversion = F.idVersion')
+            ->orderBy('V.version', 'DESC')
+            ->addOrderBy('F.title', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $v = array();
+        $json = array();
+        $versions = array_unique(array_column($q,'version'));
+
+        foreach($versions as $val){
+            $subQuery = array_filter($q, function($ar) use($val){
+                return ($ar['version'] == $val);
+            });
+
+            $nuevo = array();
+            foreach($subQuery as $value){
+                $v['version'] = $value['version'];
+                $v['releaseDate'] = $value['releaseDate'];
+
+                array_push( $nuevo, array('title' => $value['title'], 'description' => $value['description']) );
+            }
+            $v['nuevo'] = $nuevo;
+            array_push($json, $v);
+        }
+
+        return json_encode($json);
     }
 }

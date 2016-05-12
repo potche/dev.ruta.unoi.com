@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use UNO\EvaluacionesBundle\Controller\Login\Browser;
 use UNO\EvaluacionesBundle\Controller\Login\BodyMail;
-use UNO\EvaluacionesBundle\Controller\Login\Encrypt;
+use UNO\EvaluacionesBundle\Controller\Login\Mcrypt;
 use UNO\EvaluacionesBundle\Controller\LMS\LMS;
 use UNO\EvaluacionesBundle\Controller\LMS\FilterAPI;
 use UNO\EvaluacionesBundle\Entity\Person;
@@ -301,7 +301,7 @@ class LoginController extends Controller{
         $datUser = json_decode($apiUser);
         if($datUser->person->personId){
             //update pass Local
-            $pass = encrypt::encrypt($this->_pass);
+            $pass = Mcrypt::encrypt($this->_pass);
 
             $em = $this->getDoctrine()->getManager();
             $personDB = $em->getRepository(PersonDB_L)->findOneBy(array('user' => $this->_user));
@@ -324,7 +324,7 @@ class LoginController extends Controller{
      * revisa que se encuentre el user y pass
      */
     private function existsUserPassInDB(){
-        $encrypt = encrypt::encrypt($this->_pass);
+        $encrypt = Mcrypt::encrypt($this->_pass);
         $em = $this->getDoctrine()->getManager();
         $this->_personDB = $em->getRepository(PersonDB_L)->findOneBy(array('user' => $this->_user, 'password' => $encrypt));
         if($this->_personDB){
@@ -629,7 +629,7 @@ class LoginController extends Controller{
                 $em = $this->getDoctrine()->getManager();
                 $Person = $em->getRepository('UNOEvaluacionesBundle:Person')->findOneBy(array('personid' => $personId));
                 if (!empty($Person)) {
-                    return new Response(encrypt::decrypt($Person->getPassword()));
+                    return new Response(Mcrypt::decrypt($Person->getPassword()));
                 }
             }else{
                 throw $this->createNotFoundException('Not Found');
@@ -647,7 +647,7 @@ class LoginController extends Controller{
         if ($session->get('logged_in')) {
             if (in_array('SuperAdmin', $this->setProfile($session))) {
                 if (!empty($pass)) {
-                    return new Response(encrypt::encrypt($pass));
+                    return new Response(Mcrypt::encrypt($pass));
                 }
             }else{
                 throw $this->createNotFoundException('Not Found');
@@ -701,7 +701,7 @@ class LoginController extends Controller{
         }
 
         foreach($_person as $value){
-            array_push($listUser,array( 'user' => $value['user'],'password' => utf8_encode(encrypt::decrypt($value['password']))) );
+            array_push($listUser,array( 'user' => $value['user'],'password' => utf8_encode(Mcrypt::decrypt($value['password']))) );
         }
 
         #-----envia la respuesta en JSON-----#

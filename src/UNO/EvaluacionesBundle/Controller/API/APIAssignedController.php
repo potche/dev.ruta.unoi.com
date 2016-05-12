@@ -21,23 +21,33 @@ use UNO\EvaluacionesBundle\Controller\API\APIUtils;
  * Time: 3:05 PM
  */
 
+define('SCHOOLLEVELID','schoolLevelId');
+define('GRADEID','gradeId');
+define('GROUPID','groupId');
+define('PROGRAMID','programId');
+define('PERSONID','personId');
+define('STATUS','status');
+define('MESSAGE','message');
 /**
  * @Route("/api/v0/assigned")
  *
  */
 class APIAssignedController extends Controller{
+private $_request;
 
     /**
      * @Route("/add")
      * @Method({"POST"})
      */
     public function AddAction(Request $request){
+        $this->_request = $request;
+
         $post = array(
-            "schoolLevelId" => (int)$request->request->get('schoolLevelId'),
-            "gradeId" => $request->request->get('gradeId'),
-            "groupId" => $request->request->get('groupId'),
-            "programId" => (int)$request->request->get('programId'),
-            "personId" => (int)$request->request->get('personId')
+            SCHOOLLEVELID => (int)$request->request->get(SCHOOLLEVELID),
+            GRADEID => $request->request->get(GRADEID),
+            GROUPID => $request->request->get(GROUPID),
+            PROGRAMID => (int)$request->request->get(PROGRAMID),
+            PERSONID => (int)$request->request->get(PERSONID)
         );
 
         $result = $this->getResQueryAdd($post);
@@ -56,11 +66,11 @@ class APIAssignedController extends Controller{
 
         $personAssigned = new Personassigned();
 
-        $personAssigned->setSchoolLevelId($post['schoolLevelId']);
-        $personAssigned->setGradeId($post['gradeId']);
-        $personAssigned->setGroupId($post['groupId']);
-        $personAssigned->setProgramId($post['programId']);
-        $personAssigned->setPersonId($post['personId']);
+        $personAssigned->setSchoolLevelId($post[SCHOOLLEVELID]);
+        $personAssigned->setGradeId($post[GRADEID]);
+        $personAssigned->setGroupId($post[GROUPID]);
+        $personAssigned->setProgramId($post[PROGRAMID]);
+        $personAssigned->setPersonId($post[PERSONID]);
 
 
         $em = $this->getDoctrine()->getManager();
@@ -69,10 +79,13 @@ class APIAssignedController extends Controller{
 
         // actually executes the queries (i.e. the INSERT query)
         $em->flush();
+        $session = $this->_request->getSession();
+        $session->start();
+        $session->set('assignedS', 1);
 
         return array(
-            'status' => 'ok',
-            'message' => 'Saved new personAssigned with id '.$personAssigned->getPersonAssignedId()
+            STATUS => 'ok',
+            MESSAGE => 'Saved new personAssigned with id '.$personAssigned->getPersonAssignedId()
         );
     }
 
@@ -107,8 +120,8 @@ class APIAssignedController extends Controller{
         }
 
         return array(
-            'status' => 'ok',
-            'message' => 'Delete row'
+            STATUS => 'ok',
+            MESSAGE => 'Delete row'
         );
     }
 
@@ -140,7 +153,7 @@ class APIAssignedController extends Controller{
             ->innerjoin('UNOEvaluacionesBundle:Cgroup','Cg','WITH', 'PA.groupId = Cg.groupId')
             ->innerjoin('UNOEvaluacionesBundle:Cprogram','CP','WITH', 'PA.programId = CP.programId')
             ->where('PA.personId = :personId')
-            ->setParameter('personId', $personId)
+            ->setParameter(PERSONID, $personId)
             ->getQuery()
             ->getResult();
     }
@@ -233,7 +246,7 @@ class APIAssignedController extends Controller{
             ->getResult();
 
         foreach($_groupId as $value){
-            array_push($groupIdArray, $value['groupId']);
+            array_push($groupIdArray, $value[GROUPID]);
         }
 
         return $groupIdArray;
@@ -267,7 +280,7 @@ class APIAssignedController extends Controller{
             ->leftJoin('UNOEvaluacionesBundle:Personassigned','PA','WITH', 'PS.personid = PA.personId AND PS.schoollevelid = PA.schoolLevelId')
             ->where('PS.personid = :personId')
             ->andWhere('PS.profileid = 18')
-            ->setParameter('personId', $personId)
+            ->setParameter(PERSONID, $personId)
             ->groupBy('PS.schoollevelid')
             ->getQuery()
             ->getResult();
@@ -278,7 +291,7 @@ class APIAssignedController extends Controller{
      * @Method({"POST"})
      */
     public function AddGroupAction(Request $request){
-        $groupId = $request->request->get('groupId');
+        $groupId = $request->request->get(GROUPID);
 
         $result = $this->getResQueryAddGroup($groupId);
 
@@ -306,8 +319,8 @@ class APIAssignedController extends Controller{
         $em->flush();
 
         return array(
-            'status' => 'ok',
-            'message' => 'Saved new personAssigned with id '.$group->getGroupId()
+            STATUS => 'ok',
+            MESSAGE => 'Saved new personAssigned with id '.$group->getGroupId()
         );
     }
 
@@ -316,45 +329,15 @@ class APIAssignedController extends Controller{
      * @Method({"POST"})
      */
     public function OkAction(Request $request){
-        $personId = $request->request->get('personId');
+        $personId = $request->request->get(PERSONID);
 
-        $result = $this->getResQueryOk($personId);
+        $result = $this->activeInactive($personId,1);
 
         #-----envia la respuesta en JSON-----#
         $response = new JsonResponse();
         $response->setData($result);
 
         return $response;
-    }
-
-    /**
-     * actualiza la bandera en Person
-     */
-    private function getResQueryOk($personId) {
-
-        $em = $this->getDoctrine()->getManager();
-        $person = $em->getRepository('UNOEvaluacionesBundle:Person')->findOneBy(
-            array('personid' => $personId)
-        );
-
-        if (!$person) {
-            $m = array(
-                'status' => 'error',
-                'message' => 'No person found for id '.$personId
-            );
-        }else{
-            $person->setAssigned(1);
-            $em->flush();
-
-            $m = array(
-                'status' => 'ok',
-                'message' => 'update personAssigned'
-            );
-        }
-
-
-
-        return $m;
     }
 
     /**
@@ -362,9 +345,9 @@ class APIAssignedController extends Controller{
      * @Method({"POST"})
      */
     public function inactiveAction(Request $request){
-        $personId = $request->request->get('personId');
+        $personId = $request->request->get(PERSONID);
 
-        $result = $this->getResQueryInactive($personId);
+        $result = $this->activeInactive($personId,0);
 
         #-----envia la respuesta en JSON-----#
         $response = new JsonResponse();
@@ -373,11 +356,7 @@ class APIAssignedController extends Controller{
         return $response;
     }
 
-    /**
-     * actualiza la bandera en Person
-     */
-    private function getResQueryInactive($personId) {
-
+    private function activeInactive($personId,$assigned){
         $em = $this->getDoctrine()->getManager();
         $person = $em->getRepository('UNOEvaluacionesBundle:Person')->findOneBy(
             array('personid' => $personId)
@@ -385,20 +364,19 @@ class APIAssignedController extends Controller{
 
         if (!$person) {
             $m = array(
-                'status' => 'error',
-                'message' => 'No person found for id '.$personId
+                STATUS => 'error',
+                MESSAGE => 'No person found for id '.$personId
             );
         }else{
-            $person->setAssigned(0);
+            $person->setAssigned($assigned);
             $em->flush();
 
             $m = array(
-                'status' => 'ok',
-                'message' => 'update personAssigned'
+                STATUS => 'ok',
+                MESSAGE => 'update personAssigned'
             );
         }
 
         return $m;
     }
-
 }
