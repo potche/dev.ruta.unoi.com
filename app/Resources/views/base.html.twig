@@ -148,7 +148,7 @@
                         <!-- User Dropdown -->
                         <li id="listusuario" class="dropdown" style="width: 100%;">
                             <a id="panel-usuario" href="javascript:void(0)" class="dropdown-toggle pull-right" data-toggle="dropdown">
-                                {{ app.session.get('nameS') }}
+                                {{ app.session.get('nameS') | upper}}
                                 <img src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar"> <i class="fa fa-angle-down"></i>
                                 <!-- <img src="https://staticmx.unoi.com/global/logos/gris_fondoblanco_sin.png" alt="avatar"> <i class="fa fa-angle-down"></i>-->
                             </a>
@@ -160,15 +160,16 @@
                                 <li id="profile-header" class="dropdown-header text-center">
                                     <i class="fa fa-male" aria-hidden="true"></i> Perfil
                                 </li>
-                                <li id="profile">
+                                <li>
+                                    <a href="javascript:void(0)" onclick="$('#misPerfiles').modal()"> <i class="fa fa-user fa-fw pull-right" aria-hidden="true" style="opacity: 0.8;"></i> Mis perfiles</a>
                                 </li>
                                 <li class="divider uProfile hidden"></li>
                                 <li class="uProfile hidden">
-                                    <a href="#" onclick="$('#updateProfile').modal();"> <i class="fa fa-refresh fa-spin pull-right" aria-hidden="true" style="opacity: 0.8;"></i> Actualizar perfil</a>
+                                    <a href="javascript:void(0)" onclick="$('#updateProfile').modal();"> <i class="fa fa-refresh fa-spin pull-right" aria-hidden="true" style="opacity: 0.8;"></i> Actualizar perfil</a>
                                 </li>
                                 <li class="divider uProfile hidden"></li>
                                 <li class="uProfile hidden">
-                                    <a href="#" onclick="assigned('{{ app.session.get('personIdS') | raw}}')"> <i class="fa fa-university pull-right" aria-hidden="true" style="opacity: 0.8;"></i> Mis Clases</a>
+                                    <a href="javascript:void(0)" onclick="assigned('{{ app.session.get('personIdS') | raw}}')"> <i class="fa fa-university pull-right" aria-hidden="true" style="opacity: 0.8;"></i> Mis Clases</a>
                                 </li>
                                 <li class="dropdown-header text-center">
                                     {% if app.session.get('mailing') == 1 %}
@@ -179,18 +180,18 @@
                                 </li>
                                 <li class="text-left">
                                     {% if app.session.get('mailing') == 1 %}
-                                        <a href="#" id="{{ app.session.get('personIdS') }}" class="disable-notif bg-danger" ><i class="fa fa-envelope-o pull-right" style="opacity: 0.8;"></i> Inactivar</a>
+                                        <a href="javascript:void(0)" id="{{ app.session.get('personIdS') }}" class="disable-notif bg-danger" ><i class="fa fa-envelope-o pull-right" style="opacity: 0.8;"></i> Inactivar</a>
                                     {% else %}
-                                        <a href="#" id="{{ app.session.get('personIdS') }}" class="enable-notif bg-success" ><i class="fa fa-envelope pull-right" style="opacity: 0.8;"></i> Activar</a>
+                                        <a href="javascript:void(0)" id="{{ app.session.get('personIdS') }}" class="enable-notif bg-success" ><i class="fa fa-envelope pull-right" style="opacity: 0.8;"></i> Activar</a>
                                     {% endif %}
                                 </li>
                                 <li class="divider"></li>
                                 <li>
-                                    <a href="#" id="tour-trigger"  ><i class="fa fa-rocket pull-right" style="opacity: 0.8;"></i> Iniciar tour</a>
+                                    <a href="javascript:void(0)" id="tour-trigger"  ><i class="fa fa-rocket pull-right" style="opacity: 0.8;"></i> Iniciar tour</a>
                                 </li>
                                 <li class="divider"></li>
                                 <li>
-                                    <a href="#" data-toggle="modal" data-target="#aboutM"><i class="fa fa-plus-circle pull-right" style="opacity: 0.8;"></i> Acerca del Sistema</a>
+                                    <a href="javascript:void(0)" data-toggle="modal" data-target="#aboutM"><i class="fa fa-plus-circle pull-right" style="opacity: 0.8;"></i> Acerca del Sistema</a>
                                 </li>
                                 <li class="divider"></li>
                                 <li>
@@ -316,13 +317,58 @@
     </div>
     <!-- END Modal loadingProfile -->
 
+    <!-- Modal misPerfiles -->
+    <div id="misPerfiles" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header bg-success">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-user" aria-hidden="true"></i> Perfil</h4>
+                </div>
+                <div class="modal-body">
+                    <!-- User Info -->
+                    <div class="widget">
+                        <div class="widget-advanced">
+                            <!-- Widget Header -->
+                            <div class="widget-header text-center themed-background-dark" style="background-color: #394263; padding: 30px 15px 50px;">
+                                <h3 class="widget-content-light clearfix">
+                                    <strong>{{ app.session.get('nameS') | upper}}</strong><br>
+                                </h3>
+                            </div>
+                            <!-- END Widget Header -->
+
+                            <!-- Widget Main -->
+                            <div class="widget-main">
+                                <a href="page_comp_gallery.html" class="widget-image-container" style="padding: 0px;">
+                                    <img class="img-circle" src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar">
+                                </a>
+                                <div class="gallery gallery-widget" data-toggle="lightbox-gallery">
+                                    <h5>Estos son los perfiles que tienes asignados:</h5>
+
+                                    <div id="profile" style="padding-left: 10px;">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- END Widget Main -->
+                        </div>
+                    </div>
+                    <!-- END User Info -->
+                </div>
+                <div class="modal-footer" >
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal misPerfiles -->
+
     <!-- Modal update profile -->
     <div id="updateProfile" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-header bg-success">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title"><i class="fa fa-universal-access" aria-hidden="true"></i> Perfil</h4>
+                    <h4 class="modal-title"><i class="fa fa-user" aria-hidden="true"></i> Perfil</h4>
                 </div>
                 <div class="modal-body">
                     <div class="text-center" style="padding: 5% 0;">
@@ -480,49 +526,10 @@
 
                 parseInfo('{{ app.session.get('privilegeS') | raw }}', '{{ app.session.get('profileS') | raw }}');
                 var versionArray = $.parseJSON('{{ app.session.get('versionS') | raw }}');
-                $('#version').append(versionArray[0].version);
-                var actualV = '';
-                var anteriorV = '';
-                var i = 0;
-                var months = ['Enero','Febrero','Marzo','Abril','Maoy','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-                $.each(versionArray, function(i, versions) {
-                    if(i != 0) {
-                        var d = new Date(versions.releaseDate.date)
-                        anteriorV += '<div class="text-right"><h3>Version: '+versions.version+'</h3>' +
-                                '<h4>Fecha: '+d.getDate()  + "/" + months[d.getMonth()] + "/" + d.getFullYear() +'</h4></div>' +
-                                '<table>';
-                    }
-                    $.each(versions.nuevo, function (j, item) {
-                        if(i == 0) {
-                            actualV += "<tr>" +
-                                    "<th width='25%' style='vertical-align: top;'><i class='fa fa-check-circle-o'></i> " + item.title + ": </th>" +
-                                    "<td width='5%'> </td>"+
-                                    "<td style='padding-bottom: 2%'>" + item.description + "</td>" +
-                                    "</tr>"+
-                                    "<tr><td></td></tr>";
-                        }else{
+                version(versionArray);
 
-                            anteriorV += "<tr>" +
-                                    "<th width='25%' style='vertical-align: top;'><i class='fa fa-check-circle-o'></i> " + item.title + ": </th>" +
-                                    "<td width='5%'> </td>"+
-                                    "<td style='padding-bottom: 2%'>" + item.description + "</td>" +
-                                    "</tr>"+
-                                    "<tr><td></td></tr>";
-                        }
-                    });
-                    i++;
-                    if(i != 0) {
-                        anteriorV += '</table>';
-                    }
-                });
-
-                $('#nuevo').append(actualV);
-                $('.last').html(anteriorV);
             });
-            //--- Evento para mostar el video de Bienvenida al sistema
-            function showVideo(){
-                $('#videoWellcome').modal();
-            }
+
             //solicitud para actualizar perfil
             function updateProfile(personId){
                 $('#updateProfile').modal('hide');
