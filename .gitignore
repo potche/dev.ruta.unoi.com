@@ -1,9 +1,9 @@
 /app/bootstrap.php.cache
 /app/cache/
-/app/AppKernel.php
-/app/SymfonyRequirements.php
-/app/Resources/views/base.mail.html.twig
-/app/check.php
+app/AppKernel.php
+app/SymfonyRequirements.php
+app/Resources/views/base.mail.html.twig
+app/check.php
 composer.json
 composer.lock
 !app/cache/.gitkeep
@@ -15,5 +15,6 @@ composer.lock
 /composer.phar
 /vendor/
 /web/bundles/
-/web/borraCache.php
+web/borraCache.php
 .idea/
+.sonar/
