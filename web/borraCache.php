@@ -6,13 +6,13 @@
  * Time: 01:30 PM
  */
 
-$cmd = "rm -rf /Users/jbravob/Sites/dev.ruta.unoi.com/app/cache/*";
+$cmd = "rm -rf /var/www/html/dev.ruta.unoi.com/app/cache/*";
 if (substr(php_uname(), 0, 7) == "Windows"){
     pclose(popen("start /B ". $cmd, "r"));
 }else{
     exec($cmd . " > /dev/null &");
 }
-$cmd = "rm -rf /Users/jbravob/Sites/dev.ruta.unoi.com/app/logs/*";
+$cmd = "rm -rf /var/www/html/dev.ruta.unoi.com/app/logs/*";
 if (substr(php_uname(), 0, 7) == "Windows"){
     pclose(popen("start /B ". $cmd, "r"));
 }else{
