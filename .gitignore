@@ -16,4 +16,4 @@ composer.lock
 /vendor/
 /web/bundles/
 /web/borraCache.php
-.idea/*
+.idea/
