@@ -1,0 +1,178 @@
+{% extends '::base.html.twig' %}
+{% block body %}
+
+    <div id="page-content">
+
+        <div class="content-header">
+            <div class="header-section">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <h1>
+                            <b>Observaci&oacute;n del trabajo en el aula</b>
+                        </h1>
+                    </div>
+                    <div class="col-sm-4">
+                        <img class="pull-right" src="{{ asset('public/assets/images/icon/observacionHeader.svg') }}" style="width: 64px; height: 64px">
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+        <div class="block">
+            <div class="block-title text-center">
+                <h2>Ver mis <strong>Listas</strong></h2>
+            </div>
+                <div class="block-content">
+                    <div class="row">
+                        <a href="/evaluaciones/crear" class="btn btn-md btn-info animation-pulse" data-toggle="block-toggle-content">Crear Nueva <i class="fa fa-plus"></i></a>
+                    </div>
+                </div>
+        </div>
+
+
+    </div>
+    <!-- END Page Content -->
+
+    <!-- Modal Stats User -->
+    <div id="statsUser" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-rebel"></i> Estad&iacute;sticas por <strong>usuario</strong></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <img src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar" class="img-circle">
+                            <h1><span class="userName"></span></h1>
+                            <div id="avanceUser"></div>
+                            <small><em>Porcentaje de avance</em></small>
+                            <hr>
+                            <div id="selectSurveys" class="well"></div>
+                        </div>
+                    </div>
+
+
+                    <span id="bodyStatsUser"></span>
+
+                    <div id="block-resumenG" class="block">
+                        <div class="block-title">
+                            <h2>Gr&aacute;ficas de <strong>avance</strong></h2>
+                        </div>
+                        <div class="row">
+                            <div class="block-content ">
+
+                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                    <div class="block">
+                                        <div id="containerPieLU" >
+                                            <div class="text-center">
+                                                <button class="btn btn-lg">
+                                                    <i class="fa fa-refresh fa-spin fa-3x"></i>
+                                                    <br/>
+                                                    Cargando, por favor espere...
+                                                </button>
+                                                <br/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="block-content ">
+                                <div class="col-sm-12  col-md-6 col-lg-6">
+                                    <div class="block">
+                                        <div id="containerColumnLU">
+                                            <div class="text-center">
+                                                <button class="btn btn-lg">
+                                                    <i class="fa fa-refresh fa-spin fa-3x"></i>
+                                                    <br/>
+                                                    Cargando, por favor espere...
+                                                </button>
+                                                <br/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="surveyUser">
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal Stats User -->
+
+    <!-- Modal Stats DetalleSurvey -->
+    <div id="detalleSurveyM" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-file-text" style="padding-right: 5px;"></i> <span class="titleModalDS"></span></h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-sm-1">
+                            <br/><br/>
+                            <i id="left" class="fa fa-arrow-circle-left fa-2x hidden"></i>
+                        </div>
+                        <div class="col-sm-10">
+                            <div class="bodyModalDS"></div>
+                        </div>
+                        <div class="col-sm-1">
+                            <br/><br/>
+                            <i id="right" class="fa fa-arrow-circle-right fa-2x hidden"></i>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal Stats User -->
+
+    <div id="divContentDetalle" class="hidden">
+    </div>
+
+    <!-- Modal loading -->
+    <div id="loadingStats" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-body bg-primary text-center">
+                    <h4 class="modal-title"><i class="fa fa-refresh fa-spin"></i> Cargando, <strong>por favor espere...</strong></h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal loading -->
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+    <script>
+        //dominio http://dev.ruta.unoi.com
+        var HttpHost = '{{ app.request.getSchemeAndHttpHost() }}';
+        //si es /app_dev.php
+        var baseUrl = '{{ app.request.baseurl }}';
+        //ruta en la que nos encontramos http://dev.ruta.unoi.com/app_dev.php/observacion
+        var uri = '{{ app.request.uri }}';
+
+        $(function() {
+
+
+        });
+    </script>
+
+{% endblock %}

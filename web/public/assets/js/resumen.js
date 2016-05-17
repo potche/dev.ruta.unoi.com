@@ -29,8 +29,8 @@ function createDataTableRes(dat){
             '<table id="tbl-datatable-tarea" class="table table-bordered">'+
                 '<thead>'+
                     '<tr>'+
-                        '<th class="hidden-sm hidden-xs"><strong>#</strong></th>'+
-                        '<th class="text-center" style="width: 50%;"><strong>Pregunta</strong></th>'+
+                        '<th class="hidden-sm hidden-xs text-center"><strong>#</strong></th>'+
+                        '<th class="text-center" style="width: 40%;"><strong>Pregunta</strong></th>'+
                         '<th class="text-center">'+
                             '<span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><strong>Respuesta</strong></span>'+
                             '<span class="visible-xs-inline"><strong><i class="fa fa-pencil-square-o"></i></strong></span>'+
@@ -48,7 +48,7 @@ function createDataTableRes(dat){
             '<table id="tbl-datatable-resumen" class="table table-bordered">'+
                 '<thead>'+
                     '<tr>'+
-                        '<th class="hidden-sm hidden-xs"><strong>#</strong></th>'+
+                        '<th class="hidden-sm hidden-xs text-center"><strong>#</strong></th>'+
                         '<th class="text-center"><strong>Pregunta</strong></th>'+
                         '<th class="text-center">'+
                             '<span class="visible-lg-inline visible-md-inline visible-sm-inline hidden-xs"><strong>Respuesta</strong></span>'+
@@ -83,7 +83,7 @@ function createDataTableRes(dat){
                 '<tr>' +
                     '<td class="hidden-sm hidden-xs text-center">'+orderQ+'</td>'+
                     '<td>'+question+'</td>'+
-                    '<td>'+answer+'</td>'+
+                    '<td class="text-center">'+answer+'</td>'+
                     '<td>'+escapeHtml(comment)+'</td>'+
                 '</tr>';
         }else{
@@ -209,6 +209,7 @@ function editComment(id){
     commentOld = escapeHtml($("#"+id).text());
 
     $('#'+id).html('<input type="text" value="'+escapeHtml(commentOld)+'" class="form-control"/>');
+    $('#'+id).find('input').focus();
 }
 
 function saveComment(id){

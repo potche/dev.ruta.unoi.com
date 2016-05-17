@@ -47,8 +47,6 @@ class APIProfileController extends Controller{
             $this->_id = $id;
             if($this->getUserPass()){
                 $this->getProfileLMS();
-            }else{
-                $result = "boooo";
             }
 
             #-----envia la respuesta en JSON-----#

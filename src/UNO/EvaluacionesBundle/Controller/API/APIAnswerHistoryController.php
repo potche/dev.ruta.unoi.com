@@ -19,6 +19,13 @@ use UNO\EvaluacionesBundle\Controller\API\APIUtils;
  * Time: 1:25 PM
  */
 
+define('ANSWERID', 'answerId');
+define('ANSWERIDM', 'answerid');
+define('ANSWER', 'answer');
+define('COMMENT','comment');
+define('PERSONPERSONID','personPersonId');
+define('OPTIONXQUESTIONID','optionXquestionId');
+define('DATEHISTORY','dateHistory');
 /**
  * @Route("/api/v0/answerHistory")
  *
@@ -50,7 +57,7 @@ class APIAnswerHistoryController extends Controller{
         return $qb->select('A.answerId, A.answer, A.comment, A.personPersonId, A.optionXquestionId, A.dateHistory')
             ->from('UNOEvaluacionesBundle:Answerhistory', 'A')
             ->where('A.answerId = :answerId')
-            ->setParameter('answerId', $id)
+            ->setParameter(ANSWERID, $id)
             ->getQuery()
             ->getResult();
     }
@@ -60,21 +67,12 @@ class APIAnswerHistoryController extends Controller{
      * @Method({"POST"})
      */
     public function AddResAction(Request $request){
+        $answerId = (int)$request->request->get(ANSWERID);
+        $answerHistory = $this->findAnswer($answerId);
 
-        $answerHistory = $this->findAnswer((int)$request->request->get('answerId'));
+        $this->updateAnswer($answerId,$request->request->get(ANSWER), null);
 
-        $post = array(
-            "answerId" => (int)$answerHistory[0]['answerid'],
-            "answer" => $answerHistory[0]['answer'],
-            "comment" => $answerHistory[0]['comment'],
-            "personPersonId" => (int)$answerHistory[0]['personid'],
-            "optionXquestionId" => (int)$answerHistory[0]['optionxquestionId'],
-            "dateHistory" => new \DateTime()
-        );
-
-        $this->updateAnswer((int)$request->request->get('answerId'),$request->request->get('answer'), null);
-
-        $result = $this->getResQueryAdd($post);
+        $result = $this->getResQueryAdd($answerHistory);
 
         #-----envia la respuesta en JSON-----#
         $response = new JsonResponse();
@@ -88,21 +86,12 @@ class APIAnswerHistoryController extends Controller{
      * @Method({"POST"})
      */
     public function AddCommentAction(Request $request){
+        $answerId = (int)$request->request->get(ANSWERID);
+        $answerHistory = $this->findAnswer($answerId);
 
-        $answerHistory = $this->findAnswer((int)$request->request->get('answerId'));
+        $this->updateAnswer($answerId, null, $request->request->get(COMMENT));
 
-        $post = array(
-            "answerId" => (int)$answerHistory[0]['answerid'],
-            "answer" => $answerHistory[0]['answer'],
-            "comment" => $answerHistory[0]['comment'],
-            "personPersonId" => (int)$answerHistory[0]['personid'],
-            "optionXquestionId" => (int)$answerHistory[0]['optionxquestionId'],
-            "dateHistory" => new \DateTime()
-        );
-
-        $this->updateAnswer((int)$request->request->get('answerId'), null, $request->request->get('comment'));
-
-        $result = $this->getResQueryAdd($post);
+        $result = $this->getResQueryAdd($answerHistory);
 
         #-----envia la respuesta en JSON-----#
         $response = new JsonResponse();
@@ -118,28 +107,39 @@ class APIAnswerHistoryController extends Controller{
 
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
-        return $qb->select('A.answerid, A.answer, A.comment, P.personid, OQ.optionxquestionId')
+        $answerHistory = $qb->select('A.answerid, A.answer, A.comment, P.personid, OQ.optionxquestionId')
             ->from('UNOEvaluacionesBundle:Answer', 'A')
             ->innerJoin('UNOEvaluacionesBundle:Person','P','WITH', 'A.personPersonid = P.personid')
             ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','OQ','WITH', 'A.optionxquestion = OQ.optionxquestionId')
             ->where('A.answerid = :answerId')
-            ->setParameter('answerId', $id)
+            ->setParameter(ANSWERID, $id)
             ->getQuery()
             ->getResult();
+
+        return array(
+            ANSWERID => (int)$answerHistory[0][ANSWERIDM],
+            ANSWER => $answerHistory[0][ANSWER],
+            COMMENT => $answerHistory[0][COMMENT],
+            PERSONPERSONID => (int)$answerHistory[0]['personid'],
+            OPTIONXQUESTIONID => (int)$answerHistory[0]['optionxquestionId'],
+            DATEHISTORY => new \DateTime()
+        );
     }
 
     private function updateAnswer($id, $answer = null, $comment = null){
         $em = $this->getDoctrine()->getManager();
         $Answer = $em->getRepository('UNOEvaluacionesBundle:Answer')->findOneBy(
-            array('answerid' => $id)
+            array(ANSWERIDM => $id)
         );
 
         if ($Answer) {
-
-            if($answer)
+            if($answer) {
                 $Answer->setAnswer($answer);
-            if($comment)
+            }
+
+            if($comment) {
                 $Answer->setComment($comment);
+            }
 
             $em->flush();
         }
@@ -152,12 +152,12 @@ class APIAnswerHistoryController extends Controller{
 
         $AnswerHistory = new Answerhistory();
 
-        $AnswerHistory->setAnswerId($post['answerId']);
-        $AnswerHistory->setAnswer($post['answer']);
-        $AnswerHistory->setComment($post['comment']);
-        $AnswerHistory->setPersonPersonId($post['personPersonId']);
-        $AnswerHistory->setOptionXquestionId($post['optionXquestionId']);
-        $AnswerHistory->setDateHistory($post['dateHistory']);
+        $AnswerHistory->setAnswerId($post[ANSWERID]);
+        $AnswerHistory->setAnswer($post[ANSWER]);
+        $AnswerHistory->setComment($post[COMMENT]);
+        $AnswerHistory->setPersonPersonId($post[PERSONPERSONID]);
+        $AnswerHistory->setOptionXquestionId($post[OPTIONXQUESTIONID]);
+        $AnswerHistory->setDateHistory($post[DATEHISTORY]);
 
         $em = $this->getDoctrine()->getManager();
         // tells Doctrine you want to (eventually) save the Product (no queries yet)

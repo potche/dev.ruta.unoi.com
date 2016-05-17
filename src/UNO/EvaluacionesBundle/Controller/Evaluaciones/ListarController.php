@@ -36,7 +36,6 @@ class ListarController extends Controller
                 'redirect' => 'listar',
                 'with' => 'none'
             ));
-            //return $this->redirectToRoute('login');
         }
 
         $personID = $session->get('personIdS');

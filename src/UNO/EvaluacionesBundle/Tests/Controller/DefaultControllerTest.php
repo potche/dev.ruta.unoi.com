@@ -2,16 +2,14 @@
 
 namespace UNO\EvaluacionesBundle\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use UNO\EvaluacionesBundle\Controller\LMS\LMS;
 
-class DefaultControllerTest extends WebTestCase
+class DefaultControllerTest extends \PHPUnit_Framework_TestCase
 {
     public function testIndex()
     {
-        $client = static::createClient();
+        $controller = new LMS();
+        //$login->encryptPassUserAction();
 
-        $crawler = $client->request('GET', '/hello/Fabien');
-
-        $this->assertTrue($crawler->filter('html:contains("Hello Fabien")')->count() > 0);
     }
 }

@@ -95,17 +95,17 @@ class AjaxStatsController extends Controller{
             foreach($survey as $value){
                 $evalTitleArray['title'] = $valTitle;
                 if($valTitle == $value['title']){
-                    switch ($value['answer']):
-                        default:
-                            $evalTitleArray['nose'] = $value['countAnswer'];
-                            break;
+                    switch ($value['answer']) {
                         case 'Sí':
                             $evalTitleArray['si'] = $value['countAnswer'];
                             break;
                         case 'No':
                             $evalTitleArray['no'] = $value['countAnswer'];
                             break;
-                    endswitch;
+                        default:
+                            $evalTitleArray['nose'] = $value['countAnswer'];
+                            break;
+                    }
                 }
             }
             array_push($evalUserArray, $evalTitleArray);

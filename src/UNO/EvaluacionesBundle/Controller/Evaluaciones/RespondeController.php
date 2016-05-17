@@ -36,7 +36,6 @@ class RespondeController extends Controller
         if ( !$session->has('logged_in') ) {
             return $this->redirectToRoute('login');
         }else{
-            $personId = $session->get('personIdS');
             if(!Utils::isSurveyAuthorized($session,$surveyID)){
                 return $this->render('@UNOEvaluaciones/Evaluaciones/responderError.html.twig',array(
                     'title'=>'Error',

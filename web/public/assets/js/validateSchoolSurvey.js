@@ -231,11 +231,11 @@ function graphsAll(serverAPI, nameSchool, surveyName){
                         $.each(res.preguntas, function (key, value) {
                             row +=
                                 '<tr>' +
-                                '<td>' + value.orden + '</td>' +
+                                '<td class="text-center">' + value.orden + '</td>' +
                                 '<td>' + value.pregunta + '</td>';
 
                             $.each(value.opciones, function (key2, option) {
-                                row += '<td>' + numberWithCommas(option.total) + '</td>';
+                                row += '<td class="text-center">' + numberWithCommas(option.total) + '</td>';
                             });
                             row += '</tr>';
 
