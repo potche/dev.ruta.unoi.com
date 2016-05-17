@@ -1,0 +1,212 @@
+{% extends '::base.html.twig' %}
+{% block body %}
+
+    <div id="page-content">
+
+        <div class="content-header">
+            <div class="header-section">
+                <h1>
+                    {# app.request.getSchemeAndHttpHost() #}
+                    {# app.request.basepath #}
+                    {# app.request.baseurl #}
+                    {# app.request.uri #}
+                    <i class="fa fa-line-chart"></i><b>Estad&iacute;sticas</b>
+                    <small><br/><span class="label label-primary"><span class="nameSchool"></span> </span></small>
+                    <small><br/><span class="label label-primary"><span class="nameSurvey"></span> </span></small>
+                </h1>
+            </div>
+        </div>
+
+        <div class="block">
+            <div class="block-title">
+                <h2>Filtro</h2>
+            </div>
+            <div class="row">
+                <div class="block-content">
+                    <form id="schoolFrm">
+                        <div id="divSchool" class="col-sm-6">
+                            <strong>Escuela</strong>
+                            <input type="text" id="schoolIdFrm" name="schoolIdFrm" class="form-control input-typeaheadSchool" autocomplete="off" placeholder="Busca escuelas..">
+                        </div>
+
+                        <!-- Success Alert Content -->
+                        <div id="divContentSchool" class="col-sm-6" style="display: none">
+                            <div class="alert alert-success alert-dismissable">
+                                <button id="closeSchool" type="button" class="close" >&times;</button>
+                                <h4><i class="fa fa-university"></i> <strong><span class="nameSchool"></span></strong></h4>
+                            </div>
+                        </div>
+                        <!-- END Success Alert Content -->
+
+                        <div id="divSurvey" class="col-sm-6">
+                            <strong>Evaluación</strong>
+                            <input type="text" id="surveyIdFrm" name="surveyIdFrm" class="form-control input-typeaheadSurvey" autocomplete="off" placeholder="Busca evaluación..">
+                        </div>
+
+                        <!-- Success Alert Content -->
+                        <div id="divContentSurvey" class="col-sm-6" style="display: none">
+                            <div class="alert alert-info alert-dismissable">
+                                <button id="closeSurvey" type="button" class="close" >&times;</button>
+                                <h4><i class="fa fa-pencil-square-o"></i> <strong><span class="nameSurvey"></span></strong></h4>
+                            </div>
+                        </div>
+                        <!-- END Success Alert Content -->
+
+                        <div id="errorBuscar" class="alert alert-danger col-sm-12 text-center" style="display: none">
+                            <div id="mensajeSchool" style="display: none">
+                                <h5><i class="fa fa-times"></i> Ingrese una escuela v&aacute;lida</h5>
+                            </div>
+                            <div id="mensajeSurvey" style="display: none">
+                                <h5><i class="fa fa-times"></i> Ingrese una evaluación v&aacute;lida</h5>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12 text-center form-group form-actions">
+                            <button id="buscar" type="button" class="btn btn-sm btn-primary" onclick="findFilter();" disabled ><i class="fa fa-search"></i> Buscar</button>
+                            <button id="todo" type="button" class="btn btn-sm btn-warning" onclick="resetFilter()" disabled ><i class="fa fa-repeat"></i> Avance Global</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <!-- END Page Content -->
+
+    <!-- Modal Stats User -->
+    <div id="statsUser" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-rebel"></i> Estad&iacute;sticas por <strong>usuario</strong></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <img src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar" class="img-circle">
+                            <h1><span class="userName"></span></h1>
+                            <div id="avanceUser"></div>
+                            <small><em>Porcentaje de avance</em></small>
+                            <hr>
+                            <div id="selectSurveys" class="well"></div>
+                        </div>
+                    </div>
+
+
+                    <span id="bodyStatsUser"></span>
+
+                    <div id="block-resumenG" class="block">
+                        <div class="block-title">
+                            <h2>Gr&aacute;ficas de <strong>avance</strong></h2>
+                        </div>
+                        <div class="row">
+                            <div class="block-content ">
+
+                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                    <div class="block">
+                                        <div id="containerPieLU" >
+                                            <div class="text-center">
+                                                <button class="btn btn-lg">
+                                                    <i class="fa fa-refresh fa-spin fa-3x"></i>
+                                                    <br/>
+                                                    Cargando, por favor espere...
+                                                </button>
+                                                <br/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="block-content ">
+                                <div class="col-sm-12  col-md-6 col-lg-6">
+                                    <div class="block">
+                                        <div id="containerColumnLU">
+                                            <div class="text-center">
+                                                <button class="btn btn-lg">
+                                                    <i class="fa fa-refresh fa-spin fa-3x"></i>
+                                                    <br/>
+                                                    Cargando, por favor espere...
+                                                </button>
+                                                <br/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="surveyUser">
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal Stats User -->
+
+    <!-- Modal Stats DetalleSurvey -->
+    <div id="detalleSurveyM" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-file-text" style="padding-right: 5px;"></i> <span class="titleModalDS"></span></h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-sm-1">
+                            <br/><br/>
+                            <i id="left" class="fa fa-arrow-circle-left fa-2x hidden"></i>
+                        </div>
+                        <div class="col-sm-10">
+                            <div class="bodyModalDS"></div>
+                        </div>
+                        <div class="col-sm-1">
+                            <br/><br/>
+                            <i id="right" class="fa fa-arrow-circle-right fa-2x hidden"></i>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal Stats User -->
+
+    <div id="divContentDetalle" class="hidden">
+    </div>
+
+    <!-- Modal loading -->
+    <div id="loadingStats" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-body bg-primary text-center">
+                    <h4 class="modal-title"><i class="fa fa-refresh fa-spin"></i> Cargando, <strong>por favor espere...</strong></h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal loading -->
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+    <script>
+        var baseUri = "http://dev.ruta.unoi.com";
+
+        $(function() {
+
+
+        });
+    </script>
+
+{% endblock %}
