@@ -8,12 +8,22 @@ function parseInfo(privilege, profile){
     var link = '';
     var menu = '';
     $.each(privilegeArray, function(i, item) {
-        link += "<li>"+
-            "<a href=" + privilegeArray[i].ruteOptionApplication + ">"+
-            "<i class='" + privilegeArray[i].iconOptionApplication + " sidebar-nav-icon'></i>"+
-            "<span class='sidebar-nav-mini-hide'>" + privilegeArray[i].nameOptionApplication + "</span>"+
-            "</a>"+
-            "</li>";
+        if($.trim(privilegeArray[i].ruteOptionApplication) === "/observacion"){
+            link += "<li>"+
+                "<a href=" + privilegeArray[i].ruteOptionApplication + ">"+
+                "<img src='" + privilegeArray[i].iconOptionApplication + "observacion.svg' align='middle' style='width: 18px; height: 14px; opacity: 0.5; margin-right: 10px;'>"+
+                "<span class='sidebar-nav-mini-hide'>" + privilegeArray[i].nameOptionApplication + "</span>"+
+                "</a>"+
+                "</li>";
+        }else {
+            link += "<li>"+
+                "<a href=" + privilegeArray[i].ruteOptionApplication + ">"+
+                "<i class='" + privilegeArray[i].iconOptionApplication + " sidebar-nav-icon'></i>"+
+                "<span class='sidebar-nav-mini-hide'>" + privilegeArray[i].nameOptionApplication + "</span>"+
+                "</a>"+
+                "</li>";
+        }
+
     });
 
     link +="<li id='ayuda-link'>"+
@@ -28,11 +38,18 @@ function parseInfo(privilege, profile){
     //-----------------------------------------------
 
     $.each(privilegeArray, function(i, item) {
-        if(privilegeArray[i].nameOptionApplication != 'Inicio'){
-            menu += "<li>"+
-                "<a href='" + privilegeArray[i].ruteOptionApplication + "'><i class='" + privilegeArray[i].iconOptionApplication + "'></i> " + privilegeArray[i].nameOptionApplication + "</a>"+
-                "</li>"
-            ;
+        if(privilegeArray[i].nameOptionApplication !== 'Inicio'){
+            if($.trim(privilegeArray[i].ruteOptionApplication) === "/observacion") {
+                menu += "<li>" +
+                    "<a href='" + privilegeArray[i].ruteOptionApplication + "'><img src='" + privilegeArray[i].iconOptionApplication + "observacion.svg' align='middle' style='width: 100px; height: 55px; display: block; margin-right: 0; margin-bottom: 10px; font-size: 42px; padding: 10px; color: #dae7e8'> " + privilegeArray[i].nameOptionApplication + "</a>" +
+                    "</li>"
+                ;
+            }else {
+                menu += "<li>"+
+                    "<a href='" + privilegeArray[i].ruteOptionApplication + "'><i class='" + privilegeArray[i].iconOptionApplication + "'></i> " + privilegeArray[i].nameOptionApplication + "</a>"+
+                    "</li>"
+                ;
+            }
         }
     });
     menu += "<li id='ayuda-btn'><a href='/tutorials'><i class='fa fa-question-circle'></i> Ayuda</a></li>";

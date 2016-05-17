@@ -5,69 +5,30 @@
 
         <div class="content-header">
             <div class="header-section">
-                <h1>
-                    {# app.request.getSchemeAndHttpHost() #}
-                    {# app.request.basepath #}
-                    {# app.request.baseurl #}
-                    {# app.request.uri #}
-                    <i class="fa fa-line-chart"></i><b>Estad&iacute;sticas</b>
-                    <small><br/><span class="label label-primary"><span class="nameSchool"></span> </span></small>
-                    <small><br/><span class="label label-primary"><span class="nameSurvey"></span> </span></small>
-                </h1>
+                <div class="row">
+                    <div class="col-sm-8">
+                        <h1>
+                            <b>Observaci&oacute;n del trabajo en el aula</b>
+                        </h1>
+                    </div>
+                    <div class="col-sm-4">
+                        <img class="pull-right" src="{{ asset('public/assets/images/icon/observacionHeader.svg') }}" style="width: 64px; height: 64px">
+                    </div>
+                </div>
+
+
             </div>
         </div>
 
         <div class="block">
-            <div class="block-title">
-                <h2>Filtro</h2>
+            <div class="block-title text-center">
+                <h2>Ver mis <strong>Listas</strong></h2>
             </div>
-            <div class="row">
                 <div class="block-content">
-                    <form id="schoolFrm">
-                        <div id="divSchool" class="col-sm-6">
-                            <strong>Escuela</strong>
-                            <input type="text" id="schoolIdFrm" name="schoolIdFrm" class="form-control input-typeaheadSchool" autocomplete="off" placeholder="Busca escuelas..">
-                        </div>
-
-                        <!-- Success Alert Content -->
-                        <div id="divContentSchool" class="col-sm-6" style="display: none">
-                            <div class="alert alert-success alert-dismissable">
-                                <button id="closeSchool" type="button" class="close" >&times;</button>
-                                <h4><i class="fa fa-university"></i> <strong><span class="nameSchool"></span></strong></h4>
-                            </div>
-                        </div>
-                        <!-- END Success Alert Content -->
-
-                        <div id="divSurvey" class="col-sm-6">
-                            <strong>Evaluación</strong>
-                            <input type="text" id="surveyIdFrm" name="surveyIdFrm" class="form-control input-typeaheadSurvey" autocomplete="off" placeholder="Busca evaluación..">
-                        </div>
-
-                        <!-- Success Alert Content -->
-                        <div id="divContentSurvey" class="col-sm-6" style="display: none">
-                            <div class="alert alert-info alert-dismissable">
-                                <button id="closeSurvey" type="button" class="close" >&times;</button>
-                                <h4><i class="fa fa-pencil-square-o"></i> <strong><span class="nameSurvey"></span></strong></h4>
-                            </div>
-                        </div>
-                        <!-- END Success Alert Content -->
-
-                        <div id="errorBuscar" class="alert alert-danger col-sm-12 text-center" style="display: none">
-                            <div id="mensajeSchool" style="display: none">
-                                <h5><i class="fa fa-times"></i> Ingrese una escuela v&aacute;lida</h5>
-                            </div>
-                            <div id="mensajeSurvey" style="display: none">
-                                <h5><i class="fa fa-times"></i> Ingrese una evaluación v&aacute;lida</h5>
-                            </div>
-                        </div>
-
-                        <div class="col-sm-12 text-center form-group form-actions">
-                            <button id="buscar" type="button" class="btn btn-sm btn-primary" onclick="findFilter();" disabled ><i class="fa fa-search"></i> Buscar</button>
-                            <button id="todo" type="button" class="btn btn-sm btn-warning" onclick="resetFilter()" disabled ><i class="fa fa-repeat"></i> Avance Global</button>
-                        </div>
-                    </form>
+                    <div class="row">
+                        <a href="/evaluaciones/crear" class="btn btn-md btn-info animation-pulse" data-toggle="block-toggle-content">Crear Nueva <i class="fa fa-plus"></i></a>
+                    </div>
                 </div>
-            </div>
         </div>
 
 
@@ -201,7 +162,12 @@
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 
     <script>
-        var baseUri = "http://dev.ruta.unoi.com";
+        //dominio http://dev.ruta.unoi.com
+        var HttpHost = '{{ app.request.getSchemeAndHttpHost() }}';
+        //si es /app_dev.php
+        var baseUrl = '{{ app.request.baseurl }}';
+        //ruta en la que nos encontramos http://dev.ruta.unoi.com/app_dev.php/observacion
+        var uri = '{{ app.request.uri }}';
 
         $(function() {
 

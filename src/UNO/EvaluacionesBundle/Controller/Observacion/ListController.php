@@ -15,6 +15,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+/**
+ * Class ListController
+ * @package UNO\EvaluacionesBundle\Controller\Observacion
+ */
 class ListController extends Controller{
 
     /**
