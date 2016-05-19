@@ -27,11 +27,21 @@ class ListController extends Controller{
      * obtiene y crea la tabla con el detalle de la evaluacion
      */
     public function indexAction(Request $request){
-
+        $baseUrl = "http://dev.ruta.unoi.com".$this->container->get('router')->getContext()->getBaseUrl();
+        $schoolListAPI = file_get_contents("$baseUrl/api/v0/catalog/schools", false);
         return $this->render('UNOEvaluacionesBundle:Observacion:index.html.twig', array(
-
+                'schoolList' => $schoolListAPI
             ));
 
+    }
+
+    private function createSchoolList($schoolList){
+        $arraySchool = array();
+        foreach(json_decode($schoolList) as $value){
+            array_push( $arraySchool, $value->schoolid .'-'. $value->school );
+        }
+
+        return json_encode($arraySchool);
     }
 
 }
