@@ -50,22 +50,34 @@
                             <div class="col-sm-10">
                                 <select id="obSchool" name="obSchool" class="select-chosen" data-placeholder="Ingresa el nombre del colegio..." style="width: 250px;">
                                     <option></option><!-- Required for data-placeholder attribute to work with Chosen plugin -->
-                                    {% for school in schoolList %}
-                                        <option value="{{ school.schooid }}">{{ school.school}}</option>
+                                    {% for school in schoolList%}
+                                        <option value="{{ school.schoolid }}">{{ school.school}}</option>
                                     {% endfor %}
                                 </select>
 
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group" id="docenteFG" >
                             <label class="col-sm-2 control-label">Docente</label>
-                            <div class="col-sm-10">
-                                <input type="text" id="obDocente" name="obDocente" class="form-control input-typeaheadSchool" autocomplete="off" placeholder="Ingresa el nombre del docente..." disabled>
+                            <div class="col-sm-10" id="docenteS">
                             </div>
                         </div>
 
+                        <hr/>
+
+                        <div class="form-group" id="assignedFG" >
+                            <label class="col-sm-2 control-label">Clase</label>
+                            <div class="col-sm-10" id="assignedS">
+                            </div>
+                        </div>
+
+
                     </form>
+
+                    <hr/>
+
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
@@ -134,40 +146,82 @@
         //ruta en la que nos encontramos http://dev.ruta.unoi.com/app_dev.php/observacion
         var uri = '{{ app.request.uri }}';
 
-        var schoolListJS = {{ schoolList | raw }};
+
         var personSchoolList;
 
         $(function() {
-            $('.input-typeaheadSchool').typeahead({ source: schoolListJS });
+            $("#docenteFG").hide();
+            $("#assignedFG").hide();
+
+            $('#obSchool').change(function(){
+
+                $.getJSON( HttpHost+baseUrl+"/api/v0/catalog/personSchool/"+$('#obSchool').val(), function( data ) {
+                    $("#docenteFG").show('slow');
+
+                    var items =
+                            '<select id="obDocente" name="obDocente" class="select-chosen " data-placeholder="Ingresa el nombre del docente..." style="width: 250px;" onchange="docente();">'+
+                                '<option></option>';
+
+                    $.each( data, function( key, val ) {
+
+                        items += "<option value='" + val.personid + "'>" + val.nombre + "</option>";
+                    });
+
+                    items += '</select>';
+
+                    $('#docenteS').html(items);
+                    $('.select-chosen').chosen({width: "100%"});
+
+                });
+            });
+
 
         });
 
-        var obSchool = $('#obSchool');
-        var okSchool;
-        $('#obSchool').blur(function(){
-            if($('#obSchool').val() != '') {
+        function docente(){
+            console.log($('#obDocente').val());
+            $.getJSON( HttpHost+baseUrl+"/api/v0/assigned/personById/"+$('#obDocente').val(), function( data ) {
+                $("#assignedFG").show('fast');
+                console.log(data);
 
-                if (schoolListJS.indexOf($('#obSchool').val()) != -1) {
-                    //mensajeSchool.hide();
-                    okSchool = true;
-                    //showErrorBuscar(okSchool, okSurvey, schoolIdFrm, surveyIdFrm);
-                    console.log($('#obSchool').val());
-                    $('#obDocente').prop('disabled', false);
-                } else {
-                    //errorBuscar.show('fast');
-                    //mensajeSchool.show();
-                    //buscar.prop('disabled', true);
-                    okSchool = false;
-                    $('#obDocente').prop('disabled', true);
-                }
-            }else{
-                //mensajeSchool.hide();
-                okSchool = false;
-                //showErrorBuscar(okSchool, okSurvey, schoolIdFrm, surveyIdFrm);
-                $('#obDocente').prop('disabled', true);
-            }
-            console.log(okSchool);
-        });
+                var items =
+                        '<select id="obAssigned" name="obAssigned" class="select-chosen " data-placeholder="Ingresa una clase..." style="width: 250px;" onchange="console.log(\'hola\');">'+
+                        '<option></option>';
+
+                $.each( data, function( key, val ) {
+
+                    items += "<option value='" + val.personAssignedId + "'>" + escapeGrades(val.nameGrade)+ ' <strong>' +val.groupId + '</strong> ' +val.nameProgram + ' ' +val.schoollevel + "</option>";
+                });
+
+                items += '</select>';
+
+                $('#assignedS').html(items);
+                $('.select-chosen').chosen({width: "100%"});
+
+            });
+        }
+
+        function escapeGrades(string) {
+            var grades = {
+                "Primero de kinder": "1°",
+                "Segundo de kinder": "2°",
+                "Tercero de kinder": "3°",
+                "Primero de primaria": "1°",
+                "Segundo de primaria": "2°",
+                "Tercero de primaria": "3°",
+                "Cuarto de primaria": "4°",
+                "Quinto de primaria": "5°",
+                "Sexto de primaria": "6°",
+                "Primero de secundaria": "1°",
+                "Segundo de secundaria": "2°",
+                "Tercero de secundaria": "3°",
+                "Primero de bachillerato": "1°",
+                "Segundo de bachillerato": "2°",
+                "Tercero de bachillerato": "3°"
+            };
+
+            return grades[string];
+        }
     </script>
 
 {% endblock %}
