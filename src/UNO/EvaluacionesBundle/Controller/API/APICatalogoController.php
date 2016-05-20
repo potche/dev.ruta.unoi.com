@@ -117,6 +117,42 @@ class APICatalogoController extends Controller{
     }
 
     /**
+     * @Route("/personSchool/{schoolId}")
+     */
+    public function personSchoolAction($schoolId){
+
+        $result = $this->getResQueryPersonSchool($schoolId);
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * obtiene una lista con loas escuelas para poder filtrar (unicamente para Admin)
+     * la almacena en el atributo $this->_schoolId
+     */
+    private function getResQueryPersonSchool($schoolId) {
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $_personSchool = $qb->select("P.personid, concat(trim(P.name),' ',trim(P.surname)) as nombre")
+            ->from('UNOEvaluacionesBundle:Personschool','PS')
+            ->innerJoin('UNOEvaluacionesBundle:Person','P', 'WITH', 'PS.personid = P.personid')
+            ->where('PS.schoolid = :schoolId')
+            ->setParameter('schoolId', $schoolId)
+            ->groupBy('PS.personid','PS.schoolid')
+            ->orderBy('PS.schoolid')
+            ->getQuery()
+            ->getResult();
+
+
+        return $_personSchool;
+    }
+
+    /**
      * @Route("/validUniqueMail/{email}")
      * busca que el mail que tiene el usuario no lo tenga otro usuario
      */

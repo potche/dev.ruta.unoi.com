@@ -26,7 +26,7 @@
             </div>
                 <div class="block-content">
                     <div class="row">
-                        <a href="/evaluaciones/crear" class="btn btn-md btn-info animation-pulse" data-toggle="block-toggle-content">Crear Nueva <i class="fa fa-plus"></i></a>
+                        <a href="javascript:void(0)" class="btn btn-md btn-info animation-pulse" onclick="$('#addObservation').modal();">Crear Nueva <i class="fa fa-plus"></i></a>
                     </div>
                 </div>
         </div>
@@ -36,75 +36,40 @@
     <!-- END Page Content -->
 
     <!-- Modal Stats User -->
-    <div id="statsUser" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div id="addObservation" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title"><i class="fa fa-rebel"></i> Estad&iacute;sticas por <strong>usuario</strong></h4>
+                    <h4 class="modal-title"><i class="fa fa-folder-open"></i> Ingreso de <strong>datos</strong></h4>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <img src="{{ asset('public/assets/images/login/icon_niño1.png') }}" alt="avatar" class="img-circle">
-                            <h1><span class="userName"></span></h1>
-                            <div id="avanceUser"></div>
-                            <small><em>Porcentaje de avance</em></small>
-                            <hr>
-                            <div id="selectSurveys" class="well"></div>
-                        </div>
-                    </div>
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Colegio</label>
+                            <div class="col-sm-10">
+                                <select id="obSchool" name="obSchool" class="select-chosen" data-placeholder="Ingresa el nombre del colegio..." style="width: 250px;">
+                                    <option></option><!-- Required for data-placeholder attribute to work with Chosen plugin -->
+                                    {% for school in schoolList %}
+                                        <option value="{{ school.schooid }}">{{ school.school}}</option>
+                                    {% endfor %}
+                                </select>
 
-
-                    <span id="bodyStatsUser"></span>
-
-                    <div id="block-resumenG" class="block">
-                        <div class="block-title">
-                            <h2>Gr&aacute;ficas de <strong>avance</strong></h2>
-                        </div>
-                        <div class="row">
-                            <div class="block-content ">
-
-                                <div class="col-sm-12 col-md-6 col-lg-6">
-                                    <div class="block">
-                                        <div id="containerPieLU" >
-                                            <div class="text-center">
-                                                <button class="btn btn-lg">
-                                                    <i class="fa fa-refresh fa-spin fa-3x"></i>
-                                                    <br/>
-                                                    Cargando, por favor espere...
-                                                </button>
-                                                <br/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="block-content ">
-                                <div class="col-sm-12  col-md-6 col-lg-6">
-                                    <div class="block">
-                                        <div id="containerColumnLU">
-                                            <div class="text-center">
-                                                <button class="btn btn-lg">
-                                                    <i class="fa fa-refresh fa-spin fa-3x"></i>
-                                                    <br/>
-                                                    Cargando, por favor espere...
-                                                </button>
-                                                <br/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div id="surveyUser">
-                    </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Docente</label>
+                            <div class="col-sm-10">
+                                <input type="text" id="obDocente" name="obDocente" class="form-control input-typeaheadSchool" autocomplete="off" placeholder="Ingresa el nombre del docente..." disabled>
+                            </div>
+                        </div>
 
+                    </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-info" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-info">Crear</button>
                 </div>
             </div>
         </div>
@@ -169,9 +134,39 @@
         //ruta en la que nos encontramos http://dev.ruta.unoi.com/app_dev.php/observacion
         var uri = '{{ app.request.uri }}';
 
+        var schoolListJS = {{ schoolList | raw }};
+        var personSchoolList;
+
         $(function() {
+            $('.input-typeaheadSchool').typeahead({ source: schoolListJS });
 
+        });
 
+        var obSchool = $('#obSchool');
+        var okSchool;
+        $('#obSchool').blur(function(){
+            if($('#obSchool').val() != '') {
+
+                if (schoolListJS.indexOf($('#obSchool').val()) != -1) {
+                    //mensajeSchool.hide();
+                    okSchool = true;
+                    //showErrorBuscar(okSchool, okSurvey, schoolIdFrm, surveyIdFrm);
+                    console.log($('#obSchool').val());
+                    $('#obDocente').prop('disabled', false);
+                } else {
+                    //errorBuscar.show('fast');
+                    //mensajeSchool.show();
+                    //buscar.prop('disabled', true);
+                    okSchool = false;
+                    $('#obDocente').prop('disabled', true);
+                }
+            }else{
+                //mensajeSchool.hide();
+                okSchool = false;
+                //showErrorBuscar(okSchool, okSurvey, schoolIdFrm, surveyIdFrm);
+                $('#obDocente').prop('disabled', true);
+            }
+            console.log(okSchool);
         });
     </script>
 
