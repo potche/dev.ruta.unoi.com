@@ -28,7 +28,8 @@ class ListController extends Controller{
      */
     public function indexAction(Request $request){
         $baseUrl = "http://dev.ruta.unoi.com".$this->container->get('router')->getContext()->getBaseUrl();
-        $schoolListAPI = file_get_contents("$baseUrl/api/v0/catalog/schools", false);
+        $schoolListAPI = json_decode(file_get_contents("$baseUrl/api/v0/catalog/schools", false), true);
+        
         return $this->render('UNOEvaluacionesBundle:Observacion:index.html.twig', array(
                 'schoolList' => $schoolListAPI
             ));
