@@ -1,0 +1,60 @@
+{% extends '::base.html.twig' %}
+{% block body %}
+
+    <!-- Working Tabs Block -->
+    <div class="block full">
+        <!-- Working Tabs Title -->
+        <div class="block-title">
+            <h2><strong>Observaci&oacute;n</strong> del Trabajo en el Aula <small style="color: darkgray;">Cuestionario</small></h2>
+        </div>
+        <!-- END Working Tabs Title -->
+
+        <!-- Working Tabs Content -->
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Block Tabs -->
+                <div class="block full">
+                    <!-- Block Tabs Title -->
+                    <div class="block-title">
+
+                        <ul class="nav nav-tabs" data-toggle="tabs">
+                            <li class="active"><a href="#A">A</a></li>
+                            <li><a href="#B">B</a></li>
+                            <li><a href="#options" data-toggle="tooltip" title="Settings"><i class="fa fa-cogs"></i></a></li>
+                        </ul>
+                    </div>
+                    <!-- END Block Tabs Title -->
+
+                    <!-- Tabs Content -->
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="A">Block tabs..</div>
+                        <div class="tab-pane" id="B">Profile..</div>
+                        <div class="tab-pane" id="options">Settings..</div>
+                    </div>
+                    <!-- END Tabs Content -->
+                </div>
+                <!-- END Block Tabs -->
+            </div>
+        </div>
+        <!-- END Working Tabs Content -->
+    </div>
+    <!-- END Working Tabs Block -->
+
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+    <script>
+        //dominio http://dev.ruta.unoi.com
+        var HttpHost = '{{ app.request.getSchemeAndHttpHost() }}';
+        //si es /app_dev.php
+        var baseUrl = '{{ app.request.baseurl }}';
+        //ruta en la que nos encontramos http://dev.ruta.unoi.com/app_dev.php/observacion
+        var uri = '{{ app.request.uri }}';
+
+        $(function() {
+
+        });
+
+    </script>
+
+{% endblock %}

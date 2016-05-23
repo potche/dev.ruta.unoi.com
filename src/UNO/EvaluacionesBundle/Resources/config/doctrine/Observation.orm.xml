@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-  <entity name="UNO\EvaluacionesBundle\Entity\Personassigned" table="PersonAssigned">
-    <id name="personAssignedId" type="integer" column="personAssignedId">
-      <generator strategy="IDENTITY"/>
+  <entity name="UNO\EvaluacionesBundle\Entity\Observation" table="Observation">
+    <id name="observationId" type="integer" column="observationId">
+      <generator strategy="AUTO"/>
     </id>
-    <field name="schoolLevelId" type="integer" column="schoolLevelId">
+    <field name="surveyId" type="integer" column="surveyId">
       <options>
         <option name="fixed"/>
       </options>
@@ -29,5 +29,17 @@
         <option name="fixed"/>
       </options>
     </field>
+    <field name="schoolId" type="integer" column="schoolId">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="coachId" type="integer" column="coachId">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="start" type="datetime" column="start"/>
+    <field name="finish" type="datetime" column="finish"/>
   </entity>
 </doctrine-mapping>

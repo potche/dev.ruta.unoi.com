@@ -36,9 +36,9 @@ class Personassigned
     private $gradeId;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="groupId", type="integer")
+     * @ORM\Column(name="groupId", type="string", length=65)
      */
     private $groupId;
 
@@ -117,7 +117,7 @@ class Personassigned
     /**
      * Set groupId
      *
-     * @param integer $groupId
+     * @param string $groupId
      *
      * @return Personassigned
      */
@@ -131,7 +131,7 @@ class Personassigned
     /**
      * Get groupId
      *
-     * @return integer
+     * @return string
      */
     public function getGroupId()
     {
