@@ -26,7 +26,7 @@
             </div>
                 <div class="block-content">
                     <div class="row">
-                        <a href="javascript:void(0)" class="btn btn-md btn-info animation-pulse" onclick="$('#addObservation').modal();">Crear Nueva <i class="fa fa-plus"></i></a>
+                        <a href="javascript:void(0)" class="btn btn-md btn-info " onclick="$('#addObservation').modal();">Crear Nueva <i class="fa fa-plus"></i></a>
                     </div>
                 </div>
         </div>
@@ -36,15 +36,19 @@
     <!-- END Page Content -->
 
     <!-- Modal Stats User -->
-    <div id="addObservation" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div id="addObservation" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <button type="button" class="close addObCancel" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title"><i class="fa fa-folder-open"></i> Ingreso de <strong>datos</strong></h4>
                 </div>
                 <div class="modal-body">
-                    <form class="form-horizontal">
+                    <div id="addObAlert" class="alert alert-info">
+                        <h5><i class="fa fa-times"></i> Llena todos los campos para habilitar el B&oacute;ton "Crear"</h5>
+                    </div>
+
+                    <form id="addObForm" class="form-horizontal">
                         <div class="form-group">
                             <label class="col-sm-2 control-label">Colegio</label>
                             <div class="col-sm-10">
@@ -80,8 +84,8 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-info">Crear</button>
+                    <button type="button" class="btn btn-default addObCancel" data-dismiss="modal">Cancelar</button>
+                    <button id="addObCreate" type="button" class="btn btn-info" disabled>Crear</button>
                 </div>
             </div>
         </div>
@@ -150,10 +154,13 @@
         var personSchoolList;
 
         $(function() {
-            $("#docenteFG").hide();
-            $("#assignedFG").hide();
+            $("#docenteFG").hide('fast');
+            $("#assignedFG").hide('fast');
 
             $('#obSchool').change(function(){
+                $('#addObCreate').prop('disabled',true);
+                $("#assignedFG").hide('fast');
+                $("#addObAlert").show('fast');
 
                 $.getJSON( HttpHost+baseUrl+"/api/v0/catalog/personSchool/"+$('#obSchool').val(), function( data ) {
                     $("#docenteFG").show('slow');
@@ -174,23 +181,22 @@
 
                 });
             });
-
-
         });
 
         function docente(){
-            console.log($('#obDocente').val());
+            $('#addObCreate').prop('disabled',true);
+            $("#addObAlert").show('fast');
+
             $.getJSON( HttpHost+baseUrl+"/api/v0/assigned/personById/"+$('#obDocente').val(), function( data ) {
                 $("#assignedFG").show('fast');
-                console.log(data);
 
                 var items =
-                        '<select id="obAssigned" name="obAssigned" class="select-chosen " data-placeholder="Ingresa una clase..." style="width: 250px;" onchange="console.log(\'hola\');">'+
+                        '<select id="obAssigned" name="obAssigned" class="select-chosen " data-placeholder="Ingresa una clase..." style="width: 250px;" onchange="clase()">'+
                         '<option></option>';
 
                 $.each( data, function( key, val ) {
 
-                    items += "<option value='" + val.personAssignedId + "'>" + escapeGrades(val.nameGrade)+ ' <strong>' +val.groupId + '</strong> ' +val.nameProgram + ' ' +val.schoollevel + "</option>";
+                    items += "<option value='" + val.personAssignedId + "'>" + escapeGrades(val.nameGrade)+ ' <strong>' +val.groupId + '</strong> ' +val.schoollevel + ' ' +val.nameProgram + "</option>";
                 });
 
                 items += '</select>';
@@ -200,6 +206,41 @@
 
             });
         }
+
+        function clase() {
+            $('#addObCreate').prop('disabled',false);
+            $("#addObAlert").hide('fast');
+        }
+
+        $('.addObCancel').click(function () {
+            $('#obSchool').val('').trigger('chosen:updated');
+            $('#docenteS').html('');
+            $("#docenteFG").hide('fast');
+            $('#assignedS').html('');
+            $("#assignedFG").hide('fast');
+            $("#addObAlert").show('fast');
+        });
+
+        $('#addObCreate').click(function () {
+            $.getJSON( HttpHost+baseUrl+"/api/v0/assigned/byId/"+$('#obAssigned').val(), function(data) {
+                if(data){
+                    $.post( HttpHost+baseUrl+"/api/v0/observation", { gradeId: data.gradeId, groupId: data.groupId, programId: data.programId, schoolId: $('#obSchool').val(), personId: $('#obDocente').val(), coachId: {{ app.session.get('personIdS')}} })
+                            .done(function(data) {
+                                if(data){
+                                    window.location.href = uri+"/crear/"+ $('#obSchool').val() +'/'+ $('#obDocente').val() +'/'+ $('#obAssigned').val();
+                                }
+                            })
+                            .fail(function() {
+                                console.log( "error" );
+                            })
+                            .always(function() {
+                                console.log( "finished" );
+                            });
+                }
+
+            });
+
+        });
 
         function escapeGrades(string) {
             var grades = {

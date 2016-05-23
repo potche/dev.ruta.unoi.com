@@ -159,6 +159,37 @@ private $_request;
     }
 
     /**
+     * @Route("/byId/{assignedId}")
+     */
+    public function byIdAction($assignedId){
+
+        $result = $this->getResQueryById($assignedId);
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * busca una clase asignada por id
+     */
+    private function getResQueryById($assignedId) {
+        $assigned = $this->getDoctrine()
+            ->getRepository('UNOEvaluacionesBundle:Personassigned')
+            ->findOneBy(array('personAssignedId' => $assignedId));
+
+        if ($assigned) {
+            return array(
+                'gradeId' => $assigned->getGradeId(),
+                'groupId' => $assigned->getGroupId(),
+                'programId' => $assigned->getProgramId()
+            );
+        }
+    }
+
+    /**
      * @Route("/programs")
      */
     public function programAction(){
