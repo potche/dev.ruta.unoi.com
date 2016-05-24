@@ -22,11 +22,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class CreateController extends Controller{
 
     /**
-     * @Route("/observacion/crear/{schoolId}/{personId}/{assignedId}")
+     * @Route("/observacion/crear/{observationId}")
      *
      * obtiene y crea la tabla con el detalle de la evaluacion
      */
-    public function indexAction(Request $request, $schoolId, $personId, $assignedId){
+    public function indexAction(Request $request, $observationId){
         #http://
         $scheme =  $this->container->get('router')->getContext()->getScheme().'://';
         #dev.ruta.unoi.com
@@ -37,19 +37,49 @@ class CreateController extends Controller{
         $baseUrl = "http://dev.ruta.unoi.com".$this->container->get('router')->getContext()->getBaseUrl();
 
         //$schoolListAPI = json_decode(file_get_contents("$baseUrl/api/v0/catalog/schools", false), true);
-        
+
+        $result = $this->getResQueryOQ(null, null);
+
         return $this->render('UNOEvaluacionesBundle:Observacion:create.html.twig', array(
+            'questionByCategory' => $result
             ));
 
     }
 
-    private function createSchoolList($schoolList){
-        $arraySchool = array();
-        foreach(json_decode($schoolList) as $value){
-            array_push( $arraySchool, $value->schoolid .'-'. $value->school );
+    /**
+     * @param $parameters
+     * @param $where
+     * @return mixed
+     */
+    private function getResQueryOQ($parameters = null, $where = null){
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $obQ = $qb->select("Q.questionid, QS.order, Q.question, Sub.subcategoryid, Sub.subcategory")
+            ->from('UNOEvaluacionesBundle:Questionxsurvey','QS')
+            ->innerJoin('UNOEvaluacionesBundle:Question','Q','WITH','QS.questionQuestionid = Q.questionid')
+            ->innerJoin('UNOEvaluacionesBundle:Subcategory','Sub','WITH','Q.subcategorySubcategoryid = Sub.subcategoryid')
+            ->andWhere('QS.surveySurveyid = 19')
+            //->setParameters($parameters)
+            ->orderBy( 'QS.order')
+            ->getQuery()
+            ->getResult();
+
+        $questionByCategory = array();
+        $subcategorys = array_unique(array_column($obQ, 'subcategory','subcategoryid'));
+
+        foreach ($subcategorys as $key => $subcategory){
+            $questions = array();
+            foreach ($obQ as $question){
+                if($question['subcategory'] === $subcategory){
+                    array_push($questions, array('order' => $question['order'], 'question' => $question['question'], 'questionId' => $question['questionid']));
+                }
+            }
+            array_push($questionByCategory, array('categoryId' => $key, 'category' => $subcategory, 'questions' => $questions));
         }
 
-        return json_encode($arraySchool);
+        return $questionByCategory;
     }
 
 }

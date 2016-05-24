@@ -42,7 +42,7 @@ class APIObservationController extends Controller{
      */
     public function observationsAction(){
 
-        $result = $this->getResQuery(null, null);
+        $result = $this->getResQuery();
 
         #-----envia la respuesta en JSON-----#
         $response = new JsonResponse();
@@ -52,11 +52,9 @@ class APIObservationController extends Controller{
     }
 
     /**
-     * @param $parameters
-     * @param $where
      * @return mixed
      */
-    private function getResQuery($parameters = null, $where = null){
+    private function getResQuery(){
 
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
@@ -64,6 +62,41 @@ class APIObservationController extends Controller{
         return $qb->select("O.observationId, O.surveyId, O.gradeId, O.groupId, O.programId, O.personId, O.schoolId, O.coachId, O.start, O.finish")
             ->from('UNOEvaluacionesBundle:Observation','O')
             ->orderBy( 'O.personId')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @Route("/observationsByCoach/{coachId}")
+     * @Method({"GET"})
+     */
+    public function observationsByCoachAction($coachId){
+
+        $result = $this->getResQueryObyC($coachId);
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getResQueryObyC($coachId){
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        return $qb->select("O.observationId, CONCAT(TRIM(P.name), ' ', TRIM(P.surname)) AS name, S.school, O.gradeId, O.groupId, Cp.nameProgram, O.start")
+            ->from('UNOEvaluacionesBundle:Observation','O')
+            ->innerJoin('UNOEvaluacionesBundle:Person','P','WITH','O.personId = P.personid')
+            ->innerJoin('UNOEvaluacionesBundle:School','S','WITH','O.schoolId = S.schoolid')
+            ->innerJoin('UNOEvaluacionesBundle:Cprogram','Cp','WITH','O.programId = Cp.programId')
+            ->where('O.coachId = :coachId')
+            ->setParameter('coachId', $coachId)
+            ->orderBy( 'O.observationId')
             ->getQuery()
             ->getResult();
     }
@@ -88,7 +121,7 @@ class APIObservationController extends Controller{
         $result = $this->addQuery($post);
 
         #-----envia la respuesta en JSON-----#
-        return new JsonResponse(array(MESSAGE_OB => $result[MESSAGE_OB]), $result[STATUS_OB]);
+        return new JsonResponse(array('id' => $result[MESSAGE_OB]), $result[STATUS_OB]);
 
     }
 
@@ -116,9 +149,59 @@ class APIObservationController extends Controller{
         $em->flush();
 
         return array(
-            MESSAGE_OB => 'Saved new observation with id '.$observation->getObservationId(),
+            MESSAGE_OB => $observation->getObservationId(),
             STATUS_OB => 200
         );
     }
 
+    /**
+     * @Route("/observationQuestion")
+     * @Method({"GET"})
+     */
+    public function observationQuestionAction(){
+
+        $result = $this->getResQueryOQ(null, null);
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * @param $parameters
+     * @param $where
+     * @return mixed
+     */
+    private function getResQueryOQ($parameters = null, $where = null){
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $obQ = $qb->select("Q.questionid, QS.order, Q.question, Sub.subcategory")
+            ->from('UNOEvaluacionesBundle:Questionxsurvey','QS')
+            ->innerJoin('UNOEvaluacionesBundle:Question','Q','WITH','QS.questionQuestionid = Q.questionid')
+            ->innerJoin('UNOEvaluacionesBundle:Subcategory','Sub','WITH','Q.subcategorySubcategoryid = Sub.subcategoryid')
+            ->andWhere('QS.surveySurveyid = 19')
+            //->setParameters($parameters)
+            ->orderBy( 'QS.order')
+            ->getQuery()
+            ->getResult();
+
+        $questionByCategory = array();
+        $subcategorys = array_unique(array_column($obQ, 'subcategory'));
+
+        foreach ($subcategorys as $subcategory){
+            $questions = array();
+            foreach ($obQ as $question){
+                if($question['subcategory'] === $subcategory){
+                    array_push($questions, array('order' => $question['order'], 'question' => $question['question'], 'questionId' => $question['questionid']));
+                }
+            }
+            array_push($questionByCategory, array('category' => $subcategory, 'questions' => $questions));
+        }
+
+        return $questionByCategory;
+    }
 }
