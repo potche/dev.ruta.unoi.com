@@ -11,6 +11,7 @@ namespace UNO\EvaluacionesBundle\Controller\Observacion;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -33,17 +34,21 @@ class CreateController extends Controller{
         $host =  $this->container->get('router')->getContext()->getHost();
         #/app_dev.php
         $baseURL = $this->container->get('router')->getContext()->getBaseUrl();
-        
         $baseUrl = "http://dev.ruta.unoi.com".$this->container->get('router')->getContext()->getBaseUrl();
 
         //$schoolListAPI = json_decode(file_get_contents("$baseUrl/api/v0/catalog/schools", false), true);
 
-        $result = $this->getResQueryOQ(null, null);
+        $session = $request->getSession();
+        $session->start();
+        if($this->valObservationIdByCoach($observationId, $session->get('personIdS'))){
+            $result = $this->getResQueryOQ(null, null);
 
-        return $this->render('UNOEvaluacionesBundle:Observacion:create.html.twig', array(
-            'questionByCategory' => $result
+            return $this->render('UNOEvaluacionesBundle:Observacion:create.html.twig', array(
+                'questionByCategory' => $result
             ));
-
+        }else{
+            throw new AccessDeniedHttpException('No estás autorizado para ver este contenido');
+        }
     }
 
     /**
@@ -80,6 +85,18 @@ class CreateController extends Controller{
         }
 
         return $questionByCategory;
+    }
+
+    private function valObservationIdByCoach($observationId, $coachId){
+        $em = $this->getDoctrine()->getManager();
+        $observationAssigned = $em->getRepository('UNOEvaluacionesBundle:Observation')->findOneBy(array('observationId' => $observationId, 'coachId' => $coachId));
+        if ($observationAssigned) {
+            #si el coach asignada la observacion
+            $status = true;
+        }else{
+            $status = false;
+        }
+        return $status;
     }
 
 }

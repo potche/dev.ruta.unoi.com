@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use UNO\EvaluacionesBundle\Entity\Observation;
+use UNO\EvaluacionesBundle\Entity\ObservationAnswer;
+use UNO\EvaluacionesBundle\Entity\ObservationAnswerHistory;
 
 /**
  * Created by PhpStorm.
@@ -106,23 +108,44 @@ class APIObservationController extends Controller{
      * @Method({"POST"})
      */
     public function observationAction(Request $request){
-        
-        $post = array(
-            SURVEYID_OB => 19,
+
+        $existNotFinish = $this->validObservationExist('O.gradeId = :gradeId AND O.groupId = :groupId AND O.programId = :programId', array(
             GRADEID_OB => $request->get(GRADEID_OB),
             GROUPID_OB => $request->get(GROUPID_OB),
-            PROGRAMID_OB => (int)$request->get(PROGRAMID_OB),
-            PERSONID_OB => (int)$request->get(PERSONID_OB),
-            SCHOOLID_OB => (int)$request->get(SCHOOLID_OB),
-            COACHID_OB => (int)$request->get(COACHID_OB),
-            START_OB => new \DateTime()
-        );
+            PROGRAMID_OB => (int)$request->get(PROGRAMID_OB)
+        ));
 
-        $result = $this->addQuery($post);
+        if(!$existNotFinish){
+            $result = $this->addQuery(array(
+                SURVEYID_OB => 19,
+                GRADEID_OB => $request->get(GRADEID_OB),
+                GROUPID_OB => $request->get(GROUPID_OB),
+                PROGRAMID_OB => (int)$request->get(PROGRAMID_OB),
+                PERSONID_OB => (int)$request->get(PERSONID_OB),
+                SCHOOLID_OB => (int)$request->get(SCHOOLID_OB),
+                COACHID_OB => (int)$request->get(COACHID_OB),
+                START_OB => new \DateTime()
+            ));
+            #-----envia la respuesta en JSON-----#
+            return new JsonResponse(array('id' => $result[MESSAGE_OB]), $result[STATUS_OB]);
 
-        #-----envia la respuesta en JSON-----#
-        return new JsonResponse(array('id' => $result[MESSAGE_OB]), $result[STATUS_OB]);
+        }else{
+            #-----envia la respuesta en JSON-----#
+            return new JsonResponse(array('error' => 'ObservationExist'), 409);
+        }
+    }
 
+    private function validObservationExist($where, $parameters){
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        return $qb->select("O.observationId")
+            ->from('UNOEvaluacionesBundle:Observation','O')
+            ->where($where)
+            ->andWhere('O.finish is null')
+            ->setParameters($parameters)
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -183,7 +206,7 @@ class APIObservationController extends Controller{
             ->from('UNOEvaluacionesBundle:Questionxsurvey','QS')
             ->innerJoin('UNOEvaluacionesBundle:Question','Q','WITH','QS.questionQuestionid = Q.questionid')
             ->innerJoin('UNOEvaluacionesBundle:Subcategory','Sub','WITH','Q.subcategorySubcategoryid = Sub.subcategoryid')
-            ->andWhere('QS.surveySurveyid = 19')
+            ->where('QS.surveySurveyid = 19')
             //->setParameters($parameters)
             ->orderBy( 'QS.order')
             ->getQuery()
@@ -204,4 +227,88 @@ class APIObservationController extends Controller{
 
         return $questionByCategory;
     }
+
+    /**
+     * @Route("/observation/saveAnswer")
+     * @Method({"POST"})
+     */
+    public function saveAnswerAction(Request $request){
+
+        $post['questionId'] = (int)$request->request->get('questionId');
+        $post['personId'] = (int)$request->request->get('personId');
+        $post['observationId'] = (int)$request->request->get('observationId');
+        $post['answer'] = $request->request->get('answer');
+        $post['comment'] = $request->request->get('comment');
+
+        $result = $this->validSaveAnswer($post);
+
+
+        /*
+        $result = $this->getResQueryAdd($answerHistory);
+        */
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    private function validSaveAnswer($post){
+        $where = array_slice($post, 0, 3);
+        $em = $this->getDoctrine()->getManager();
+        $ObservationAnswer = $em->getRepository('UNOEvaluacionesBundle:ObservationAnswer')->findOneBy($where);
+
+        if($ObservationAnswer){
+            #actualiza
+            $post['observationAnswerId'] = $ObservationAnswer->getObservationAnswerId();
+
+            $ObservationAnswer->setAnswer($post['answer']);
+            $ObservationAnswer->setComment($post['comment']);
+        }else{
+            #crea
+            return $this->createAnswerQuery($post);
+        }
+    }
+
+    private function createAnswerQuery($post){
+        $em = $this->getDoctrine()->getManager();
+        try{
+            $ObservationAnswer = new ObservationAnswer();
+            $ObservationAnswer->setQuestionId($post['questionId']);
+            $ObservationAnswer->setAnswer($post['answer']);
+            $ObservationAnswer->setComment($post['comment']);
+            $ObservationAnswer->setPersonId($post['personId']);
+            $ObservationAnswer->setDateRecord(new \DateTime());
+            $ObservationAnswer->setObservationId($post['observationId']);
+            
+            $em->persist($ObservationAnswer);
+            $em->flush();
+            return array('observationAnswerId' => $ObservationAnswer->getObservationAnswerId());
+        } catch(\Exception $e){
+            print_r($e->getMessage());
+            return false;
+        }
+    }
+
+    private function createAnswerHistoryQuery($post){
+        $em = $this->getDoctrine()->getManager();
+        try{
+            $ObservationAnswerHistory = new ObservationAnswerHistory();
+            $ObservationAnswerHistory->setObservationAnswerId($post['questionId']);
+            $ObservationAnswerHistory->setQuestionId($post['questionId']);
+            $ObservationAnswerHistory->setAnswer($post['answer']);
+            $ObservationAnswerHistory->setComment($post['comment']);
+            $ObservationAnswerHistory->setPersonId($post['personId']);
+            $ObservationAnswerHistory->setDateRecord(new \DateTime());
+            $ObservationAnswerHistory->setObservationId($post['observationId']);
+
+            $em->persist($ObservationAnswerHistory);
+            $em->flush();
+            return array('observationId' => $ObservationAnswerHistory->getObservationId());
+        } catch(\Exception $e){
+            print_r($e->getMessage());
+            return false;
+        }
+    }
+
 }

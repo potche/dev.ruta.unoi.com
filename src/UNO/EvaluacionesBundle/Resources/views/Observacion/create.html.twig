@@ -55,11 +55,11 @@
                                                 <td>
                                                     <div class="btn-group-wrap" style="text-align: center">
                                                         <div id="btn-group-'+answerId+'" class="btn-group" style="margin: 0 auto; text-align: center; width: inherit; display: inline-block;">
-                                                            <button id="btn-si-'+answerId+'" class="btn btn-alt btn-primary" data-toggle="tooltip" data-placement="top" title="Sí" onclick="changeRes(this)">
+                                                            <button id="btn-si-{{ Questions.question }}" class="btn btn-alt btn-primary" data-toggle="tooltip" data-placement="top" title="Sí" onclick="$(this).addClass('active').siblings().removeClass('active');">
                                                                 <span class="visible-lg-inline visible-md-inline hidden-sm hidden-xs"><b>Sí</b></span>
                                                                 <span class="visible-sm-inline visible-xs-inline"><b><i class="fa fa-check"></i></b></span>
                                                             </button>
-                                                            <button id="btn-no-'+answerId+'" class="btn btn-alt btn-primary" data-toggle="tooltip" data-placement="top" title="No" onclick="changeRes(this)">
+                                                            <button id="btn-no-{{ Questions.question }}" class="btn btn-alt btn-primary" data-toggle="tooltip" data-placement="top" title="No" onclick="$(this).addClass('active').siblings().removeClass('active');">
                                                                 <span class="visible-lg-inline visible-md-inline hidden-sm hidden-xs"><b>No</b></span>
                                                                 <span class="visible-sm-inline visible-xs-inline"><b><i class="fa fa-times"></i></b></span>
                                                             </button>
