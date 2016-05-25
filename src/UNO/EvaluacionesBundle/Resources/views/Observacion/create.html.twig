@@ -16,20 +16,65 @@
                 <div class="block full">
                     <!-- Block Tabs Title -->
                     <div class="block-title">
-
                         <ul class="nav nav-tabs" data-toggle="tabs">
-                            <li class="active"><a href="#A">A</a></li>
-                            <li><a href="#B">B</a></li>
-                            <li><a href="#options" data-toggle="tooltip" title="Settings"><i class="fa fa-cogs"></i></a></li>
+                            {% for Category in questionByCategory%}
+                                {% if loop.index == 1 %}
+                                <li class="active"><a href="#categoryId{{ Category.categoryId }}">{{ Category.category }}</a></li>
+                                {% else %}
+                                <li><a href="#categoryId{{ Category.categoryId }}">{{ Category.category }}</a></li>
+                                {% endif %}
+                            {% endfor %}
                         </ul>
                     </div>
                     <!-- END Block Tabs Title -->
 
                     <!-- Tabs Content -->
                     <div class="tab-content">
-                        <div class="tab-pane active" id="A">Block tabs..</div>
-                        <div class="tab-pane" id="B">Profile..</div>
-                        <div class="tab-pane" id="options">Settings..</div>
+                        {% for Category in questionByCategory%}
+                            {% if loop.index == 1 %}
+                            <div class="tab-pane active" id="categoryId{{ Category.categoryId }}">
+                            {% else %}
+                            <div class="tab-pane" id="categoryId{{ Category.categoryId }}">
+                            {% endif %}
+                                <div class="table-responsive">
+                                    <!--
+                                    Available Table Classes:
+                                        'table'             - basic table
+                                        'table-bordered'    - table with full borders
+                                        'table-borderless'  - table with no borders
+                                        'table-striped'     - striped table
+                                        'table-condensed'   - table with smaller top and bottom cell padding
+                                        'table-hover'       - rows highlighted on mouse hover
+                                        'table-vcenter'     - middle align content vertically
+                                    -->
+                                    <table class="table table-striped table-vcenter">
+                                        <tbody>
+                            {% for Questions in Category.questions%}
+                                            <tr>
+                                                <td width="50%">{{ Questions.order }}. {{ Questions.question }}</td>
+                                                <td>
+                                                    <div class="btn-group-wrap" style="text-align: center">
+                                                        <div id="btn-group-'+answerId+'" class="btn-group" style="margin: 0 auto; text-align: center; width: inherit; display: inline-block;">
+                                                            <button id="btn-si-{{ Questions.question }}" class="btn btn-alt btn-primary" data-toggle="tooltip" data-placement="top" title="Sí" onclick="$(this).addClass('active').siblings().removeClass('active');">
+                                                                <span class="visible-lg-inline visible-md-inline hidden-sm hidden-xs"><b>Sí</b></span>
+                                                                <span class="visible-sm-inline visible-xs-inline"><b><i class="fa fa-check"></i></b></span>
+                                                            </button>
+                                                            <button id="btn-no-{{ Questions.question }}" class="btn btn-alt btn-primary" data-toggle="tooltip" data-placement="top" title="No" onclick="$(this).addClass('active').siblings().removeClass('active');">
+                                                                <span class="visible-lg-inline visible-md-inline hidden-sm hidden-xs"><b>No</b></span>
+                                                                <span class="visible-sm-inline visible-xs-inline"><b><i class="fa fa-times"></i></b></span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td><input type="text" class="form-control" placeholder="Agregar un comentario..."></td>
+
+                                            </tr>
+                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
                     <!-- END Tabs Content -->
                 </div>

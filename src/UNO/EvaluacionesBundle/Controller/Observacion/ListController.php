@@ -27,22 +27,46 @@ class ListController extends Controller{
      * obtiene y crea la tabla con el detalle de la evaluacion
      */
     public function indexAction(Request $request){
+        $session = $request->getSession();
+        $session->start();
+        
         $baseUrl = "http://dev.ruta.unoi.com".$this->container->get('router')->getContext()->getBaseUrl();
-        $schoolListAPI = json_decode(file_get_contents("$baseUrl/api/v0/catalog/schools", false), true);
         
         return $this->render('UNOEvaluacionesBundle:Observacion:index.html.twig', array(
-                'schoolList' => $schoolListAPI
+                'schoolList' => json_decode(file_get_contents("$baseUrl/api/v0/catalog/schools", false), true),
+                'observationsByCoach' => $this->observationsByCoach($session->get('personIdS'))
             ));
 
     }
+    
+    /**
+     * @return mixed
+     */
+    private function observationsByCoach($coachId){
 
-    private function createSchoolList($schoolList){
-        $arraySchool = array();
-        foreach(json_decode($schoolList) as $value){
-            array_push( $arraySchool, $value->schoolid .'-'. $value->school );
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $oByC = $qb->select("O.observationId, CONCAT(TRIM(P.name), ' ', TRIM(P.surname)) AS name, S.school, O.gradeId, O.groupId, Cp.nameProgram, O.start")
+            ->from('UNOEvaluacionesBundle:Observation','O')
+            ->innerJoin('UNOEvaluacionesBundle:Person','P','WITH','O.personId = P.personid')
+            ->innerJoin('UNOEvaluacionesBundle:School','S','WITH','O.schoolId = S.schoolid')
+            ->innerJoin('UNOEvaluacionesBundle:Cprogram','Cp','WITH','O.programId = Cp.programId')
+            ->where('O.coachId = :coachId')
+            ->setParameter('coachId', $coachId)
+            ->orderBy( 'O.observationId')
+            ->getQuery()
+            ->getResult();
+
+        $nivel = array('K' => 'Kinder', 'P' => 'Primaria', 'S' => 'Secundaria', 'B' => 'Bachillerato');
+        $observationsByCoach = array();
+        foreach ($oByC as $row){
+            $row['nivel'] = strtoupper($row['gradeId'][1]);
+            $row['nivelCompleto'] = $nivel[strtoupper($row['gradeId'][1])];
+            $row['grado'] = $row['gradeId'][0].'°';
+            array_push($observationsByCoach, $row);
         }
-
-        return json_encode($arraySchool);
+        return $observationsByCoach;
     }
 
 }
