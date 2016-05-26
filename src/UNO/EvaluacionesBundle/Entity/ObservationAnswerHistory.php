@@ -16,7 +16,8 @@ class ObservationAnswerHistory
      * @var integer
      *
      * @ORM\Column(name="observationAnswerId", type="integer")
-     *
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     private $observationAnswerId;
 
