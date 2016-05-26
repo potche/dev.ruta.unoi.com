@@ -1,6 +1,60 @@
 {% extends '::base.html.twig' %}
 {% block body %}
+    <style>
 
+        #btnRight {
+            padding:0px 0px 0px 0px;
+            text-align: center;
+            margin:184px 0px 0px 0px;
+            width: 160px;
+            height:40px;
+            background:#FF931E;
+            z-index:15;
+            border-radius: 5px 5px 0px 0px;
+            -moz-transform:rotate(-90deg);
+            -ms-transform:rotate(-90deg);
+            -o-transform:rotate(-90deg);
+            -webkit-transform:rotate(-90deg);
+            transform-origin: bottom right;
+            position: fixed;
+            right: 0px;
+        }
+        #btnRight p {
+            color:#fff;
+            display:inline-block;
+            line-height:40px;
+        }
+
+        #btnLeft {
+            padding:0px 0px 0px 0px;
+            text-align: center;
+            margin: 184px 0px 0px 0px;
+            width: 160px;
+            height:40px;
+            background:#FF931E;
+            z-index:15;
+            border-radius: 5px 5px 0px 0px;
+            -moz-transform:rotate(+90deg);
+            -ms-transform:rotate(+90deg);
+            -o-transform:rotate(+90deg);
+            -webkit-transform:rotate(+90deg);
+            transform-origin: bottom left;
+            position: fixed;
+            left: 0px;
+        }
+        #btnLeft p {
+            color:#fff;
+            display:inline-block;
+            line-height:40px;
+        }
+    </style>
+    <div id="btnRight">
+        <p>ACCIONES <i class="fa fa-angle-up fa-1x" aria-hidden="true"></i></p>
+    </div>
+
+    <div id="btnLeft">
+        <p>CUESTIONARIO <i class="fa fa-angle-up fa-1x" aria-hidden="true"></i></p>
+    </div>
     <!-- Working Tabs Block -->
     <div class="block full">
         <!-- Working Tabs Title -->
@@ -11,7 +65,7 @@
 
         <!-- Working Tabs Content -->
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-xs-12">
                 <!-- Block Tabs -->
                 <div class="block full">
                     <!-- Block Tabs Title -->
@@ -52,21 +106,53 @@
                             {% for Questions in Category.questions%}
                                             <tr>
                                                 <td width="50%">{{ Questions.order }}. {{ Questions.question }}</td>
-                                                <td>
+                                                <td width="20%">
                                                     <div class="btn-group-wrap" style="text-align: center">
-                                                        <div id="btn-group-'+answerId+'" class="btn-group" style="margin: 0 auto; text-align: center; width: inherit; display: inline-block;">
-                                                            <button id="btn-si-{{ Questions.question }}" class="btn btn-alt btn-primary" data-toggle="tooltip" data-placement="top" title="Sí" onclick="$(this).addClass('active').siblings().removeClass('active');">
+                                                        <div id="btn-group-{{ Questions.questionId }}" class="btn-group" style="margin: 0 auto; text-align: center; width: inherit; display: inline-block;">
+                                                            {% set activeSi = '' %}
+                                                            {% set activeNo = '' %}
+                                                            {% if Questions.observationAnswerId %}
+                                                                {% if Questions.answer == 1 %}
+                                                                    {% set activeSi = 'active'%}
+                                                                {% else %}
+                                                                    {% set activeNo = 'active'%}
+                                                                {% endif %}
+                                                            {% endif %}
+                                                            <button id="btn-1-{{ Questions.questionId }}" class="btn btn-alt btn-primary {{ activeSi }}" data-toggle="tooltip" data-placement="top" title="Sí" onclick="saveAnswer(this, {{ observationId }});">
                                                                 <span class="visible-lg-inline visible-md-inline hidden-sm hidden-xs"><b>Sí</b></span>
                                                                 <span class="visible-sm-inline visible-xs-inline"><b><i class="fa fa-check"></i></b></span>
                                                             </button>
-                                                            <button id="btn-no-{{ Questions.question }}" class="btn btn-alt btn-primary" data-toggle="tooltip" data-placement="top" title="No" onclick="$(this).addClass('active').siblings().removeClass('active');">
+                                                            <button id="btn-0-{{ Questions.questionId }}" class="btn btn-alt btn-primary {{ activeNo }}" data-toggle="tooltip" data-placement="top" title="No" onclick="saveAnswer(this, {{ observationId }});">
                                                                 <span class="visible-lg-inline visible-md-inline hidden-sm hidden-xs"><b>No</b></span>
                                                                 <span class="visible-sm-inline visible-xs-inline"><b><i class="fa fa-times"></i></b></span>
                                                             </button>
                                                         </div>
                                                     </div>
+                                                    <input id="answerOrigin-{{ Questions.questionId }}" type="text" class="hidden" value="{{ Questions.answer }}">
                                                 </td>
-                                                <td><input type="text" class="form-control" placeholder="Agregar un comentario..."></td>
+                                                <td width="30%">
+                                                    <div class="form-group">
+                                                        <div class="col-xs-12">
+                                                            <div class="input-group">
+                                                                {% if Questions.observationAnswerId %}
+                                                                <span id="comment-{{ Questions.questionId }}">{{ Questions.comment }}</span>
+                                                                <span class="input-group-btn">
+                                                                    <button id="btnE-{{ Questions.questionId }}" type="button" class="btn btn-alt btn-default pull-right " data-toggle="tooltip" data-placement="top" title="Editar comentario" onclick="editComment({{ Questions.questionId }})"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                                                                    <button id="btnS-{{ Questions.questionId }}" type="button" class="btn btn-alt btn-default pull-right hidden" data-toggle="tooltip" data-placement="top" title="Guardar comentario"  onclick="saveComment({{ Questions.questionId }}, {{ observationId }})"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
+                                                                </span>
+                                                                {% else %}
+                                                                <input type="text" id="comment-{{ Questions.questionId }}" class="form-control" placeholder="Agregar un comentario..." value="{{ Questions.observationAnswerId }}">
+                                                                <span class="input-group-btn">
+                                                                    <button id="btnE-{{ Questions.questionId }}" type="button" class="btn btn-alt btn-default pull-right hidden" data-toggle="tooltip" data-placement="top" title="Editar comentario" onclick="editComment({{ Questions.questionId }})"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                                                                    <button id="btnS-{{ Questions.questionId }}" type="button" class="btn btn-alt btn-default pull-right " data-toggle="tooltip" data-placement="top" title="Guardar comentario"  onclick="saveComment({{ Questions.questionId }}, {{ observationId }})"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
+                                                                </span>
+                                                                {% endif %}
+                                                                <input id="commentOrigin-{{ Questions.questionId }}" type="text" class="hidden" value="{{ Questions.comment }}">
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
 
                                             </tr>
                             {% endfor %}
@@ -100,6 +186,84 @@
 
         });
 
+        function saveAnswer(btn, observationId) {
+            var answerRow = $(btn).attr('id').split('-');
+            $(btn).addClass('active').siblings().removeClass('active');
+            if($('#comment-'+answerRow[2]).val()){
+                var comment = $('#comment-'+answerRow[2]).val();
+            }else {
+                var comment = $('#comment-'+answerRow[2]).text();
+            }
+
+            if($.trim(answerRow[1]) !== $.trim($('#answerOrigin-'+answerRow[2]).val())) {
+                save(answerRow[2], answerRow[1], comment, observationId);
+                $('#answerOrigin-'+answerRow[2]).val(answerRow[1]);
+            }
+        }
+
+
+        function editComment(questionId) {
+            $('#btnS-'+questionId).removeClass('hidden');
+            $('#btnE-'+questionId).addClass('hidden');
+            $('#comment-'+questionId).replaceWith("<input type='text' id='comment-"+questionId+"' value='"+$('#comment-'+questionId).text()+"' class='form-control'>" );
+            $('#comment-'+questionId).focus();
+        }
+
+        function saveComment(questionId, observationId) {
+            var answerOrigin = $('#answerOrigin-'+questionId).val();
+            var comment = $('#comment-'+questionId).val();
+            var commentOrigin = $('#commentOrigin-'+questionId).val();
+
+            if($.trim(comment) !== $.trim(commentOrigin)) {
+                save(questionId, answerOrigin, comment, observationId);
+                $('#commentOrigin-'+questionId).val(comment);
+            }else {
+                $('#btnE-'+questionId).removeClass('hidden');
+                $('#btnS-'+questionId).addClass('hidden');
+                $('#comment-'+questionId).replaceWith("<span id='comment-"+questionId+"'>" + $('#comment-'+questionId).val() + "</span>");
+            }
+
+        }
+
+        function save(questionId, answer, comment, observationId) {
+            $('#commentOrigin-'+questionId).val(comment);
+            var notify = $.notify('<strong>Actualizando</strong> datos...', {
+                allow_dismiss: false,
+                showProgressbar: true,
+                animate: {
+                    enter: 'animated fadeInRight',
+                    exit: 'animated fadeOutRight'
+                }
+            });
+
+            $.post(HttpHost + baseUrl + "/api/v0/observation/saveAnswer", {
+                questionId: questionId,
+                answer: answer,
+                comment: comment,
+                observationId: observationId
+            })
+                    .done(function (data) {
+                        if (data) {
+                            console.log(data)
+                            notify.update({
+                                'type': 'success',
+                                'message': 'Los <strong>datos</strong> se han cambiado!',
+                                'progress': 100
+                            });
+                            if($('#comment-'+questionId).val()){
+                                $('#btnE-'+questionId).removeClass('hidden');
+                                $('#btnS-'+questionId).addClass('hidden');
+                                $('#comment-'+questionId).replaceWith("<span id='comment-"+questionId+"'>" + $('#comment-'+questionId).val() + "</span>");
+                            }
+                        }
+                    })
+                    .fail(function () {
+                        console.log('error')
+                    })
+                    .always(function () {
+                        console.log("finished");
+                    });
+        }
     </script>
 
 {% endblock %}

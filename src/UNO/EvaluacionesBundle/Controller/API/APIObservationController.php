@@ -233,11 +233,13 @@ class APIObservationController extends Controller{
      * @Method({"POST"})
      */
     public function saveAnswerAction(Request $request){
-
+        $session = $request->getSession();
+        $session->start();
+        
         $post['questionId'] = (int)$request->request->get('questionId');
-        $post['personId'] = (int)$request->request->get('personId');
+        $post['personId'] = (int)$session->get('personIdS');
         $post['observationId'] = (int)$request->request->get('observationId');
-        $post['answer'] = $request->request->get('answer');
+        $post['answer'] = (int)$request->request->get('answer');
         $post['comment'] = $request->request->get('comment');
 
         $result = $this->validSaveAnswer($post);
@@ -259,11 +261,21 @@ class APIObservationController extends Controller{
         $ObservationAnswer = $em->getRepository('UNOEvaluacionesBundle:ObservationAnswer')->findOneBy($where);
 
         if($ObservationAnswer){
-            #actualiza
             $post['observationAnswerId'] = $ObservationAnswer->getObservationAnswerId();
+            #guarda en historico
+            $history = $post;
+            $history['answer'] = $ObservationAnswer->getAnswer();
+            $history['comment'] = $ObservationAnswer->getComment();
+            $history['dateRecord'] = $ObservationAnswer->getDateRecord();
 
-            $ObservationAnswer->setAnswer($post['answer']);
-            $ObservationAnswer->setComment($post['comment']);
+            if($this->createAnswerHistoryQuery($history)){
+                #actualiza
+                $ObservationAnswer->setAnswer($post['answer']);
+                $ObservationAnswer->setComment($post['comment']);
+                $ObservationAnswer->setDateRecord(new \DateTime());
+                $em->flush();
+                return array("message" => "updated");
+            }
         }else{
             #crea
             return $this->createAnswerQuery($post);
@@ -290,25 +302,27 @@ class APIObservationController extends Controller{
         }
     }
 
-    private function createAnswerHistoryQuery($post){
+    private function createAnswerHistoryQuery($history){
+
         $em = $this->getDoctrine()->getManager();
         try{
             $ObservationAnswerHistory = new ObservationAnswerHistory();
-            $ObservationAnswerHistory->setObservationAnswerId($post['questionId']);
-            $ObservationAnswerHistory->setQuestionId($post['questionId']);
-            $ObservationAnswerHistory->setAnswer($post['answer']);
-            $ObservationAnswerHistory->setComment($post['comment']);
-            $ObservationAnswerHistory->setPersonId($post['personId']);
-            $ObservationAnswerHistory->setDateRecord(new \DateTime());
-            $ObservationAnswerHistory->setObservationId($post['observationId']);
+            $ObservationAnswerHistory->setObservationAnswerId($history['questionId']);
+            $ObservationAnswerHistory->setQuestionId($history['questionId']);
+            $ObservationAnswerHistory->setAnswer($history['answer']);
+            $ObservationAnswerHistory->setComment($history['comment']);
+            $ObservationAnswerHistory->setPersonId($history['personId']);
+            $ObservationAnswerHistory->setDateRecord($history['dateRecord']);
+            $ObservationAnswerHistory->setObservationId($history['observationId']);
 
             $em->persist($ObservationAnswerHistory);
             $em->flush();
-            return array('observationId' => $ObservationAnswerHistory->getObservationId());
+            return true;
         } catch(\Exception $e){
             print_r($e->getMessage());
             return false;
         }
+
     }
 
 }

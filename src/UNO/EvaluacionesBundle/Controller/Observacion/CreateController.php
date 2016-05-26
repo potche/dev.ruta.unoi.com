@@ -44,7 +44,8 @@ class CreateController extends Controller{
             $result = $this->getResQueryOQ(null, null);
 
             return $this->render('UNOEvaluacionesBundle:Observacion:create.html.twig', array(
-                'questionByCategory' => $result
+                'questionByCategory' => $result,
+                'observationId' => $observationId
             ));
         }else{
             throw new AccessDeniedHttpException('No estás autorizado para ver este contenido');
@@ -61,11 +62,13 @@ class CreateController extends Controller{
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 
-        $obQ = $qb->select("Q.questionid, QS.order, Q.question, Sub.subcategoryid, Sub.subcategory")
-            ->from('UNOEvaluacionesBundle:Questionxsurvey','QS')
+        $obQ = $qb->select("Q.questionid, QS.order, Q.question, Sub.subcategoryid, Sub.subcategory, OA.observationAnswerId, OA.answer, OA.comment, OA.personId, OA.dateRecord")
+            ->from('UNOEvaluacionesBundle:Observation', 'O')
+            ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','QS','WITH','QS.surveySurveyid = O.surveyId')
             ->innerJoin('UNOEvaluacionesBundle:Question','Q','WITH','QS.questionQuestionid = Q.questionid')
             ->innerJoin('UNOEvaluacionesBundle:Subcategory','Sub','WITH','Q.subcategorySubcategoryid = Sub.subcategoryid')
-            ->andWhere('QS.surveySurveyid = 19')
+            ->leftJoin('UNOEvaluacionesBundle:ObservationAnswer','OA','WITH','OA.questionId = Q.questionid AND O.observationId = OA.observationId')
+            ->andWhere('O.observationId = 1')
             //->setParameters($parameters)
             ->orderBy( 'QS.order')
             ->getQuery()
@@ -78,7 +81,16 @@ class CreateController extends Controller{
             $questions = array();
             foreach ($obQ as $question){
                 if($question['subcategory'] === $subcategory){
-                    array_push($questions, array('order' => $question['order'], 'question' => $question['question'], 'questionId' => $question['questionid']));
+                    array_push($questions, array(
+                        'order' => $question['order'],
+                        'question' => $question['question'],
+                        'questionId' => $question['questionid'],
+                        'observationAnswerId' => $question['observationAnswerId'],
+                        'answer' => gettype($question['answer']) == 'boolean' ? (int)$question['answer'] : $question['answer'],
+                        'comment' => $question['comment'],
+                        'personId' => $question['personId'],
+                        'dateRecord' => $question['dateRecord']
+                    ));
                 }
             }
             array_push($questionByCategory, array('categoryId' => $key, 'category' => $subcategory, 'questions' => $questions));
