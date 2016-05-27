@@ -1,62 +1,12 @@
 {% extends '::base.html.twig' %}
 {% block body %}
-    <style>
+    <link rel="stylesheet" href="{{ asset('public/assets/css/observationCreate.css') }}">
 
-        #btnRight {
-            padding:0px 0px 0px 0px;
-            text-align: center;
-            margin:184px 0px 0px 0px;
-            width: 160px;
-            height:40px;
-            background:#FF931E;
-            z-index:15;
-            border-radius: 5px 5px 0px 0px;
-            -moz-transform:rotate(-90deg);
-            -ms-transform:rotate(-90deg);
-            -o-transform:rotate(-90deg);
-            -webkit-transform:rotate(-90deg);
-            transform-origin: bottom right;
-            position: fixed;
-            right: 0px;
-        }
-        #btnRight p {
-            color:#fff;
-            display:inline-block;
-            line-height:40px;
-        }
+    <button id="feedback-R" class="btn btn-primary "><span><strong>ACCIONES <i class="fa fa-angle-up" aria-hidden="true" style="font-size: large;"></i></strong></span></button>
+    <button id="feedback-L" class="btn btn-primary hidden"><span><strong><i class="fa fa-angle-up " aria-hidden="true" style="font-size: large;"></i> CUESTIONARIO</strong></span></button>
 
-        #btnLeft {
-            padding:0px 0px 0px 0px;
-            text-align: center;
-            margin: 184px 0px 0px 0px;
-            width: 160px;
-            height:40px;
-            background:#FF931E;
-            z-index:15;
-            border-radius: 5px 5px 0px 0px;
-            -moz-transform:rotate(+90deg);
-            -ms-transform:rotate(+90deg);
-            -o-transform:rotate(+90deg);
-            -webkit-transform:rotate(+90deg);
-            transform-origin: bottom left;
-            position: fixed;
-            left: 0px;
-        }
-        #btnLeft p {
-            color:#fff;
-            display:inline-block;
-            line-height:40px;
-        }
-    </style>
-    <div id="btnRight">
-        <p>ACCIONES <i class="fa fa-angle-up fa-1x" aria-hidden="true"></i></p>
-    </div>
-
-    <div id="btnLeft">
-        <p>CUESTIONARIO <i class="fa fa-angle-up fa-1x" aria-hidden="true"></i></p>
-    </div>
     <!-- Working Tabs Block -->
-    <div class="block full">
+    <div id="cuestionario" class="block full">
         <!-- Working Tabs Title -->
         <div class="block-title">
             <h2><strong>Observaci&oacute;n</strong> del Trabajo en el Aula <small style="color: darkgray;">Cuestionario</small></h2>
@@ -172,7 +122,111 @@
     <!-- END Working Tabs Block -->
 
 
+    <!-- Working Tabs Block -->
+    <div id="acciones" class="block full hidden">
+        <!-- Working Tabs Title -->
+        <div class="block-title">
+            <h2><strong>Observaci&oacute;n</strong> del Trabajo en el Aula <small style="color: darkgray;">Acciones</small></h2>
+        </div>
+        <!-- END Working Tabs Title -->
+
+        <!-- Working Tabs Content -->
+        <div class="row">
+            <div class="col-xs-12">
+                <!-- Block Tabs -->
+                <div class="block full">
+                    <!-- Block Tabs Title -->
+                    <div class="block-title">
+                        <ul class="nav nav-tabs" data-toggle="tabs">
+                            <li class="active"><a href="#regAct-{{ observationId }}">Registro de Actividades</a></li>
+                            <li><a href="#dispAula-{{ observationId }}">Dispocici&oacute;n del Aula</a></li>
+                            <li><a href="#galeria-{{ observationId }}">Galeria</a></li>
+                        </ul>
+                    </div>
+                    <!-- END Block Tabs Title -->
+
+                    <!-- Tabs Content -->
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="regAct-{{ observationId }}">
+                            <div class="table-responsive">
+                                <!--
+                                Available Table Classes:
+                                    'table'             - basic table
+                                    'table-bordered'    - table with full borders
+                                    'table-borderless'  - table with no borders
+                                    'table-striped'     - striped table
+                                    'table-condensed'   - table with smaller top and bottom cell padding
+                                    'table-hover'       - rows highlighted on mouse hover
+                                    'table-vcenter'     - middle align content vertically
+                                -->
+                                <table class="table table-striped table-vcenter">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">Inicio</th>
+                                            <th class="text-center">Actividad</th>
+                                            <th class="text-center">T&eacute;rmino</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td class="text-center" width="15%">
+                                            <span id="start-{{ observationId }}"></span>
+                                        </td>
+                                        <td class="text-center" width="70%">
+                                            <input type="text" id="activity-{{ observationId }}" class="form-control">
+                                        </td>
+                                        <td class="text-center" width="15%">
+                                            <button class="btn btn-primary"> Registar horra</button>
+                                        </td>
+
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="dispAula-{{ observationId }}">
+                            <p><em><i class="fa fa-info-circle text-primary"></i> Selecciona la disposici&oacute;n del aula correspondiente</em></p>
+                            <div class="row text-center">
+                                <div id="filas-{{ observationId }}" class="col-xs-4" style="cursor:pointer" onclick="dispAula('filas', {{ observationId }})" onmouseover="dispAulaHover('filas', {{ observationId }})">
+                                    <img src="{{ asset('public/assets/images/observation/filas.svg') }}">
+                                    <br/>
+                                    <h3>Filas</h3>
+                                </div>
+                                <div id="herradura-{{ observationId }}" class="col-xs-4" style="cursor:pointer" onclick="dispAula('herradura', {{ observationId }})">
+                                    <img src="{{ asset('public/assets/images/observation/herradura_2.svg') }}">
+                                    <br/>
+                                    <h3>Herradura</h3>
+                                </div>
+                                <div id="equipos-{{ observationId }}" class="col-xs-4" style="cursor:pointer" onclick="dispAula('equipos', {{ observationId }})">
+                                    <img src="{{ asset('public/assets/images/observation/equipos.svg') }}">
+                                    <br/>
+                                    <h3>Equipos</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="galeria-{{ observationId }}">
+                            <p><em><i class="fa fa-info-circle text-primary"></i> Esta secci&oacute;n es para documentar el ambiente de la clase</em></p>
+                            <ul>
+                                <li>Puedes subir 2 fotos solamente</li>
+                                <li>Para observar toda el aula, cada foto debe ser tomada del lado opuesto como se muestra:</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- END Tabs Content -->
+                </div>
+                <!-- END Block Tabs -->
+            </div>
+        </div>
+        <!-- END Working Tabs Content -->
+    </div>
+    <!-- END Working Tabs Block -->
+
+
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="{{ asset('public/assets/js/observationCreate.js')}}"></script>
 
     <script>
         //dominio http://dev.ruta.unoi.com
@@ -186,84 +240,14 @@
 
         });
 
-        function saveAnswer(btn, observationId) {
-            var answerRow = $(btn).attr('id').split('-');
-            $(btn).addClass('active').siblings().removeClass('active');
-            if($('#comment-'+answerRow[2]).val()){
-                var comment = $('#comment-'+answerRow[2]).val();
-            }else {
-                var comment = $('#comment-'+answerRow[2]).text();
-            }
 
-            if($.trim(answerRow[1]) !== $.trim($('#answerOrigin-'+answerRow[2]).val())) {
-                save(answerRow[2], answerRow[1], comment, observationId);
-                $('#answerOrigin-'+answerRow[2]).val(answerRow[1]);
-            }
+        function dispAula(type, observationId) {
+            console.log(type+'|'+observationId);
         }
 
-
-        function editComment(questionId) {
-            $('#btnS-'+questionId).removeClass('hidden');
-            $('#btnE-'+questionId).addClass('hidden');
-            $('#comment-'+questionId).replaceWith("<input type='text' id='comment-"+questionId+"' value='"+$('#comment-'+questionId).text()+"' class='form-control'>" );
-            $('#comment-'+questionId).focus();
-        }
-
-        function saveComment(questionId, observationId) {
-            var answerOrigin = $('#answerOrigin-'+questionId).val();
-            var comment = $('#comment-'+questionId).val();
-            var commentOrigin = $('#commentOrigin-'+questionId).val();
-
-            if($.trim(comment) !== $.trim(commentOrigin)) {
-                save(questionId, answerOrigin, comment, observationId);
-                $('#commentOrigin-'+questionId).val(comment);
-            }else {
-                $('#btnE-'+questionId).removeClass('hidden');
-                $('#btnS-'+questionId).addClass('hidden');
-                $('#comment-'+questionId).replaceWith("<span id='comment-"+questionId+"'>" + $('#comment-'+questionId).val() + "</span>");
-            }
-
-        }
-
-        function save(questionId, answer, comment, observationId) {
-            $('#commentOrigin-'+questionId).val(comment);
-            var notify = $.notify('<strong>Actualizando</strong> datos...', {
-                allow_dismiss: false,
-                showProgressbar: true,
-                animate: {
-                    enter: 'animated fadeInRight',
-                    exit: 'animated fadeOutRight'
-                }
-            });
-
-            $.post(HttpHost + baseUrl + "/api/v0/observation/saveAnswer", {
-                questionId: questionId,
-                answer: answer,
-                comment: comment,
-                observationId: observationId
-            })
-                    .done(function (data) {
-                        if (data) {
-                            console.log(data)
-                            notify.update({
-                                'type': 'success',
-                                'message': 'Los <strong>datos</strong> se han cambiado!',
-                                'progress': 100
-                            });
-                            if($('#comment-'+questionId).val()){
-                                $('#btnE-'+questionId).removeClass('hidden');
-                                $('#btnS-'+questionId).addClass('hidden');
-                                $('#comment-'+questionId).replaceWith("<span id='comment-"+questionId+"'>" + $('#comment-'+questionId).val() + "</span>");
-                            }
-                        }
-                    })
-                    .fail(function () {
-                        console.log('error')
-                    })
-                    .always(function () {
-                        console.log("finished");
-                    });
+        function dispAulaHover(type, observationId) {
+            console.log('onmouse');
+            //$('#type-observationId').find('h3').html('hola');
         }
     </script>
-
 {% endblock %}

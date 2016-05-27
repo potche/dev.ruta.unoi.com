@@ -1,0 +1,34 @@
+
+#feedback-R{
+    position:fixed;
+    text-align: center;
+    width: 160px;
+    height:40px;
+    right:-10px;
+    top:40%;
+    transform-origin: bottom right;
+    padding-top: 0px;
+    z-index: 1500;
+
+    -moz-transform:rotate(-90deg);
+    -ms-transform:rotate(-90deg);
+    -o-transform:rotate(-90deg);
+    -webkit-transform:rotate(-90deg);
+}
+
+#feedback-L{
+    position:fixed;
+    text-align: center;
+    width: 160px;
+    height:40px;
+    left:-10px;
+    top:40%;
+    transform-origin: bottom left;
+    padding-top: 0px;
+    z-index: 1500;
+
+    -moz-transform:rotate(+90deg);
+    -ms-transform:rotate(+90deg);
+    -o-transform:rotate(+90deg);
+    -webkit-transform:rotate(+90deg);
+}
