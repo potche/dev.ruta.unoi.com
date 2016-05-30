@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use UNO\EvaluacionesBundle\Entity\Observation;
 use UNO\EvaluacionesBundle\Entity\ObservationAnswer;
 use UNO\EvaluacionesBundle\Entity\ObservationAnswerHistory;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use UNO\EvaluacionesBundle\Controller\FileUpload\Document;
 
 /**
  * Created by PhpStorm.
@@ -323,6 +325,46 @@ class APIObservationController extends Controller{
             return false;
         }
 
+    }
+
+
+    /**
+     * @Route("/observation/saveImg")
+     * @Method({"POST"})
+     */
+    public function saveImgAction(Request $request){
+        $session = $request->getSession();
+        $session->start();
+
+        $img = $request->files->get('image');
+        print_r($img);
+        if( ($img instanceof UploadedFile) && ($img->getError() == '0') ){
+            $request = array(
+                'originalName' => $img->getClientOriginalName(),
+                'mimeType' => $img->getMimeType(),
+                'pathName' => $img->getPathname(),
+                'realPath' => $img->getRealPath()
+            );
+
+            $nameArray = explode('.',$request['originalName']);
+            $fileType = $nameArray[sizeof($nameArray)-1];
+            $validFileTypes = array('jpg','jpeg','bmg','png');
+            //print_r($root = $this->get('kernel')->getRootDir()."/../www");
+            if(in_array(strtolower($fileType), $validFileTypes)){
+                $document = new Document();
+                $document->setFile($img);
+                $document->setUploadDirectory('public/assets/images/observation/uploads');
+                $relativePath = date('Y-m', filemtime($img->getPath()));
+                $document->setUploadHash('ghfashgsa.'.strtolower($fileType));
+                $document->processFile();
+                $uploadUrl = $document->getUploadDirectory(). DIRECTORY_SEPARATOR. $img->getBasename();
+                $request = $uploadUrl;
+            }
+        }else{
+            $request = array('message' => 'error file');
+        }
+
+        return new JsonResponse($request, 200);
     }
 
 }
