@@ -346,6 +346,7 @@ class APIObservationController extends Controller{
                 'realPath' => $img->getRealPath()
             );
 
+            
             $nameArray = explode('.',$request['originalName']);
             $fileType = $nameArray[sizeof($nameArray)-1];
             $validFileTypes = array('jpg','jpeg','bmg','png');
