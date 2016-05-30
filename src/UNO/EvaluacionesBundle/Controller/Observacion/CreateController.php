@@ -41,7 +41,7 @@ class CreateController extends Controller{
         $session = $request->getSession();
         $session->start();
         if($this->valObservationIdByCoach($observationId, $session->get('personIdS'))){
-            $result = $this->getResQueryOQ(null, null);
+            $result = $this->getResQueryOQ($observationId);
 
             return $this->render('UNOEvaluacionesBundle:Observacion:create.html.twig', array(
                 'questionByCategory' => $result,
@@ -57,7 +57,7 @@ class CreateController extends Controller{
      * @param $where
      * @return mixed
      */
-    private function getResQueryOQ($parameters = null, $where = null){
+    private function getResQueryOQ($observationId){
 
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
@@ -68,8 +68,8 @@ class CreateController extends Controller{
             ->innerJoin('UNOEvaluacionesBundle:Question','Q','WITH','QS.questionQuestionid = Q.questionid')
             ->innerJoin('UNOEvaluacionesBundle:Subcategory','Sub','WITH','Q.subcategorySubcategoryid = Sub.subcategoryid')
             ->leftJoin('UNOEvaluacionesBundle:ObservationAnswer','OA','WITH','OA.questionId = Q.questionid AND O.observationId = OA.observationId')
-            ->andWhere('O.observationId = 1')
-            //->setParameters($parameters)
+            ->andWhere('O.observationId = :observationId')
+            ->setParameter('observationId', $observationId)
             ->orderBy( 'QS.order')
             ->getQuery()
             ->getResult();
