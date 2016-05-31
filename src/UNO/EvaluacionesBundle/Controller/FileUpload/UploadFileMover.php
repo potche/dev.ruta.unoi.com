@@ -45,7 +45,6 @@ class UploadFileMover
             }
         }
 
-        print_r($nameHash);
         $file->move($targetDir, $nameHash == null ? basename($targetFilePath) : $nameHash);
 
         return str_replace($uploadBasePath . DIRECTORY_SEPARATOR, "", $targetFilePath);

@@ -201,19 +201,19 @@
                         <div class="tab-pane" id="dispAula-{{ observationId }}">
                             <p><em><i class="fa fa-info-circle text-primary"></i> Selecciona la disposici&oacute;n del aula correspondiente</em></p>
                             <div class="row text-center">
-                                <label id="filas-{{ observationId }}" class="col-xs-4" style="cursor:pointer" onclick="dispAula('filas', {{ observationId }})" onmouseover="dispAulaBig('filas', {{ observationId }})" onmouseout="dispAulaNormal('filas', {{ observationId }})">
+                                <label id="filas-{{ observationId }}" class="col-xs-4" style="cursor:pointer; opacity: 0.5;" onclick="dispAula('filas', {{ observationId }})" onmouseover="dispAulaBig('filas', {{ observationId }})" onmouseout="dispAulaNormal('filas', {{ observationId }})">
                                     <input type="radio" name="disposicion" value="filas" />
                                     <img src="{{ asset('public/assets/images/observation/filas.svg') }}">
                                     <br/>
                                     <h3>Filas</h3>
                                 </label>
-                                <label id="herradura-{{ observationId }}" class="col-xs-4" style="cursor:pointer" onclick="dispAula('herradura', {{ observationId }})" onmouseover="dispAulaBig('herradura', {{ observationId }})" onmouseout="dispAulaNormal('herradura', {{ observationId }})">
+                                <label id="herradura-{{ observationId }}" class="col-xs-4" style="cursor:pointer; opacity: 0.5;" onclick="dispAula('herradura', {{ observationId }})" onmouseover="dispAulaBig('herradura', {{ observationId }})" onmouseout="dispAulaNormal('herradura', {{ observationId }})">
                                     <input type="radio" name="disposicion" value="herradura" />
                                     <img src="{{ asset('public/assets/images/observation/herradura.svg') }}">
                                     <br/>
                                     <h3>Herradura</h3>
                                 </label>
-                                <label id="equipos-{{ observationId }}" class="col-xs-4" style="cursor:pointer" onclick="dispAula('equipos', {{ observationId }})" onmouseover="dispAulaBig('equipos', {{ observationId }})" onmouseout="dispAulaNormal('equipos', {{ observationId }})">
+                                <label id="equipos-{{ observationId }}" class="col-xs-4" style="cursor:pointer; opacity: 0.5;" onclick="dispAula('equipos', {{ observationId }})" onmouseover="dispAulaBig('equipos', {{ observationId }})" onmouseout="dispAulaNormal('equipos', {{ observationId }})">
                                     <input type="radio" name="disposicion" value="equipos" />
                                     <img src="{{ asset('public/assets/images/observation/equipos.svg') }}">
                                     <br/>
@@ -225,24 +225,57 @@
                         </div>
 
                         <div class="tab-pane" id="galeria-{{ observationId }}">
-                            <p><em><i class="fa fa-info-circle text-primary"></i> Esta secci&oacute;n es para documentar el ambiente de la clase</em></p>
-                            <ul>
-                                <li>Puedes subir 2 fotos solamente</li>
-                                <li>Para observar toda el aula, cada foto debe ser tomada del lado opuesto como se muestra:</li>
-                            </ul>
+                            <div class="row">
+                                <div class="col-sx-12 col-md-6">
+                                    <p><em><i class="fa fa-info-circle text-primary"></i> Esta secci&oacute;n es para documentar el ambiente de la clase</em></p>
+                                    <ul>
+                                        <li>Puedes subir 2 fotos solamente</li>
+                                        <li>Para observar toda el aula, cada foto debe ser tomada del lado opuesto como se muestra:</li>
+                                    </ul>
 
-                            <hr/>
-
-                            <form action="#">
-                                <input type="file" name="image" >
-                                <button class="btn btn-sm btn-info upload" type="submit">Upload</button>
-                                <button type="button" class="btn btn-sm btn-danger cancel">Cancel</button>
-
-                                <div class="progress progress-striped active">
-                                    <div class="progress-bar" style="width:0%"></div>
+                                    <div class="row">
+                                        <div class="col-xs-6 text-center" >
+                                            <img src="{{ asset('public/assets/images/observation/anguloa.svg') }}">
+                                        </div>
+                                        <div class="col-xs-6 text-left" >
+                                            <img src="{{ asset('public/assets/images/observation/angulob.svg') }}">
+                                        </div>
+                                    </div>
                                 </div>
-                            </form>
 
+                                <div class="col-sx-12 col-md-6">
+                                    <div class="row">
+                                        <div class="col-xs-12 text-center">
+                                            <h1 style="font-size: 80px"><i class="fa fa-picture-o text-muted" aria-hidden="true"></i></h1>
+                                            <h4><strong>Foto A</strong></h4>
+                                        </div>
+                                    </div>
+
+                                    <form id="A" name="A" action="#">
+                                        <div class="input-group">
+                                            <label class="input-group-btn">
+                                                    <span id="findA" class="btn btn-info">
+                                                        <i class="fa fa-folder-open" aria-hidden="true"></i> Agregar una foto&hellip; <input type="file" id="imageA" name="imageA" style="display: none;" multiple accept='image/*'>
+                                                    </span>
+                                            </label>
+                                            <input type="text" class="form-control" readonly>
+                                            <label class="input-group-btn">
+                                                <button id="uploadA" type="submit" tabindex="500" class="btn btn-info upload" disabled>
+                                                    <i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i>
+                                                    <span class="hidden-xs">Upload</span>
+                                                </button>
+                                            </label>
+                                        </div>
+                                        <!-- <button class="btn btn-sm btn-info upload" type="submit"><i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i> Upload</button>
+                                        <button type="button" class="btn btn-sm btn-danger cancel">Cancel</button> -->
+                                        <input id="obsIdA" name="obsIdA" type="text" class="hidden" value="{{ observationId }}">
+                                        <div class="progress progress-striped active">
+                                            <div class="progress-bar progress-bar-info" style="width:0%"></div>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <!-- END Tabs Content -->
@@ -267,7 +300,30 @@
         var uri = '{{ app.request.uri }}';
 
         $(function() {
+            // We can attach the `fileselect` event to all file inputs on the page
+            $(document).on('change', ':file', function() {
+                var input = $(this),
+                        numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
 
+                input.trigger('fileselect', [numFiles, label]);
+            });
+
+            // We can watch for our custom `fileselect` event like this
+            $(document).ready( function() {
+                $(':file').on('fileselect', function(event, numFiles, label) {
+
+                    var input = $(this).parents('.input-group').find(':text'),
+                            log = numFiles > 1 ? numFiles + ' files selected' : label;
+
+                    if( input.length ) {
+                        input.val(log);
+                    } else {
+                        if( log ) console.log(log);
+                    }
+
+                });
+            });
         });
 
 
@@ -277,10 +333,12 @@
         }
 
         function dispAulaBig(type, observationId) {
+            $('#'+type +'-'+ observationId).css('opacity', '1');
             $('#'+type +'-'+ observationId).children('h3').html('<strong>'+type.charAt(0).toUpperCase() + type.slice(1)+'</strong>');
         }
 
         function dispAulaNormal(type, observationId) {
+            $('#'+type +'-'+ observationId).css('opacity', '0.5');
             $('#'+type +'-'+ observationId).children('h3').html( type.charAt(0).toUpperCase() + type.slice(1) );
         }
 
@@ -293,7 +351,16 @@
 
 
 
+        $('#imageA').change(function () {
 
+            if($("#imageA").val()) {
+                $('#uploadA').prop("disabled", false);
+                $('#findA').removeClass('btn-info');
+                $('#findA').addClass('btn-default');
+            }else {
+                console.log("Not file");
+            }
+        });
 
         $('.upload-all').click(function(){
             //submit all form
@@ -303,11 +370,12 @@
             //submit all form
             $('form .cancel').click();
         });
+
         $(document).on('submit','form',function(e){
             e.preventDefault();
-            $form = $(this);
-            uploadImage($form);
+            uploadImage($(this));
         });
+
         function uploadImage($form){
             $form.find('.progress-bar').removeClass('progress-bar-success')
                     .removeClass('progress-bar-danger');
@@ -320,7 +388,7 @@
             });
             //progress completed load event
             request.addEventListener('load',function(e){
-                $form.find('.progress-bar').addClass('progress-bar-success').html('upload completed....');
+                $form.find('.progress-bar').addClass('progress-bar-success').html('cargar completada....');
             });
             console.log(HttpHost+baseUrl);
             request.open('post', HttpHost+baseUrl+'/api/v0/observation/saveImg');
@@ -330,7 +398,7 @@
                 $form.find('.progress-bar')
                         .addClass('progress-bar-danger')
                         .removeClass('progress-bar-success')
-                        .html('upload aborted...');
+                        .html('cargar abortada...');
             });
         }
 
