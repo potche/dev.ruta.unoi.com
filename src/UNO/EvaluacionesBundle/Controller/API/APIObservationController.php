@@ -13,6 +13,7 @@ use UNO\EvaluacionesBundle\Entity\ObservationAnswer;
 use UNO\EvaluacionesBundle\Entity\ObservationAnswerHistory;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use UNO\EvaluacionesBundle\Controller\FileUpload\Document;
+use UNO\EvaluacionesBundle\Entity\ObservationGallery;
 
 /**
  * Created by PhpStorm.
@@ -335,9 +336,14 @@ class APIObservationController extends Controller{
     public function saveImgAction(Request $request){
         $session = $request->getSession();
         $session->start();
+        if($request->request->get('obsIdA')){
+            $observationId = $request->request->get('obsIdA');
+            $type = 'A';
+            $obsIdA = $observationId.'-'.$type;
+        }
 
-        $img = $request->files->get('image');
-        print_r($img);
+        $img = $request->files->get('imageA');
+
         if( ($img instanceof UploadedFile) && ($img->getError() == '0') ){
             $request = array(
                 'originalName' => $img->getClientOriginalName(),
@@ -350,22 +356,62 @@ class APIObservationController extends Controller{
             $nameArray = explode('.',$request['originalName']);
             $fileType = $nameArray[sizeof($nameArray)-1];
             $validFileTypes = array('jpg','jpeg','bmg','png');
+            $dir = 'public/assets/images/observation/uploads';
             //print_r($root = $this->get('kernel')->getRootDir()."/../www");
             if(in_array(strtolower($fileType), $validFileTypes)){
                 $document = new Document();
                 $document->setFile($img);
-                $document->setUploadDirectory('public/assets/images/observation/uploads');
-                $relativePath = date('Y-m', filemtime($img->getPath()));
-                $document->setUploadHash('ghfashgsa.'.strtolower($fileType));
-                $document->processFile();
-                $uploadUrl = $document->getUploadDirectory(). DIRECTORY_SEPARATOR. $img->getBasename();
-                $request = $uploadUrl;
+                $document->setUploadDirectory($dir);
+                $relativePath = md5( $obsIdA );
+                $document->setUploadHash($relativePath.'.'.strtolower($fileType));
+
+                if($this->createGalleryQuery($relativePath.'.'.strtolower($fileType), $dir.'/', $type, $observationId)){
+                    $document->processFile();
+
+                    $uploadUrl = $document->getUploadDirectory(). DIRECTORY_SEPARATOR. $relativePath.'.'.strtolower($fileType);
+                    $request = $uploadUrl;
+                }
+
+            }else{
+                $request = array('status' => 'error','message' => 'File Type Invalid');
             }
         }else{
-            $request = array('message' => 'error file');
+            $request = array('status' => 'error', 'message' => 'empty file');
         }
 
         return new JsonResponse($request, 200);
+    }
+
+    private function createGalleryQuery($name, $dir, $type, $observationId){
+        $em = $this->getDoctrine()->getManager();
+        $ObservationGallery = $em->getRepository('UNOEvaluacionesBundle:ObservationGallery')->findOneBy(array('observationGalleryId' => $name));
+
+        if($ObservationGallery){
+            //update
+            $ObservationGallery->setDateUpload(new \DateTime());
+            $em->flush();
+            return true;
+        }else{
+            //create
+            $em = $this->getDoctrine()->getManager();
+            try{
+                $ObservationGallery = new ObservationGallery();
+                $ObservationGallery->setObservationGalleryId($name);
+                $ObservationGallery->setDir($dir);
+                $ObservationGallery->setType($type);
+                $ObservationGallery->setDateUpload(new \DateTime());
+                $ObservationGallery->setObservationId($observationId);
+
+                $em->persist($ObservationGallery);
+                $em->flush();
+                return true;
+            } catch(\Exception $e){
+                print_r($e->getMessage());
+                return false;
+            }
+        }
+
+
     }
 
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="UNO\EvaluacionesBundle\Entity\ObservationGallery" table="ObservationGallery">
+    <id name="observationGalleryId" type="string" column="observationGalleryId" length="65">
+      <generator strategy="NONE"/>
+    </id>
+    <field name="dir" type="string" column="dir" length="255">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="type" type="string" column="type" length="1">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="dateUpload" type="datetime" column="dateUpload">
+    </field>
+    <field name="observationId" type="integer" column="observationId">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+  </entity>
+</doctrine-mapping>
