@@ -41,9 +41,14 @@ class ListarController extends Controller
         $personID = $session->get('personIdS');
         $response = json_decode(file_get_contents($this->generateUrl('APISurveysPerson',array('personid'=>$personID),true), false), true);
 
-        $countToBeAnswered = array_count_values(array_column($response,'actioncode'))['0'];
+        if(!$response['Error']){
+            $countToBeAnswered = array_count_values(array_column($response,'actioncode'))['0'];
+            $statistics = Utils::fetchStats(count($response),$countToBeAnswered);
 
-        $statistics = Utils::fetchStats(count($response),$countToBeAnswered);
+        }else{
+            $response = '';
+            $statistics = Utils::fetchStats(count($response),0);
+        }
 
         return $this->render('@UNOEvaluaciones/Evaluaciones/listar.html.twig', array(
 
