@@ -1,5 +1,6 @@
 {% extends '::base.html.twig' %}
 {% block body %}
+    <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/themes.css">
     <style>
         label > input{ /* HIDE RADIO */
             display:none;
@@ -11,6 +12,7 @@
         label > input:checked + img{ /* (CHECKED) IMAGE STYLES */
             border:2px solid #f00;
         }
+
     </style>
     <link rel="stylesheet" href="{{ asset('public/assets/css/observationCreate.css') }}">
 
@@ -245,35 +247,128 @@
 
                                 <div class="col-sx-12 col-md-6">
                                     <div class="row">
+
                                         <div class="col-xs-12 text-center">
-                                            <h1 style="font-size: 80px"><i class="fa fa-picture-o text-muted" aria-hidden="true"></i></h1>
-                                            <h4><strong>Foto A</strong></h4>
+                                            <div id="widgetFotoA" class="widget" style="display: none">
+                                                <div class="alert alert-success alert-dismissable">
+                                                    <button id="closeA" type="button" class="close pull-right" aria-hidden="true">&times;</button>
+                                                    <!-- Carousel -->
+                                                    <div id="widget-carousel6" class="carousel slide remove-margin">
+                                                        <!-- Wrapper for slides -->
+                                                        <div class="carousel-inner">
+                                                            <div class="active item">
+                                                                <img src="" alt="image A">
+                                                            </div>
+                                                        </div>
+                                                        <!-- END Wrapper for slides -->
+                                                    </div>
+                                                    <!-- END Carousel -->
+                                                    <div class="widget-simple themed-background-dark-night">
+                                                        <a href="javascript:void(0)" class="widget-icon pull-right themed-background-flatie">
+                                                            <i class="fa fa-camera" aria-hidden="true"></i>
+                                                        </a>
+                                                        <h4 class="widget-content widget-content-light">
+                                                            <a href="javascript:void(0)" class="themed-color-flatie"><strong>Foto</strong> A</a>
+                                                            <small>Observaci&oacute;n en el aula</small>
+                                                        </h4>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            <div id="fotoA">
+                                                <h1 style="font-size: 80px">
+                                                    <i class="fa fa-picture-o text-muted" aria-hidden="true"></i>
+                                                </h1>
+                                                <h4><strong>Foto A</strong></h4>
+
+                                                <form id="A" name="A" action="#">
+                                                    <div class="input-group">
+                                                        <label class="input-group-btn">
+                                                        <span id="findA" class="btn btn-info">
+                                                            <i class="fa fa-folder-open" aria-hidden="true"></i> Agregar una foto&hellip; <input type="file" id="imageA" name="imageA" style="display: none;" multiple accept='image/*'>
+                                                        </span>
+                                                        </label>
+                                                        <input type="text" class="form-control" readonly>
+                                                        <label class="input-group-btn">
+                                                            <button id="uploadA" type="submit" tabindex="500" class="btn btn-info upload" disabled>
+                                                                <i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i>
+                                                                <span class="hidden-xs">Upload</span>
+                                                            </button>
+                                                        </label>
+                                                    </div>
+                                                    <input id="obsIdA" name="obsIdA" type="text" class="hidden" value="{{ observationId }}">
+                                                    <div class="progress progress-striped active">
+                                                        <div class="progress-bar progress-bar-info" style="width:0%"></div>
+                                                    </div>
+
+                                                </form>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xs-12 text-center">
+
+                                            <div id="widgetFotoB" class="widget" style="display: none">
+                                                <div class="alert alert-success alert-dismissable">
+                                                    <button id="closeB" type="button" class="close pull-right" aria-hidden="true">&times;</button>
+                                                    <!-- Carousel -->
+                                                    <div id="widget-carousel6" class="carousel slide remove-margin">
+                                                        <!-- Wrapper for slides -->
+                                                        <div class="carousel-inner">
+                                                            <div class="active item">
+                                                                <img src="" alt="image B">
+                                                            </div>
+                                                        </div>
+                                                        <!-- END Wrapper for slides -->
+                                                    </div>
+                                                    <!-- END Carousel -->
+                                                    <div class="widget-simple themed-background-dark-night">
+                                                        <a href="javascript:void(0)" class="widget-icon pull-right themed-background-flatie">
+                                                            <i class="fa fa-camera" aria-hidden="true"></i>
+                                                        </a>
+                                                        <h4 class="widget-content widget-content-light">
+                                                            <a href="javascript:void(0)" class="themed-color-flatie"><strong>Foto</strong> B</a>
+                                                            <small>Observaci&oacute;n en el aula</small>
+                                                        </h4>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            <div id="fotoB">
+                                                <h1 style="font-size: 80px">
+                                                    <i class="fa fa-picture-o text-muted" aria-hidden="true"></i>
+                                                </h1>
+                                                <h4><strong>Foto B</strong></h4>
+
+                                                <form id="B" name="B" action="#">
+                                                    <div class="input-group">
+                                                        <label class="input-group-btn">
+                                                        <span id="findB" class="btn btn-info">
+                                                            <i class="fa fa-folder-open" aria-hidden="true"></i> Agregar una foto&hellip; <input type="file" id="imageB" name="imageB" style="display: none;" multiple accept='image/*'>
+                                                        </span>
+                                                        </label>
+                                                        <input type="text" class="form-control" readonly>
+                                                        <label class="input-group-btn">
+                                                            <button id="uploadB" type="submit" tabindex="500" class="btn btn-info upload" disabled>
+                                                                <i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i>
+                                                                <span class="hidden-xs">Upload</span>
+                                                            </button>
+                                                        </label>
+                                                    </div>
+                                                    <input id="obsIdB" name="obsIdB" type="text" class="hidden" value="{{ observationId }}">
+                                                    <div class="progress progress-striped active">
+                                                        <div class="progress-bar progress-bar-info" style="width:0%"></div>
+                                                    </div>
+
+                                                </form>
+                                            </div>
+
                                         </div>
                                     </div>
 
-                                    <form id="A" name="A" action="#">
-                                        <div class="input-group">
-                                            <label class="input-group-btn">
-                                                    <span id="findA" class="btn btn-info">
-                                                        <i class="fa fa-folder-open" aria-hidden="true"></i> Agregar una foto&hellip; <input type="file" id="imageA" name="imageA" style="display: none;" multiple accept='image/*'>
-                                                    </span>
-                                            </label>
-                                            <input type="text" class="form-control" readonly>
-                                            <label class="input-group-btn">
-                                                <button id="uploadA" type="submit" tabindex="500" class="btn btn-info upload" disabled>
-                                                    <i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i>
-                                                    <span class="hidden-xs">Upload</span>
-                                                </button>
-                                            </label>
-                                        </div>
-                                        <!-- <button class="btn btn-sm btn-info upload" type="submit"><i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i> Upload</button>
-                                        <button type="button" class="btn btn-sm btn-danger cancel">Cancel</button> -->
-                                        <input id="obsIdA" name="obsIdA" type="text" class="hidden" value="{{ observationId }}">
-                                        <div class="progress progress-striped active">
-                                            <div class="progress-bar progress-bar-info" style="width:0%"></div>
-                                        </div>
 
-                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -298,6 +393,7 @@
         var baseUrl = '{{ app.request.baseurl }}';
         //ruta en la que nos encontramos http://dev.ruta.unoi.com/app_dev.php/observacion
         var uri = '{{ app.request.uri }}';
+        var observationId = {{ observationId }};
 
         $(function() {
             // We can attach the `fileselect` event to all file inputs on the page
@@ -324,6 +420,8 @@
 
                 });
             });
+
+            getGallery();
         });
 
 
@@ -345,18 +443,23 @@
 
 
 
-
-
-
-
-
-
         $('#imageA').change(function () {
 
             if($("#imageA").val()) {
                 $('#uploadA').prop("disabled", false);
                 $('#findA').removeClass('btn-info');
                 $('#findA').addClass('btn-default');
+            }else {
+                console.log("Not file");
+            }
+        });
+
+        $('#imageB').change(function () {
+
+            if($("#imageB").val()) {
+                $('#uploadB').prop("disabled", false);
+                $('#findB').removeClass('btn-info');
+                $('#findB').addClass('btn-default');
             }else {
                 console.log("Not file");
             }
@@ -380,6 +483,7 @@
             $form.find('.progress-bar').removeClass('progress-bar-success')
                     .removeClass('progress-bar-danger');
             var formdata = new FormData($form[0]); //formelement
+            console.log($form);
             var request = new XMLHttpRequest();
             //progress event...
             request.upload.addEventListener('progress',function(e){
@@ -389,6 +493,7 @@
             //progress completed load event
             request.addEventListener('load',function(e){
                 $form.find('.progress-bar').addClass('progress-bar-success').html('cargar completada....');
+                getGallery();
             });
             console.log(HttpHost+baseUrl);
             request.open('post', HttpHost+baseUrl+'/api/v0/observation/saveImg');
@@ -401,6 +506,48 @@
                         .html('cargar abortada...');
             });
         }
+
+        function getGallery() {
+            $.get( HttpHost+baseUrl+"/api/v0/observation/gallery/"+observationId)
+                    .done(function(data) {
+                        if(data){
+                            $.each( data, function( key, val ) {
+                                if(val.type.toUpperCase() === 'A'){
+                                    console.log(val.ruta);
+                                    $('#widgetFotoA').find('img').attr('src',HttpHost+'/'+val.ruta);
+                                    $('#widgetFotoA').css("display", "block");
+                                    $('#fotoA').hide();
+                                }
+
+                                if(val.type.toUpperCase() === 'B'){
+                                    console.log(val.ruta);
+                                    $('#widgetFotoB').find('img').attr('src',HttpHost+'/'+val.ruta);
+                                    $('#widgetFotoB').css("display", "block");
+                                    $('#fotoB').hide();
+                                }
+
+                            });
+
+
+                        }
+                    })
+                    .fail(function() {
+                        console.log('error')
+                    })
+                    .always(function() {
+                        console.log( "finished" );
+                    });
+        }
+
+        $('#closeA').on('click',function(e){
+            $('#widgetFotoA').hide();
+            $('#fotoA').show();
+        });
+
+        $('#closeB').on('click',function(e){
+            $('#widgetFotoB').hide();
+            $('#fotoB').show();
+        });
 
     </script>
 {% endblock %}

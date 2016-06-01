@@ -340,9 +340,14 @@ class APIObservationController extends Controller{
             $observationId = $request->request->get('obsIdA');
             $type = 'A';
             $obsIdA = $observationId.'-'.$type;
+            $img = $request->files->get('imageA');
+        }else if($request->request->get('obsIdB')){
+            $observationId = $request->request->get('obsIdB');
+            $type = 'B';
+            $obsIdA = $observationId.'-'.$type;
+            $img = $request->files->get('imageB');
         }
 
-        $img = $request->files->get('imageA');
 
         if( ($img instanceof UploadedFile) && ($img->getError() == '0') ){
             $request = array(
@@ -362,7 +367,7 @@ class APIObservationController extends Controller{
                 $document = new Document();
                 $document->setFile($img);
                 $document->setUploadDirectory($dir);
-                $relativePath = md5( $obsIdA );
+                $relativePath = md5( date('Y-m-d-H-i-s'). $obsIdA );
                 $document->setUploadHash($relativePath.'.'.strtolower($fileType));
 
                 if($this->createGalleryQuery($relativePath.'.'.strtolower($fileType), $dir.'/', $type, $observationId)){
@@ -384,10 +389,12 @@ class APIObservationController extends Controller{
 
     private function createGalleryQuery($name, $dir, $type, $observationId){
         $em = $this->getDoctrine()->getManager();
-        $ObservationGallery = $em->getRepository('UNOEvaluacionesBundle:ObservationGallery')->findOneBy(array('observationGalleryId' => $name));
+        $ObservationGallery = $em->getRepository('UNOEvaluacionesBundle:ObservationGallery')->findOneBy(array('type' => $type, 'observationId' => $observationId));
 
         if($ObservationGallery){
             //update
+            unlink($dir.$ObservationGallery->getObservationGalleryId());
+            $ObservationGallery->setObservationGalleryId($name);
             $ObservationGallery->setDateUpload(new \DateTime());
             $em->flush();
             return true;
@@ -410,8 +417,36 @@ class APIObservationController extends Controller{
                 return false;
             }
         }
-
-
     }
 
+    /**
+     * @Route("/observation/gallery/{observationId}")
+     * @Method({"GET"})
+     */
+    public function observationGalleryAction($observationId){
+
+        $result = $this->getGalleryQuery($observationId);
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getGalleryQuery($observationId){
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        return $qb->select("concat(OG.dir,OG.observationGalleryId) as ruta, OG.type, OG.dateUpload")
+            ->from('UNOEvaluacionesBundle:ObservationGallery','OG')
+            ->where('OG.observationId = :observationId')
+            ->setParameter('observationId', $observationId)
+            ->getQuery()
+            ->getResult();
+
+    }
 }
