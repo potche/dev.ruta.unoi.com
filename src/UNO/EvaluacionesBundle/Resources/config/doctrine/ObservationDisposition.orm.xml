@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="UNO\EvaluacionesBundle\Entity\ObservationDisposition" table="ObservationDisposition">
+    <id name="observationId" type="integer" column="observationId">
+      <generator strategy="NONE"/>
+    </id>
+    <field name="disposition" type="string" column="disposition" length="45">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="dateDisposition" type="datetime" column="dateDisposition"/>
+  </entity>
+</doctrine-mapping>
