@@ -14,6 +14,7 @@ use UNO\EvaluacionesBundle\Entity\ObservationAnswerHistory;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use UNO\EvaluacionesBundle\Controller\FileUpload\Document;
 use UNO\EvaluacionesBundle\Entity\ObservationGallery;
+use UNO\EvaluacionesBundle\Entity\ObservationDisposition;
 
 /**
  * Created by PhpStorm.
@@ -370,7 +371,7 @@ class APIObservationController extends Controller{
                 $relativePath = md5( date('Y-m-d-H-i-s'). $obsIdA );
                 $document->setUploadHash($relativePath.'.'.strtolower($fileType));
 
-                if($this->createGalleryQuery($relativePath.'.'.strtolower($fileType), $dir.'/', $type, $observationId)){
+                if($this->createOrUpdateGalleryQuery($relativePath.'.'.strtolower($fileType), $dir.'/', $type, $observationId)){
                     $document->processFile();
 
                     $uploadUrl = $document->getUploadDirectory(). DIRECTORY_SEPARATOR. $relativePath.'.'.strtolower($fileType);
@@ -387,7 +388,7 @@ class APIObservationController extends Controller{
         return new JsonResponse($request, 200);
     }
 
-    private function createGalleryQuery($name, $dir, $type, $observationId){
+    private function createOrUpdateGalleryQuery($name, $dir, $type, $observationId){
         $em = $this->getDoctrine()->getManager();
         $ObservationGallery = $em->getRepository('UNOEvaluacionesBundle:ObservationGallery')->findOneBy(array('type' => $type, 'observationId' => $observationId));
 
@@ -449,4 +450,88 @@ class APIObservationController extends Controller{
             ->getResult();
 
     }
+
+    /**
+     * @Route("/observation/disposition/{observationId}")
+     * @Method({"GET"})
+     */
+    public function observationDispositionAction($observationId){
+
+        $result = $this->getDispositionQuery($observationId);
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getDispositionQuery($observationId){
+        $em = $this->getDoctrine()->getManager();
+        $ObservationDisposition = $em->getRepository('UNOEvaluacionesBundle:ObservationDisposition')->findOneBy(array('observationId'=> $observationId));
+
+        if($ObservationDisposition) {
+            return array('disposition' => $ObservationDisposition->getDisposition());
+        }else{
+            return array('status' => 'error', 'message' => 'empty Disposition');
+        }
+    }
+
+    /**
+     * @Route("/observation/saveDisposition")
+     * @Method({"POST"})
+     */
+    public function saveDispositionAction(Request $request){
+        $disposition = $request->request->get('disposition');
+        $observationId = $request->request->get('observationId');
+
+        if($disposition){
+            $result = $this->createOrUpdateDispositionQuery($disposition, $observationId);
+        }else{
+            $result = array('status' => 'error', 'message' => 'missing parameters');
+        }
+        
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * @return mixed
+     */
+    private function createOrUpdateDispositionQuery($disposition, $observationId){
+        $em = $this->getDoctrine()->getManager();
+        $ObservationDisposition = $em->getRepository('UNOEvaluacionesBundle:ObservationDisposition')->findOneBy(array('observationId'=> $observationId));
+
+        if($ObservationDisposition) {
+            $ObservationDisposition->setDisposition($disposition);
+            $ObservationDisposition->setDateDisposition(new \DateTime());
+            $em->flush();
+            return true;
+        }else{
+            //create
+            $em = $this->getDoctrine()->getManager();
+            try{
+                $ObservationDisposition = new ObservationDisposition();
+                $ObservationDisposition->setObservationId($observationId);
+                $ObservationDisposition->setDisposition($disposition);
+                $ObservationDisposition->setDateDisposition(new \DateTime());
+
+                $em->persist($ObservationDisposition);
+                $em->flush();
+                return true;
+            } catch(\Exception $e){
+                print_r($e->getMessage());
+                return false;
+            }
+            
+        }
+    }
+
 }

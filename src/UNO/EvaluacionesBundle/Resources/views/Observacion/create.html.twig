@@ -203,20 +203,20 @@
                         <div class="tab-pane" id="dispAula-{{ observationId }}">
                             <p><em><i class="fa fa-info-circle text-primary"></i> Selecciona la disposici&oacute;n del aula correspondiente</em></p>
                             <div class="row text-center">
-                                <label id="filas-{{ observationId }}" class="col-xs-4" style="cursor:pointer; opacity: 0.5;" onclick="dispAula('filas', {{ observationId }})" onmouseover="dispAulaBig('filas', {{ observationId }})" onmouseout="dispAulaNormal('filas', {{ observationId }})">
-                                    <input type="radio" name="disposicion" value="filas" />
+                                <label id="label-filas-{{ observationId }}" class="col-xs-4" style="cursor:pointer; opacity: 0.5;" onclick="dispAula('filas', {{ observationId }})" >
+                                    <input id="filas-{{ observationId }}" type="radio" name="disposicion" value="filas" />
                                     <img src="{{ asset('public/assets/images/observation/filas.svg') }}">
                                     <br/>
                                     <h3>Filas</h3>
                                 </label>
-                                <label id="herradura-{{ observationId }}" class="col-xs-4" style="cursor:pointer; opacity: 0.5;" onclick="dispAula('herradura', {{ observationId }})" onmouseover="dispAulaBig('herradura', {{ observationId }})" onmouseout="dispAulaNormal('herradura', {{ observationId }})">
-                                    <input type="radio" name="disposicion" value="herradura" />
+                                <label id="label-herradura-{{ observationId }}" class="col-xs-4" style="cursor:pointer; opacity: 0.5;" onclick="dispAula('herradura', {{ observationId }})" >
+                                    <input id="herradura-{{ observationId }}" type="radio" name="disposicion" value="herradura" />
                                     <img src="{{ asset('public/assets/images/observation/herradura.svg') }}">
                                     <br/>
                                     <h3>Herradura</h3>
                                 </label>
-                                <label id="equipos-{{ observationId }}" class="col-xs-4" style="cursor:pointer; opacity: 0.5;" onclick="dispAula('equipos', {{ observationId }})" onmouseover="dispAulaBig('equipos', {{ observationId }})" onmouseout="dispAulaNormal('equipos', {{ observationId }})">
-                                    <input type="radio" name="disposicion" value="equipos" />
+                                <label id="label-equipos-{{ observationId }}" class="col-xs-4" style="cursor:pointer; opacity: 0.5;" onclick="dispAula('equipos', {{ observationId }})" >
+                                    <input id="equipos-{{ observationId }}" type="radio" name="disposicion" value="equipos" />
                                     <img src="{{ asset('public/assets/images/observation/equipos.svg') }}">
                                     <br/>
                                     <h3>Equipos</h3>
@@ -422,24 +422,76 @@
             });
 
             getGallery();
+            getDisposition();
         });
 
+        $(document).on('click','label',function(e){
+            $disposicion = $(this)[0].id.split('-');
+            $('#'+$(this)[0].id).css('opacity', '1');
+            $('#'+$(this)[0].id).unbind('mouseover');
+            $('#'+$(this)[0].id).children('h3').html('<strong>'+$disposicion[1].charAt(0).toUpperCase() + $disposicion[1].slice(1)+'</strong>');
+
+            $.post( HttpHost+baseUrl+"/api/v0/observation/saveDisposition", {disposition: $disposicion[1], observationId: observationId})
+                    .done(function(data) {
+                        if(data){
+                            console.log(data);
+                            //$("#radio_1").prop("checked", true)
+                        }
+                    })
+                    .fail(function() {
+                        console.log('error')
+                    })
+                    .always(function() {
+                        console.log( "finished" );
+                    });
+        });
+
+        $(document).on('mouseover','label',function(e){
+            $disposicion = $(this)[0].id.split('-');
+            $('#'+$(this)[0].id).css('opacity', '1');
+            $('#'+$(this)[0].id).children('h3').html('<strong>'+$disposicion[1].charAt(0).toUpperCase() + $disposicion[1].slice(1)+'</strong>');
+        });
+
+        $(document).on('mouseout','label',function(e){
+            $disposicion = $(this)[0].id.split('-');
+            $('#'+$(this)[0].id).css('opacity', '0.5');
+            $('#'+$(this)[0].id).children('h3').html( $disposicion[1].charAt(0).toUpperCase() + $disposicion[1].slice(1) );
+        });
 
         function dispAula(type, observationId) {
             console.log(type+'|'+observationId);
-            $('#'+type +'-'+ observationId).children('h3').html('<strong>'+type.charAt(0).toUpperCase() + type.slice(1)+'</strong>');
+
         }
 
         function dispAulaBig(type, observationId) {
-            $('#'+type +'-'+ observationId).css('opacity', '1');
-            $('#'+type +'-'+ observationId).children('h3').html('<strong>'+type.charAt(0).toUpperCase() + type.slice(1)+'</strong>');
+            $('#label-'+type +'-'+ observationId).css('opacity', '1');
+            $('#label-'+type +'-'+ observationId).children('h3').html('<strong>'+type.charAt(0).toUpperCase() + type.slice(1)+'</strong>');
         }
 
         function dispAulaNormal(type, observationId) {
-            $('#'+type +'-'+ observationId).css('opacity', '0.5');
-            $('#'+type +'-'+ observationId).children('h3').html( type.charAt(0).toUpperCase() + type.slice(1) );
+            $('#label-'+type +'-'+ observationId).css('opacity', '0.5');
+            $('#label-'+type +'-'+ observationId).children('h3').html( type.charAt(0).toUpperCase() + type.slice(1) );
         }
 
+        function getDisposition() {
+            $.get( HttpHost+baseUrl+"/api/v0/observation/disposition/"+observationId)
+                    .done(function(data) {
+                        if(data){
+                            console.log('#'+data.disposition+'-'+observationId);
+                            $('#label-'+data.disposition +'-'+ observationId).css('opacity', '1');
+
+                            $('#label-'+data.disposition +'-'+ observationId).children('h3').html('<strong>'+data.disposition .charAt(0).toUpperCase() + data.disposition .slice(1)+'</strong>');
+
+                            $('#'+data.disposition+'-'+observationId).prop("checked", true)
+                        }
+                    })
+                    .fail(function() {
+                        console.log('error')
+                    })
+                    .always(function() {
+                        console.log( "finished" );
+                    });
+        }
 
 
 
@@ -548,6 +600,7 @@
             $('#widgetFotoB').hide();
             $('#fotoB').show();
         });
+
 
     </script>
 {% endblock %}
