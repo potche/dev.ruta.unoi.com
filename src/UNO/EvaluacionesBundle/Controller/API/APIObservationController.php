@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use UNO\EvaluacionesBundle\Controller\FileUpload\Document;
 use UNO\EvaluacionesBundle\Entity\ObservationGallery;
 use UNO\EvaluacionesBundle\Entity\ObservationDisposition;
+use UNO\EvaluacionesBundle\Entity\ObservationActivity;
 
 /**
  * Created by PhpStorm.
@@ -531,6 +532,84 @@ class APIObservationController extends Controller{
                 return false;
             }
             
+        }
+    }
+
+
+    /**
+     * @Route("/observation/activity/{observationId}")
+     * @Method({"GET"})
+     */
+    public function observationActivityAction($observationId){
+
+        $result = $this->getActivityQuery($observationId);
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getActivityQuery($observationId){
+        $em = $this->getDoctrine()->getManager();
+        $ObservationActivity = $em->getRepository('UNOEvaluacionesBundle:ObservationActivity')->findOneBy(array('observationId'=> $observationId));
+
+        if($ObservationActivity) {
+            return array('activity' => $ObservationActivity->getActivity());
+        }else{
+            return array('status' => 'error', 'message' => 'empty Activity');
+        }
+    }
+
+    /**
+     * @Route("/observation/saveActivityId")
+     * @Method({"POST"})
+     */
+    public function saveActivityAction(Request $request){
+        $observationId = $request->request->get('observationId');
+        $order = $request->request->get('order');
+
+        //create
+        $em = $this->getDoctrine()->getManager();
+        try{
+            $ObservationActivity = new ObservationActivity();
+            $ObservationActivity->setOrder($order);
+            $ObservationActivity->setStartActivity(new \DateTime());
+            $ObservationActivity->setObservationId($observationId);
+
+            $em->persist($ObservationActivity);
+            $em->flush();
+            return new JsonResponse(array('observationActivityId' => $ObservationActivity->getObservationActivityId()), 200);
+        } catch(\Exception $e){
+            return new JsonResponse(array('error' => $e->getMessage()), 400);
+        }
+    }
+
+    /**
+     * @Route("/observation/saveActivity")
+     * @Method({"POST"})
+     */
+    public function updateActivityAction(Request $request){
+        $observationActivityId = $request->request->get('ObservationActivityId');
+        $activity = $request->request->get('activity');
+        $observationId = $request->request->get('observationId');
+
+
+        $em = $this->getDoctrine()->getManager();
+        $ObservationActivity = $em->getRepository('UNOEvaluacionesBundle:ObservationActivity')->findOneBy(array('observationActivityId' => $observationActivityId, 'observationId' => $observationId));
+
+        if($ObservationActivity){
+            //update
+            $ObservationActivity->setActivity($activity);
+            $ObservationActivity->setEndActivity(new \DateTime());
+            $em->flush();
+            return new JsonResponse(array('message' => true), 200);
+        }else{
+            return new JsonResponse(array('message' => false), 400);
         }
     }
 

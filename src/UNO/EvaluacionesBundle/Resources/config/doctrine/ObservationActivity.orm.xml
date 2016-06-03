@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="UNO\EvaluacionesBundle\Entity\ObservationActivity" table="ObservationActivity">
+    <id name="observationActivityId" type="integer" column="observationActivityId">
+      <generator strategy="AUTO"/>
+    </id>
+    <field name="order" type="integer" column="`order`">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="activity" type="string" column="activity" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="startActivity" type="datetime" column="startActivity">
+    </field>
+    <field name="endActivity" type="datetime" column="endActivity" nullable="true">
+    </field>
+    <field name="observationId" type="integer" column="observationId">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+  </entity>
+</doctrine-mapping>
