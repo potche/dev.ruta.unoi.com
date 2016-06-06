@@ -535,7 +535,6 @@ class APIObservationController extends Controller{
         }
     }
 
-
     /**
      * @Route("/observation/activity/{observationId}")
      * @Method({"GET"})
@@ -556,61 +555,97 @@ class APIObservationController extends Controller{
      */
     private function getActivityQuery($observationId){
         $em = $this->getDoctrine()->getManager();
-        $ObservationActivity = $em->getRepository('UNOEvaluacionesBundle:ObservationActivity')->findOneBy(array('observationId'=> $observationId));
+        $qb = $em->createQueryBuilder();
 
-        if($ObservationActivity) {
-            return array('activity' => $ObservationActivity->getActivity());
-        }else{
-            return array('status' => 'error', 'message' => 'empty Activity');
-        }
+        return $qb->select("OA.observationActivityId, OA.activity, OA.startActivity, OA.endActivity")
+            ->from('UNOEvaluacionesBundle:ObservationActivity','OA')
+            ->where('OA.observationId = :observationId')
+            ->andWhere('OA.endActivity is not null')
+            ->setParameter('observationId', $observationId)
+            ->orderBy("OA.observationActivityId", 'DESC')
+            ->getQuery()
+            ->getResult();
+
     }
 
     /**
-     * @Route("/observation/saveActivityId")
+     * @Route("/observation/deleteActivity")
      * @Method({"POST"})
      */
-    public function saveActivityAction(Request $request){
-        $observationId = $request->request->get('observationId');
-        $order = $request->request->get('order');
+    public function deleteActivityAction(Request $request){
 
-        //create
+        $observationActivityId= $request->request->get('observationActivityId');
+
         $em = $this->getDoctrine()->getManager();
-        try{
-            $ObservationActivity = new ObservationActivity();
-            $ObservationActivity->setOrder($order);
-            $ObservationActivity->setStartActivity(new \DateTime());
-            $ObservationActivity->setObservationId($observationId);
+        $ObservationDisposition = $em->getRepository('UNOEvaluacionesBundle:ObservationActivity')->findOneBy(array('observationActivityId'=> $observationActivityId));
 
-            $em->persist($ObservationActivity);
+        if($ObservationDisposition) {
+            $em->remove($ObservationDisposition);
             $em->flush();
-            return new JsonResponse(array('observationActivityId' => $ObservationActivity->getObservationActivityId()), 200);
-        } catch(\Exception $e){
-            return new JsonResponse(array('error' => $e->getMessage()), 400);
+            return new JsonResponse(array('status' => true),200);
+        }else{
+            return new JsonResponse(array('status' => false),400);
         }
+
+    }
+
+    /**
+     * @Route("/observation/startActivity")
+     * @Method({"GET"})
+     */
+    public function startActivityIdAction(){
+        return new JsonResponse(array('startActivity' => new \DateTime()), 200);
     }
 
     /**
      * @Route("/observation/saveActivity")
      * @Method({"POST"})
      */
-    public function updateActivityAction(Request $request){
-        $observationActivityId = $request->request->get('ObservationActivityId');
+    public function saveActivityAction(Request $request){
         $activity = $request->request->get('activity');
+        $startActivity = $request->request->get('startActivity');
         $observationId = $request->request->get('observationId');
 
-
+        //create
         $em = $this->getDoctrine()->getManager();
-        $ObservationActivity = $em->getRepository('UNOEvaluacionesBundle:ObservationActivity')->findOneBy(array('observationActivityId' => $observationActivityId, 'observationId' => $observationId));
-
-        if($ObservationActivity){
-            //update
+        try{
+            $ObservationActivity = new ObservationActivity();
             $ObservationActivity->setActivity($activity);
+            $ObservationActivity->setStartActivity(new \DateTime($startActivity));
             $ObservationActivity->setEndActivity(new \DateTime());
+            $ObservationActivity->setObservationId($observationId);
+
+            $em->persist($ObservationActivity);
             $em->flush();
-            return new JsonResponse(array('message' => true), 200);
-        }else{
-            return new JsonResponse(array('message' => false), 400);
+            return new JsonResponse(
+                array(
+                    'observationActivityId' => $ObservationActivity->getObservationActivityId()
+                ), 200);
+        } catch(\Exception $e){
+            return new JsonResponse(array('error' => $e->getMessage()), 400);
         }
     }
+
+    /**
+     * @Route("/observation/editActivity")
+     * @Method({"POST"})
+     */
+    public function editActivityAction(Request $request){
+        $activity = $request->request->get('activity');
+        $observationActivityId = $request->request->get('observationActivityId');
+
+        //update
+        $em = $this->getDoctrine()->getManager();
+        $ObservationDisposition = $em->getRepository('UNOEvaluacionesBundle:ObservationActivity')->findOneBy(array('observationActivityId'=> $observationActivityId));
+
+        if($ObservationDisposition) {
+            $ObservationDisposition->setActivity($activity);
+            $em->flush();
+            return new JsonResponse(array('status' => true),200);
+        }else{
+            return new JsonResponse(array('status' => false),400);
+        }
+    }
+
 
 }

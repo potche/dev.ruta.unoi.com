@@ -4,11 +4,6 @@
     <id name="observationActivityId" type="integer" column="observationActivityId">
       <generator strategy="AUTO"/>
     </id>
-    <field name="order" type="integer" column="`order`">
-      <options>
-        <option name="unsigned"/>
-      </options>
-    </field>
     <field name="activity" type="string" column="activity" length="255" nullable="true">
       <options>
         <option name="fixed"/>

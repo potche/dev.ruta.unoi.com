@@ -162,3 +162,29 @@ function escapeHtml(string) {
     });
 }
 
+function paserDate(date){
+    var d = date.split(' ');
+
+    var dateArray = d[0].split("-");
+    var timeArray = d[1].split(":");
+
+    var monthNames = [
+        "Ene", "Feb", "Mar","Abr", "May", "Jun", "Jul","Ago", "Sep", "Oct", "Nov", "Dic"
+    ];
+
+    var date = new Date(dateArray[0],dateArray[1]-1,dateArray[2],timeArray[0],timeArray[1],timeArray[2]);
+    var day = date.getDate();
+    var monthIndex = date.getMonth();
+    var year = date.getFullYear();
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var seconds = date.getSeconds();
+
+    var ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0'+minutes : minutes;
+    seconds = seconds < 10 ? '0'+seconds : seconds;
+
+    return day +'/'+ monthNames[monthIndex]+'/'+ year +' @ '+ hours +':'+ minutes +':'+ seconds + ' ' + ampm;
+}

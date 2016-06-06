@@ -22,13 +22,6 @@ class ObservationActivity
     private $observationActivityId;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="order", type="integer")
-     */
-    private $order;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="activity", type="string", length=255)
@@ -64,30 +57,6 @@ class ObservationActivity
     public function getObservationActivityId()
     {
         return $this->observationActivityId;
-    }
-
-    /**
-     * Set order
-     *
-     * @param integer $order
-     *
-     * @return ObservationActivity
-     */
-    public function setOrder($order)
-    {
-        $this->order = $order;
-
-        return $this;
-    }
-
-    /**
-     * Get order
-     *
-     * @return integer
-     */
-    public function getOrder()
-    {
-        return $this->order;
     }
 
     /**

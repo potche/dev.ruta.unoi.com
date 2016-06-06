@@ -162,45 +162,89 @@
                     <!-- Tabs Content -->
                     <div class="tab-content">
                         <div class="tab-pane active" id="regAct-{{ observationId }}">
-                            <div class="table-responsive">
-                                <!--
-                                Available Table Classes:
-                                    'table'             - basic table
-                                    'table-bordered'    - table with full borders
-                                    'table-borderless'  - table with no borders
-                                    'table-striped'     - striped table
-                                    'table-condensed'   - table with smaller top and bottom cell padding
-                                    'table-hover'       - rows highlighted on mouse hover
-                                    'table-vcenter'     - middle align content vertically
-                                -->
-                                <table id="actividades" class="table table-striped table-vcenter">
-                                    <thead>
+                            <form id="ActivityFrm" name="ActivityFrm" action="#">
+                                <div class="table-responsive">
+                                    <!--
+                                    Available Table Classes:
+                                        'table'             - basic table
+                                        'table-bordered'    - table with full borders
+                                        'table-borderless'  - table with no borders
+                                        'table-striped'     - striped table
+                                        'table-condensed'   - table with smaller top and bottom cell padding
+                                        'table-hover'       - rows highlighted on mouse hover
+                                        'table-vcenter'     - middle align content vertically
+                                    -->
+                                    <table id="actividades" class="table table-striped table-vcenter">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center">Inicio</th>
+                                                <th class="text-center">Actividad</th>
+                                                <th class="text-center"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
                                         <tr>
-                                            <th class="text-center">Inicio</th>
-                                            <th class="text-center">Actividad</th>
-                                            <th class="text-center"></th>
+                                            <td class="text-center" width="15%">
+                                                <span id="start-{{ observationId }}"></span>
+                                            </td>
+                                            <td class="text-center" width="70%">
+                                                <input type="text" id="activity-{{ observationId }}" class="form-control">
+                                            </td>
+                                            <td class="text-center" width="15%">
+                                                <button id="subActivity" type="submit" class="btn btn-primary" disabled> Registar horra</button>
+                                            </td>
+
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td class="text-center" width="15%">
-                                            <span id="start-{{ observationId }}"></span>
-                                        </td>
-                                        <td class="text-center" width="70%">
-                                            <input type="text" id="activity-{{ observationId }}" class="form-control">
-                                        </td>
-                                        <td class="text-center" width="15%">
-                                            <button class="btn btn-primary"> Registar horra</button>
-                                        </td>
 
-                                    </tr>
+                                        </tbody>
+                                    </table>
 
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                                </div>
+                                <input type="text" id="observationActivityId" name="observationActivityId" class="hidden">
 
-                        <div class="tab-pane active" id="regAct-{{ observationId }}">
+                            </form>
+
+                            <form id="editActivityFrm" name="editActivityFrm" action="#" class="hidden">
+                                <div class="table-responsive">
+                                    <!--
+                                    Available Table Classes:
+                                        'table'             - basic table
+                                        'table-bordered'    - table with full borders
+                                        'table-borderless'  - table with no borders
+                                        'table-striped'     - striped table
+                                        'table-condensed'   - table with smaller top and bottom cell padding
+                                        'table-hover'       - rows highlighted on mouse hover
+                                        'table-vcenter'     - middle align content vertically
+                                    -->
+                                    <table class="table table-striped table-vcenter">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center">Inicio</th>
+                                                <th class="text-center">Actividad</th>
+                                                <th class="text-center"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="text-center" width="20%">
+                                                    <span id="start"></span>
+                                                </td>
+                                                <td class="text-center" width="65%">
+                                                    <input type="text" id="activity" class="form-control">
+                                                </td>
+                                                <td class="text-center" width="15%">
+                                                    <button id="subEditActivity" type="submit" class="btn btn-primary" disabled> Actualizar</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                                <input type="text" id="editObservationActivityId" name="editObservationActivityId" class="hidden">
+
+                            </form>
+
+
                             <div class="table-responsive">
                                 <!--
                                 Available Table Classes:
@@ -212,32 +256,25 @@
                                     'table-hover'       - rows highlighted on mouse hover
                                     'table-vcenter'     - middle align content vertically
                                 -->
-                                <table id="actividadesDT" class="table table-striped table-vcenter">
+                                <table id="actividadesDT" class="table table-striped table-vcenter" width="100%">
                                     <thead>
                                     <tr>
-                                        <th class="text-center">Inicio</th>
-                                        <th class="text-center">Actividad</th>
-                                        <th class="text-center">T&eacute;rmino</th>
+                                        <th class="text-center" width="20%">Inicio</th>
+                                        <th class="text-center" width="50%">Actividad</th>
+                                        <th class="text-center" width="20%">T&eacute;rmino</th>
+                                        <th class="text-center" width="10%"></th>
                                     </tr>
                                     </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td class="text-center" width="15%">
-                                            <span id="start-{{ observationId }}"></span>
-                                        </td>
-                                        <td class="text-center" width="70%">
-                                            <span type="text" id="activity-{{ observationId }}"></span>
-                                        </td>
-                                        <td class="text-center" width="15%">
-                                            <span id="end-{{ observationId }}"></span>
-                                        </td>
+                                    <tbody id="activityHistory">
 
-                                    </tr>
 
                                     </tbody>
                                 </table>
+
                             </div>
                         </div>
+
+
 
                         <div class="tab-pane" id="dispAula-{{ observationId }}">
                             <p><em><i class="fa fa-info-circle text-primary"></i> Selecciona la disposici&oacute;n del aula correspondiente</em></p>
@@ -460,18 +497,204 @@
                 });
             });
 
+            getActivity();
             getGallery();
             getDisposition();
+
+            $('#activity-'+observationId).on('keyup',function(e) {
+                if( ($('#observationActivityId').val() === '') && ($.trim($('#activity-'+observationId).val()).length !== 0) ) {
+                    $.get(HttpHost + baseUrl + "/api/v0/observation/startActivity")
+                            .done(function (data) {
+                                if (data) {
+                                    console.log(data);
+                                    $('#start-' + observationId).html(paserDate(data.startActivity.date));
+                                    $('#observationActivityId').val(data.startActivity.date);
+
+                                }
+                            })
+                            .fail(function () {
+                                console.log('error')
+                            })
+                            .always(function () {
+                                console.log("finished");
+                            });
+                }
+
+                if($('#activity-'+observationId).val().length !== 0) {
+                    $('#subActivity').prop("disabled", false);
+                }else {
+                    $('#subActivity').prop("disabled", true);
+                }
+            });
+
+            $('#activity').on('keyup',function(e) {
+                console.log($('#activity').val().length);
+                if($('#activity').val().length !== 0) {
+                    $('#subEditActivity').prop("disabled", false);
+                }else {
+                    $('#subEditActivity').prop("disabled", true);
+                }
+            });
+
         });
 
-        $('#activity-'+observationId).on('click',function(e){
-            console.log('hola');
-            $('start-'+observationId).html(new date('Y-m-d H:j:s'));
+
+        function getActivity() {
+            $.get( HttpHost+baseUrl+"/api/v0/observation/activity/"+observationId)
+                    .done(function(data) {
+                        if(data){
+                            var row = '';
+                            $.each( data, function( key, val ) {
+                                console.log(val);
+                                row += '<tr>' +
+                                        '<td class="text-center" width="20%">' +
+                                        '<span>' + paserDate(val.startActivity.date) + '</span>' +
+                                        '</td>' +
+                                        '<td class="text-justify" width="50%">' +
+                                        '<span>' + val.activity + '</span>' +
+                                        '</td>' +
+                                        '<td class="text-center" width="20%">' +
+                                        '<span>' + paserDate(val.endActivity.date) + '</span>' +
+                                        '</td>' +
+                                        '<td class="text-center" width="10%">' +
+                                        '<div class="btn-group">'+
+                                        '<a href="javascript:void(0)" onclick="editActivity(\'' + paserDate(val.startActivity.date) + '\',\'' + val.activity + '\','+val.observationActivityId+')" title="Edit" class="btn btn-xs btn-default"><i class="fa fa-pencil" aria-hidden="true"></i></a>'+
+                                        '<a href="javascript:void(0)" onclick="deleteActivity('+val.observationActivityId+')" title="Borrar" class="btn btn-xs btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></a>'+
+                                        '</div>' +
+                                        '</td>' +
+                                        '</tr>'
+                            });
+                            $('#activityHistory').html(row);
+                        }
+                    })
+                    .fail(function() {
+                        console.log('error')
+                    })
+                    .always(function() {
+                        console.log( "finished" );
+                    });
+        }
+
+        $('#ActivityFrm').on('submit',function(e){
+            e.preventDefault();
+            var startActivity = $.trim($('#observationActivityId').val());
+            var activity = $('#activity-'+observationId).val();
             //$('#actividades > tbody:last-child').append('<tr><td>New row</td><td>New row</td></tr>');
 
+            if( (startActivity.length !== 0 ) && ( $.trim(activity).length !== 0) ){
+                $.post(HttpHost + baseUrl + "/api/v0/observation/saveActivity", {startActivity: startActivity, activity: activity, observationId: observationId})
+                        .done(function (data) {
+                            if (data) {
+                                console.log(data);
+
+                                $('#start-' + observationId).html('');
+                                $('#observationActivityId').val('');
+                                $('#activity-'+observationId).val('');
+
+                                $('#subActivity').prop("disabled", true);
+                            }
+                        })
+                        .fail(function () {
+                            console.log('error')
+                        })
+                        .always(function () {
+                            getActivity();
+                            console.log("finished");
+                        });
+            }
+
         });
 
+        function editActivity(startActivity,activity,observationActivityId){
+            console.log(observationActivityId);
 
+            $('#start').text(startActivity);
+            $('#activity').val(activity);
+            $('#editObservationActivityId').val(observationActivityId);
+            $('#ActivityFrm').addClass('hidden');
+            $('#editActivityFrm').removeClass('hidden');
+        }
+
+        $('#editActivityFrm').on('submit',function(e){
+            e.preventDefault();
+            var activity = $('#activity').val();
+            var observationActivityId = $('#editObservationActivityId').val();
+            var notify = $.notify('<strong>Editando</strong> registro...', {
+                allow_dismiss: false,
+                showProgressbar: true,
+                animate: {
+                    enter: 'animated fadeInRight',
+                    exit: 'animated fadeOutRight'
+                }
+            });
+            if( $.trim(activity).length !== 0 ){
+                $.post(HttpHost + baseUrl + "/api/v0/observation/editActivity", {observationActivityId: observationActivityId, activity: activity})
+                        .done(function (data) {
+                            if (data.status) {
+                                console.log(data);
+                                notify.update({
+                                    'type': 'success',
+                                    'message': 'El <strong>registro</strong> se han actualizado!',
+                                    'progress': 100
+                                });
+
+                                $('#start').html('');
+                                $('#editObservationActivityId').val('');
+                                $('#activity').val('');
+                                $('#ActivityFrm').removeClass('hidden');
+                                $('#editActivityFrm').addClass('hidden');
+                                $('#subEditActivity').prop("disabled", true);
+                                $('#subActivity').prop("disabled", true);
+                            }
+                        })
+                        .fail(function () {
+                            console.log('error')
+                        })
+                        .always(function () {
+                            getActivity();
+                            console.log("finished");
+                        });
+            }
+
+        });
+
+        function deleteActivity(observationActivityId){
+            console.log(observationActivityId);
+            var notify = $.notify('<strong>Eliminando</strong> registro...', {
+                allow_dismiss: false,
+                showProgressbar: true,
+                animate: {
+                    enter: 'animated fadeInRight',
+                    exit: 'animated fadeOutRight'
+                }
+            });
+            $.post(HttpHost + baseUrl + "/api/v0/observation/deleteActivity", {observationActivityId: observationActivityId})
+                    .done(function (data) {
+                        if (data.status) {
+                            console.log(data);
+                            notify.update({
+                                'type': 'success',
+                                'message': 'El <strong>registro</strong> se han eliminado!',
+                                'progress': 100
+                            });
+
+                            $('#start').html('');
+                            $('#editObservationActivityId').val('');
+                            $('#activity').val('');
+                            $('#ActivityFrm').removeClass('hidden');
+                            $('#editActivityFrm').addClass('hidden');
+                            $('#subEditActivity').prop("disabled", true);
+                            $('#subActivity').prop("disabled", true);
+                        }
+                    })
+                    .fail(function () {
+                        console.log('error')
+                    })
+                    .always(function () {
+                        getActivity();
+                        console.log("finished");
+                    });
+        }
 
         $(document).on('click','label',function(e){
             $disposicion = $(this)[0].id.split('-');
@@ -559,7 +782,12 @@
             $('form .cancel').click();
         });
 
-        $(document).on('submit','form',function(e){
+        $('#A').on('submit','form',function(e){
+            e.preventDefault();
+            uploadImage($(this));
+        });
+
+        $('#B').on('submit','form',function(e){
             e.preventDefault();
             uploadImage($(this));
         });
