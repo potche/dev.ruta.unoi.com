@@ -45,6 +45,7 @@
                                 </tr>
                             </thead>
                             <tbody>
+
                             {% for listObservation in observationsByCoach %}
                                 <tr>
                                     <td class="text-center">{{ listObservation.name }}</td>
@@ -53,11 +54,26 @@
                                     <td class="text-center">{{ listObservation.grado }}</td>
                                     <td class="text-center">{{ listObservation.groupId }}</td>
                                     <td class="text-center">{{ listObservation.nameProgram }}</td>
-                                    <td class="text-center">{{ listObservation.start.date | date('j/M/Y \@ g:i a') }} <i class="fa fa-clock-o" aria-hidden="true" data-toggle="tooltip" title="tiempo restante..."></i></td>
+                                    {% set limitDate = listObservation.start.date | date_modify("+7 day") | date() %}
+                                    {% set difference = date( "now" | date() ).diff(date(limitDate)) %}
+                                    {% set leftDays = difference.days %}
+                                    {% set leftHours = difference.h %}
+
+                                    {% if listObservation.finish is null %}
+                                        <td class="text-center">{{ listObservation.start.date | date('j/M/Y \@ g:i a') }} <i class="fa fa-clock-o" aria-hidden="true" data-toggle="tooltip" title="pendiente"></i></td>
+
+                                    {% else %}
+                                        <td class="text-center">{{ listObservation.start.date | date('j/M/Y \@ g:i a') }} <i class="fa fa-check-circle" aria-hidden="true" data-toggle="tooltip" title="finalizada"></i></td>
+                                    {% endif %}
                                     <td class="text-center">
                                         <div class="btn-group">
-                                            <a href="javascript:void(0)" data-toggle="tooltip" title="view" class="btn btn-xs btn-default"><i class="fa fa-eye" aria-hidden="true"></i></a>
-                                            <a href="javascript:void(0)" onclick="window.location.href = uri+'/crear/{{ listObservation.observationId }}';" title="Edit" class="btn btn-xs btn-default"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                            {% if listObservation.finish is null %}
+                                                <a href="javascript:void(0)" data-toggle="tooltip" title="view" class="btn btn-xs btn-default" disabled><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                                <a href="javascript:void(0)" onclick="window.location.href = uri+'/crear/{{ listObservation.observationId }}';" title="Edit" class="btn btn-xs btn-default"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                            {% else %}
+                                                <a href="javascript:void(0)" onclick="window.location.href = uri+'/view/{{ listObservation.observationId }}';" data-toggle="tooltip" title="view" class="btn btn-xs btn-default"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                                <a href="javascript:void(0)" title="Edit" class="btn btn-xs btn-default" disabled><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                            {% endif %}
                                             <a href="javascript:void(0)" data-toggle="tooltip" title="Notification" class="btn btn-xs btn-default"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
                                         </div>
                                     </td>

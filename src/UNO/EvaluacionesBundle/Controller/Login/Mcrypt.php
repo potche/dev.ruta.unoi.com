@@ -13,7 +13,6 @@ namespace UNO\EvaluacionesBundle\Controller\Login;
 /**
  * Clave privada para la encriptación de Passwords.
  */
-DEFINE('ENCRYPTION_KEY', 'SomeRandomString');
 
 class Mcrypt{
 
