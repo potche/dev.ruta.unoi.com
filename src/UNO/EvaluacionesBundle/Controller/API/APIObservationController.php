@@ -16,6 +16,7 @@ use UNO\EvaluacionesBundle\Controller\FileUpload\Document;
 use UNO\EvaluacionesBundle\Entity\ObservationGallery;
 use UNO\EvaluacionesBundle\Entity\ObservationDisposition;
 use UNO\EvaluacionesBundle\Entity\ObservationActivity;
+use UNO\EvaluacionesBundle\Controller\Evaluaciones\Utils;
 
 /**
  * Created by PhpStorm.
@@ -74,6 +75,30 @@ class APIObservationController extends Controller{
     }
 
     /**
+     * @Route("/observation/finish")
+     * @Method({"POST"})
+     */
+    public function finishObservationAction(Request $request){
+        $observationId = $request->request->get('observationId');
+        if($observationId){
+            //update
+            $em = $this->getDoctrine()->getManager();
+            $Observation = $em->getRepository('UNOEvaluacionesBundle:Observation')->findOneBy(array('observationId'=> $observationId));
+
+            if($Observation) {
+                $Observation->setFinish(new \DateTime());
+                $em->flush();
+                return new JsonResponse(array('status' => Utils::http_response_code(200)),200);
+            }else{
+                return new JsonResponse(array('status' => Utils::http_response_code(404)),404);
+            }
+        }else{
+            return new JsonResponse(array('status' => Utils::http_response_code(409)),409);
+        }
+
+    }
+
+    /**
      * @Route("/observationsByCoach/{coachId}")
      * @Method({"GET"})
      */
@@ -96,7 +121,7 @@ class APIObservationController extends Controller{
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 
-        return $qb->select("O.observationId, CONCAT(TRIM(P.name), ' ', TRIM(P.surname)) AS name, S.school, O.gradeId, O.groupId, Cp.nameProgram, O.start")
+        return $qb->select("O.observationId, CONCAT(TRIM(P.name), ' ', TRIM(P.surname)) AS name, S.school, O.gradeId, O.groupId, Cp.nameProgram, O.start, O.finish")
             ->from('UNOEvaluacionesBundle:Observation','O')
             ->innerJoin('UNOEvaluacionesBundle:Person','P','WITH','O.personId = P.personid')
             ->innerJoin('UNOEvaluacionesBundle:School','S','WITH','O.schoolId = S.schoolid')
@@ -447,6 +472,7 @@ class APIObservationController extends Controller{
             ->from('UNOEvaluacionesBundle:ObservationGallery','OG')
             ->where('OG.observationId = :observationId')
             ->setParameter('observationId', $observationId)
+            ->orderBy('OG.type', 'ASC')
             ->getQuery()
             ->getResult();
 
@@ -645,6 +671,112 @@ class APIObservationController extends Controller{
         }else{
             return new JsonResponse(array('status' => false),400);
         }
+    }
+
+
+    /**
+     * @Route("/observation/sendMail/{observationId}")
+     * @Method({"GET"})
+     */
+    public function sendMailAction($observationId){
+
+        $result = $this->getMail($observationId);
+
+        foreach ($result as $value) {
+            $mesg = $this->buildMessage(
+                'Observacion en el Aula',
+                'UNOEvaluacionesBundle:Notifications:finishObservation.html.twig',
+                array(
+                    'Director' => $value['Direcctor'],
+                    'Docente' => $value['Docente'],
+                    'school' => $value['school'],
+                    'nameGrade' => $value['nameGrade'],
+                    'groupId' => $value['groupId'],
+                    'nameProgram' => $value['nameProgram'],
+                    'Coach' => $value['Coach'],
+                    'host' => 'dev.ruta.unoi.com',
+                    'scheme' => 'http'
+                ),
+                'potcheunam@gmail.com',
+                'Observacion-Finalizada');
+
+            print_r($mesg);
+        }
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getMail($observationId){
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        return $qb->select("CONCAT(P.name, ' ', P.surname) AS Direcctor,
+                            P.email AS emailDirecctor,
+                            O.observationId,
+                            O.personId AS DocenteId,
+                            CONCAT(P2.name, ' ', P2.surname) AS Docente,
+                            S.school,
+                            PA.schoolLevelId,
+                            Cg.nameGrade,
+                            PA.groupId,
+                            Cp.nameProgram,
+                            O.coachId,
+                            CONCAT(P3.name, ' ', P3.surname) AS Coach")
+            ->from('UNOEvaluacionesBundle:Observation','O')
+            ->innerJoin('UNOEvaluacionesBundle:Personassigned','PA','WITH','O.personId = PA.personId AND O.gradeId = PA.gradeId AND O.groupId = PA.groupId')
+            ->innerJoin('UNOEvaluacionesBundle:Cgrade','Cg','WITH','PA.gradeId = Cg.gradeId')
+            ->innerJoin('UNOEvaluacionesBundle:Cprogram','Cp','WITH','PA.programId = Cp.programId')
+            ->innerJoin('UNOEvaluacionesBundle:Person','P2','WITH','PA.personId = P2.personid')
+            ->innerJoin('UNOEvaluacionesBundle:Person','P3','WITH','O.coachId = P3.personid')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','PS','WITH','O.schoolId = PS.schoolid AND PA.schoolLevelId = PS.schoollevelid')
+            ->innerJoin('UNOEvaluacionesBundle:Person','P', 'WITH', 'PS.personid = P.personid')
+            ->innerJoin('UNOEvaluacionesBundle:School','S', 'WITH', 'O.schoolId = S.schoolid')
+            ->where('O.observationId = :observationId')
+            ->andWhere('O.finish IS NOT NULL')
+            ->andWhere('PS.profileid = 19')
+            ->setParameter('observationId', $observationId)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     *
+     * Construcción de mensaje para correo
+     *
+     * @param $title "Titulo del mensaje"
+     * @param $view "Enlace de la vista que ocupara el mensaje"
+     * @param $params "Parámetros de la vista"
+     * @param $recipient "Dirección de correo electrónico de quien recibe el mensaje"
+     * @return int "Cantidad de correos enviados"
+     * @throws \Exception
+     * @throws \Twig_Error
+     */
+
+    private function buildMessage($title, $view, $params, $recipient,$tag){
+
+        setlocale(6,"es_MX.utf8");
+        $sendDate = strftime("%d %B %Y");
+
+        $message = \Swift_Message::newInstance()
+            ->setSubject($title.' '.$sendDate)
+            ->setFrom(array('noreplymx@unoi.com' => 'Diagnóstico Institucional UNOi'))
+            ->setTo($recipient)
+            ->setBody(
+                $this->renderView($view, $params),
+                'text/html'
+            );
+
+        $message->getHeaders()->addTextHeader('X-MC-Tags',$tag);
+
+        return $this->get('mailer')->send($message);
     }
 
 

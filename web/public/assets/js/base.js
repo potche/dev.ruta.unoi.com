@@ -40,8 +40,13 @@ function parseInfo(privilege, profile){
     $.each(privilegeArray, function(i, item) {
         if(privilegeArray[i].nameOptionApplication !== 'Inicio'){
             if($.trim(privilegeArray[i].ruteOptionApplication) === "/observacion") {
-                menu += "<li>" +
-                    "<a href='" + privilegeArray[i].ruteOptionApplication + "'><img src='" + privilegeArray[i].iconOptionApplication + "observacion.svg' align='middle' style='width: 100px; height: 55px; display: block; margin-right: 0; margin-bottom: 10px; font-size: 42px; padding: 10px; color: #dae7e8'> " + privilegeArray[i].nameOptionApplication + "</a>" +
+                menu +=
+                    "<li>" +
+                        "<a href='" + privilegeArray[i].ruteOptionApplication + "'>" +
+                            "<img class='visible-lg visible-md' src='" + privilegeArray[i].iconOptionApplication + "observacion.svg' align='middle' style='width: 100px; height: 55px; display: block; margin-right: 0; margin-bottom: 10px; font-size: 42px; padding: 10px; color: #dae7e8'> " +
+                            "<img class='visible-xs-inline visible-sx-inline' src='" + privilegeArray[i].iconOptionApplication + "observacion.svg' align='middle' style='width: 15px;height: 17px; display: inline; margin-right: 0; margin-bottom: 0px; padding: 0px; color: #dae7e8;'> " +
+                            privilegeArray[i].nameOptionApplication +
+                        "</a>" +
                     "</li>"
                 ;
             }else {

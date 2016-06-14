@@ -3,7 +3,7 @@
 /**
  * Created by PhpStorm.
  * User: isra
- * Date: 23/05/16
+ * Date: 13/06/16
  * Time: 12:17 AM
  */
 
@@ -17,15 +17,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
- * Class CreateController
+ * Class ViewController
  * @package UNO\EvaluacionesBundle\Controller\Observacion
  */
-class CreateController extends Controller{
+class ViewController extends Controller{
 
     /**
-     * @Route("/observacion/crear/{observationId}")
+     * @Route("/observacion/view/{observationId}")
      *
-     * obtiene y crea la tabla con el detalle de la evaluacion
+     * visiualiza la observacion
      */
     public function indexAction(Request $request, $observationId){
         #http://
@@ -34,18 +34,23 @@ class CreateController extends Controller{
         $host =  $this->container->get('router')->getContext()->getHost();
         #/app_dev.php
         $baseURL = $this->container->get('router')->getContext()->getBaseUrl();
-        $baseUrl = "http://dev.ruta.unoi.com".$this->container->get('router')->getContext()->getBaseUrl();
+        $baseUrl = $scheme.$host.$baseURL;
 
-        //$schoolListAPI = json_decode(file_get_contents("$baseUrl/api/v0/catalog/schools", false), true);
+        $activity = json_decode(file_get_contents("$baseUrl/api/v0/observation/activity/".$observationId, false),true);
+        $disposition = json_decode(file_get_contents("$baseUrl/api/v0/observation/disposition/".$observationId, false),true);
+        $gallery = json_decode(file_get_contents("$baseUrl/api/v0/observation/gallery/".$observationId, false),true);
 
         $session = $request->getSession();
         $session->start();
         if($this->valObservationIdByCoach($observationId, $session->get('personIdS')) == 200){
             $result = $this->getResQueryOQ($observationId);
 
-            return $this->render('UNOEvaluacionesBundle:Observacion:create.html.twig', array(
+            return $this->render('UNOEvaluacionesBundle:Observacion:view.html.twig', array(
                 'questionByCategory' => $result,
-                'observationId' => $observationId
+                'activities' => $activity,
+                'observationId' => $observationId,
+                'disposition' => $disposition,
+                'galleries' => $gallery
             ));
         }else{
             throw new AccessDeniedHttpException('No estás autorizado para ver este contenido');
@@ -103,11 +108,10 @@ class CreateController extends Controller{
         $observationAssigned = $em->getRepository('UNOEvaluacionesBundle:Observation')->findOneBy(array('observationId' => $observationId, 'coachId' => $coachId));
         if ($observationAssigned) {
             if($observationAssigned->getFinish()){
-                #ya esta finalizada por lo cual no la puede editar
-                $status = 403;
-            }else {
-                #si el coach asignada la observacion
+                #ya esta finalizada por lo cual la puede ver
                 $status = 200;
+            }else {
+                $status = 403;
             }
         }else{
             #no le corresponde o no existe

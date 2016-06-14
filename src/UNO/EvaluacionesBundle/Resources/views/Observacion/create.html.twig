@@ -19,6 +19,29 @@
     <button id="feedback-R" class="btn btn-primary "><span><strong>ACCIONES <i class="fa fa-angle-up" aria-hidden="true" style="font-size: large;"></i></strong></span></button>
     <button id="feedback-L" class="btn btn-primary hidden"><span><strong><i class="fa fa-angle-up " aria-hidden="true" style="font-size: large;"></i> CUESTIONARIO</strong></span></button>
 
+    <div class="content-header">
+        <div class="header-section">
+            <div class="row">
+                <div class="col-sm-8">
+                    <h1>
+                        <b>Observaci&oacute;n del trabajo en el aula</b>
+                    </h1>
+                </div>
+                <div class="col-sm-4">
+                    <div class="pull-right">
+                        <button type="button" class="btn btn-alt btn btn-info" onclick="window.location.href = uriBack;">Continuar despu&eacute;s</button>
+                        <button id="finalizar" type="button" class="btn btn-info" >Finalizar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Working Tabs Block -->
     <div id="cuestionario" class="block full">
         <!-- Working Tabs Title -->
@@ -256,7 +279,7 @@
                                     'table-hover'       - rows highlighted on mouse hover
                                     'table-vcenter'     - middle align content vertically
                                 -->
-                                <table id="actividadesDT" class="table table-striped table-vcenter" width="100%">
+                                <table id="actividadesDT" class="table table-striped table-vcenter table-bordered" width="100%">
                                     <thead>
                                     <tr>
                                         <th class="text-center" width="20%">Inicio</th>
@@ -279,19 +302,19 @@
                         <div class="tab-pane" id="dispAula-{{ observationId }}">
                             <p><em><i class="fa fa-info-circle text-primary"></i> Selecciona la disposici&oacute;n del aula correspondiente</em></p>
                             <div class="row text-center">
-                                <label id="label-filas-{{ observationId }}" class="col-xs-4" style="cursor:pointer; opacity: 0.5;" >
+                                <label id="label-filas-{{ observationId }}" class="col-xs-4 disposition" style="cursor:pointer; opacity: 0.5;" >
                                     <input id="filas-{{ observationId }}" type="radio" name="disposicion" value="filas" />
                                     <img src="{{ asset('public/assets/images/observation/filas.svg') }}">
                                     <br/>
                                     <h3>Filas</h3>
                                 </label>
-                                <label id="label-herradura-{{ observationId }}" class="col-xs-4" style="cursor:pointer; opacity: 0.5;" >
+                                <label id="label-herradura-{{ observationId }}" class="col-xs-4 disposition" style="cursor:pointer; opacity: 0.5;" >
                                     <input id="herradura-{{ observationId }}" type="radio" name="disposicion" value="herradura" />
                                     <img src="{{ asset('public/assets/images/observation/herradura.svg') }}">
                                     <br/>
                                     <h3>Herradura</h3>
                                 </label>
-                                <label id="label-equipos-{{ observationId }}" class="col-xs-4" style="cursor:pointer; opacity: 0.5;" >
+                                <label id="label-equipos-{{ observationId }}" class="col-xs-4 disposition" style="cursor:pointer; opacity: 0.5;" >
                                     <input id="equipos-{{ observationId }}" type="radio" name="disposicion" value="equipos" />
                                     <img src="{{ asset('public/assets/images/observation/equipos.svg') }}">
                                     <br/>
@@ -325,31 +348,34 @@
                                     <div class="row">
 
                                         <div class="col-xs-12 text-center">
-                                            <div id="widgetFotoA" class="widget" style="display: none">
-                                                <div class="alert alert-success alert-dismissable">
-                                                    <button id="closeA" type="button" class="close pull-right" aria-hidden="true">&times;</button>
-                                                    <!-- Carousel -->
-                                                    <div id="widget-carousel6" class="carousel slide remove-margin">
-                                                        <!-- Wrapper for slides -->
-                                                        <div class="carousel-inner">
-                                                            <div class="active item">
-                                                                <img src="" alt="image A">
+
+                                            <div class="widget-main">
+                                                <div class="gallery gallery-widget" data-toggle="lightbox-gallery">
+                                                    <div id="widgetFotoA" class="widget" style="display: none">
+                                                        <div class="alert alert-success alert-dismissable">
+                                                            <button id="closeA" type="button" class="close pull-right" aria-hidden="true">&times;</button>
+
+                                                            <div id="widget-carousel6" class="carousel slide remove-margin">
+                                                                <div class="carousel-inner">
+                                                                    <div class="active item">
+                                                                        <a href="" class="gallery-link" title="Foto A">
+                                                                            <img src="" alt="image A">
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="widget-simple themed-background-dark-night">
+                                                                <a href="javascript:void(0)" class="widget-icon pull-right themed-background-flatie">
+                                                                    <i class="fa fa-camera" aria-hidden="true"></i>
+                                                                </a>
+                                                                <h4 class="widget-content widget-content-light">
+                                                                    <a href="javascript:void(0)" class="themed-color-flatie"><strong>Foto</strong> A</a>
+                                                                    <small>Observaci&oacute;n en el aula</small>
+                                                                </h4>
                                                             </div>
                                                         </div>
-                                                        <!-- END Wrapper for slides -->
-                                                    </div>
-                                                    <!-- END Carousel -->
-                                                    <div class="widget-simple themed-background-dark-night">
-                                                        <a href="javascript:void(0)" class="widget-icon pull-right themed-background-flatie">
-                                                            <i class="fa fa-camera" aria-hidden="true"></i>
-                                                        </a>
-                                                        <h4 class="widget-content widget-content-light">
-                                                            <a href="javascript:void(0)" class="themed-color-flatie"><strong>Foto</strong> A</a>
-                                                            <small>Observaci&oacute;n en el aula</small>
-                                                        </h4>
                                                     </div>
                                                 </div>
-
                                             </div>
 
                                             <div id="fotoA">
@@ -385,31 +411,33 @@
 
                                         <div class="col-xs-12 text-center">
 
-                                            <div id="widgetFotoB" class="widget" style="display: none">
-                                                <div class="alert alert-success alert-dismissable">
-                                                    <button id="closeB" type="button" class="close pull-right" aria-hidden="true">&times;</button>
-                                                    <!-- Carousel -->
-                                                    <div id="widget-carousel6" class="carousel slide remove-margin">
-                                                        <!-- Wrapper for slides -->
-                                                        <div class="carousel-inner">
-                                                            <div class="active item">
-                                                                <img src="" alt="image B">
+                                            <div class="widget-main">
+                                                <div class="gallery gallery-widget" data-toggle="lightbox-gallery">
+                                                    <div id="widgetFotoB" class="widget" style="display: none">
+                                                        <div class="alert alert-success alert-dismissable">
+                                                            <button id="closeB" type="button" class="close pull-right" aria-hidden="true">&times;</button>
+
+                                                            <div id="widget-carousel6" class="carousel slide remove-margin">
+                                                                <div class="carousel-inner">
+                                                                    <div class="active item">
+                                                                        <a href="" class="gallery-link" title="Foto B">
+                                                                            <img src="" alt="image B">
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="widget-simple themed-background-dark-night">
+                                                                <a href="javascript:void(0)" class="widget-icon pull-right themed-background-flatie">
+                                                                    <i class="fa fa-camera" aria-hidden="true"></i>
+                                                                </a>
+                                                                <h4 class="widget-content widget-content-light">
+                                                                    <a href="javascript:void(0)" class="themed-color-flatie"><strong>Foto</strong> B</a>
+                                                                    <small>Observaci&oacute;n en el aula</small>
+                                                                </h4>
                                                             </div>
                                                         </div>
-                                                        <!-- END Wrapper for slides -->
-                                                    </div>
-                                                    <!-- END Carousel -->
-                                                    <div class="widget-simple themed-background-dark-night">
-                                                        <a href="javascript:void(0)" class="widget-icon pull-right themed-background-flatie">
-                                                            <i class="fa fa-camera" aria-hidden="true"></i>
-                                                        </a>
-                                                        <h4 class="widget-content widget-content-light">
-                                                            <a href="javascript:void(0)" class="themed-color-flatie"><strong>Foto</strong> B</a>
-                                                            <small>Observaci&oacute;n en el aula</small>
-                                                        </h4>
                                                     </div>
                                                 </div>
-
                                             </div>
 
                                             <div id="fotoB">
@@ -458,6 +486,27 @@
     </div>
     <!-- END Working Tabs Block -->
 
+    <!-- Modal Stats finish -->
+    <div id="finishModal" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Finalizar la Observaci&oacute;n</h4>
+                </div>
+                <div class="modal-body">
+
+                    <h4>Esta seguro de <strong>Finalizar</strong> la Observaci&oacute;n</h4>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-info" onclick="finishedObservation()">Fianlizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal finish -->
 
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="{{ asset('public/assets/js/observationCreate.js')}}"></script>
@@ -467,8 +516,10 @@
         var HttpHost = '{{ app.request.getSchemeAndHttpHost() }}';
         //si es /app_dev.php
         var baseUrl = '{{ app.request.baseurl }}';
-        //ruta en la que nos encontramos http://dev.ruta.unoi.com/app_dev.php/observacion
+        //ruta en la que nos encontramos http://dev.ruta.unoi.com/app_dev.php/observacion/crear/1
         var uri = '{{ app.request.uri }}';
+        var uriArr = uri.split("/");
+        var uriBack = uriArr.slice(0,uriArr.length-2).join("/");
         var observationId = {{ observationId }};
 
         $(function() {
@@ -506,14 +557,14 @@
                     $.get(HttpHost + baseUrl + "/api/v0/observation/startActivity")
                             .done(function (data) {
                                 if (data) {
-                                    console.log(data);
+                                    //console.log(data);
                                     $('#start-' + observationId).html(paserDate(data.startActivity.date));
                                     $('#observationActivityId').val(data.startActivity.date);
 
                                 }
                             })
                             .fail(function () {
-                                console.log('error')
+                                //console.log('error')
                             })
                             .always(function () {
                                 console.log("finished");
@@ -528,7 +579,7 @@
             });
 
             $('#activity').on('keyup',function(e) {
-                console.log($('#activity').val().length);
+
                 if($('#activity').val().length !== 0) {
                     $('#subEditActivity').prop("disabled", false);
                 }else {
@@ -538,329 +589,6 @@
 
         });
 
-
-        function getActivity() {
-            $.get( HttpHost+baseUrl+"/api/v0/observation/activity/"+observationId)
-                    .done(function(data) {
-                        if(data){
-                            var row = '';
-                            $.each( data, function( key, val ) {
-                                console.log(val);
-                                row += '<tr>' +
-                                        '<td class="text-center" width="20%">' +
-                                        '<span>' + paserDate(val.startActivity.date) + '</span>' +
-                                        '</td>' +
-                                        '<td class="text-justify" width="50%">' +
-                                        '<span>' + val.activity + '</span>' +
-                                        '</td>' +
-                                        '<td class="text-center" width="20%">' +
-                                        '<span>' + paserDate(val.endActivity.date) + '</span>' +
-                                        '</td>' +
-                                        '<td class="text-center" width="10%">' +
-                                        '<div class="btn-group">'+
-                                        '<a href="javascript:void(0)" onclick="editActivity(\'' + paserDate(val.startActivity.date) + '\',\'' + val.activity + '\','+val.observationActivityId+')" title="Edit" class="btn btn-xs btn-default"><i class="fa fa-pencil" aria-hidden="true"></i></a>'+
-                                        '<a href="javascript:void(0)" onclick="deleteActivity('+val.observationActivityId+')" title="Borrar" class="btn btn-xs btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></a>'+
-                                        '</div>' +
-                                        '</td>' +
-                                        '</tr>'
-                            });
-                            $('#activityHistory').html(row);
-                        }
-                    })
-                    .fail(function() {
-                        console.log('error')
-                    })
-                    .always(function() {
-                        console.log( "finished" );
-                    });
-        }
-
-        $('#ActivityFrm').on('submit',function(e){
-            e.preventDefault();
-            var startActivity = $.trim($('#observationActivityId').val());
-            var activity = $('#activity-'+observationId).val();
-            //$('#actividades > tbody:last-child').append('<tr><td>New row</td><td>New row</td></tr>');
-
-            if( (startActivity.length !== 0 ) && ( $.trim(activity).length !== 0) ){
-                $.post(HttpHost + baseUrl + "/api/v0/observation/saveActivity", {startActivity: startActivity, activity: activity, observationId: observationId})
-                        .done(function (data) {
-                            if (data) {
-                                console.log(data);
-
-                                $('#start-' + observationId).html('');
-                                $('#observationActivityId').val('');
-                                $('#activity-'+observationId).val('');
-
-                                $('#subActivity').prop("disabled", true);
-                            }
-                        })
-                        .fail(function () {
-                            console.log('error')
-                        })
-                        .always(function () {
-                            getActivity();
-                            console.log("finished");
-                        });
-            }
-
-        });
-
-        function editActivity(startActivity,activity,observationActivityId){
-            console.log(observationActivityId);
-
-            $('#start').text(startActivity);
-            $('#activity').val(activity);
-            $('#editObservationActivityId').val(observationActivityId);
-            $('#ActivityFrm').addClass('hidden');
-            $('#editActivityFrm').removeClass('hidden');
-        }
-
-        $('#editActivityFrm').on('submit',function(e){
-            e.preventDefault();
-            var activity = $('#activity').val();
-            var observationActivityId = $('#editObservationActivityId').val();
-            var notify = $.notify('<strong>Editando</strong> registro...', {
-                allow_dismiss: false,
-                showProgressbar: true,
-                animate: {
-                    enter: 'animated fadeInRight',
-                    exit: 'animated fadeOutRight'
-                }
-            });
-            if( $.trim(activity).length !== 0 ){
-                $.post(HttpHost + baseUrl + "/api/v0/observation/editActivity", {observationActivityId: observationActivityId, activity: activity})
-                        .done(function (data) {
-                            if (data.status) {
-                                console.log(data);
-                                notify.update({
-                                    'type': 'success',
-                                    'message': 'El <strong>registro</strong> se han actualizado!',
-                                    'progress': 100
-                                });
-
-                                $('#start').html('');
-                                $('#editObservationActivityId').val('');
-                                $('#activity').val('');
-                                $('#ActivityFrm').removeClass('hidden');
-                                $('#editActivityFrm').addClass('hidden');
-                                $('#subEditActivity').prop("disabled", true);
-                                $('#subActivity').prop("disabled", true);
-                            }
-                        })
-                        .fail(function () {
-                            console.log('error')
-                        })
-                        .always(function () {
-                            getActivity();
-                            console.log("finished");
-                        });
-            }
-
-        });
-
-        function deleteActivity(observationActivityId){
-            console.log(observationActivityId);
-            var notify = $.notify('<strong>Eliminando</strong> registro...', {
-                allow_dismiss: false,
-                showProgressbar: true,
-                animate: {
-                    enter: 'animated fadeInRight',
-                    exit: 'animated fadeOutRight'
-                }
-            });
-            $.post(HttpHost + baseUrl + "/api/v0/observation/deleteActivity", {observationActivityId: observationActivityId})
-                    .done(function (data) {
-                        if (data.status) {
-                            console.log(data);
-                            notify.update({
-                                'type': 'success',
-                                'message': 'El <strong>registro</strong> se han eliminado!',
-                                'progress': 100
-                            });
-
-                            $('#start').html('');
-                            $('#editObservationActivityId').val('');
-                            $('#activity').val('');
-                            $('#ActivityFrm').removeClass('hidden');
-                            $('#editActivityFrm').addClass('hidden');
-                            $('#subEditActivity').prop("disabled", true);
-                            $('#subActivity').prop("disabled", true);
-                        }
-                    })
-                    .fail(function () {
-                        console.log('error')
-                    })
-                    .always(function () {
-                        getActivity();
-                        console.log("finished");
-                    });
-        }
-
-        $(document).on('click','label',function(e){
-            $disposicion = $(this)[0].id.split('-');
-            $('#'+$(this)[0].id).css('opacity', '1');
-            $('#'+$(this)[0].id).unbind('mouseover');
-            $('#'+$(this)[0].id).children('h3').html('<strong>'+$disposicion[1].charAt(0).toUpperCase() + $disposicion[1].slice(1)+'</strong>');
-
-            $.post( HttpHost+baseUrl+"/api/v0/observation/saveDisposition", {disposition: $disposicion[1], observationId: observationId})
-                    .done(function(data) {
-                        if(data){
-                            console.log(data);
-                            //$("#radio_1").prop("checked", true)
-                        }
-                    })
-                    .fail(function() {
-                        console.log('error')
-                    })
-                    .always(function() {
-                        console.log( "finished" );
-                    });
-        });
-
-        $(document).on('mouseover','label',function(e){
-            $disposicion = $(this)[0].id.split('-');
-            $('#'+$(this)[0].id).css('opacity', '1');
-            $('#'+$(this)[0].id).children('h3').html('<strong>'+$disposicion[1].charAt(0).toUpperCase() + $disposicion[1].slice(1)+'</strong>');
-        });
-
-        $(document).on('mouseout','label',function(e){
-            $disposicion = $(this)[0].id.split('-');
-            $('#'+$(this)[0].id).css('opacity', '0.5');
-            $('#'+$(this)[0].id).children('h3').html( $disposicion[1].charAt(0).toUpperCase() + $disposicion[1].slice(1) );
-        });
-
-        function getDisposition() {
-            $.get( HttpHost+baseUrl+"/api/v0/observation/disposition/"+observationId)
-                    .done(function(data) {
-                        if(data){
-                            console.log('#'+data.disposition+'-'+observationId);
-                            $('#label-'+data.disposition +'-'+ observationId).css('opacity', '1');
-
-                            $('#label-'+data.disposition +'-'+ observationId).children('h3').html('<strong>'+data.disposition .charAt(0).toUpperCase() + data.disposition .slice(1)+'</strong>');
-
-                            $('#'+data.disposition+'-'+observationId).prop("checked", true)
-                        }
-                    })
-                    .fail(function() {
-                        console.log('error')
-                    })
-                    .always(function() {
-                        console.log( "finished" );
-                    });
-        }
-
-
-
-        $('#imageA').change(function () {
-
-            if($("#imageA").val()) {
-                $('#uploadA').prop("disabled", false);
-                $('#findA').removeClass('btn-info');
-                $('#findA').addClass('btn-default');
-            }else {
-                console.log("Not file");
-            }
-        });
-
-        $('#imageB').change(function () {
-
-            if($("#imageB").val()) {
-                $('#uploadB').prop("disabled", false);
-                $('#findB').removeClass('btn-info');
-                $('#findB').addClass('btn-default');
-            }else {
-                console.log("Not file");
-            }
-        });
-
-        $('.upload-all').click(function(){
-            //submit all form
-            $('form').submit();
-        });
-        $('.cancel-all').click(function(){
-            //submit all form
-            $('form .cancel').click();
-        });
-
-        $('#A').on('submit','form',function(e){
-            e.preventDefault();
-            uploadImage($(this));
-        });
-
-        $('#B').on('submit','form',function(e){
-            e.preventDefault();
-            uploadImage($(this));
-        });
-
-        function uploadImage($form){
-            $form.find('.progress-bar').removeClass('progress-bar-success')
-                    .removeClass('progress-bar-danger');
-            var formdata = new FormData($form[0]); //formelement
-            console.log($form);
-            var request = new XMLHttpRequest();
-            //progress event...
-            request.upload.addEventListener('progress',function(e){
-                var percent = Math.round(e.loaded/e.total * 100);
-                $form.find('.progress-bar').width(percent+'%').html(percent+'%');
-            });
-            //progress completed load event
-            request.addEventListener('load',function(e){
-                $form.find('.progress-bar').addClass('progress-bar-success').html('cargar completada....');
-                getGallery();
-            });
-            console.log(HttpHost+baseUrl);
-            request.open('post', HttpHost+baseUrl+'/api/v0/observation/saveImg');
-            request.send(formdata);
-            $form.on('click','.cancel',function(){
-                request.abort();
-                $form.find('.progress-bar')
-                        .addClass('progress-bar-danger')
-                        .removeClass('progress-bar-success')
-                        .html('cargar abortada...');
-            });
-        }
-
-        function getGallery() {
-            $.get( HttpHost+baseUrl+"/api/v0/observation/gallery/"+observationId)
-                    .done(function(data) {
-                        if(data){
-                            $.each( data, function( key, val ) {
-                                if(val.type.toUpperCase() === 'A'){
-                                    console.log(val.ruta);
-                                    $('#widgetFotoA').find('img').attr('src',HttpHost+'/'+val.ruta);
-                                    $('#widgetFotoA').css("display", "block");
-                                    $('#fotoA').hide();
-                                }
-
-                                if(val.type.toUpperCase() === 'B'){
-                                    console.log(val.ruta);
-                                    $('#widgetFotoB').find('img').attr('src',HttpHost+'/'+val.ruta);
-                                    $('#widgetFotoB').css("display", "block");
-                                    $('#fotoB').hide();
-                                }
-
-                            });
-
-
-                        }
-                    })
-                    .fail(function() {
-                        console.log('error')
-                    })
-                    .always(function() {
-                        console.log( "finished" );
-                    });
-        }
-
-        $('#closeA').on('click',function(e){
-            $('#widgetFotoA').hide();
-            $('#fotoA').show();
-        });
-
-        $('#closeB').on('click',function(e){
-            $('#widgetFotoB').hide();
-            $('#fotoB').show();
-        });
 
 
     </script>
