@@ -15,6 +15,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use UNO\EvaluacionesBundle\Controller\Evaluaciones\Utils;
 
 /**
  * Class ViewController
@@ -36,12 +37,21 @@ class ViewController extends Controller{
         $baseURL = $this->container->get('router')->getContext()->getBaseUrl();
         $baseUrl = $scheme.$host.$baseURL;
 
+        $session = $request->getSession();
+        $session->start();
+        
+        if(!Utils::isUserLoggedIn($session)){
+
+            return $this->redirectToRoute('login',array(
+                'redirect' => 'inicio',
+                'with' => 'none'
+            ));
+        }
+
         $activity = json_decode(file_get_contents("$baseUrl/api/v0/observation/activity/".$observationId, false),true);
         $disposition = json_decode(file_get_contents("$baseUrl/api/v0/observation/disposition/".$observationId, false),true);
         $gallery = json_decode(file_get_contents("$baseUrl/api/v0/observation/gallery/".$observationId, false),true);
 
-        $session = $request->getSession();
-        $session->start();
         if($this->valObservationIdByCoach($observationId, $session->get('personIdS')) == 200){
             $result = $this->getResQueryOQ($observationId);
 

@@ -12,6 +12,7 @@ namespace UNO\EvaluacionesBundle\Controller\Evaluaciones;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use UNO\EvaluacionesBundle\Controller\Evaluaciones\Utils;
 
 class InicioController extends Controller{
 
@@ -37,18 +38,21 @@ class InicioController extends Controller{
         $colegio = null;
         $personas = null;
         $coaches = null;
+        $observationsByCoach = null;
         $personal = json_decode(file_get_contents($this->generateUrl('APIStatsProgressByPerson',array('personid' => $this->_personId),true),false),true);
 
         if(in_array('SuperAdmin',$this->_profile)){
-
             $colegios = $this->getColegiosCount();
             $personas = $this->getPersonsCount();
             $coaches = $this->getCoachesCount();
             $personal = null;
         }
 
-        if (in_array('Director',$this->_profile)){
+        if(in_array('COACH',$this->_profile)){
+            $observationsByCoach = $this->observationsByCoachPV();
+        }
 
+        if (in_array('Director',$this->_profile)){
             $colegio = json_decode(file_get_contents($this->generateUrl('APIStatsProgressBySchool',array('schoolid' => $this->getSchoolid($this->_personId)),true),false),true)['global']['Stats'][0]["y"];
         }
 
@@ -57,7 +61,8 @@ class InicioController extends Controller{
             'colegio' => $colegio,
             'personas'=> $personas,
             'coaches' => $coaches,
-            'personal' => $personal
+            'personal' => $personal,
+            'observationsByCoach' => $observationsByCoach
         ));
     }
 
@@ -118,6 +123,35 @@ class InicioController extends Controller{
         foreach($profileJson as $value){
             array_push($this->_profile, $value->profile);
         }
+    }
+
+    private function observationsByCoachPV(){
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $oByC = $qb->select("O.observationId, CONCAT(TRIM(P.name), ' ', TRIM(P.surname)) AS name, S.school, O.gradeId, O.groupId, Cp.nameProgram, O.start, O.finish")
+            ->from('UNOEvaluacionesBundle:Observation','O')
+            ->innerJoin('UNOEvaluacionesBundle:Person','P','WITH','O.personId = P.personid')
+            ->innerJoin('UNOEvaluacionesBundle:School','S','WITH','O.schoolId = S.schoolid')
+            ->innerJoin('UNOEvaluacionesBundle:Cprogram','Cp','WITH','O.programId = Cp.programId')
+            ->where('O.coachId = :coachId')
+            ->andWhere('O.finish is null')
+            ->setParameter('coachId', $this->_personId)
+            ->orderBy( 'O.observationId')
+            ->setMaxResults(4)
+            ->getQuery()
+            ->getResult();
+
+        $nivel = array('K' => 'Kinder', 'P' => 'Primaria', 'S' => 'Secundaria', 'B' => 'Bachillerato');
+        $observationsByCoach = array();
+        foreach ($oByC as $row){
+            $row['nivel'] = strtoupper($row['gradeId'][1]);
+            $row['nivelCompleto'] = $nivel[strtoupper($row['gradeId'][1])];
+            $row['grado'] = $row['gradeId'][0].'°';
+            array_push($observationsByCoach, $row);
+        }
+        return $observationsByCoach;
     }
 
 }

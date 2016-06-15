@@ -14,6 +14,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use UNO\EvaluacionesBundle\Controller\Evaluaciones\Utils;
 
 /**
  * Class ListController
@@ -29,9 +30,17 @@ class ListController extends Controller{
     public function indexAction(Request $request){
         $session = $request->getSession();
         $session->start();
-        
+
+        if(!Utils::isUserLoggedIn($session)){
+
+            return $this->redirectToRoute('login',array(
+                'redirect' => 'inicio',
+                'with' => 'none'
+            ));
+        }
+
         $baseUrl = "http://dev.ruta.unoi.com".$this->container->get('router')->getContext()->getBaseUrl();
-        
+
         return $this->render('UNOEvaluacionesBundle:Observacion:index.html.twig', array(
                 'schoolList' => json_decode(file_get_contents("$baseUrl/api/v0/catalog/schools", false), true),
                 'observationsByCoach' => $this->observationsByCoach($session->get('personIdS'))

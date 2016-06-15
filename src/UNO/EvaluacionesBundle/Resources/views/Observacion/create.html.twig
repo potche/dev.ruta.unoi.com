@@ -105,11 +105,11 @@
                                                                     {% set activeNo = 'active'%}
                                                                 {% endif %}
                                                             {% endif %}
-                                                            <button id="btn-1-{{ Questions.questionId }}" class="btn btn-alt btn-primary {{ activeSi }}" data-toggle="tooltip" data-placement="top" title="Sí" onclick="saveAnswer(this, {{ observationId }});">
+                                                            <button id="btn-1-{{ Questions.questionId }}" class="btn btn-alt btn-primary {{ activeSi }}" onclick="saveAnswer(this, {{ observationId }});">
                                                                 <span class="visible-lg-inline visible-md-inline hidden-sm hidden-xs"><b>Sí</b></span>
                                                                 <span class="visible-sm-inline visible-xs-inline"><b><i class="fa fa-check"></i></b></span>
                                                             </button>
-                                                            <button id="btn-0-{{ Questions.questionId }}" class="btn btn-alt btn-primary {{ activeNo }}" data-toggle="tooltip" data-placement="top" title="No" onclick="saveAnswer(this, {{ observationId }});">
+                                                            <button id="btn-0-{{ Questions.questionId }}" class="btn btn-alt btn-primary {{ activeNo }}" onclick="saveAnswer(this, {{ observationId }});">
                                                                 <span class="visible-lg-inline visible-md-inline hidden-sm hidden-xs"><b>No</b></span>
                                                                 <span class="visible-sm-inline visible-xs-inline"><b><i class="fa fa-times"></i></b></span>
                                                             </button>
@@ -118,27 +118,8 @@
                                                     <input id="answerOrigin-{{ Questions.questionId }}" type="text" class="hidden" value="{{ Questions.answer }}">
                                                 </td>
                                                 <td width="30%">
-                                                    <div class="form-group">
-                                                        <div class="col-xs-12">
-                                                            <div class="input-group">
-                                                                {% if Questions.observationAnswerId %}
-                                                                <span id="comment-{{ Questions.questionId }}">{{ Questions.comment }}</span>
-                                                                <span class="input-group-btn">
-                                                                    <button id="btnE-{{ Questions.questionId }}" type="button" class="btn btn-alt btn-default pull-right " data-toggle="tooltip" data-placement="top" title="Editar comentario" onclick="editComment({{ Questions.questionId }})"><i class="fa fa-pencil" aria-hidden="true"></i></button>
-                                                                    <button id="btnS-{{ Questions.questionId }}" type="button" class="btn btn-alt btn-default pull-right hidden" data-toggle="tooltip" data-placement="top" title="Guardar comentario"  onclick="saveComment({{ Questions.questionId }}, {{ observationId }})"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
-                                                                </span>
-                                                                {% else %}
-                                                                <input type="text" id="comment-{{ Questions.questionId }}" class="form-control" placeholder="Agregar un comentario..." value="{{ Questions.observationAnswerId }}">
-                                                                <span class="input-group-btn">
-                                                                    <button id="btnE-{{ Questions.questionId }}" type="button" class="btn btn-alt btn-default pull-right hidden" data-toggle="tooltip" data-placement="top" title="Editar comentario" onclick="editComment({{ Questions.questionId }})"><i class="fa fa-pencil" aria-hidden="true"></i></button>
-                                                                    <button id="btnS-{{ Questions.questionId }}" type="button" class="btn btn-alt btn-default pull-right " data-toggle="tooltip" data-placement="top" title="Guardar comentario"  onclick="saveComment({{ Questions.questionId }}, {{ observationId }})"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
-                                                                </span>
-                                                                {% endif %}
-                                                                <input id="commentOrigin-{{ Questions.questionId }}" type="text" class="hidden" value="{{ Questions.comment }}">
-
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    <input type="text" id="comment-{{ Questions.questionId }}" class="commentObservation form-control" placeholder="Agregar un comentario..." value="{{ Questions.comment }}">
+                                                    <input id="commentOrigin-{{ Questions.questionId }}" type="text" class="hidden" value="{{ Questions.comment }}">
                                                 </td>
 
                                             </tr>
@@ -176,7 +157,7 @@
                     <div class="block-title">
                         <ul class="nav nav-tabs" data-toggle="tabs">
                             <li class="active"><a href="#regAct-{{ observationId }}">Registro de Actividades</a></li>
-                            <li><a href="#dispAula-{{ observationId }}">Dispocici&oacute;n del Aula</a></li>
+                            <li><a href="#dispAula-{{ observationId }}">Disposici&oacute;n del Aula</a></li>
                             <li><a href="#galeria-{{ observationId }}">Galeria</a></li>
                         </ul>
                     </div>
@@ -588,8 +569,6 @@
             });
 
         });
-
-
 
     </script>
 {% endblock %}

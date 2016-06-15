@@ -68,7 +68,7 @@ function parseInfo(privilege, profile){
     //console.log(profileArray);
     var adminBase = false;
     $.each(profileArray, function(i, item) {
-        if(profileArray[i].profileid === 1){
+        if(profileArray[i].profileid === 1 || profileArray[i].profileid === 2){
             adminBase = true;
         }
         profileStr +=   "<span>" +

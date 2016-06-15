@@ -16,7 +16,7 @@
                 </div>
                 <div class="col-sm-4">
                     <div class="pull-right">
-                        <button type="button" class="btn btn-alt btn btn-info" onclick="window.location.href = uriBack;">Regrezar</button>
+                        <button type="button" class="btn btn-alt btn btn-info" onclick="window.location.href = uriBack;">Regresar</button>
                     </div>
                 </div>
             </div>
@@ -147,7 +147,7 @@
                     <div class="block-title">
                         <ul class="nav nav-tabs" data-toggle="tabs">
                             <li class="active"><a href="#regAct-{{ observationId }}">Registro de Actividades</a></li>
-                            <li><a href="#dispAula-{{ observationId }}">Dispocici&oacute;n del Aula</a></li>
+                            <li><a href="#dispAula-{{ observationId }}">Disposici&oacute;n del Aula</a></li>
                             <li><a href="#galeria-{{ observationId }}">Galeria</a></li>
                         </ul>
                     </div>
@@ -297,6 +297,8 @@
             $("#acciones").removeClass('hidden');
             $("#cuestionario").addClass('hidden');
 
+            $('body').removeClass().addClass('animation-fadeInLeft');
+
             $("#feedback-L").removeClass('hidden');
             $("#feedback-R").addClass('hidden');
         });
@@ -312,6 +314,8 @@
             console.log('hola');
             $("#cuestionario").removeClass('hidden');
             $("#acciones").addClass('hidden');
+
+            $('body').removeClass().addClass('animation-fadeInRight');
 
             $("#feedback-R").removeClass('hidden');
             $("#feedback-L").addClass('hidden');

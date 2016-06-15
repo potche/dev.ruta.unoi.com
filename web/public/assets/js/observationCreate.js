@@ -40,6 +40,19 @@ function saveComment(questionId, observationId) {
 
 }
 
+$('.commentObservation').on('blur', function (e) {
+    var disposicion = $(this)[0].id.split('-');
+    
+    var answerOrigin = $('#answerOrigin-'+disposicion[1]).val();
+    var comment = $('#comment-'+disposicion[1]).val();
+    var commentOrigin = $('#commentOrigin-'+disposicion[1]).val();
+
+    if($.trim(comment) !== $.trim(commentOrigin)) {
+        save(disposicion[1], answerOrigin, comment, observationId);
+        $('#commentOrigin-'+disposicion[1]).val(comment);
+    }
+});
+
 function save(questionId, answer, comment, observationId) {
     $('#commentOrigin-'+questionId).val(comment);
     var notify = $.notify('<strong>Actualizando</strong> datos...', {
@@ -65,11 +78,6 @@ function save(questionId, answer, comment, observationId) {
                     'message': 'Los <strong>datos</strong> se han cambiado!',
                     'progress': 100
                 });
-                if($('#comment-'+questionId).val()){
-                    $('#btnE-'+questionId).removeClass('hidden');
-                    $('#btnS-'+questionId).addClass('hidden');
-                    $('#comment-'+questionId).replaceWith("<span id='comment-"+questionId+"'>" + $('#comment-'+questionId).val() + "</span>");
-                }
             }
         })
         .fail(function () {
@@ -470,6 +478,8 @@ $('button#feedback-R').click(function(){
     $("#acciones").removeClass('hidden');
     $("#cuestionario").addClass('hidden');
 
+    $('body').removeClass().addClass('animation-fadeInLeft');
+
     $("#feedback-L").removeClass('hidden');
     $("#feedback-R").addClass('hidden');
 });
@@ -485,6 +495,8 @@ $('button#feedback-L').click(function(){
     console.log('hola');
     $("#cuestionario").removeClass('hidden');
     $("#acciones").addClass('hidden');
+
+    $('body').removeClass().addClass('animation-fadeInRight');
 
     $("#feedback-R").removeClass('hidden');
     $("#feedback-L").addClass('hidden');

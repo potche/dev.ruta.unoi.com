@@ -15,6 +15,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use UNO\EvaluacionesBundle\Controller\Evaluaciones\Utils;
 
 /**
  * Class CreateController
@@ -40,6 +41,15 @@ class CreateController extends Controller{
 
         $session = $request->getSession();
         $session->start();
+
+        if(!Utils::isUserLoggedIn($session)){
+
+            return $this->redirectToRoute('login',array(
+                'redirect' => 'inicio',
+                'with' => 'none'
+            ));
+        }
+
         if($this->valObservationIdByCoach($observationId, $session->get('personIdS')) == 200){
             $result = $this->getResQueryOQ($observationId);
 

@@ -287,6 +287,15 @@
     <script src="{{ asset('public/assets/js/validateSurvey.js') }}"></script>
     <script src="{{ asset('public/assets/js/statsGraph.js')}}"></script>
     <script>
+        //dominio http://dev.ruta.unoi.com
+        var HttpHost = '{{ app.request.getSchemeAndHttpHost() }}';
+        //si es /app_dev.php
+        var baseUrl = '{{ app.request.getBaseURL() }}';
+        //ruta en la que nos encontramos http://dev.ruta.unoi.com/app_dev.php/estadisticas
+        var uri = '{{ app.request.uri }}';
+
+        var baseUri = HttpHost+baseUrl;
+
         var schoolIdS = JSON.parse('{{ app.session.get('schoolIdS') | raw}}');
         var schoolId = schoolIdS[0].schoolid;
 
@@ -300,23 +309,22 @@
         var nameSchool = '{{ nameSchool }}';
         var nameSchoolArray = nameSchool.split("-");
         var nameSurvey = 'Todas las Evaluaciones';
-        var baseUri = "http://dev.ruta.unoi.com";
 
         var schoolLevel = "/school/"+schoolId+"/level/"+schoolLevelId;
 
-        var serverAllAPI = baseUri+"{{ app.request.getBaseURL() }}/api/v0/stats/results";
-        var serverSchoolSurveyAPI = baseUri+"{{ app.request.getBaseURL() }}/api/v0/stats/results/survey/3/school/";
-        var serverSchoolAPI = baseUri+"{{ app.request.getBaseURL() }}/api/v0/stats/results"+schoolLevel;
-        var serverSurveyAPI = baseUri+"{{ app.request.getBaseURL() }}/api/v0/stats/results/survey/";
-        var serverPersonSurveyAPI = baseUri+"{{ app.request.getBaseURL() }}/api/v0/stats/results/person/";
-        var serverSurveyUserAPI = baseUri+"{{ app.request.getBaseURL() }}/api/v0/result/survey/";
+        var serverAllAPI = baseUri+"/api/v0/stats/results";
+        var serverSchoolSurveyAPI = baseUri+"/api/v0/stats/results/survey/3/school/";
+        var serverSchoolAPI = baseUri+"/api/v0/stats/results"+schoolLevel;
+        var serverSurveyAPI = baseUri+"/api/v0/stats/results/survey/";
+        var serverPersonSurveyAPI = baseUri+"/api/v0/stats/results/person/";
+        var serverSurveyUserAPI = baseUri+"/api/v0/result/survey/";
 
         <!-- graphs -->
-        var graphSchoolAPI = baseUri+"{{ app.request.getBaseURL() }}/api/v0/stats/global"+schoolLevel;
-        var graphSurveyAPI = baseUri+"{{ app.request.getBaseURL() }}/api/v0/stats/global/survey/";
-        var graphSurveySchoolAPI = baseUri+"{{ app.request.getBaseURL() }}/api/v0/stats/global/survey/";
+        var graphSchoolAPI = baseUri+"/api/v0/stats/global"+schoolLevel;
+        var graphSurveyAPI = baseUri+"/api/v0/stats/global/survey/";
+        var graphSurveySchoolAPI = baseUri+"/api/v0/stats/global/survey/";
 
-        var detail = baseUri+"{{ app.request.getBaseURL() }}/api/v0/result/detail/";
+        var detail = baseUri+"/api/v0/result/detail/";
 
         $(function() {
 

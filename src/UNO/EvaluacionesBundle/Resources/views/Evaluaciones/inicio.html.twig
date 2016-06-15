@@ -204,19 +204,72 @@
         {% endif %}
 
         {% if personal != null %}
-        <div class="col-sm-6">
-            <a href="javascript:void(0)" class="widget widget-hover-effect4">
-                <div class="widget-extra text-center themed-background-dark-autumn">
-                    <h3 class="widget-content-light">Nivel personal de <strong>Progreso</strong></h3>
-                </div>
-                <div class="widget-extra-full text-center">
-                    <div class="pie-chart easyPieChart" data-percent="{{ personal['global']['Stats'][0]["y"]| raw }}" data-size="90" data-bar-color="#e67e22" style="width: 90px; height: 90px; line-height: 90px;">
-                        <span style="color: #0b0b0b">{{ personal['global']['Stats'][0]["y"]| raw }}%</span>
-                        <canvas width="90" height="90"></canvas>
+            <div class="col-sm-6">
+                <a href="javascript:void(0)" class="widget widget-hover-effect4">
+                    <div class="widget-extra text-center themed-background-dark-autumn">
+                        <h3 class="widget-content-light">Nivel personal de <strong>Progreso</strong></h3>
+                    </div>
+                    <div class="widget-extra-full text-center">
+                        <div class="pie-chart easyPieChart" data-percent="{{ personal['global']['Stats'][0]["y"]| raw }}" data-size="90" data-bar-color="#e67e22" style="width: 90px; height: 90px; line-height: 90px;">
+                            <span style="color: #0b0b0b">{{ personal['global']['Stats'][0]["y"]| raw }}%</span>
+                            <canvas width="90" height="90"></canvas>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-sm-6">
+                <!-- Your Plan Widget -->
+                <div class="widget">
+                    <div class="widget-extra themed-background-dark">
+                        <h3 class="widget-content-light">
+                            Observaci&oacute;n del <strong>Trabajo en el Aula</strong>
+                            <small><a href="javascript:void(0)"><strong>preview</strong></a></small>
+                        </h3>
+                    </div>
+                    <div class="block full">
+                        <div class="row">
+                            <div class="table-responsive">
+                                <table id="obList-datatable" class="table table-vcenter table-condensed table-bordered table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center">Docente</th>
+                                        <th class="text-center">Clase</th>
+                                        <th class="text-center">Fecha de Creaci&oacute;n</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    {% for listObservation in observationsByCoach %}
+                                        <tr>
+                                            <td class="text-center">{{ listObservation.name }}</td>
+                                            <td class="text-center">{{ listObservation.grado }} {{ listObservation.groupId }} <strong>{{ listObservation.nivelCompleto }}</strong> {{ listObservation.nameProgram }} {{ listObservation.school | title}}</td>
+                                            {% set limitDate = listObservation.start.date | date_modify("+7 day") | date() %}
+                                            {% set difference = date( "now" | date() ).diff(date(limitDate)) %}
+                                            {% set leftDays = difference.days %}
+                                            {% set leftHours = difference.h %}
+
+                                            {% if listObservation.finish is null %}
+                                                <td class="text-center">{{ listObservation.start.date | date('j/M/Y \@ g:i a') }} <i class="fa fa-clock-o" aria-hidden="true" data-toggle="tooltip" title="pendiente"></i></td>
+
+                                            {% else %}
+                                                <td class="text-center">{{ listObservation.start.date | date('j/M/Y \@ g:i a') }} <i class="fa fa-check-circle" aria-hidden="true" data-toggle="tooltip" title="finalizada"></i></td>
+                                            {% endif %}
+                                            <td class="text-center">
+                                                <div class="btn-group">
+                                                    <a href="javascript:void(0)" onclick="window.location.href = uri+'/observacion/crear/{{ listObservation.observationId }}';" title="Edit" class="btn btn-xs btn-default"><i class="fa fa-pencil fa-2x" aria-hidden="true"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </a>
-        </div>
+            </div>
         {% endif %}
 
     </div>
@@ -291,8 +344,14 @@
     <!-- END Modal Video -->
 
     <script src="{{ asset('public/assets/js/jquery-1.11.3.min.js') }}"></script>
+    <script>$(function(){ DTObCoach.init(); });</script>
     <script>
-        var uri = 'http://dev.ruta.unoi.com/app_dev.php';
+        //dominio http://dev.ruta.unoi.com
+        var HttpHost = '{{ app.request.getSchemeAndHttpHost() }}';
+        //si es /app_dev.php
+        var baseUrl = '{{ app.request.baseurl }}';
+
+        var uri = HttpHost+baseUrl;
         var filter = '';
         var Admin = false;
         var profileArray = $.parseJSON('{{ app.session.get('profileS') | raw }}');
@@ -434,5 +493,26 @@
             }
             getStatsCoaches(filter);
         }
+
+
+        var DTObCoach = function() {
+
+            return {
+                init: function() {
+                    /* Initialize Bootstrap Datatables Integration */
+                    App.datatables();
+
+                    /* Initialize Datatables */
+                    $('#obList-datatable').dataTable({
+                        columnDefs: [ { orderable: false, targets: [ 0, 3 ] } ],
+                        pageLength: 4,
+                        lengthMenu: [1,2,3,4]
+                    });
+
+                    /* Add placeholder attribute to the search input */
+                    $('.dataTables_filter input').attr('placeholder', 'Buscar');
+                }
+            };
+        }();
     </script>
 {% endblock %}

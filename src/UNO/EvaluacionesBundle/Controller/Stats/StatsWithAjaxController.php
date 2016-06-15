@@ -41,7 +41,15 @@ class StatsWithAjaxController extends Controller{
 
         $session = $request->getSession();
         $session->start();
-        $baseUrl = "http://dev.ruta.unoi.com".$this->container->get('router')->getContext()->getBaseUrl();
+
+        #http://
+        $scheme =  $this->container->get('router')->getContext()->getScheme().'://';
+        #dev.ruta.unoi.com
+        $host =  $this->container->get('router')->getContext()->getHost();
+        #/app_dev.php
+        $baseUrl = $this->container->get('router')->getContext()->getBaseUrl();
+
+        $base = $scheme.$host;
 
         //valida usuario con session iniciada
         if ($session->get('logged_in')) {
@@ -50,10 +58,10 @@ class StatsWithAjaxController extends Controller{
             if (array_intersect(array('SuperAdmin','Director','COACH'), $this->_profile)) {
                 if (array_intersect(array('SuperAdmin','COACH'), $this->_profile)) {
                     #vista para SuperAdmin y COACH
-                    $schoolListAPI = $this->getAPI("$baseUrl/api/v0/catalog/schools");
+                    $schoolListAPI = $this->getAPI("$base/api/v0/catalog/schools");
                     $schoolList = $this->createSchoolList($schoolListAPI);
 
-                    $surveysListAPI = $this->getAPI("$baseUrl/api/v0/catalog/surveys");
+                    $surveysListAPI = $this->getAPI("$base/api/v0/catalog/surveys");
                     $surveyList = $this->createSurveyList($surveysListAPI);
 
                     return $this->render('UNOEvaluacionesBundle:Stats:stats.html.twig',
@@ -66,9 +74,9 @@ class StatsWithAjaxController extends Controller{
                     #vista para Director
                     $this->setSchooIdPerson($session);
                     if($this->_i === 1 && $this->_levelId !== 0) {
-                        $surveysListAPI = $this->getAPI("$baseUrl/api/v0/catalog/survey/school/" . $this->_schoolIdPerson . "/level/" . $this->_levelId);
+                        $surveysListAPI = $this->getAPI("$base/api/v0/catalog/survey/school/" . $this->_schoolIdPerson . "/level/" . $this->_levelId);
                     }else{
-                        $surveysListAPI = $this->getAPI("$baseUrl/api/v0/catalog/surveys");
+                        $surveysListAPI = $this->getAPI("$base/api/v0/catalog/surveys");
                     }
                     $surveyList = $this->createSurveyList($surveysListAPI);
 
