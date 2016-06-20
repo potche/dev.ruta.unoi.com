@@ -40,14 +40,15 @@ class APICatalogoController extends Controller{
     }
 
     /**
-     * @Route("/survey/school/{schoolId}/level/{levelId}",
-     * requirements={"schoolId" = "\d+", "levelId" = "\d+"},
-     * defaults={"schoolId" = null, "levelId" = null})
-     * @Method({"GET"})
+     * @Route("/survey/school/{schoolId}/level",
+     * requirements={"schoolId" = "\d+"},
+     * defaults={"schoolId" = null})
+     * @Method({"POST"})
      */
-    public function surveySchoolAction($schoolId, $levelId){
+    public function surveySchoolAction(Request $request, $schoolId){
+        $schoolLevelId = $request->request->get('schoolLevelId');
 
-        $result = $this->getResQuerySurvey(array('schoolId' => $schoolId, 'levelId' => $levelId), 'PS.schoolid = :schoolId AND PS.schoollevelid = :levelId');
+        $result = $this->getResQuerySurvey(array('schoolId' => $schoolId), 'PS.schoolid = :schoolId AND PS.schoollevelid in ('.$schoolLevelId.')');
 
         #-----envia la respuesta en JSON-----#
         $response = new JsonResponse();

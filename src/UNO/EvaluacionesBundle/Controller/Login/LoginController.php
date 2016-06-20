@@ -379,6 +379,25 @@ class LoginController extends Controller{
 
     /**
      * @return string
+     * obtiene el Id del schoolLevel(kinder, primaria, secundaria) si es profesor
+     */
+    private function getSchoolLevel(){
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+        return json_encode(
+            $qb->select('PS.schoollevelid, SL.schoollevel')
+            ->from('UNOEvaluacionesBundle:Personschool', 'PS')
+            ->innerJoin('UNOEvaluacionesBundle:Schoollevel','SL','WITH', 'PS.schoollevelid = SL.schoollevelid')
+            ->where('PS.personid = :personId')
+            ->setParameter('personId', $this->_personDB->getPersonid())
+            ->groupBy('PS.schoollevelid')
+            ->getQuery()
+            ->getResult()
+        );
+    }
+
+    /**
+     * @return string
      * obtiene el Id de la escuela del usuario logeado y lo envia como json
      */
     private function getSchoolId(){
@@ -447,6 +466,7 @@ class LoginController extends Controller{
         $session->set('nameS', $this->_personDB->getName());
         $session->set('privilegeS', $this->getPrivilege());
         $session->set('profileS', $this->getProfile());
+        $session->set('schoolLevelS', $this->getSchoolLevel());
         $session->set('schoolIdS', $this->getSchoolId());
         $session->set('versionS', $this->getVersion());
         $session->set('mailing', $this->_personDB->getMailing());

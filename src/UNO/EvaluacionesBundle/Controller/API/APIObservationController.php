@@ -2,6 +2,7 @@
 
 namespace UNO\EvaluacionesBundle\Controller\API;
 
+//require '../../../../../vendor/autoload.php';
 use \Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -17,7 +18,8 @@ use UNO\EvaluacionesBundle\Entity\ObservationGallery;
 use UNO\EvaluacionesBundle\Entity\ObservationDisposition;
 use UNO\EvaluacionesBundle\Entity\ObservationActivity;
 use UNO\EvaluacionesBundle\Controller\Evaluaciones\Utils;
-
+use Aws\S3\S3Client;
+use Aws\S3\Exception\S3Exception;
 /**
  * Created by PhpStorm.
  * User: isra
@@ -374,7 +376,7 @@ class APIObservationController extends Controller{
             $obsIdA = $observationId.'-'.$type;
             $img = $request->files->get('imageB');
         }
-
+        print_r($img);
 
         if( ($img instanceof UploadedFile) && ($img->getError() == '0') ){
             $request = array(
@@ -384,18 +386,22 @@ class APIObservationController extends Controller{
                 'realPath' => $img->getRealPath()
             );
 
-            
             $nameArray = explode('.',$request['originalName']);
             $fileType = $nameArray[sizeof($nameArray)-1];
             $validFileTypes = array('jpg','jpeg','bmg','png');
             $dir = 'public/assets/images/observation/uploads';
+
             //print_r($root = $this->get('kernel')->getRootDir()."/../www");
             if(in_array(strtolower($fileType), $validFileTypes)){
+
                 $document = new Document();
                 $document->setFile($img);
                 $document->setUploadDirectory($dir);
                 $relativePath = md5( date('Y-m-d-H-i-s'). $obsIdA );
                 $document->setUploadHash($relativePath.'.'.strtolower($fileType));
+
+                $this->S3($img, $relativePath.'.'.strtolower($fileType), $request['mimeType']);
+
 
                 if($this->createOrUpdateGalleryQuery($relativePath.'.'.strtolower($fileType), $dir.'/', $type, $observationId)){
                     $document->processFile();
@@ -412,6 +418,34 @@ class APIObservationController extends Controller{
         }
 
         return new JsonResponse($request, 200);
+    }
+
+    private function S3($sourceFileName, $nameFile, $contentType){
+        $client = S3Client::factory(
+            array('credentials' => array(
+                'key'    => "AKIAIHSQ7XQE4TQMSQPA",
+                'secret' => "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"
+            ),
+                'version' => 'latest',
+                'region'  => 'us-east-1'
+            )
+        );
+
+        // Upload a publicly accessible file. The file size and type are determined by the SDK.
+        try {
+            $bucket = 'pre-staticmx.unoi.com';
+            $result = $client->putObject(array(
+                'ACL' => 'public-read',
+                'Bucket'=> $bucket,
+                'Key' =>  'ruta/observacion/'.$nameFile,
+                'SourceFile' => $sourceFileName,
+                'ContentType' => $contentType
+            ));
+            print_r($result);
+        } catch (S3Exception $e) {
+            print_r($e->getMessage());
+        }
+
     }
 
     private function createOrUpdateGalleryQuery($name, $dir, $type, $observationId){
@@ -444,6 +478,35 @@ class APIObservationController extends Controller{
                 return false;
             }
         }
+    }
+
+    /**
+     * @Route("/observation/deleteImg")
+     * @Method({"POST"})
+     */
+    public function deleteImgAction(Request $request){
+
+        $type = $request->request->get('type');
+        $observationId = $request->request->get('observationId');
+
+        if($observationId){
+            $em = $this->getDoctrine()->getManager();
+            $ObservationGallery = $em->getRepository('UNOEvaluacionesBundle:ObservationGallery')->findOneBy(array('type' => $type, 'observationId' => $observationId));
+
+            if($ObservationGallery){
+                $dir = 'public/assets/images/observation/uploads/';
+                unlink($dir.$ObservationGallery->getObservationGalleryId());
+                $em->remove($ObservationGallery);
+                $em->flush();
+                return new JsonResponse(array('status' => Utils::http_response_code(200)),200);
+            }else{
+                return new JsonResponse(array('status' => Utils::http_response_code(404)),404);
+            }
+        }else{
+            return new JsonResponse(array('status' => Utils::http_response_code(409)),409);
+        }
+
+
     }
 
     /**

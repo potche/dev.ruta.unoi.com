@@ -375,6 +375,8 @@ function uploadImage($form){
         console.log(e);
         $form.find('.progress-bar').addClass('progress-bar-success').html('cargar completada....');
         getGallery();
+        $form.find('.progress-bar').width('0%').html('0%');
+        $form.find('.progress-bar').removeClass('progress-bar-success').html('');
     });
     request.open('post', HttpHost+baseUrl+'/api/v0/observation/saveImg');
     request.send(formdata);
@@ -394,17 +396,17 @@ function getGallery() {
                 $.each( data, function( key, val ) {
                     if(val.type.toUpperCase() === 'A'){
                         //console.log(val.ruta);
-                        $('#widgetFotoA').find('img').attr('src',HttpHost+'/'+val.ruta);
-                        $('#widgetFotoA').find('a').attr('href',HttpHost+'/'+val.ruta);
-                        $('#widgetFotoA').css("display", "block");
+                        $('#imgA').attr('src',HttpHost+'/'+val.ruta);
+                        $('#hrefA').attr('href',HttpHost+'/'+val.ruta);
+                        $('.galleryA').css("display", "block");
                         $('#fotoA').hide();
                     }
 
                     if(val.type.toUpperCase() === 'B'){
                         //console.log(val.ruta);
-                        $('#widgetFotoB').find('img').attr('src',HttpHost+'/'+val.ruta);
-                        $('#widgetFotoB').find('a').attr('href',HttpHost+'/'+val.ruta);
-                        $('#widgetFotoB').css("display", "block");
+                        $('#imgB').attr('src',HttpHost+'/'+val.ruta);
+                        $('#hrefB').attr('href',HttpHost+'/'+val.ruta);
+                        $('.galleryB').css("display", "block");
                         $('#fotoB').hide();
                     }
 
@@ -421,10 +423,53 @@ function getGallery() {
         });
 }
 
-$('#closeA').on('click',function(e){
-    $('#widgetFotoA').hide();
+function editImgA(){
+    $('.galleryA').hide();
     $('#fotoA').show();
-});
+}
+
+function deleteImgA(observationId){
+    $('.galleryA').hide();
+    console.log($('#imgA').attr('src'));
+    $('#fotoA').show();
+
+    $.post(HttpHost + baseUrl + "/api/v0/observation/deleteImg", {observationId: observationId, type: 'A'})
+        .done(function (data) {
+            if (data) {
+                console.log(data);
+            }
+        })
+        .fail(function () {
+            console.log('error')
+        })
+        .always(function () {
+            console.log("finished");
+        });
+}
+
+function editImgB(){
+    $('.galleryB').hide();
+    $('#fotoB').show();
+}
+
+function deleteImgB(observationId){
+    $('.galleryB').hide();
+    console.log($('#imgB').attr('src'));
+    $('#fotoB').show();
+
+    $.post(HttpHost + baseUrl + "/api/v0/observation/deleteImg", {observationId: observationId, type: 'B'})
+        .done(function (data) {
+            if (data) {
+                console.log(data);
+            }
+        })
+        .fail(function () {
+            console.log('error')
+        })
+        .always(function () {
+            console.log("finished");
+        });
+}
 
 $('#closeB').on('click',function(e){
     $('#widgetFotoB').hide();

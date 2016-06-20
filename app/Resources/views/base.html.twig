@@ -522,6 +522,7 @@
             //--- obtiene los Json de session
             $(document).ready(function() {
                 var personIdS = "{{ app.session.get('personIdS') | raw}}";
+                var schoolLevelS = '{{ app.session.get('schoolLevelS') | raw}}';
                 var assignedS = "{{ app.session.get('assignedS')}}";
                 if(assignedS !== "1"){
                     assigned(personIdS);

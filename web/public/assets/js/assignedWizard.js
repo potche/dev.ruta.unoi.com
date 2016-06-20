@@ -204,6 +204,7 @@ function assigned(personIdS) {
 }
 
 function gradesHTML(schoollevelid){
+    console.log("/api/v0/assigned/grades/"+schoollevelid);
     $.ajax({
         type: "JSON",
         url: "/api/v0/assigned/grades/"+schoollevelid,
