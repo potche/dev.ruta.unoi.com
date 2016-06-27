@@ -2,7 +2,6 @@
 
 namespace UNO\EvaluacionesBundle\Controller\API;
 
-//require '../../../../../vendor/autoload.php';
 use \Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -13,7 +12,6 @@ use UNO\EvaluacionesBundle\Entity\Observation;
 use UNO\EvaluacionesBundle\Entity\ObservationAnswer;
 use UNO\EvaluacionesBundle\Entity\ObservationAnswerHistory;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use UNO\EvaluacionesBundle\Controller\FileUpload\Document;
 use UNO\EvaluacionesBundle\Entity\ObservationGallery;
 use UNO\EvaluacionesBundle\Entity\ObservationDisposition;
 use UNO\EvaluacionesBundle\Entity\ObservationActivity;
@@ -38,6 +36,9 @@ define('START_OB','start');
 define('FINISH_OB','finish');
 define('STATUS_OB','status');
 define('MESSAGE_OB','message');
+define('BUCKET','pre-staticmx.unoi.com');
+define('KEYS3','ruta/observacion/');
+define('DIRS3','https://pre-staticmx.unoi.com/ruta/observacion/');
 
 
 /**
@@ -46,6 +47,9 @@ define('MESSAGE_OB','message');
  */
 class APIObservationController extends Controller{
 
+    private $_obsId;
+    private $_type;
+    private $_observationId;
     /**
      * @Route("/observations")
      * @Method({"GET"})
@@ -366,17 +370,16 @@ class APIObservationController extends Controller{
         $session = $request->getSession();
         $session->start();
         if($request->request->get('obsIdA')){
-            $observationId = $request->request->get('obsIdA');
-            $type = 'A';
-            $obsIdA = $observationId.'-'.$type;
+            $this->_observationId = $request->request->get('obsIdA');
+            $this->_type = 'A';
+            $this->_obsId = $this->_observationId.'-A';
             $img = $request->files->get('imageA');
         }else if($request->request->get('obsIdB')){
-            $observationId = $request->request->get('obsIdB');
-            $type = 'B';
-            $obsIdA = $observationId.'-'.$type;
+            $this->_observationId = $request->request->get('obsIdB');
+            $this->_type = 'B';
+            $this->_obsId = $this->_observationId.'-B';
             $img = $request->files->get('imageB');
         }
-        print_r($img);
 
         if( ($img instanceof UploadedFile) && ($img->getError() == '0') ){
             $request = array(
@@ -389,38 +392,59 @@ class APIObservationController extends Controller{
             $nameArray = explode('.',$request['originalName']);
             $fileType = $nameArray[sizeof($nameArray)-1];
             $validFileTypes = array('jpg','jpeg','bmg','png');
-            $dir = 'public/assets/images/observation/uploads';
 
             //print_r($root = $this->get('kernel')->getRootDir()."/../www");
             if(in_array(strtolower($fileType), $validFileTypes)){
+                $relativePath = md5( date('Y-m-d-H-i-s'). $this->_obsId ).'.'.strtolower($fileType);
 
-                $document = new Document();
-                $document->setFile($img);
-                $document->setUploadDirectory($dir);
-                $relativePath = md5( date('Y-m-d-H-i-s'). $obsIdA );
-                $document->setUploadHash($relativePath.'.'.strtolower($fileType));
-
-                $this->S3($img, $relativePath.'.'.strtolower($fileType), $request['mimeType']);
-
-
-                if($this->createOrUpdateGalleryQuery($relativePath.'.'.strtolower($fileType), $dir.'/', $type, $observationId)){
-                    $document->processFile();
-
-                    $uploadUrl = $document->getUploadDirectory(). DIRECTORY_SEPARATOR. $relativePath.'.'.strtolower($fileType);
-                    $request = $uploadUrl;
+                if($this->createOrUpdateGalleryQuery($img, $relativePath, $request['mimeType'])){
+                    return new JsonResponse(array('status' => Utils::http_response_code(200)),200);
                 }
-
             }else{
-                $request = array('status' => 'error','message' => 'File Type Invalid');
+                return new JsonResponse(array('status' => Utils::http_response_code(409)),409);
             }
         }else{
-            $request = array('status' => 'error', 'message' => 'empty file');
+            return new JsonResponse(array('status' => Utils::http_response_code(400)),400);
         }
 
-        return new JsonResponse($request, 200);
     }
 
-    private function S3($sourceFileName, $nameFile, $contentType){
+    private function S3Put($client, $sourceFileName, $nameFile, $contentType){
+        // Upload a publicly accessible file. The file size and type are determined by the SDK.
+        try {
+            $client->putObject(array(
+                'ACL' => 'public-read',
+                'Bucket' => BUCKET,
+                'Key' => KEYS3 . $nameFile,
+                'SourceFile' => $sourceFileName,
+                'ContentType' => $contentType
+            ));
+            return true;
+        } catch (S3Exception $e) {
+            print_r($e->getMessage());
+            return false;
+        }
+    }
+
+    private function S3Delete($client, $nameFile){
+        // Delete a publicly file.
+        try {
+            $client->deleteObject([
+                'Bucket' => BUCKET, // REQUIRED
+                'Key' => KEYS3.$nameFile, // REQUIRED
+                'RequestPayer' => 'requester'
+            ]);
+            return true;
+        } catch (S3Exception $e) {
+            print_r($e->getMessage());
+            return false;
+        }
+    }
+
+    private function createOrUpdateGalleryQuery($img, $name, $mimeType){
+        $em = $this->getDoctrine()->getManager();
+        $ObservationGallery = $em->getRepository('UNOEvaluacionesBundle:ObservationGallery')->findOneBy(array('type' => $this->_type, 'observationId' => $this->_observationId));
+
         $client = S3Client::factory(
             array('credentials' => array(
                 'key'    => "AKIAIHSQ7XQE4TQMSQPA",
@@ -431,53 +455,41 @@ class APIObservationController extends Controller{
             )
         );
 
-        // Upload a publicly accessible file. The file size and type are determined by the SDK.
-        try {
-            $bucket = 'pre-staticmx.unoi.com';
-            $result = $client->putObject(array(
-                'ACL' => 'public-read',
-                'Bucket'=> $bucket,
-                'Key' =>  'ruta/observacion/'.$nameFile,
-                'SourceFile' => $sourceFileName,
-                'ContentType' => $contentType
-            ));
-            print_r($result);
-        } catch (S3Exception $e) {
-            print_r($e->getMessage());
-        }
-
-    }
-
-    private function createOrUpdateGalleryQuery($name, $dir, $type, $observationId){
-        $em = $this->getDoctrine()->getManager();
-        $ObservationGallery = $em->getRepository('UNOEvaluacionesBundle:ObservationGallery')->findOneBy(array('type' => $type, 'observationId' => $observationId));
+        $r = false;
 
         if($ObservationGallery){
             //update
-            unlink($dir.$ObservationGallery->getObservationGalleryId());
-            $ObservationGallery->setObservationGalleryId($name);
-            $ObservationGallery->setDateUpload(new \DateTime());
-            $em->flush();
-            return true;
+            if($this->S3Delete($client, $ObservationGallery->getObservationGalleryId())){
+                if($this->S3Put($client, $img, $name, $mimeType)) {
+                    $ObservationGallery->setObservationGalleryId($name);
+                    $ObservationGallery->setDateUpload(new \DateTime());
+                    $em->flush();
+                    $r = true;
+                }
+            }
+
         }else{
             //create
-            $em = $this->getDoctrine()->getManager();
-            try{
-                $ObservationGallery = new ObservationGallery();
-                $ObservationGallery->setObservationGalleryId($name);
-                $ObservationGallery->setDir($dir);
-                $ObservationGallery->setType($type);
-                $ObservationGallery->setDateUpload(new \DateTime());
-                $ObservationGallery->setObservationId($observationId);
+            if($this->S3Put($client, $img, $name, $mimeType)){
+                $em = $this->getDoctrine()->getManager();
+                try{
+                    $ObservationGallery = new ObservationGallery();
+                    $ObservationGallery->setObservationGalleryId($name);
+                    $ObservationGallery->setDir(DIRS3);
+                    $ObservationGallery->setType($this->_type);
+                    $ObservationGallery->setDateUpload(new \DateTime());
+                    $ObservationGallery->setObservationId($this->_observationId);
 
-                $em->persist($ObservationGallery);
-                $em->flush();
-                return true;
-            } catch(\Exception $e){
-                print_r($e->getMessage());
-                return false;
+                    $em->persist($ObservationGallery);
+                    $em->flush();
+                    $r = true;
+                } catch(\Exception $e){
+                    print_r($e->getMessage());
+                    $r = false;
+                }
             }
         }
+        return $r;
     }
 
     /**
@@ -489,24 +501,32 @@ class APIObservationController extends Controller{
         $type = $request->request->get('type');
         $observationId = $request->request->get('observationId');
 
+        $client = S3Client::factory(
+            array('credentials' => array(
+                'key'    => "AKIAIHSQ7XQE4TQMSQPA",
+                'secret' => "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"
+            ),
+                'version' => 'latest',
+                'region'  => 'us-east-1'
+            )
+        );
+
         if($observationId){
             $em = $this->getDoctrine()->getManager();
             $ObservationGallery = $em->getRepository('UNOEvaluacionesBundle:ObservationGallery')->findOneBy(array('type' => $type, 'observationId' => $observationId));
 
             if($ObservationGallery){
-                $dir = 'public/assets/images/observation/uploads/';
-                unlink($dir.$ObservationGallery->getObservationGalleryId());
-                $em->remove($ObservationGallery);
-                $em->flush();
-                return new JsonResponse(array('status' => Utils::http_response_code(200)),200);
+                if($this->S3Delete($client, $ObservationGallery->getObservationGalleryId())) {
+                    $em->remove($ObservationGallery);
+                    $em->flush();
+                    return new JsonResponse(array('status' => Utils::http_response_code(200)), 200);
+                }
             }else{
                 return new JsonResponse(array('status' => Utils::http_response_code(404)),404);
             }
         }else{
             return new JsonResponse(array('status' => Utils::http_response_code(409)),409);
         }
-
-
     }
 
     /**
@@ -538,7 +558,6 @@ class APIObservationController extends Controller{
             ->orderBy('OG.type', 'ASC')
             ->getQuery()
             ->getResult();
-
     }
 
     /**
@@ -744,7 +763,7 @@ class APIObservationController extends Controller{
     public function sendMailAction($observationId){
 
         $result = $this->getMail($observationId);
-
+        
         foreach ($result as $value) {
             $mesg = $this->buildMessage(
                 'Observacion en el Aula',
@@ -757,18 +776,16 @@ class APIObservationController extends Controller{
                     'groupId' => $value['groupId'],
                     'nameProgram' => $value['nameProgram'],
                     'Coach' => $value['Coach'],
-                    'host' => 'dev.ruta.unoi.com',
-                    'scheme' => 'http'
+                    'host' => 'pre-ruta.unoi.com',
+                    'scheme' => 'https'
                 ),
-                'potcheunam@gmail.com',
+                $value['emailDirecctor'],
                 'Observacion-Finalizada');
-
-            print_r($mesg);
         }
 
         #-----envia la respuesta en JSON-----#
         $response = new JsonResponse();
-        $response->setData($result);
+        $response->setData($mesg);
 
         return $response;
     }
@@ -786,6 +803,7 @@ class APIObservationController extends Controller{
                             O.observationId,
                             O.personId AS DocenteId,
                             CONCAT(P2.name, ' ', P2.surname) AS Docente,
+                            P2.email AS emailDocente,
                             S.school,
                             PA.schoolLevelId,
                             Cg.nameGrade,

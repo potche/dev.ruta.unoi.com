@@ -222,7 +222,7 @@
                 $("#addObAlert").show('fast');
 
                 $.getJSON( HttpHost+baseUrl+"/api/v0/catalog/personSchool/"+$('#obSchool').val(), function( data ) {
-                    $("#docenteFG").show('slow');
+                    $("#docenteFG").show('fast');
 
                     var items =
                             '<select id="obDocente" name="obDocente" class="select-chosen " data-placeholder="Ingresa el nombre del docente..." style="width: 250px;" onchange="docente();">'+
@@ -230,7 +230,7 @@
 
                     $.each( data, function( key, val ) {
 
-                        items += "<option value='" + val.personid + "'>" + val.nombre + "</option>";
+                        items += "<option value='" + val.personid + "'>" + val.personid + " - " + val.nombre + "</option>";
                     });
 
                     items += '</select>';

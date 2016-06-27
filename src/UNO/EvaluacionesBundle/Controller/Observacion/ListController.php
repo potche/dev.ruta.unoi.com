@@ -39,8 +39,14 @@ class ListController extends Controller{
             ));
         }
 
-        $baseUrl = "http://dev.ruta.unoi.com".$this->container->get('router')->getContext()->getBaseUrl();
-
+        #http://
+        $scheme =  $this->container->get('router')->getContext()->getScheme().'://';
+        #dev.ruta.unoi.com
+        $host =  $this->container->get('router')->getContext()->getHost();
+        #/app_dev.php
+        $baseURL = $this->container->get('router')->getContext()->getBaseUrl();
+        $baseUrl = $scheme.$host.$baseURL;
+        
         return $this->render('UNOEvaluacionesBundle:Observacion:index.html.twig', array(
                 'schoolList' => json_decode(file_get_contents("$baseUrl/api/v0/catalog/schools", false), true),
                 'observationsByCoach' => $this->observationsByCoach($session->get('personIdS'))

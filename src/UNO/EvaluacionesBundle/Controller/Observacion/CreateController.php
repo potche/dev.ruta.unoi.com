@@ -29,16 +29,7 @@ class CreateController extends Controller{
      * obtiene y crea la tabla con el detalle de la evaluacion
      */
     public function indexAction(Request $request, $observationId){
-        #http://
-        $scheme =  $this->container->get('router')->getContext()->getScheme().'://';
-        #dev.ruta.unoi.com
-        $host =  $this->container->get('router')->getContext()->getHost();
-        #/app_dev.php
-        $baseURL = $this->container->get('router')->getContext()->getBaseUrl();
-        $baseUrl = "http://dev.ruta.unoi.com".$this->container->get('router')->getContext()->getBaseUrl();
-
-        //$schoolListAPI = json_decode(file_get_contents("$baseUrl/api/v0/catalog/schools", false), true);
-
+        
         $session = $request->getSession();
         $session->start();
 

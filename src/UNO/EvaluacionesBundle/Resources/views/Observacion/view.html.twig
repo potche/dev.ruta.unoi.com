@@ -2,6 +2,45 @@
 {% block body %}
     <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/themes.css">
     <link rel="stylesheet" href="{{ asset('public/assets/css/observationCreate.css') }}">
+    <style>
+        .north {
+            -webkit-transform : rotate(0deg); /* Chrome, Safari 3.1+ */
+            -moz-transform : rotate(0deg); /* Firefox 3.5-15 */
+            -ms-transform : rotate(0deg); /* IE 9 */
+            -o-transform: rotate(0deg); /* Opera 10.50-12.00 */
+            transform : rotate(0deg); /* Firefox 16+, IE 10+, Opera 12.10+ */
+        }
+        .west {
+            -webkit-transform : rotate(90deg); /* Chrome, Safari 3.1+ */
+            -moz-transform : rotate(90deg); /* Firefox 3.5-15 */
+            -ms-transform : rotate(90deg); /* IE 9 */
+            -o-transform: rotate(90deg); /* Opera 10.50-12.00 */
+            transform : rotate(90deg); /* Firefox 16+, IE 10+, Opera 12.10+ */
+        }
+        .south {
+            -webkit-transform : rotate(180deg); /* Chrome, Safari 3.1+ */
+            -moz-transform : rotate(180deg); /* Firefox 3.5-15 */
+            -ms-transform : rotate(180deg); /* IE 9 */
+            -o-transform: rotate(180deg); /* Opera 10.50-12.00 */
+            transform : rotate(180deg); /* Firefox 16+, IE 10+, Opera 12.10+ */
+        }
+        .east {
+            -webkit-transform : rotate(270deg); /* Chrome, Safari 3.1+ */
+            -moz-transform : rotate(270deg); /* Firefox 3.5-15 */
+            -ms-transform : rotate(270deg); /* IE 9 */
+            -o-transform: rotate(270deg); /* Opera 10.50-12.00 */
+            transform : rotate(270deg); /* Firefox 16+, IE 10+, Opera 12.10+ */
+        }
+
+        .thumbnail {
+            height: 400px;
+        }
+
+        .thumbnail img {
+            max-height: 100%;
+            max-width: 100%;
+        }
+    </style>
 
     <button id="feedback-R" class="btn btn-primary "><span><strong>ACCIONES <i class="fa fa-angle-up" aria-hidden="true" style="font-size: large;"></i></strong></span></button>
     <button id="feedback-L" class="btn btn-primary hidden"><span><strong><i class="fa fa-angle-up " aria-hidden="true" style="font-size: large;"></i> CUESTIONARIO</strong></span></button>
@@ -191,32 +230,33 @@
 
                         <div class="tab-pane" id="dispAula-{{ observationId }}">
                             <div class="row text-center">
-                            {% if disposition.disposition | raw == "filas" %}
+                            {% if disposition.disposition is defined %}
+                                {% if disposition.disposition | raw == "filas" %}
 
-                                <label id="label-filas-{{ observationId }}" class="col-xs-12" >
-                                    <img src="{{ asset('public/assets/images/observation/filas.svg') }}">
-                                    <br/>
-                                    <h3>Filas</h3>
-                                </label>
+                                    <label id="label-filas-{{ observationId }}" class="col-xs-12" >
+                                        <img src="{{ asset('public/assets/images/observation/filas.svg') }}">
+                                        <br/>
+                                        <h3>Filas</h3>
+                                    </label>
 
-                            {% elseif disposition.disposition | raw == "herradura" %}
+                                {% elseif disposition.disposition | raw == "herradura" %}
 
-                                <label id="label-herradura-{{ observationId }}" class="col-xs-12" >
-                                    <img src="{{ asset('public/assets/images/observation/herradura.svg') }}">
-                                    <br/>
-                                    <h3>Herradura</h3>
-                                </label>
+                                    <label id="label-herradura-{{ observationId }}" class="col-xs-12" >
+                                        <img src="{{ asset('public/assets/images/observation/herradura.svg') }}">
+                                        <br/>
+                                        <h3>Herradura</h3>
+                                    </label>
 
-                            {% elseif disposition.disposition | raw == 'equipos' %}
+                                {% elseif disposition.disposition | raw == 'equipos' %}
 
-                                <label id="label-equipos-{{ observationId }}" class="col-xs-12">
-                                    <img src="{{ asset('public/assets/images/observation/equipos.svg') }}">
-                                    <br/>
-                                    <h3>Equipos</h3>
-                                </label>
+                                    <label id="label-equipos-{{ observationId }}" class="col-xs-12">
+                                        <img src="{{ asset('public/assets/images/observation/equipos.svg') }}">
+                                        <br/>
+                                        <h3>Equipos</h3>
+                                    </label>
 
+                                {% endif %}
                             {% endif %}
-
                             </div>
                         </div>
 
@@ -224,40 +264,24 @@
 
                             <div class="row">
 
-                                <div class="col-xs-12">
-                                    <div class="widget-main">
-                                        <div class="gallery gallery-widget" data-toggle="lightbox-gallery">
-                                            <div class="row">
-                                            {% for gallery in galleries | raw %}
+                                {% for gallery in galleries | raw %}
 
-                                                <div class="col-xs-6">
-                                                    <div class="widget">
-                                                        <div id="widget-carousel6" class="carousel slide remove-margin">
-                                                            <div class="carousel-inner">
-                                                                <div class="active item">
-                                                                    <a href="{{ asset( gallery.ruta ) }}" class="gallery-link" title="Foto {{ gallery.type | raw }}">
-                                                                        <img src="{{ asset( gallery.ruta ) }}">
-                                                                    </a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="widget-simple themed-background-dark-night">
-                                                            <a href="javascript:void(0)" class="widget-icon pull-right themed-background-flatie">
-                                                                <i class="fa fa-camera" aria-hidden="true"></i>
-                                                            </a>
-                                                            <h4 class="widget-content widget-content-light">
-                                                                <a href="javascript:void(0)" class="themed-color-flatie"><strong>Foto</strong> {{ gallery.type | raw }}</a>
-                                                                <small>Observaci&oacute;n en el aula</small>
-                                                            </h4>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                            {% endfor %}
-                                            </div>
+                                    <div class="col-xs-6 text-center">
+                                        <div class="sub-header" style="z-index: 1000; position: relative;">
+                                            <h4>Foto B</h4>
+                                            <!-- .. along with a div.gallery-image-options which will contain your hover links! -->
+                                            <!-- Link to your large image with the attribute data-toggle="lightbox-image" -->
+                                            <a href="{{ asset( gallery.ruta ) }}" data-toggle="lightbox-image" title="Foto {{ gallery.type | raw }}" class="gallery-link btn btn-sm btn-primary"><i class="fa fa-eye"></i> Ver</a>
+                                            <a onclick="rotateImg('img{{ gallery.type | raw }}');" class="btn btn-sm btn-alt btn-primary" data-toggle="tooltip" title="Rotar"><i class="fa fa-repeat"></i></a>
+                                        </div>
+                                        <!-- Just wrap your image with a div.gallery-image and.. -->
+                                        <div class="gallery-image thumbnail" style="border: 0px">
+                                            <!-- .. add your image.. -->
+                                            <img id=img{{ gallery.type | raw }} class="north" src="{{ asset( gallery.ruta ) }}" alt="Foto {{ gallery.type | raw }}">
                                         </div>
                                     </div>
-                                </div>
+
+                                {% endfor %}
 
                             </div>
                         </div>
@@ -320,5 +344,22 @@
             $("#feedback-R").removeClass('hidden');
             $("#feedback-L").addClass('hidden');
         });
+
+        function rotateImg(img) {
+            var img = $('#'+img);
+            if(img.hasClass('north')){
+                img.removeClass('north');
+                img.addClass('west');
+            }else if(img.hasClass('west')){
+                img.removeClass('west');
+                img.addClass('south');
+            }else if(img.hasClass('south')){
+                img.removeClass('south');
+                img.addClass('east');
+            }else if(img.hasClass('east')){
+                img.removeClass('east');
+                img.addClass('north');
+            }
+        }
     </script>
 {% endblock %}

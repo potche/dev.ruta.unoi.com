@@ -394,25 +394,25 @@ function getGallery() {
         .done(function(data) {
             if(data){
                 $.each( data, function( key, val ) {
+                    //var urlImage = HttpHost+'/'+val.ruta;
+                    var urlImage = val.ruta;
                     if(val.type.toUpperCase() === 'A'){
                         //console.log(val.ruta);
-                        $('#imgA').attr('src',HttpHost+'/'+val.ruta);
-                        $('#hrefA').attr('href',HttpHost+'/'+val.ruta);
+                        $('#imgA').attr('src',urlImage);
+                        $('#hrefA').attr('href',urlImage);
                         $('.galleryA').css("display", "block");
                         $('#fotoA').hide();
                     }
 
                     if(val.type.toUpperCase() === 'B'){
                         //console.log(val.ruta);
-                        $('#imgB').attr('src',HttpHost+'/'+val.ruta);
-                        $('#hrefB').attr('href',HttpHost+'/'+val.ruta);
+                        $('#imgB').attr('src',urlImage);
+                        $('#hrefB').attr('href',urlImage);
                         $('.galleryB').css("display", "block");
                         $('#fotoB').hide();
                     }
 
                 });
-
-
             }
         })
         .fail(function() {
@@ -425,12 +425,14 @@ function getGallery() {
 
 function editImgA(){
     $('.galleryA').hide();
+    $('#imageA').val('');
     $('#fotoA').show();
 }
 
 function deleteImgA(observationId){
     $('.galleryA').hide();
     console.log($('#imgA').attr('src'));
+    $('#imageA').val('');
     $('#fotoA').show();
 
     $.post(HttpHost + baseUrl + "/api/v0/observation/deleteImg", {observationId: observationId, type: 'A'})
@@ -449,12 +451,14 @@ function deleteImgA(observationId){
 
 function editImgB(){
     $('.galleryB').hide();
+    $('#imageB').val('');
     $('#fotoB').show();
 }
 
 function deleteImgB(observationId){
     $('.galleryB').hide();
     console.log($('#imgB').attr('src'));
+    $('#imageB').val('');
     $('#fotoB').show();
 
     $.post(HttpHost + baseUrl + "/api/v0/observation/deleteImg", {observationId: observationId, type: 'B'})
@@ -481,7 +485,7 @@ $('#finalizar').on('click',function (e) {
     $('#finishModal').modal();
 });
 
-function finishedObservation() {
+function finishedObservation(observationId) {
     $('#finishModal').modal('hide');
     var notify = $.notify('<strong>Finalizando</strong> observaci&oacute;n...', {
         allow_dismiss: false,
@@ -499,6 +503,11 @@ function finishedObservation() {
                     'message': 'La <strong>observación</strong> se han finalizado!',
                     'progress': 100
                 });
+
+                $.get( HttpHost+baseUrl+"/api/v0/observation/sendMail/"+observationId)
+                    .done(function(data) {
+
+                    });
             }
         })
         .fail(function() {

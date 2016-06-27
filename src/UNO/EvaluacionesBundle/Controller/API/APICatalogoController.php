@@ -145,7 +145,7 @@ class APICatalogoController extends Controller{
             ->where('PS.schoolid = :schoolId')
             ->setParameter('schoolId', $schoolId)
             ->groupBy('PS.personid','PS.schoolid')
-            ->orderBy('PS.schoolid')
+            ->orderBy('PS.personid')
             ->getQuery()
             ->getResult();
 

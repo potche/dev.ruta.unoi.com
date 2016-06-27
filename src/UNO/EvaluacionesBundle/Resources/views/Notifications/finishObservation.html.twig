@@ -3,59 +3,20 @@
     <img src="{{ scheme~'://'~host~asset('public/assets/images/mail/logo_mail.png') }}" alt="UNO Internacional" width="170" height="170" style="display:block;" />
 {% endblock %}
 {% block body %}
-    <tr>
-        <td bgcolor="#ffffff" style="padding: 20px 40px 10px 40px; color: #555555; font-family: Arial, sans-serif; font-size: 20px; line-height: 30px; text-align: justify;">
+
+    <tr bgcolor="#ffffff" style="padding: 20px 40px 10px 40px; color: #555555; font-family: Arial, sans-serif; font-size: 20px; line-height: 30px; text-align: justify;">
+        <td>
             <b>Hola, {{ Director|title }}</b><br>
-            <p>Este mensaje es para informarte que tu proceso de diagnóstico institucional aun no está completo. Éste es tu estatus actual.</p>
+            <p>Este mensaje es para informarte que el Coach <strong>{{ Coach|title }}</strong> ha terminado la observacion en el aula del docente <strong>{{ Docente|title }}</strong>.</p>
         </td>
     </tr>
-    <tr>
-        <td bgcolor="#1ec1b8" style="padding: 0; color: #ffffff; font-family: Arial, sans-serif; font-size: 20px; line-height: 50px; text-align: center;">
-            <b>Estatus actual</b>
+    <tr bgcolor="#ffffff" style="padding: 20px 40px 10px 40px; color: #555555; font-family: Arial, sans-serif; font-size: 20px; line-height: 30px; text-align: justify;">
+        <td>
+            <p>Perteneciente a <strong>{{ nameGrade|title }}</strong> grupo <strong>{{ groupId|title }}</strong> programa <strong>{{ nameProgram|title }}</strong></p>
         </td>
     </tr>
-    <tr>
-        <td bgcolor="#ffffff" style="padding: 40px 40px 0 40px;">
-            <table align="left" border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
-                <tr>
-                    <td height="96">
-                        <img src="{{ scheme~'://'~host~asset('public/assets/images/mail/doneSurveys.png') }}" width="96" height="96" style="display: inline-block;" />
-                    </td>
-                    <td height="96" style="color: #555555; font-family: Arial, sans-serif; font-size: 20px; text-align: left;">
-                        <b>Evaluaciones respondidas:</b> <b style="color: #1ec1b8;">{{ school~' de '~nameGrade }}</b>
-                    </td>
-                </tr>
-                <tr>
-                    <td height="24">
-                    </td>
-                </tr>
-                <tr>
-                    <td height="96">
-                        <img src="{{ scheme~'://'~host~asset('public/assets/images/mail/pendingProgress.png') }}" width="96" height="96" style="display: inline-block;" />
-                    </td>
-                    <td height="96" style="color: #555555; font-family: Arial, sans-serif; font-size: 20px; text-align: left;">
-                        <b>Progreso al día de hoy:</b> <b style="color: #1ec1b8;">{{ Docente }}</b>
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td bgcolor="#ffffff" style="padding: 10px 40px 10px 40px; color: #555555; font-family: Arial, sans-serif; font-size: 20px; line-height: 30px; text-align: justify;">
-            <p>Te hacemos una invitación a que termines de responder las evaluaciones que tienes pendientes haciendo click en el botón que aparece enseguida.</p>
-        </td>
-    </tr>
-    <tr>
-        <td align="center" bgcolor="#f9f9f9" style="padding: 5px 20px 30px 20px; font-family: Arial, sans-serif;">
-            <table bgcolor="#1ec1b8" border="0" cellspacing="0" cellpadding="0" class="buttonwrapper">
-                <tr>
-                    <td align="center" height="50" style=" padding: 0 25px 0 25px; font-family: Arial, sans-serif; font-size: 16px; font-weight: bold;" class="button">
-                        <a href="{{ scheme~'://'~host~'/listar' }}" style="color: #ffffff; text-align: center; text-decoration: none;">Ir a mis evaluaciones</a>
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
+
+<br/>
 {% endblock %}
 {% block unsuscribe %}
     <td align="center" bgcolor="#dddddd" style="padding: 30px 40px 40px 40px; font-family: Arial, sans-serif;">
