@@ -73,7 +73,7 @@ class APICatalogoController extends Controller{
             ->innerJoin('UNOEvaluacionesBundle:Survey','S', 'WITH', 'S.surveyid = SP.surveySurveyid')
             ->where('S.active = 1')
             ->andWhere('PS.personid > 1')
-            ->andWhere('S.closingdate >= CURRENT_DATE()')
+            //->andWhere('S.closingdate >= CURRENT_DATE()')
             ->andWhere($where)
             ->setParameters($parameters)
             ->groupBy('S.surveyid')

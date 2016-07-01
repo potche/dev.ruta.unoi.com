@@ -2,14 +2,21 @@
 {% block body %}
     <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/themes.css">
     <style>
-        label > input{ /* HIDE RADIO */
-            display:none;
-        }
-        label > input + img{ /* IMAGE STYLES */
+
+        .seleccionable{
             cursor:pointer;
-            border:2px solid transparent;
+            opacity: 0.5;
         }
-        label > input:checked + img{ /* (CHECKED) IMAGE STYLES */
+
+        .seleccionable:hover{
+            opacity: 1;
+        }
+
+        .seleccionable.selected{
+            opacity: 1;
+        }
+
+        .seleccionable.selected img{
             border:2px solid #3498db;
         }
 
@@ -316,20 +323,17 @@
                         <div class="tab-pane" id="dispAula-{{ observationId }}">
                             <p><em><i class="fa fa-info-circle text-primary"></i> Selecciona la disposici&oacute;n del aula correspondiente</em></p>
                             <div class="row text-center">
-                                <label id="label-filas-{{ observationId }}" class="col-xs-4 disposition" style="cursor:pointer; opacity: 0.5;" >
-                                    <input id="filas-{{ observationId }}" type="radio" name="disposicion" value="filas" />
+                                <label id="label-filas-{{ observationId }}" class="col-xs-4 seleccionable">
                                     <img src="{{ asset('public/assets/images/observation/filas.svg') }}">
                                     <br/>
                                     <h3>Filas</h3>
                                 </label>
-                                <label id="label-herradura-{{ observationId }}" class="col-xs-4 disposition" style="cursor:pointer; opacity: 0.5;" >
-                                    <input id="herradura-{{ observationId }}" type="radio" name="disposicion" value="herradura" />
+                                <label id="label-herradura-{{ observationId }}" class="col-xs-4 seleccionable">
                                     <img src="{{ asset('public/assets/images/observation/herradura.svg') }}">
                                     <br/>
                                     <h3>Herradura</h3>
                                 </label>
-                                <label id="label-equipos-{{ observationId }}" class="col-xs-4 disposition" style="cursor:pointer; opacity: 0.5;" >
-                                    <input id="equipos-{{ observationId }}" type="radio" name="disposicion" value="equipos" />
+                                <label id="label-equipos-{{ observationId }}" class="col-xs-4 seleccionable">
                                     <img src="{{ asset('public/assets/images/observation/equipos.svg') }}">
                                     <br/>
                                     <h3>Equipos</h3>
@@ -470,7 +474,7 @@
     </div>
     <!-- END Working Tabs Block -->
 
-    <!-- Modal Stats finish -->
+    <!-- Modal Start finish -->
     <div id="finishModal" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-md">
             <div class="modal-content">
@@ -485,12 +489,34 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-info" onclick="finishedObservation({{ observationId }})">Fianlizar</button>
+                    <button type="button" class="btn btn-info" onclick="finishedObservation({{ observationId }})">Finalizar</button>
                 </div>
             </div>
         </div>
     </div>
     <!-- END Modal finish -->
+
+    <!-- Modal Generic Start -->
+    <div id="genericModal" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> <span id="genericTitle"></span></h4>
+                </div>
+                <div class="modal-body">
+
+                    <h4 id="genericBody"></h4>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button id="genericOk" type="button" class="btn btn-info">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Generic finish -->
 
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="{{ asset('public/assets/js/observationCreate.js')}}"></script>

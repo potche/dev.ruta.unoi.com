@@ -668,11 +668,31 @@ class APIObservationController extends Controller{
         return $qb->select("OA.observationActivityId, OA.activity, OA.startActivity, OA.endActivity")
             ->from('UNOEvaluacionesBundle:ObservationActivity','OA')
             ->where('OA.observationId = :observationId')
-            ->andWhere('OA.endActivity is not null')
             ->setParameter('observationId', $observationId)
             ->orderBy("OA.observationActivityId", 'DESC')
             ->getQuery()
             ->getResult();
+
+    }
+
+    /**
+     * @Route("/observation/finishedActivity")
+     * @Method({"POST"})
+     */
+    public function finishedActivityAction(Request $request){
+
+        $observationActivityId= $request->request->get('observationActivityId');
+
+        $em = $this->getDoctrine()->getManager();
+        $ObservationActivity = $em->getRepository('UNOEvaluacionesBundle:ObservationActivity')->findOneBy(array('observationActivityId'=> $observationActivityId));
+
+        if($ObservationActivity) {
+            $ObservationActivity->setEndActivity(new \DateTime());
+            $em->flush();
+            return new JsonResponse(array('status' => true),200);
+        }else{
+            return new JsonResponse(array('status' => false),400);
+        }
 
     }
 
@@ -685,10 +705,10 @@ class APIObservationController extends Controller{
         $observationActivityId= $request->request->get('observationActivityId');
 
         $em = $this->getDoctrine()->getManager();
-        $ObservationDisposition = $em->getRepository('UNOEvaluacionesBundle:ObservationActivity')->findOneBy(array('observationActivityId'=> $observationActivityId));
+        $ObservationActivity = $em->getRepository('UNOEvaluacionesBundle:ObservationActivity')->findOneBy(array('observationActivityId'=> $observationActivityId));
 
-        if($ObservationDisposition) {
-            $em->remove($ObservationDisposition);
+        if($ObservationActivity) {
+            $em->remove($ObservationActivity);
             $em->flush();
             return new JsonResponse(array('status' => true),200);
         }else{
@@ -720,7 +740,7 @@ class APIObservationController extends Controller{
             $ObservationActivity = new ObservationActivity();
             $ObservationActivity->setActivity($activity);
             $ObservationActivity->setStartActivity(new \DateTime($startActivity));
-            $ObservationActivity->setEndActivity(new \DateTime());
+            //$ObservationActivity->setEndActivity(new \DateTime());
             $ObservationActivity->setObservationId($observationId);
 
             $em->persist($ObservationActivity);

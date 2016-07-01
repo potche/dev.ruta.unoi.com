@@ -103,13 +103,19 @@ function getActivity() {
                         '<td class="text-justify" width="50%">' +
                         '<span>' + val.activity + '</span>' +
                         '</td>' +
-                        '<td class="text-center" width="20%">' +
-                        '<span>' + paserDate(val.endActivity.date) + '</span>' +
-                        '</td>' +
+                        '<td class="text-center" width="20%">';
+
+                    if(val.endActivity){
+                        row += '<span>' + paserDate(val.endActivity.date) + '</span>';
+                    }else{
+                        row += '<button type="button" class="btn btn-primary" onclick="finishedActivity('+val.observationActivityId+')"><i class="fa fa-check" aria-hidden="true"></i> Teminar</button>';
+                    }
+
+                    row += '</td>' +
                         '<td class="text-center" width="10%">' +
                         '<div class="btn-group">'+
                         '<a href="javascript:void(0)" onclick="editActivity(\'' + paserDate(val.startActivity.date) + '\',\'' + val.activity + '\','+val.observationActivityId+')" title="Edit" class="btn btn-xs btn-default"><i class="fa fa-pencil" aria-hidden="true"></i></a>'+
-                        '<a href="javascript:void(0)" onclick="deleteActivity('+val.observationActivityId+')" title="Borrar" class="btn btn-xs btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></a>'+
+                        '<a href="javascript:void(0)" onclick="confirmDeleteActivity('+val.observationActivityId+')" title="Borrar" class="btn btn-xs btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></a>'+
                         '</div>' +
                         '</td>' +
                         '</tr>'
@@ -129,8 +135,7 @@ $('#ActivityFrm').on('submit',function(e){
     e.preventDefault();
     var startActivity = $.trim($('#observationActivityId').val());
     var activity = $('#activity-'+observationId).val();
-    //$('#actividades > tbody:last-child').append('<tr><td>New row</td><td>New row</td></tr>');
-
+    
     if( (startActivity.length !== 0 ) && ( $.trim(activity).length !== 0) ){
         $.post(HttpHost + baseUrl + "/api/v0/observation/saveActivity", {startActivity: startActivity, activity: activity, observationId: observationId})
             .done(function (data) {
@@ -208,6 +213,56 @@ $('#editActivityFrm').on('submit',function(e){
 
 });
 
+function finishedActivity(observationActivityId) {
+    //console.log(observationActivityId);
+    var notify = $.notify('<strong>Finalizando</strong> Actividad...', {
+        allow_dismiss: false,
+        showProgressbar: true,
+        animate: {
+            enter: 'animated fadeInRight',
+            exit: 'animated fadeOutRight'
+        }
+    });
+    $.post(HttpHost + baseUrl + "/api/v0/observation/finishedActivity", {observationActivityId: observationActivityId})
+        .done(function (data) {
+            if (data.status) {
+                //console.log(data);
+                notify.update({
+                    'type': 'success',
+                    'message': 'La <strong>Actividad</strong> se han Finalizado!',
+                    'progress': 100
+                });
+
+                $('#start').html('');
+                $('#editObservationActivityId').val('');
+                $('#activity').val('');
+            }
+        })
+        .fail(function () {
+            console.log('error')
+        })
+        .always(function () {
+            getActivity();
+            console.log("finished");
+        });
+}
+
+function confirmDeleteActivity(observationActivityId) {
+    $('#genericTitle').html('Confirmación');
+    $('#genericBody').html('Realmente desea <b>eliminar</b> la Actividad');
+    $('#genericOk').attr('data-action', 'deleteActivity');
+    $('#genericOk').attr('data-result', observationActivityId);
+
+    $('#genericModal').modal();
+}
+
+$('#genericOk').click(function () {
+    if($('#genericOk').attr('data-action') == 'deleteActivity'){
+        deleteActivity($('#genericOk').attr('data-result'));
+        $('#genericModal').modal('hide');
+    }
+});
+
 function deleteActivity(observationActivityId){
     //console.log(observationActivityId);
     var notify = $.notify('<strong>Eliminando</strong> registro...', {
@@ -246,12 +301,14 @@ function deleteActivity(observationActivityId){
         });
 }
 
-$(".disposition").on('click',function(e){
+
+$(".seleccionable").click(function(){
+
     $disposicion = $(this)[0].id.split('-');
-    $('#label-'+$disposicion[1]+'-'+$disposicion[2]).css('opacity', '1');
-    $('#label-'+$disposicion[1]+'-'+$disposicion[2]).unbind('mouseover');
-    $('#label-'+$disposicion[1]+'-'+$disposicion[2]).children('h3').html('<strong>'+$disposicion[1].charAt(0).toUpperCase() + $disposicion[1].slice(1)+'</strong>');
-/*
+    
+    $('.seleccionable').removeClass('selected');
+    $(this).addClass('selected');
+
     var notify = $.notify('<strong>Guardando</strong> disposición...', {
         allow_dismiss: false,
         showProgressbar: true,
@@ -260,18 +317,18 @@ $(".disposition").on('click',function(e){
             exit: 'animated fadeOutRight'
         }
     });
-*/
+
     $.post( HttpHost+baseUrl+"/api/v0/observation/saveDisposition", {disposition: $disposicion[1], observationId: observationId})
         .done(function(data) {
             if(data){
-                /*
+
                 console.log(data);
                 notify.update({
                     'type': 'success',
                     'message': 'Se <strong>ha</strong> guardado exitosamente!',
                     'progress': 100
                 });
-                */
+
             }
         })
         .fail(function() {
@@ -282,28 +339,12 @@ $(".disposition").on('click',function(e){
         });
 });
 
-$(".disposition").on('mouseover',function(e){
-    $disposicion = $(this)[0].id.split('-');
-    $('#label-'+$disposicion[1]+'-'+$disposicion[2]).css('opacity', '1');
-    $('#label-'+$disposicion[1]+'-'+$disposicion[2]).children('h3').html('<strong>'+$disposicion[1].charAt(0).toUpperCase() + $disposicion[1].slice(1)+'</strong>');
-});
-
-$(".disposition").on('mouseout',function(e){
-    $disposicion = $(this)[0].id.split('-');
-    $('#label-'+$disposicion[1]+'-'+$disposicion[2]).css('opacity', '0.5');
-    $('#label-'+$disposicion[1]+'-'+$disposicion[2]).children('h3').html( $disposicion[1].charAt(0).toUpperCase() + $disposicion[1].slice(1) );
-});
-
 function getDisposition() {
     $.get( HttpHost+baseUrl+"/api/v0/observation/disposition/"+observationId)
         .done(function(data) {
             if(data.disposition){
                 if(data){
-                    $('#label-'+data.disposition +'-'+ observationId).css('opacity', '1');
-
-                    $('#label-'+data.disposition +'-'+ observationId).children('h3').html('<strong>'+data.disposition .charAt(0).toUpperCase() + data.disposition .slice(1)+'</strong>');
-
-                    $('#'+data.disposition+'-'+observationId).prop("checked", true);
+                    $('#label-'+data.disposition +'-'+ observationId).addClass('selected');
                 }
             }
         })
