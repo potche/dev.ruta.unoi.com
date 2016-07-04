@@ -371,9 +371,9 @@
                                             <!-- .. along with a div.gallery-image-options which will contain your hover links! -->
                                             <!-- Link to your large image with the attribute data-toggle="lightbox-image" -->
                                             <a id=hrefA href="" data-toggle="lightbox-image" title="Foto A" class="gallery-link btn btn-sm btn-primary"><i class="fa fa-eye"></i> Ver</a>
-                                            <a href="javascript:editImgA();" class="btn btn-sm btn-alt btn-primary" data-toggle="tooltip" title="Editar"><i class="fa fa-pencil"></i></a>
+                                            <a href="javascript:editImgA();" class="btn btn-sm btn-alt btn-primary" data-toggle="tooltip" title="Remplazar"><i class="fa fa-exchange"></i></a>
                                             <a onclick="rotateImg('imgA');" class="btn btn-sm btn-alt btn-primary" data-toggle="tooltip" title="Rotar"><i class="fa fa-repeat"></i></a>
-                                            <a href="javascript:deleteImgA({{ observationId }});" class="btn btn-sm btn-alt btn-primary" data-toggle="tooltip" title="Eliminar"><i class="fa fa-times"></i></a>
+                                            <a href="javascript:confirmDeleteGallery('{{ observationId }}', 'A');" class="btn btn-sm btn-alt btn-primary" data-toggle="tooltip" title="Eliminar"><i class="fa fa-times"></i></a>
                                         </div>
                                         <!-- Just wrap your image with a div.gallery-image and.. -->
                                         <div class="gallery-image thumbnail" style="border: 0px">
@@ -392,14 +392,18 @@
                                             <div class="input-group">
                                                 <label class="input-group-btn">
                                                         <span id="findA" class="btn btn-info">
-                                                            <i class="fa fa-folder-open" aria-hidden="true"></i> Agregar una foto&hellip; <input type="file" id="imageA" name="imageA" style="display: none;" multiple accept='image/*'>
+                                                            <i class="fa fa-folder-open" aria-hidden="true"></i> Buscar&hellip; <input type="file" id="imageA" name="imageA" style="display: none;" multiple accept='image/*'>
                                                         </span>
                                                 </label>
                                                 <input type="text" class="form-control" readonly>
                                                 <label class="input-group-btn">
                                                     <button id="uploadA" type="submit" tabindex="500" class="btn btn-info upload" disabled>
                                                         <i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i>
-                                                        <span class="hidden-xs">Upload</span>
+                                                        <span class="hidden-xs">Cargar</span>
+                                                    </button>
+                                                    <button id="editA" type="button" class="btn btn-default hide" onclick="cancelEditImgA();">
+                                                        <i class="fa fa-times" aria-hidden="true"></i>
+                                                        <span class="hidden-xs">Cancelar</span>
                                                     </button>
                                                 </label>
                                             </div>
@@ -421,9 +425,9 @@
                                             <!-- .. along with a div.gallery-image-options which will contain your hover links! -->
                                             <!-- Link to your large image with the attribute data-toggle="lightbox-image" -->
                                             <a id=hrefB href="" data-toggle="lightbox-image" title="Foto B" class="gallery-link btn btn-sm btn-primary"><i class="fa fa-eye"></i> Ver</a>
-                                            <a href="javascript:editImgB();" class="btn btn-sm btn-alt btn-primary" data-toggle="tooltip" title="Editar"><i class="fa fa-pencil"></i></a>
+                                            <a href="javascript:editImgB();" class="btn btn-sm btn-alt btn-primary" data-toggle="tooltip" title="Remplazar"><i class="fa fa-exchange"></i></a>
                                             <a onclick="rotateImg('imgB');" class="btn btn-sm btn-alt btn-primary" data-toggle="tooltip" title="Rotar"><i class="fa fa-repeat"></i></a>
-                                            <a href="javascript:deleteImgB({{ observationId }});" class="btn btn-sm btn-alt btn-primary" data-toggle="tooltip" title="Eliminar"><i class="fa fa-times"></i></a>
+                                            <a href="javascript:confirmDeleteGallery('{{ observationId }}', 'B');" class="btn btn-sm btn-alt btn-primary" data-toggle="tooltip" title="Eliminar"><i class="fa fa-times"></i></a>
                                         </div>
                                         <!-- Just wrap your image with a div.gallery-image and.. -->
                                         <div class="gallery-image thumbnail" style="border: 0px">
@@ -442,14 +446,18 @@
                                             <div class="input-group">
                                                 <label class="input-group-btn">
                                                         <span id="findB" class="btn btn-info">
-                                                            <i class="fa fa-folder-open" aria-hidden="true"></i> Agregar una foto&hellip; <input type="file" id="imageB" name="imageB" style="display: none;" multiple accept='image/*'>
+                                                            <i class="fa fa-folder-open" aria-hidden="true"></i> Buscar&hellip; <input type="file" id="imageB" name="imageB" style="display: none;" multiple accept='image/*'>
                                                         </span>
                                                 </label>
                                                 <input type="text" class="form-control" readonly>
                                                 <label class="input-group-btn">
                                                     <button id="uploadB" type="submit" tabindex="500" class="btn btn-info upload" disabled>
                                                         <i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i>
-                                                        <span class="hidden-xs">Upload</span>
+                                                        <span class="hidden-xs">Cargar</span>
+                                                    </button>
+                                                    <button id="editB" type="button" class="btn btn-default hide" onclick="cancelEditImgB();">
+                                                        <i class="fa fa-times" aria-hidden="true"></i>
+                                                        <span class="hidden-xs">Cancelar</span>
                                                     </button>
                                                 </label>
                                             </div>

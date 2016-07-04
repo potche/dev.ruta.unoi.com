@@ -115,7 +115,7 @@ function getActivity() {
                         '<td class="text-center" width="10%">' +
                         '<div class="btn-group">'+
                         '<a href="javascript:void(0)" onclick="editActivity(\'' + paserDate(val.startActivity.date) + '\',\'' + val.activity + '\','+val.observationActivityId+')" title="Edit" class="btn btn-xs btn-default"><i class="fa fa-pencil" aria-hidden="true"></i></a>'+
-                        '<a href="javascript:void(0)" onclick="confirmDeleteActivity('+val.observationActivityId+')" title="Borrar" class="btn btn-xs btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></a>'+
+                        '<a href="javascript:void(0)" onclick="confirmDeleteActivity('+val.observationActivityId+')" title="Borrar" class="btn btn-xs btn-info"><i class="fa fa-times" aria-hidden="true"></i></a>'+
                         '</div>' +
                         '</td>' +
                         '</tr>'
@@ -256,11 +256,36 @@ function confirmDeleteActivity(observationActivityId) {
     $('#genericModal').modal();
 }
 
+function confirmDeleteGallery(observationActivityId, typeImg) {
+    $('#genericTitle').html('Confirmación');
+    $('#genericBody').html('Realmente desea <b>eliminar</b> la Foto');
+    $('#genericOk').attr('data-action', 'deleteGallery');
+    $('#genericOk').attr('data-img', typeImg);
+    $('#genericOk').attr('data-result', observationActivityId);
+
+    $('#genericModal').modal();
+}
+
 $('#genericOk').click(function () {
-    if($('#genericOk').attr('data-action') == 'deleteActivity'){
-        deleteActivity($('#genericOk').attr('data-result'));
-        $('#genericModal').modal('hide');
+    switch ($('#genericOk').attr('data-action')){
+        case 'deleteActivity':
+            deleteActivity($('#genericOk').attr('data-result'));
+            $('#genericModal').modal('hide');
+            break;
+        case 'deleteGallery':
+            if($('#genericOk').attr('data-img') == 'A'){
+                deleteImgA($('#genericOk').attr('data-result'));
+                $('#genericModal').modal('hide');
+
+            }else {
+                deleteImgB($('#genericOk').attr('data-result'));
+                $('#genericModal').modal('hide');
+            }
+            break;
+        default:
+            break;
     }
+
 });
 
 function deleteActivity(observationActivityId){
@@ -466,14 +491,21 @@ function getGallery() {
 
 function editImgA(){
     $('.galleryA').hide();
-    $('#imageA').val('');
+    $('#A').find('input').val('');
+    $('#editA').removeClass('hide');
     $('#fotoA').show();
+}
+
+function cancelEditImgA(){
+    $('#fotoA').hide();
+    $('#editA').addClass('hide');
+    $('.galleryA').show();
 }
 
 function deleteImgA(observationId){
     $('.galleryA').hide();
     console.log($('#imgA').attr('src'));
-    $('#imageA').val('');
+    $('#A').find('input').val('');
     $('#fotoA').show();
 
     $.post(HttpHost + baseUrl + "/api/v0/observation/deleteImg", {observationId: observationId, type: 'A'})
@@ -492,14 +524,21 @@ function deleteImgA(observationId){
 
 function editImgB(){
     $('.galleryB').hide();
-    $('#imageB').val('');
+    $('#B').find('input').val('');
+    $('#editB').removeClass('hide');
     $('#fotoB').show();
+}
+
+function cancelEditImgB(){
+    $('#fotoB').hide();
+    $('#editB').addClass('hide');
+    $('.galleryB').show();
 }
 
 function deleteImgB(observationId){
     $('.galleryB').hide();
     console.log($('#imgB').attr('src'));
-    $('#imageB').val('');
+    $('#B').find('input').val('');
     $('#fotoB').show();
 
     $.post(HttpHost + baseUrl + "/api/v0/observation/deleteImg", {observationId: observationId, type: 'B'})
