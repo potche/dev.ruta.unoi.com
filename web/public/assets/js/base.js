@@ -7,24 +7,63 @@ function parseInfo(privilege, profile){
     var privilegeArray = $.parseJSON(privilege);
     var link = '';
     var menu = '';
-    $.each(privilegeArray, function(i, item) {
-        if($.trim(privilegeArray[i].ruteOptionApplication) === "/observacion"){
-            link += "<li>"+
-                "<a href=" + privilegeArray[i].ruteOptionApplication + ">"+
-                "<img src='" + privilegeArray[i].iconOptionApplication + "observacion.svg' align='middle' style='width: 18px; height: 14px; opacity: 0.5; margin-right: 10px;'>"+
-                "<span class='sidebar-nav-mini-hide'>" + privilegeArray[i].nameOptionApplication + "</span>"+
-                "</a>"+
-                "</li>";
-        }else {
-            link += "<li>"+
-                "<a href=" + privilegeArray[i].ruteOptionApplication + ">"+
-                "<i class='" + privilegeArray[i].iconOptionApplication + " sidebar-nav-icon'></i>"+
-                "<span class='sidebar-nav-mini-hide'>" + privilegeArray[i].nameOptionApplication + "</span>"+
-                "</a>"+
-                "</li>";
-        }
 
+    $.each(privilegeArray, function(i, item) {
+        if(privilegeArray[i].nameOptionApplication !== 'Inicio'){
+            switch ($.trim(privilegeArray[i].ruteOptionApplication)){
+                case "/observacion":
+                    menu +=
+                        "<li>" +
+                        "<a href='" + privilegeArray[i].ruteOptionApplication + "'>" +
+                        "<img class='visible-lg visible-md' src='" + privilegeArray[i].iconOptionApplication + "observacion.svg' align='middle' style='width: 100px; height: 55px; display: block; margin-right: 0; margin-bottom: 10px; font-size: 42px; padding: 10px; color: #dae7e8'> " +
+                        "<img class='visible-xs-inline visible-sx-inline' src='" + privilegeArray[i].iconOptionApplication + "observacion.svg' align='middle' style='width: 15px;height: 17px; display: inline; margin-right: 0; margin-bottom: 0px; padding: 0px; color: #dae7e8;'> " +
+                        privilegeArray[i].nameOptionApplication +
+                        "</a>" +
+                        "</li>"
+                    ;
+
+                    link += "<li>"+
+                        "<a href=" + privilegeArray[i].ruteOptionApplication + ">"+
+                        "<img src='" + privilegeArray[i].iconOptionApplication + "observacion.svg' align='middle' style='width: 18px; height: 14px; opacity: 0.5; margin-right: 10px;'>"+
+                        "<span class='sidebar-nav-mini-hide'>" + privilegeArray[i].nameOptionApplication + "</span>"+
+                        "</a>"+
+                        "</li>";
+                    break;
+                case "/seminarMarketing":
+                    menu +=
+                        "<li>" +
+                        "<a href='" + privilegeArray[i].ruteOptionApplication + "'>" +
+                        "<img class='visible-lg visible-md' src='" + privilegeArray[i].iconOptionApplication + "seminar.svg' align='middle' style='width: 100px; height: 66px; display: block; margin-right: 0; margin-bottom: -1px; font-size: 42px; padding: 10px; color: #dae7e8'> " +
+                        "<img class='visible-sx-inline visible-xs-inline' src='" + privilegeArray[i].iconOptionApplication + "seminar.svg' align='middle' style='width: 15px;height: 16px; display: inline; margin-right: 0; margin-bottom: 0px; padding: 0px; color: #dae7e8;'> " +
+                        privilegeArray[i].nameOptionApplication +
+                        "</a>" +
+                        "</li>"
+                    ;
+
+                    link += "<li>"+
+                        "<a href=" + privilegeArray[i].ruteOptionApplication + ">"+
+                        "<img src='" + privilegeArray[i].iconOptionApplication + "seminar.svg' align='middle' style='width: 18px; height: 18px; opacity: 0.5; margin-right: 10px;'  onmouseover='hoverSeminar(this, \"" + privilegeArray[i].iconOptionApplication + "\");' onmouseout='unhoverSeminar(this, \"" + privilegeArray[i].iconOptionApplication + "\");'>"+
+                        "<span class='sidebar-nav-mini-hide'>" + privilegeArray[i].nameOptionApplication + "</span>"+
+                        "</a>"+
+                        "</li>";
+                    break;
+                default:
+                    menu += "<li>"+
+                        "<a href='" + privilegeArray[i].ruteOptionApplication + "'><i class='" + privilegeArray[i].iconOptionApplication + "'></i> " + privilegeArray[i].nameOptionApplication + "</a>"+
+                        "</li>"
+                    ;
+
+                    link += "<li>"+
+                        "<a href=" + privilegeArray[i].ruteOptionApplication + ">"+
+                        "<i class='" + privilegeArray[i].iconOptionApplication + " sidebar-nav-icon'></i>"+
+                        "<span class='sidebar-nav-mini-hide'>" + privilegeArray[i].nameOptionApplication + "</span>"+
+                        "</a>"+
+                        "</li>";
+            }
+
+        }
     });
+    menu += "<li id='ayuda-btn'><a href='/tutorials'><i class='fa fa-question-circle'></i> Ayuda</a></li>";
 
     link +="<li id='ayuda-link'>"+
         "<a href='/tutorials'>"+
@@ -34,31 +73,6 @@ function parseInfo(privilege, profile){
         "</li>";
 
     $('#privilege').html(link);
-
-    //-----------------------------------------------
-
-    $.each(privilegeArray, function(i, item) {
-        if(privilegeArray[i].nameOptionApplication !== 'Inicio'){
-            if($.trim(privilegeArray[i].ruteOptionApplication) === "/observacion") {
-                menu +=
-                    "<li>" +
-                        "<a href='" + privilegeArray[i].ruteOptionApplication + "'>" +
-                            "<img class='visible-lg visible-md' src='" + privilegeArray[i].iconOptionApplication + "observacion.svg' align='middle' style='width: 100px; height: 55px; display: block; margin-right: 0; margin-bottom: 10px; font-size: 42px; padding: 10px; color: #dae7e8'> " +
-                            "<img class='visible-xs-inline visible-sx-inline' src='" + privilegeArray[i].iconOptionApplication + "observacion.svg' align='middle' style='width: 15px;height: 17px; display: inline; margin-right: 0; margin-bottom: 0px; padding: 0px; color: #dae7e8;'> " +
-                            privilegeArray[i].nameOptionApplication +
-                        "</a>" +
-                    "</li>"
-                ;
-            }else {
-                menu += "<li>"+
-                    "<a href='" + privilegeArray[i].ruteOptionApplication + "'><i class='" + privilegeArray[i].iconOptionApplication + "'></i> " + privilegeArray[i].nameOptionApplication + "</a>"+
-                    "</li>"
-                ;
-            }
-        }
-    });
-    menu += "<li id='ayuda-btn'><a href='/tutorials'><i class='fa fa-question-circle'></i> Ayuda</a></li>";
-
     $('#menuInicio').html(menu);
 
     //-----------------------------------------------
@@ -192,4 +206,19 @@ function paserDate(date){
     seconds = seconds < 10 ? '0'+seconds : seconds;
 
     return day +'/'+ monthNames[monthIndex]+'/'+ year +' @ '+ hours +':'+ minutes +':'+ seconds + ' ' + ampm;
+}
+
+function hoverSeminar(element, src) {
+    console.log(element);
+    console.log(src);
+
+    $(element).attr('src', src+'seminarW.svg');
+    $( element ).fadeTo( "fast", 1 );
+}
+function unhoverSeminar(element, src) {
+    console.log(element);
+    console.log(src);
+
+    $(element).attr('src', src+'seminar.svg');
+    $( element ).fadeTo( "fast", 0.5 );
 }

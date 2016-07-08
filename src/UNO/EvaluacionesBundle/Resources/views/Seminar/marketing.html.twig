@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <style>
+        .selected:hover{
+            opacity: 0.5;
+        }
+    </style>
+    <div id="page-content">
+        <!-- Media Widgets Header -->
+        <div class="content-header">
+            <div class="header-section">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <h1>
+                            Seminario de Marketing Educativo <br><small>con Paty Zorrilla</small>
+                        </h1>
+                    </div>
+                    <div class="col-sm-4">
+                        <img class="pull-right" src="{{ asset('public/assets/images/icon/seminarHeader.svg') }}" style="width: 64px; height: 64px">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END Media Widgets Header -->
+
+        <div class="row">
+            <div class="col-md-9">
+
+                <div class="widget">
+                    <div class="widget-simple themed-background-dark">
+                        <a href="javascript:void(0)" class="widget-icon pull-right themed-background-modern">
+                            <i class="fa fa-video-camera"></i>
+                        </a>
+                        <h4 class="widget-content widget-content-light">
+                            <span class="themed-color-modern" id="title"><strong>1</strong> PROCESOS DEL MARKETING EDUCATIVO</span>
+                            <small class="themed-color-modern" id="subtitle">SEMINARIO MARKETING</small>
+                        </h4>
+                    </div>
+                    <div class="widget-extra-full themed-background-modern">
+                        <div class="wistia_responsive_padding" style="padding:56.25% 0 0 0;position:relative;">
+                            <div class="wistia_responsive_wrapper" style="height:100%;left:0;position:absolute;top:0;width:100%;">
+                                <iframe id="video" src="//fast.wistia.net/embed/iframe/dlytfd2q4l?videoFoam=true" allowtransparency="true" frameborder="0" scrolling="no" class="wistia_embed" name="wistia_embed" allowfullscreen mozallowfullscreen webkitallowfullscreen oallowfullscreen msallowfullscreen width="100%" height="100%"></iframe>
+                            </div>
+                        </div>
+                        <script src="//fast.wistia.net/assets/external/E-v1.js" async></script>
+                    </div>
+                </div>
+                <!-- END Specific Theme Color Widget 2 with Carousel -->
+            </div>
+
+            <div class="col-md-3">
+
+                <div class="widget">
+                    <div class="widget-advanced widget-advanced-alt themed-background-autumn">
+                        <div class="widget-main">
+                            <h4><b>Capítulos</b></h4>
+                            <div class="list-group remove-margin" style="min-height: 500px; max-height: 633px; overflow: scroll;">
+
+                                <div class="list-group-item selected" data-title="1 PROCESOS DEL MARKETING EDUCATIVO" data-src="//fast.wistia.net/embed/iframe/dlytfd2q4l?videoFoam=true">
+                                    <a href="javascript:void(0);">
+                                        <img src="{{ asset('public/assets/images/seminar/video1.jpg') }}" width="100%">
+                                    </a>
+                                </div>
+
+                                <div class="list-group-item selected" data-title="2 ELIGE BIEN TU HISTORIA" data-src="//fast.wistia.net/embed/iframe/tb6p7xgoo3?videoFoam=true">
+                                    <a href="javascript:void(0);">
+                                        <img src="{{ asset('public/assets/images/seminar/video2.jpg') }}" width="100%">
+                                    </a>
+                                </div>
+
+                                <div class="list-group-item selected" data-title="3 ESTRATEGIAS DE CAPTACIÓN" data-src="//fast.wistia.net/embed/iframe/5kx9fp4s8l?videoFoam=true">
+                                    <a href="javascript:void(0);">
+                                        <img src="{{ asset('public/assets/images/seminar/video3.jpg') }}" width="100%">
+                                    </a>
+                                </div>
+
+                                <div class="list-group-item selected" data-title="4 ESTRATEGIAS DE FIDELIZACIÓN" data-src="//fast.wistia.net/embed/iframe/c540b8pnn8?videoFoam=true">
+                                    <a href="javascript:void(0);">
+                                        <img src="{{ asset('public/assets/images/seminar/video4.jpg') }}" width="100%">
+                                    </a>
+                                </div>
+
+                                <div class="list-group-item selected" data-title="5 EVALUACIÓN Y SEGUIMIENTO" data-src="//fast.wistia.net/embed/iframe/ht1gffwzfc?videoFoam=true">
+                                    <a href="javascript:void(0);">
+                                        <img src="{{ asset('public/assets/images/seminar/video5.jpg') }}" width="100%">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- END Simple Widgets with Carousel Row -->
+
+    </div>
+    <script src="{{ asset('public/assets/js/jquery-1.11.3.min.js') }}"></script>
+    <script src="//fast.wistia.net/assets/external/iframe-api-v1.js"></script>
+    <script>
+        $(".selected").click(function (e) {
+            $('#title').html($(this).attr("data-title"));
+            $('#video').attr("src", $(this).attr("data-src"));
+        });
+    </script>
+{% endblock %}
