@@ -172,4 +172,81 @@ class APICatalogoController extends Controller{
         $response->setData($status);
         return $response;
     }
+
+    /**
+     * @Route("/usersBySchool/{schoolId}")
+     */
+    public function usersBySchoolAction($schoolId){
+        $result = $this->getQuerySPS(
+            "P.personid, concat(trim(P.name),' ',trim(P.surname)) as nombre",
+            'PS.schoolid = :schoolId ',
+            array('schoolId' => $schoolId),
+            'P.personid'
+        );
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * @Route("/surveysBySchool/{schoolId}")
+     */
+    public function surveyBySchoolAction($schoolId){
+        $result = $this->getQuerySPS(
+            "S.surveyid, S.title",
+            'PS.schoolid = :schoolId ',
+            array('schoolId' => $schoolId),
+            'S.surveyid'
+        );
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    /**
+     * @Route("/personBy/survey/{surveyId}/school/{schoolId}")
+     */
+    public function personBySurveySchoolAction($surveyId,$schoolId){
+
+        $result = $this->getQuerySPS(
+            "P.personid, concat(trim(P.name),' ',trim(P.surname)) as nombre",
+            'PS.schoolid = :schoolId and S.surveyid = :surveyId',
+            array('schoolId' => $schoolId, 'surveyId' => $surveyId),
+            'PS.personid','S.surveyid'
+        );
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($result);
+
+        return $response;
+    }
+
+    private function getQuerySPS($select, $where, $parameters, $groupBy){
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        return $qb->select($select)
+            ->from('UNOEvaluacionesBundle:Personschool','PS')
+            ->innerJoin('UNOEvaluacionesBundle:Surveyxprofile','SP', 'WITH', 'PS.profileid = SP.profileProfileid AND PS.schoollevelid = SP.schoollevelid')
+            ->innerJoin('UNOEvaluacionesBundle:Survey','S', 'WITH', 'SP.surveySurveyid = S.surveyid')
+            ->innerJoin('UNOEvaluacionesBundle:School','Sc', 'WITH', 'Sc.schoolid = PS.schoolid')
+            ->innerJoin('UNOEvaluacionesBundle:Person','P', 'WITH', 'PS.personid = P.personid')
+            ->innerJoin('UNOEvaluacionesBundle:Log','L', 'WITH', 'P.personid = L.personPersonid AND S.surveyid = L.surveySurveyid')
+            ->where( $where )
+            ->setParameters( $parameters )
+            ->groupBy($groupBy)
+            ->orderBy('S.surveyid')
+            ->getQuery()
+            ->getResult();
+
+    }
+
 }

@@ -1,0 +1,378 @@
+{% extends '::base.html.twig' %}
+{% block body %}
+
+    <div id="page-content">
+
+        <div class="content-header">
+            <div class="header-section">
+                <h1>
+                    {# app.request.getSchemeAndHttpHost() #}
+                    {# app.request.basepath #}
+                    {# app.request.baseurl #}
+                    {# app.request.uri #}
+                    <i class="fa fa-bar-chart"></i><b>Administracíon de Estadísticas</b>
+                    <small><br/><span class="label label-primary"><span class="nameSchool"></span> </span></small>
+                </h1>
+            </div>
+        </div>
+
+        <div class="block">
+            <div class="block-title">
+                <h2>Filtro</h2>
+            </div>
+
+            <div class="block-content">
+                <div class="row">
+                    <div id="divSchool" class="col-sm-6">
+                        <strong>Colegio</strong>
+                        <select id="optionSchool" name="optionSchool" class="select-chosen" data-placeholder="Seleciona un Colegio" style="width: 250px;">
+                            <option></option>
+                            {% for school in schoolList%}
+                                <option value="{{ school.schoolid }}-{{ school.school}}">{{ school.school}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div id="divSchool" class="col-sm-6">
+                        <strong>Instrumento</strong>
+                        <select id="optionSurvey" name="optionSurvey" class="select-chosen" data-placeholder="Seleciona un Instrumento" style="width: 250px;" disabled>
+
+                        </select>
+                    </div>
+
+                    <hr/>
+
+                </div>
+                <br/>
+                <div class="row">
+                    <div class="col-sm-12 text-center">
+                        <button id="resetAll" type='button' class='btn btn-warning' data-school="" data-survey="" disabled>Reiniciar <span id="combinacion"></span></button>
+                    </div>
+                </div>
+
+            </div>
+            <br/>
+        </div>
+
+        <div id="userList">
+
+        </div>
+
+        <div id="emptyList" class="block" style="display: none">
+            <div class="row">
+                <div class="block-content">
+                    <div class="col-sm-12 text-center">
+                        <div class="block">
+                            <h1>El colegio no ha contestado algun <strong>Instrumento</strong>.</h1>
+                            <div class="carousel slide" data-ride="carousel">
+                                <div class="carousel-inner" role="listbox">
+                                    <div class="item active">
+                                        <h2 class="text-center"><span class="fa fa-bed fa-2x"></span></h2>
+                                    </div>
+                                    <div class="item">
+                                        <h2 class="text-center"><span class="fa fa-thumbs-down fa-2x"></span></h2>
+                                    </div>
+                                    <div class="item">
+                                        <h2 class="text-center"><span class="fa fa-hourglass-end fa-2x"></span></h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- END Page Content -->
+
+
+    <!-- Modal Stats DetalleSurvey -->
+    <div id="confirmModal" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-recycle" style="padding-right: 5px;"></i> <span class="titleModal"></span></h4>
+                </div>
+
+                <div class="bodyModal"></div>
+
+
+            </div>
+        </div>
+    </div>
+    <!-- END Modal Stats User -->
+
+    <!-- Modal loading -->
+    <div id="loadingStats" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-body bg-primary text-center">
+                    <h4 class="modal-title"><i class="fa fa-refresh fa-spin"></i> Cargando, <strong>por favor espere...</strong></h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal loading -->
+
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="{{ asset('public/assets/js/resetUser.js')}}"></script>
+    <!-- Load and execute javascript code used only in this page -->
+
+    <script>
+        //dominio http://dev.ruta.unoi.com
+        var HttpHost = '{{ app.request.getSchemeAndHttpHost() }}';
+        //si es /app_dev.php
+        var baseUrl = '{{ app.request.getBaseURL() }}';
+        //ruta en la que nos encontramos http://dev.ruta.unoi.com/app_dev.php/estadisticas
+        var uri = '{{ app.request.uri }}';
+
+        var schoolArrayG = [];
+        var okSchool = true;
+        var nameSchool = 'Todas las Escuelas';
+        var nameSchoolArray;
+        var baseUri = HttpHost+baseUrl;
+        var combinacion = "Colegio";
+
+
+        $(function() {
+            setNameSchool(nameSchool);
+
+            $("#optionSchool").change(function () {
+
+                if($(this).val() ){
+
+                    nameSchoolArray = $(this).val().split('-');
+                    nameSchool = nameSchoolArray[1];
+                    setNameSchool(nameSchool);
+
+                    $('#userList').html('<div class="row">'+
+                            '<div class="block-content">'+
+                            '<div class="col-sm-12">'+
+
+                            '<div class="text-center">'+
+                            '<button class="btn btn-lg">'+
+                            '<i class="fa fa-refresh fa-spin fa-3x"></i>'+
+                            '<br/>'+
+                            'Cargando, por favor espere...'+
+                            '</button>'+
+                            '<br/>'+
+                            '</div>'+
+                            '</div>'+
+                            '</div>'+
+                            '</div>');
+
+                    $("#emptyList").hide();
+
+                    surveyList(nameSchoolArray[0]);
+
+
+                }
+            });
+
+
+            $("#optionSurvey").change(function (e) {
+                $("#combinacion").html(combinacion + " Instrumento");
+                $("#resetAll").attr("data-survey",  $(this).val());
+
+                var surveyArr = $(this).val().split('-');
+                $('#userList').html('<div class="row">'+
+                        '<div class="block-content">'+
+                        '<div class="col-sm-12">'+
+
+                        '<div class="text-center">'+
+                        '<button class="btn btn-lg">'+
+                        '<i class="fa fa-refresh fa-spin fa-3x"></i>'+
+                        '<br/>'+
+                        'Cargando, por favor espere...'+
+                        '</button>'+
+                        '<br/>'+
+                        '</div>'+
+                        '</div>'+
+                        '</div>'+
+                        '</div>');
+
+                $.getJSON( HttpHost+baseUrl+"/api/v0/catalog/personBy/survey/"+surveyArr[0]+"/school/"+nameSchoolArray[0], function( data ) {
+
+                    var row = '';
+                    $.each( data, function( key, value ) {
+
+                        row += '<tr>'+
+                                '<td class="text-center">'+
+                                '<img src="/public/assets/images/login/icon_niño1.png" alt="avatar" class="img-circle">'+
+                                '</td>'+
+                                '<td>'+
+                                value.nombre+
+                                '</td>'+
+                                '<td class="text-center">' +
+                                '<div class="btn-group">'+
+                                '<a href="javascript:void(0)" data-toggle="tooltip" title="Reiniciar" class="btn btn-xs btn-danger" onclick="resetUser('+value.personid+',\''+value.nombre+'\', '+surveyArr[0]+', \''+surveyArr[1]+'\');"><i class="fa fa-bar-chart" aria-hidden="true"></i></a>'+
+                                '</div>'+
+                                '</td>'+
+                                '</tr>';
+                    });
+
+                    var divUsers =
+                            '<div id="block-resumenT" class="block" >'+
+                            '<div class="block-title">'+
+                            '<h2>Usuarios de <strong>'+nameSchool+'</strong></h2>'+
+                            '</div>'+
+                            '<div class="row">'+
+                            '<div class="block-content">'+
+                            '<div class="col-sm-12">'+
+                            '<div class="table-responsive">'+
+                            '<p><em>Da <b>clic</b> sobre un usuario para adminístralo</em></p>'+
+                            '<table id="userList-datatable" class="table table-vcenter table-condensed table-bordered">'+
+                            '<thead>'+
+                            '<tr>'+
+                            '<th style="width: 150px;" class="text-center"><i class="fa fa-users"></i></th>'+
+                            '<th>Nombre</th>'+
+                            '<th class="text-center">Detalle</th>'+
+                            '</tr>'+
+                            '</thead>'+
+                            '<tbody>'+
+                            row+
+                            '</tbody>'+
+                            '</table>'+
+                            '<br/>'+
+                            '</div>'+
+                            '</div>'+
+                            '</div>'+
+                            '</div>'+
+                            '</div>';
+                    $('#userList').html(divUsers);
+                    TablesDatatables.init();
+                });
+            });
+
+            $("#resetAll").click(function (e) {
+                var schoolArr = $(this).attr("data-school").split('-');
+                var surveyArr = $(this).attr("data-survey").split('-');
+                var alertMessage;
+                var boton;
+                if($(this).attr("data-survey")){
+                    alertMessage = "¿Realmente desea Reiniciar las Estadísticas del intrumento <b>"+surveyArr[1]+"</b> de los Usuarios del Colegio <b>"+schoolArr[1]+"</b>. ?";
+                    boton = "<button onclick='resetSchoolOk("+schoolArr[0]+", "+surveyArr[0]+")' type='button' class='btn btn-success' >Aceptar</button>";
+                }else {
+                    alertMessage = "¿Realmente desea Reiniciar las Estadísticas de los Usuarios del Colegio <b>"+schoolArr[1]+"</b>. ?";
+                    boton = "<button onclick='resetSchoolOk("+schoolArr[0]+", null)' type='button' class='btn btn-success' >Aceptar</button>";
+                }
+
+                $(".titleModal").html("Reiniciar Colegio");
+                $(".bodyModal").html(
+                        "<div class='modal-body'>"+
+                        "<div class='row'>"+
+                        "<div class='col-xs-3 text-center'>" +
+                        "<i class='fa fa-university fa-2x' aria-hidden='true'></i>"+
+                        "</div>"+
+                        "<div class='col-xs-9 text-justify'>" +
+                        alertMessage+
+                        "</div>"+
+                        "</div>"+
+                        "</div>"+
+                        "<div class='modal-footer'>"+
+                        "<button type='button' class='btn btn-info' data-dismiss='modal'>Cancelar</button>"+
+                        boton+
+                        "</div>"
+                );
+
+                $("#confirmModal").modal();
+            });
+
+        });
+
+        function surveyList(schoolId) {
+            $.getJSON( HttpHost+baseUrl+"/api/v0/catalog/surveysBySchool/"+schoolId, function( data ) {
+
+                if(data.length > 0) {
+                    var row = '<option></option>';
+                    $.each(data, function (key, value) {
+                        row += '<option value="' + value.surveyid + '-' + value.title + '">' +
+                                value.surveyid + '-' + value.title +
+                                '</option>';
+                    });
+
+                    $("#optionSurvey").html(row);
+                    $("#optionSurvey").prop('disabled', false);
+                    $("#optionSurvey").trigger('chosen:updated');
+
+                    $("#resetAll").prop('disabled',false);
+                    $("#resetAll").attr("data-school",  $("#optionSchool").val());
+
+                    $("#combinacion").html(combinacion);
+
+                    setListUsers(nameSchoolArray[0]);
+                }else {
+                    $("#optionSurvey").html('');
+                    $("#optionSurvey").prop('disabled', true);
+                    $("#optionSurvey").trigger('chosen:updated');
+
+                    $('#userList').html('');
+                    $("#emptyList").show();
+                    $("#resetAll").prop('disabled',true);
+
+                    $("#combinacion").html('');
+                }
+
+            });
+        }
+
+        function setListUsers(schoolId) {
+            $.getJSON( HttpHost+baseUrl+"/api/v0/catalog/usersBySchool/"+schoolId, function( data ) {
+
+                var row = '';
+                $.each( data, function( key, value ) {
+
+                    row += '<tr>'+
+                            '<td class="text-center">'+
+                            '<img src="/public/assets/images/login/icon_niño1.png" alt="avatar" class="img-circle">'+
+                            '</td>'+
+                            '<td>'+
+                            value.nombre+
+                            '</td>'+
+                            '<td class="text-center">' +
+                            '<div class="btn-group">'+
+                            '<a href="javascript:void(0)" data-toggle="tooltip" title="Reiniciar" class="btn btn-xs btn-danger" onclick="resetUser('+value.personid+',\''+value.nombre+'\');"><i class="fa fa-pie-chart" aria-hidden="true"></i></a>'+
+                            '</div>'+
+                            '</td>'+
+                            '</tr>';
+                });
+
+                var divUsers =
+                        '<div id="block-resumenT" class="block" >'+
+                        '<div class="block-title">'+
+                        '<h2>Usuarios de <strong>'+nameSchool+'</strong></h2>'+
+                        '</div>'+
+                        '<div class="row">'+
+                        '<div class="block-content">'+
+                        '<div class="col-sm-12">'+
+                        '<div class="table-responsive">'+
+                        '<p><em>Da <b>click</b> sobre un usuario para adminstarlo</em></p>'+
+                        '<table id="userList-datatable" class="table table-vcenter table-condensed table-bordered">'+
+                        '<thead>'+
+                        '<tr>'+
+                        '<th style="width: 150px;" class="text-center"><i class="fa fa-users"></i></th>'+
+                        '<th>Nombre</th>'+
+                        '<th class="text-center">Detalle</th>'+
+                        '</tr>'+
+                        '</thead>'+
+                        '<tbody>'+
+                        row+
+                        '</tbody>'+
+                        '</table>'+
+                        '<br/>'+
+                        '</div>'+
+                        '</div>'+
+                        '</div>'+
+                        '</div>'+
+                        '</div>';
+                $('#userList').html(divUsers);
+                TablesDatatables.init();
+            });
+        }
+
+    </script>
+
+{% endblock %}

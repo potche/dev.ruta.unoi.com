@@ -212,12 +212,16 @@
         $(function() {
             $("#docenteFG").hide('fast');
             $("#assignedFG").hide('fast');
+            $("#addObAlert").removeClass('alert-warning');
+            $("#addObAlert").addClass('alert-info');
             $('#messageError').html('Llena todos los campos para habilitar el B&oacute;ton "Crear"');
             $("#addObAlert").show('fast');
 
             $('#obSchool').change(function(){
                 $('#addObCreate').prop('disabled',true);
                 $("#assignedFG").hide('fast');
+                $("#addObAlert").removeClass('alert-warning');
+                $("#addObAlert").addClass('alert-info');
                 $('#messageError').html('Llena todos los campos para habilitar el B&oacute;ton "Crear"');
                 $("#addObAlert").show('fast');
 
@@ -289,9 +293,12 @@
                                     window.location.href = uri+"/crear/"+ data.id;
                                 }
                             })
-                            .fail(function() {
-                                $('#messageError').html('Ya se encuentra una Observaci&oacute;n con estos parametros <strong>abierta</strong>');
+                            .fail(function(error) {
+				$("#addObAlert").removeClass('alert-info');
+				$("#addObAlert").addClass('alert-warning');
+                                $('#messageError').html('Ya se encuentra una Observaci&oacute;n <strong>abierta</strong> con estos parametros por <strong>'+jQuery.parseJSON(error.responseText).coach+'</strong>');
                                 $("#addObAlert").show('fast');
+				$('#addObCreate').prop('disabled',true);
                             })
                             .always(function() {
                                 console.log( "finished" );

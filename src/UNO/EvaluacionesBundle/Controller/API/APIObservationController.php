@@ -151,7 +151,7 @@ class APIObservationController extends Controller{
             PROGRAMID_OB => (int)$request->get(PROGRAMID_OB)
         ));
 
-        if(!$existNotFinish){
+	if(!$existNotFinish){
             $result = $this->addQuery(array(
                 SURVEYID_OB => 19,
                 GRADEID_OB => $request->get(GRADEID_OB),
@@ -167,7 +167,7 @@ class APIObservationController extends Controller{
 
         }else{
             #-----envia la respuesta en JSON-----#
-            return new JsonResponse(array('error' => 'ObservationExist'), 409);
+            return new JsonResponse(array('error' => 'ObservationExist', 'coach' => $existNotFinish[0]['coach']), 409);
         }
     }
 
@@ -175,8 +175,9 @@ class APIObservationController extends Controller{
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 
-        return $qb->select("O.observationId")
+        return $qb->select("O.observationId, concat(P.name,' ',P.surname) as coach")
             ->from('UNOEvaluacionesBundle:Observation','O')
+	    ->innerJoin('UNOEvaluacionesBundle:Person','P','WITH','O.coachId = P.personid')
             ->where($where)
             ->andWhere('O.finish is null')
             ->setParameters($parameters)
