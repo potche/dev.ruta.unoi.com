@@ -27,11 +27,11 @@ var SurveyTable = function(){
 
                         if (accion == true ){
 
-                            $("#"+survey).attr( "class","disable-survey btn btn-xs btn-danger").html("Inactivar")
+                            $("#"+survey).attr( "class","disable-survey btn btn-xs btn-danger").html("<i class='fa fa-times' aria-hidden='true'></i>")
 
                         }else{
 
-                            $("#"+survey).attr( "class","enable-survey btn btn-xs btn-success").html("Activar");
+                            $("#"+survey).attr( "class","enable-survey btn btn-xs btn-success").html("<i class='fa fa-times' aria-hidden='true'></i>");
                         }
 
                         $.bootstrapGrowl("<h4>Cambio exitoso</h4><p>"+data.message+"</p>", {

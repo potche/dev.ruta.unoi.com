@@ -3,10 +3,16 @@
 namespace UNO\EvaluacionesBundle\Controller\API;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use UNO\EvaluacionesBundle\Controller\Evaluaciones\Utils;
 
+/**
+ * @Route("/api/v0/survey")
+ *
+ */
 class APISurveyController extends Controller{
 
     public function surveyAction(Request $request){
@@ -210,5 +216,82 @@ class APISurveyController extends Controller{
             }
         }
         return $surveys;
+    }
+
+    /**
+     * @Route("/editQuestion")
+     * @Method({"POST"})
+     * actualiza el texto de la preguna de un instrumento
+     */
+    public function editQuestionAction(Request $request){
+
+        $questionId= $request->request->get('questionId');
+        $question= $request->request->get('question');
+
+        $em = $this->getDoctrine()->getManager();
+        $Question = $em->getRepository('UNOEvaluacionesBundle:Question')->findOneBy(array('questionid' => $questionId));
+        if ($Question) {
+            $Question->setQuestion($question);
+            $em->flush();
+            return new JsonResponse(array('status' => true),200);
+        }else{
+            return new JsonResponse(array('status' => false),400);
+        }
+    }
+
+    /**
+     * @Route("/deleteQuestion")
+     * @Method({"POST"})
+     * bora una la preguna de un instrumento
+     */
+    public function deleteQuestionAction(Request $request){
+
+        $questionId= $request->request->get('questionId');
+        $surveyId= $request->request->get('surveyId');
+
+        $em = $this->getDoctrine()->getManager();
+        $Question = $em->getRepository('UNOEvaluacionesBundle:Questionxsurvey')->findOneBy(
+            array(
+                'questionQuestionid' => $questionId,
+                'surveySurveyid' => $surveyId)
+        );
+
+        if ($Question) {
+            $order = $Question->getOrder();
+            $em->remove($Question);
+            $em->flush();
+
+            $this->executeQuery(
+                "UPDATE QuestionXSurvey QS
+                    SET QS.order = QS.order-1
+                    WHERE
+                        QS.Survey_surveyId = $surveyId
+                            AND QS.order > $order
+            ");
+
+            return new JsonResponse(array('status' => true),200);
+        }else{
+            return new JsonResponse(array('status' => false),400);
+        }
+
+    }
+
+    private function executeQuery($query){
+        $em = $this->getDoctrine()->getManager();
+
+        $em->getConnection()->beginTransaction();
+
+        try {
+            $statement = $em->getConnection()->prepare($query);
+            $statement->execute();
+            $em->getConnection()->commit();
+
+            return true;
+
+        }catch (\PDOException $e) {
+            return false;
+        }
+
+
     }
 }

@@ -107,7 +107,7 @@ var CrearWizard = function() {
              * @param perftitle
              */
 
-           function agregaPerfil(perfil_id, nivel_id, nivtitle, perftitle) {
+            function agregaPerfil(perfil_id, nivel_id, nivtitle, perftitle) {
 
                 var count = parseInt($("#count_profiles").val());
 
@@ -263,7 +263,6 @@ var CrearWizard = function() {
                         $(elem).appendTo('#div-preg-agregadas');
                         $("#count_questions").val(countPreg+1);
                         $("#error_preguntas").remove();
-<<<<<<< HEAD
 
                     } else if((pregunta === '' || categoria_id === '')){
 
@@ -271,16 +270,6 @@ var CrearWizard = function() {
                     }
                 }else showQuestionErrors("Por favor agrega una pregunta que no haya sido agregada a esta evaluación");
 
-=======
-
-                    } else if((pregunta === '' || categoria_id === '')){
-
-                        showQuestionErrors("Por favor selecciona o agrega una pregunta con una categoría");
-                    }
-                }else showQuestionErrors("Por favor agrega una pregunta que no haya sido agregada a esta evaluación");
-
-                $('#pregunta').val('');
->>>>>>> 83fd9838aca9e24613c9e0099936a78fe7fbaba6
             });
 
 
@@ -340,13 +329,13 @@ var CrearWizard = function() {
 
                         profs[perfil] = [];
                     }
-                        profs[perfil].push(nivel);
+                    profs[perfil].push(nivel);
                 });
 
                 for(var p in profs) {
 
                     rows = rows+'<tr>'+
-                            '<td>'+p+'</td><td><ul>';
+                        '<td>'+p+'</td><td><ul>';
 
                     for(var n in profs[p]){
 
@@ -355,7 +344,7 @@ var CrearWizard = function() {
                             '</li>';
                     }
                     rows = rows+
-                    '</ul></td></tr>';
+                        '</ul></td></tr>';
                 }
                 return rows;
             }

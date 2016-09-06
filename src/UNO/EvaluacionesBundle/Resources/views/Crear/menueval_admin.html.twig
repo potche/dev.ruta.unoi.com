@@ -132,12 +132,14 @@
                                     {{ survey['fechacierre']|date('j/M/Y \@ g:i a') }}
                                 </td>
                                 <td class="text-center">
-                                    <div class="btn-group btn-group-xs">
+                                    <div class="btn-group">
                                         {% if survey['activa'] %}
-                                        <a href="#" id="{{ survey['id'] }}" class="disable-survey btn btn-xs btn-danger" style="display: block; width: 85px;"> Inactivar</a>
+                                        <a href="javascript:void(0)" id="{{ survey['id'] }}" class="disable-survey btn btn-xs btn-danger" ><i class="fa fa-times" aria-hidden="true"></i></a>
                                         {% else %}
-                                        <a href="#" id="{{ survey['id'] }}" class="enable-survey btn btn-xs btn-success" style="display: block; width: 85px;"> Activar</a>
+                                        <a href="javascript:void(0)" id="{{ survey['id'] }}" class="enable-survey btn btn-xs btn-success" ><i class="fa fa-check" aria-hidden="true"></i></a>
                                         {% endif %}
+
+                                        <a href="javascript:void(0)" id="{{ survey['id'] }}" class="editSurvey btn btn-xs btn-warning"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
                                     </div>
                                 </td>
                             </tr>
@@ -171,6 +173,47 @@
         </div>
     </div>
 
+    <div id="editSurveyModal" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-pencil"></i> Editar Preguntas</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="block" style="border: 0px;">
+                        <small><i class="fa fa-info-circle text-primary"></i> Puedes editar y eliminar las preguntas de un intrumento</small>
+                        <br>
+                        <div class="table-responsive ">
+                            <table id="tableQuestion" class="table table-vcenter table-condensed table-bordered table-responsive table-striped table-hover"></table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="deleteQuestionSurveyModal" class="modal" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-pencil"></i> Borrar Pregunta</h4>
+                </div>
+                <div class="modal-body">
+                    <h1>Realmente desea Borrar le pregunda <span id="preguntaDelete"></span> del intrumento</h1>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Cerrar</button>
+                    <button id="deleteQuestionModal" type="button" class="btn btn-primary" data-questionid="" data-surveyid="">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
     <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -195,7 +238,141 @@
                     $('#progress-'+item).html(html);
                 });
             });
+
+            $(".editSurvey").click(function () {
+
+                apiGetQuestion($(this).attr('id'));
+                $("#editSurveyModal").modal();
+            });
+
+            $("#deleteQuestionModal").click(function () {
+                var questionId = $("#deleteQuestionModal").attr('data-questionid');
+                var surveyId = $("#deleteQuestionModal").attr('data-surveyid');
+
+                var notify = $.notify('<strong>Borrando</strong> pregunta...', {
+                    allow_dismiss: false,
+                    showProgressbar: true,
+                    animate: {
+                        enter: 'animated fadeInRight',
+                        exit: 'animated fadeOutRight'
+                    },
+                    element: '#deleteQuestionSurveyModal'
+                });
+
+                $.post("api/v0/survey/deleteQuestion",{questionId: questionId, surveyId: surveyId}).done(function (data) {
+                    if(data){
+
+                        $("#deleteQuestionModal").attr('data-questionid','');
+                        $("#deleteQuestionModal").attr('data-surveyid','');
+                        $("#deleteQuestionSurveyModal").modal('hide');
+
+                        $("#editSurveyModal").modal('hide');
+                        $("#tableQuestion").html('');
+                        apiGetQuestion(surveyId);
+
+                        notify.update({
+                            'type': 'success',
+                            'message': 'Se <strong>ha</strong> borrado exitosamente!',
+                            'progress': 100
+                        });
+                        $("#editSurveyModal").modal('show');
+
+
+                    }
+                });
+            });
         });
+
+        function apiGetQuestion(surveyId) {
+
+            $.get("api/v0/catalog/questionSurvey/"+surveyId).done(function (data) {
+                var row;
+
+                $.each(data, function (key, value) {
+                    row +=
+                            '<tr>' +
+                            '<td class="text-center">' + value.order + '</td>' +
+                            '<td id="question_' + value.questionid + '">' + value.question + '</td>'+
+                            '<td class="text-center">'+
+                            '<div class="btn-group">'+
+                            '<a href="javascript:void(0)" id="editQuestionB_' + value.questionid + '" onclick="editQuestion('+value.questionid+',\''+value.question+'\')" class="btn btn-xs btn-warning disabledBtn" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>'+
+                            '<a href="javascript:void(0)" id="saveQuestionB_' + value.questionid + '" onclick="saveQuestion('+value.questionid+',\''+value.question+'\','+surveyId+')" class="btn btn-xs btn-success hidden"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>'+
+                            '<a href="javascript:void(0)" onclick="confirmDeleteQuestion('+value.questionid+',\''+value.question+'\','+surveyId+')" class="btn btn-xs btn-danger disabledBtn" ><i class="fa fa-times" aria-hidden="true"></i></a>'+
+                            '</div>'+
+                            '</td>'+
+                            '</tr>';
+
+                });
+                var dataTableQuestion =
+                        '<thead>'+
+                        '<tr>'+
+                        '<th class="text-center"><strong>#</strong></th>'+
+                        '<th class="text-center"><strong>Pregunta</strong></th>'+
+                        '<th class="text-center">Acciones</th>'+
+                        '</tr>'+
+                        '</thead>'+
+                        '<tbody>'+
+                        row+
+                        '</tbody>';
+                $("#tableQuestion").html(dataTableQuestion);
+
+            });
+        }
+        function editQuestion(questionId, question){
+            $("#question_"+questionId).html("<input id='editQuestion_"+questionId+"' type='text' class='form-control' placeholder='El reactivo no puede estar vació' value='"+question+"'>");
+            $("#saveQuestionB_"+questionId).removeClass("hidden");
+            $("#editQuestionB_"+questionId).addClass("hidden");
+
+            $(".disabledBtn").addClass('disabled');
+        }
+
+        function saveQuestion(questionId, question, surveyId) {
+            var newQuestion = $.trim($("#editQuestion_"+questionId).val());
+
+            if(newQuestion !== ''){
+                $("#question_"+questionId).html(newQuestion);
+                $("#saveQuestionB_"+questionId).addClass("hidden");
+                $("#editQuestionB_"+questionId).removeClass("hidden");
+
+                $(".disabledBtn").removeClass('disabled');
+
+                if($.trim(question) !== newQuestion){
+
+                    var notify = $.notify('<strong>Actualizando</strong> pregunta...', {
+                        allow_dismiss: false,
+                        showProgressbar: true,
+                        animate: {
+                            enter: 'animated fadeInRight',
+                            exit: 'animated fadeOutRight'
+                        },
+                        element: '#editSurveyModal'
+                    });
+                    $.post("api/v0/survey/editQuestion",{questionId: questionId, question: newQuestion}).done(function (data) {
+                        if(data){
+                            console.log(data);
+                            notify.update({
+                                'type': 'success',
+                                'message': 'Se <strong>ha</strong> actualizado exitosamente!',
+                                'progress': 100
+                            });
+                            $("#tableQuestion").html('');
+                            apiGetQuestion(surveyId);
+                        }
+                    });
+
+                }
+            }
+
+        }
+
+        function confirmDeleteQuestion(questionId, question, surveyId) {
+            $("#preguntaDelete").html('<b>"'+question+'"</b>');
+            $("#deleteQuestionModal").attr('data-questionid', questionId);
+            $("#deleteQuestionModal").attr('data-surveyid', surveyId);
+            $("#deleteQuestionSurveyModal").modal("show");
+
+        }
+
     </script>
     <script>$(function(){ Charts.init(); });</script>
     <script>$(function(){ SurveyTable.init('/evaluaciones/setstatus'); });</script>

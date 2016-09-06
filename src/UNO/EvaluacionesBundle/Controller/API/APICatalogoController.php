@@ -249,4 +249,30 @@ class APICatalogoController extends Controller{
 
     }
 
+    /**
+     * @Route("/questionSurvey/{surveyId}")
+     */
+    public function questionSurveyAction($surveyId){
+
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $rs = $qb->select("QS.order, Q.questionid, Q.question")
+            ->from('UNOEvaluacionesBundle:Survey','S')
+            ->innerJoin('UNOEvaluacionesBundle:Questionxsurvey','QS', 'WITH', 'S.surveyid = QS.surveySurveyid')
+            ->innerJoin('UNOEvaluacionesBundle:Question','Q', 'WITH', 'QS.questionQuestionid = Q.questionid')
+            ->innerJoin('UNOEvaluacionesBundle:Optionxquestion','OQ', 'WITH', 'QS.questionxsurveyId = OQ.questionxsurvey')
+            ->where( 'S.surveyid = :surveyId' )
+            ->setParameters( array('surveyId' => $surveyId) )
+            ->groupBy('QS.order')
+            ->getQuery()
+            ->getResult();
+
+        #-----envia la respuesta en JSON-----#
+        $response = new JsonResponse();
+        $response->setData($rs);
+
+        return $response;
+    }
 }
