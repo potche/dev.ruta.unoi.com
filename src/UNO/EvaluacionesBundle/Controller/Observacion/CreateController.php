@@ -43,9 +43,11 @@ class CreateController extends Controller{
 
         if($this->valObservationIdByCoach($observationId, $session->get('personIdS')) == 200){
             $result = $this->getResQueryOQ($observationId);
+            $aspects = $this->resultAspects($observationId);
 
             return $this->render('UNOEvaluacionesBundle:Observacion:create.html.twig', array(
                 'questionByCategory' => $result,
+                'aspects' => $aspects,
                 'observationId' => $observationId
             ));
         }else{
@@ -68,7 +70,7 @@ class CreateController extends Controller{
             ->innerJoin('UNOEvaluacionesBundle:Question','Q','WITH','QS.questionQuestionid = Q.questionid')
             ->innerJoin('UNOEvaluacionesBundle:Subcategory','Sub','WITH','Q.subcategorySubcategoryid = Sub.subcategoryid')
             ->leftJoin('UNOEvaluacionesBundle:ObservationAnswer','OA','WITH','OA.questionId = Q.questionid AND O.observationId = OA.observationId')
-            ->andWhere('O.observationId = :observationId')
+            ->where('O.observationId = :observationId')
             ->setParameter('observationId', $observationId)
             ->orderBy( 'QS.order')
             ->getQuery()
@@ -97,6 +99,32 @@ class CreateController extends Controller{
         }
 
         return $questionByCategory;
+    }
+
+    private function resultAspects($observationId){
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+
+        $obAspects = $qb->select("OA.observationAspectsId, OA.inicioRelevante, OA.desarrolloRelevante, OA.cierreRelevante, OA.inicioMejorar, OA.desarrolloMejorar, OA.cierreMejorar")
+            ->from('UNOEvaluacionesBundle:Observation', 'O')
+            ->innerJoin('UNOEvaluacionesBundle:ObservationAspects','OA','WITH','O.observationId = OA.observationId')
+            ->where('O.observationId = :observationId')
+            ->setParameter('observationId', $observationId)
+            ->getQuery()
+            ->getResult();
+
+
+
+        return array(
+            'observationAspectsId' => $obAspects[0]['observationAspectsId'],
+            'inicioRelevante' => $obAspects[0]['inicioRelevante'],
+            'desarrolloRelevante' => $obAspects[0]['desarrolloRelevante'],
+            'cierreRelevante' => $obAspects[0]['cierreRelevante'],
+            'inicioMejorar' => $obAspects[0]['inicioMejorar'],
+            'desarrolloMejorar' => $obAspects[0]['desarrolloMejorar'],
+            'cierreMejorar' => $obAspects[0]['cierreMejorar']
+        );
     }
 
     private function valObservationIdByCoach($observationId, $coachId){

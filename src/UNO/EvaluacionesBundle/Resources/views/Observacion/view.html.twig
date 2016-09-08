@@ -40,6 +40,10 @@
             max-height: 100%;
             max-width: 100%;
         }
+
+        textarea {
+            resize:none;
+        }
     </style>
 
     <button id="feedback-R" class="btn btn-primary "><span><strong>ACCIONES <i class="fa fa-angle-up" aria-hidden="true" style="font-size: large;"></i></strong></span></button>
@@ -188,6 +192,7 @@
                             <li class="active"><a href="#regAct-{{ observationId }}">Registro de Actividades</a></li>
                             <li><a href="#dispAula-{{ observationId }}">Disposici&oacute;n del Aula</a></li>
                             <li><a href="#galeria-{{ observationId }}">Galeria</a></li>
+                            <li><a href="#aspectos-{{ observationId }}">Aspectos de la Clase</a></li>
                         </ul>
                     </div>
                     <!-- END Block Tabs Title -->
@@ -284,6 +289,40 @@
                                 {% endfor %}
 
                             </div>
+                        </div>
+
+                        <div class="tab-pane" id="aspectos-{{ observationId }}">
+                            <!-- Responsive Full Content -->
+                            <div class="table-responsive">
+                                <table class="table table-vcenter table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th width="10%"></th>
+                                        <th class="text-center" width="40%">Aspectos relevantes que se presentaron durante la observación</th>
+                                        <th class="text-center" width="40%">Aspectos para comentar</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <th><h4><strong>INICIO</strong></h4></th>
+                                        <td><textarea class="form-control" rows="5" readonly data-title="inicioRelevante">{{ aspects.inicioRelevante }}</textarea></td>
+                                        <td><textarea class="form-control" rows="5" readonly data-title="inicioMejorar">{{ aspects.inicioMejorar }}</textarea></td>
+                                    </tr>
+                                    <tr>
+                                        <th><h4><strong>DESRROLLO</strong></h4></th>
+                                        <td><textarea class="form-control" rows="5" readonly data-title="desarrolloRelevante">{{ aspects.desarrolloRelevante }}</textarea></td>
+                                        <td><textarea class="form-control" rows="5" readonly data-title="desarrolloMejorar">{{ aspects.desarrolloMejorar }}</textarea></td>
+                                    </tr>
+                                    <tr>
+                                        <th><h4><strong>CIERRE</strong></h4></th>
+                                        <td><textarea class="form-control" rows="5" readonly data-title="cierreRelevante">{{ aspects.cierreRelevante }}</textarea></td>
+                                        <td><textarea class="form-control" rows="5" readonly data-title="cierreMejorar">{{ aspects.cierreMejorar }}</textarea></td>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- END Responsive Full Content -->
                         </div>
                     </div>
                     <!-- END Tabs Content -->

@@ -54,13 +54,15 @@ class ViewController extends Controller{
 
         if($this->valObservationIdByCoach($observationId, $session->get('personIdS')) == 200){
             $result = $this->getResQueryOQ($observationId);
+            $aspects = $this->getResultAspects($observationId);
 
             return $this->render('UNOEvaluacionesBundle:Observacion:view.html.twig', array(
                 'questionByCategory' => $result,
                 'activities' => $activity,
                 'observationId' => $observationId,
                 'disposition' => $disposition,
-                'galleries' => $gallery
+                'galleries' => $gallery,
+                'aspects' => $aspects
             ));
         }else{
             throw new AccessDeniedHttpException('No estás autorizado para ver este contenido');
@@ -128,6 +130,32 @@ class ViewController extends Controller{
             $status = 404;
         }
         return $status;
+    }
+
+    private function getResultAspects($observationId){
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+
+        $obAspects = $qb->select("OA.observationAspectsId, OA.inicioRelevante, OA.desarrolloRelevante, OA.cierreRelevante, OA.inicioMejorar, OA.desarrolloMejorar, OA.cierreMejorar")
+            ->from('UNOEvaluacionesBundle:Observation', 'O')
+            ->innerJoin('UNOEvaluacionesBundle:ObservationAspects','OA','WITH','O.observationId = OA.observationId')
+            ->where('O.observationId = :observationId')
+            ->setParameter('observationId', $observationId)
+            ->getQuery()
+            ->getResult();
+
+
+
+        return array(
+            'observationAspectsId' => $obAspects[0]['observationAspectsId'],
+            'inicioRelevante' => $obAspects[0]['inicioRelevante'],
+            'desarrolloRelevante' => $obAspects[0]['desarrolloRelevante'],
+            'cierreRelevante' => $obAspects[0]['cierreRelevante'],
+            'inicioMejorar' => $obAspects[0]['inicioMejorar'],
+            'desarrolloMejorar' => $obAspects[0]['desarrolloMejorar'],
+            'cierreMejorar' => $obAspects[0]['cierreMejorar']
+        );
     }
 
 }

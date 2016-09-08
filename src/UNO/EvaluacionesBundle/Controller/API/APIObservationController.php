@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use UNO\EvaluacionesBundle\Entity\ObservationGallery;
 use UNO\EvaluacionesBundle\Entity\ObservationDisposition;
 use UNO\EvaluacionesBundle\Entity\ObservationActivity;
+use UNO\EvaluacionesBundle\Entity\ObservationAspects;
 use UNO\EvaluacionesBundle\Controller\Evaluaciones\Utils;
 use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception;
@@ -208,10 +209,30 @@ class APIObservationController extends Controller{
         // actually executes the queries (i.e. the INSERT query)
         $em->flush();
 
+        $this->addQueryAspects($observation->getObservationId());
+
         return array(
             MESSAGE_OB => $observation->getObservationId(),
             STATUS_OB => 200
         );
+    }
+
+    /**
+     *
+     */
+    private function addQueryAspects($observationId){
+
+        $observationAspects = new ObservationAspects();
+
+        $observationAspects->setObservationId($observationId);
+
+        $em = $this->getDoctrine()->getManager();
+        // tells Doctrine you want to (eventually) save the Product (no queries yet)
+        $em->persist($observationAspects);
+        // actually executes the queries (i.e. the INSERT query)
+        $em->flush();
+
+        return true;
     }
 
     /**
@@ -881,5 +902,26 @@ class APIObservationController extends Controller{
         return $this->get('mailer')->send($message);
     }
 
+    /**
+     * @Route("/observation/saveAspect")
+     * @Method({"POST"})
+     */
+    public function saveAspectAction(Request $request){
 
+        $observationId= $request->request->get('observationId');
+        $type= 'set'.ucfirst($request->request->get('type'));
+        $aspect= $request->request->get('aspect');
+
+        $em = $this->getDoctrine()->getManager();
+        $ObservationAspects = $em->getRepository('UNOEvaluacionesBundle:ObservationAspects')->findOneBy(array('observationId'=> $observationId));
+
+        if($ObservationAspects) {
+            $ObservationAspects->$type($aspect);
+            $em->flush();
+            return new JsonResponse(array('status' => true),200);
+        }else{
+            return new JsonResponse(array('status' => false),400);
+        }
+
+    }
 }

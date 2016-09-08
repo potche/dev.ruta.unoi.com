@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="UNO\EvaluacionesBundle\Entity\ObservationAspects" table="ObservationAspects">
+    <id name="observationAspectsId" type="integer" column="observationAspectsId">
+      <generator strategy="AUTO"/>
+    </id>
+    <field name="inicioRelevante" type="string" column="inicioRelevante" length="1000" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="desarrolloRelevante" type="string" column="desarrolloRelevante" length="1000" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="cierreRelevante" type="string" column="cierreRelevante" length="1000" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="inicioMejorar" type="string" column="inicioMejorar" length="1000" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="desarrolloMejorar" type="string" column="desarrolloMejorar" length="1000" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="cierreMejorar" type="string" column="cierreMejorar" length="1000" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="observationId" type="integer" column="observationId">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+  </entity>
+</doctrine-mapping>
