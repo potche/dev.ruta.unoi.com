@@ -1,0 +1,184 @@
+{% extends '::base.html.twig' %}
+{% block body %}
+    <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/themes.css">
+
+    <div class="content-header">
+        <div class="header-section">
+            <div class="row">
+                <div class="col-sm-8">
+                    <h1>
+                        <b>Interacci&oacute;n</b> Constructiva
+                    </h1>
+                </div>
+                <div class="col-sm-4">
+                    <div class="pull-right">
+                        <button type="button" class="btn btn-alt btn btn-info" onclick="window.location.href = uriBack;">Continuar despu&eacute;s</button>
+                        <button id="finalizar" type="button" class="btn btn-info" >Finalizar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Working Tabs Block -->
+    <div id="cuestionario" class="block full">
+        <!-- Working Tabs Title -->
+        <div class="block-title">
+            <h2><strong>Interacci&oacute;n</strong> Constructiva <small style="color: darkgray;">Cuestionario</small></h2>
+        </div>
+        <!-- END Working Tabs Title -->
+
+        <!-- Working Tabs Content -->
+        <div class="row">
+            <div class="col-xs-12">
+                <!-- Block Tabs -->
+                <div class="block full">
+                    <!-- Block Tabs Title -->
+                    <div class="block-title">
+                        <ul class="nav nav-tabs" data-toggle="tabs">
+                            {% for Category in questionByCategory%}
+                                {% if loop.index == 1 %}
+                                <li class="active"><a href="#categoryId{{ Category.categoryId }}">{{ Category.category }}</a></li>
+                                {% else %}
+                                <li><a href="#categoryId{{ Category.categoryId }}">{{ Category.category }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <!-- END Block Tabs Title -->
+
+                    <!-- Tabs Content -->
+                    <div class="tab-content">
+                        {% for Category in questionByCategory%}
+                            {% if loop.index == 1 %}
+                            <div class="tab-pane active" id="categoryId{{ Category.categoryId }}">
+                            {% else %}
+                            <div class="tab-pane" id="categoryId{{ Category.categoryId }}">
+                            {% endif %}
+                                <div class="table-responsive">
+                                    <!--
+                                    Available Table Classes:
+                                        'table'             - basic table
+                                        'table-bordered'    - table with full borders
+                                        'table-borderless'  - table with no borders
+                                        'table-striped'     - striped table
+                                        'table-condensed'   - table with smaller top and bottom cell padding
+                                        'table-hover'       - rows highlighted on mouse hover
+                                        'table-vcenter'     - middle align content vertically
+                                    -->
+                                    <table class="table table-striped table-vcenter">
+                                        <tbody>
+                            {% for Questions in Category.questions%}
+                                            <tr>
+                                                <td width="50%">{{ Questions.order }}. {{ Questions.question }}</td>
+                                                <td width="20%">
+                                                    <div class="btn-group-wrap" style="text-align: center">
+                                                        <div id="btn-group-{{ Questions.questionId }}" class="btn-group" style="margin: 0 auto; text-align: center; width: inherit; display: inline-block;">
+                                                            {% set activeSi = '' %}
+                                                            {% set activeNo = '' %}
+                                                            {% if Questions.interactionAnswerId %}
+                                                                {% if Questions.answer == 1 %}
+                                                                    {% set activeSi = 'active'%}
+                                                                {% else %}
+                                                                    {% set activeNo = 'active'%}
+                                                                {% endif %}
+                                                            {% endif %}
+                                                            <button id="btn-1-{{ Questions.questionId }}" class="btn btn-alt btn-primary {{ activeSi }}" onclick="saveAnswer(this, {{ interactionId }});">
+                                                                <span class="visible-lg-inline visible-md-inline hidden-sm hidden-xs"><b>Sí</b></span>
+                                                                <span class="visible-sm-inline visible-xs-inline"><b><i class="fa fa-check"></i></b></span>
+                                                            </button>
+                                                            <button id="btn-0-{{ Questions.questionId }}" class="btn btn-alt btn-primary {{ activeNo }}" onclick="saveAnswer(this, {{ interactionId }});">
+                                                                <span class="visible-lg-inline visible-md-inline hidden-sm hidden-xs"><b>No</b></span>
+                                                                <span class="visible-sm-inline visible-xs-inline"><b><i class="fa fa-times"></i></b></span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <input id="answerOrigin-{{ Questions.questionId }}" type="text" class="hidden" value="{{ Questions.answer }}">
+                                                </td>
+                                                <td width="30%">
+                                                    <input type="text" id="comment-{{ Questions.questionId }}" class="commentInteraction form-control" placeholder="Agregar un comentario..." value="{{ Questions.comment }}">
+                                                    <input id="commentOrigin-{{ Questions.questionId }}" type="text" class="hidden" value="{{ Questions.comment }}">
+                                                </td>
+
+                                            </tr>
+                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <!-- END Tabs Content -->
+                </div>
+                <!-- END Block Tabs -->
+            </div>
+        </div>
+        <!-- END Working Tabs Content -->
+    </div>
+    <!-- END Working Tabs Block -->
+
+    <!-- Modal Start finish -->
+    <div id="finishModal" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Finalizar la Interacci&oacute;n Constructiva</h4>
+                </div>
+                <div class="modal-body">
+
+                    <h4>Esta seguro de <strong>Finalizar</strong> la Interacci&oacute;n Constructiva</h4>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-info" onclick="finishedInteraction({{ interactionId }})">Finalizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Modal finish -->
+
+    <!-- Modal Generic Start -->
+    <div id="genericModal" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> <span id="genericTitle"></span></h4>
+                </div>
+                <div class="modal-body">
+
+                    <h4 id="genericBody"></h4>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button id="genericOk" type="button" class="btn btn-info">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Generic finish -->
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="{{ asset('public/assets/js/interactionCreate.js')}}"></script>
+
+    <script>
+        //dominio http://dev.ruta.unoi.com
+        var HttpHost = '{{ app.request.getSchemeAndHttpHost() }}';
+        //si es /app_dev.php
+        var baseUrl = '{{ app.request.baseurl }}';
+        //ruta en la que nos encontramos http://dev.ruta.unoi.com/app_dev.php/observacion/crear/1
+        var uri = '{{ app.request.uri }}';
+        var uriArr = uri.split("/");
+        var uriBack = uriArr.slice(0,uriArr.length-2).join("/");
+        var interactionId = {{ interactionId }};
+
+        $(function() {
+
+        });
+
+    </script>
+
+{% endblock %}

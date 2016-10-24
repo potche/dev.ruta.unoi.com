@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+    <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+    <!--[if IE 9]>         <html class="no-js lt-ie10"> <![endif]-->
+    <!--[if gt IE 9]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+
+        <title>Error</title>
+
+        <meta name="description" content="UNOi is a Responsive Bootstrap Admin Template created by pixelcave and published on Themeforest.">
+        <meta name="author" content="pixelcave">
+        <meta name="robots" content="noindex,nofollow" />
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1.0">
+
+        <!-- Icons -->
+        <!-- The following icons can be replaced with your own, they are used by desktop and mobile browsers -->
+        <link rel="shortcut icon" href="{{ asset('public/assets/images/login/faviconUnoi.ico') }}" type="image/x-icon" />
+        <!-- END Icons -->
+
+        <!-- Stylesheets -->
+        <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,800&amp;subset=latin,latin-ext">
+        <!-- Related styles of various icon packs and plugins -->
+        <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/plugins.css">
+        <!-- The main stylesheet of this template. All Bootstrap overwrites are defined in here -->
+        <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/main.css">
+        <!-- The themes stylesheet of this template (for using specific theme color in individual elements - must included last) -->
+        <link rel="stylesheet" href="https://staticmx.unoi.com/global/css/themes.css">
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <!-- END Stylesheets -->
+
+        <!-- Modernizr (browser feature detection library) & Respond.js (enables responsive CSS code on browsers that don't support it, eg IE8) -->
+        <script src="https://staticmx.unoi.com/global/js/vendor/modernizr-respond.min.js"></script>
+    </head>
+    <body style="background-color: #222222">
+        <!-- Error Container -->
+        <div id="error-container">
+            <div class="error-options">
+                <h3><i class="fa fa-chevron-circle-left text-muted"></i> <a href="javascript:window.history.back();">Volver atrás</a></h3>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 text-center">
+                    <h1><i class="fa fa-times text-danger animation-pulse"></i> {{ status }}</h1>
+                    <h2 class="h3">Oops, {{ message }} ...</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 text-center">
+                    <a href='javascript:window.location.replace("{{ path("login") }}")' type="button" class="btn btn-primary" >Regresar a Ruta UNOi</a>
+                </div>
+            </div>
+        </div>
+        <!-- END Error Container -->
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    </body>
+</html>

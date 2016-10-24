@@ -3,7 +3,7 @@
  */
 
 
-function deleteUser(id, name) {
+function deleteUser(id, user, name, executioner) {
 
     $(".titleModal").html("Eliminar Usuario");
     $(".bodyModal").html(
@@ -19,16 +19,16 @@ function deleteUser(id, name) {
         "</div>"+
         "<div class='modal-footer'>"+
         "<button type='button' class='btn btn-info' data-dismiss='modal'>Cancelar</button>"+
-        "<button onclick='deleteUserOk("+id+")' type='button' class='btn btn-success' >Aceptar</button>"+
+        "<button onclick='deleteUserOk("+id+", \""+user+"\", \""+name+"\", "+schoolId+", \""+nameSchool+"\", "+executioner+")' type='button' class='btn btn-success' >Aceptar</button>"+
         "</div>"
     );
 
     $("#confirmModal").modal();
 }
 
-function deleteUserOk(personId) {
+function deleteUserOk(personId, user, name, schoolId, school, executioner) {
 
-    $.post(  HttpHost+baseUrl+"/api/v0/admin/deletePerson",{personId: personId}, function() {
+    $.post(  HttpHost+baseUrl+"/api/v0/admin/deletePerson",{personId: personId, user: user, name: name, schoolId: schoolId, school: school, executioner: executioner}, function() {
         $("#deleteAllSchool").prop('disabled',true);
     }).done(function(data) {
         $(".titleModal").html("Eliminar Usuario");
@@ -59,9 +59,9 @@ function deleteUserOk(personId) {
 
 }
 
-function deleteSchoolOk(schoolId) {
+function deleteSchoolOk(schoolId, school, executioner) {
 
-    $.post(  HttpHost+baseUrl+"/api/v0/admin/deleteSchool",{schoolId: schoolId}, function() {
+    $.post(  HttpHost+baseUrl+"/api/v0/admin/deleteSchool",{schoolId: schoolId, school: school, executioner: executioner}, function() {
         $("#deleteAllSchool").prop('disabled',true);
     }).done(function(data) {
         $(".titleModal").html("Eliminar Colegio");

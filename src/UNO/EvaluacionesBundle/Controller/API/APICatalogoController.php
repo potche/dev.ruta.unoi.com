@@ -139,7 +139,7 @@ class APICatalogoController extends Controller{
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
 
-        $_personSchool = $qb->select("P.personid, concat(trim(P.name),' ',trim(P.surname)) as nombre")
+        $_personSchool = $qb->select("P.personid, P.user, concat(trim(P.name),' ',trim(P.surname)) as nombre, P.email")
             ->from('UNOEvaluacionesBundle:Personschool','PS')
             ->innerJoin('UNOEvaluacionesBundle:Person','P', 'WITH', 'PS.personid = P.personid')
             ->where('PS.schoolid = :schoolId')
@@ -178,7 +178,7 @@ class APICatalogoController extends Controller{
      */
     public function usersBySchoolAction($schoolId){
         $result = $this->getQuerySPS(
-            "P.personid, concat(trim(P.name),' ',trim(P.surname)) as nombre",
+            "P.personid, P.user, concat(trim(P.name),' ',trim(P.surname)) as nombre, P.email",
             'PS.schoolid = :schoolId ',
             array('schoolId' => $schoolId),
             'P.personid'
@@ -215,7 +215,7 @@ class APICatalogoController extends Controller{
     public function personBySurveySchoolAction($surveyId,$schoolId){
 
         $result = $this->getQuerySPS(
-            "P.personid, concat(trim(P.name),' ',trim(P.surname)) as nombre",
+            "P.personid, P.user, concat(trim(P.name),' ',trim(P.surname)) as nombre, P.email",
             'PS.schoolid = :schoolId and S.surveyid = :surveyId',
             array('schoolId' => $schoolId, 'surveyId' => $surveyId),
             'PS.personid','S.surveyid'

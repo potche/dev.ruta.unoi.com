@@ -55,7 +55,7 @@ class StatsWithAjaxController extends Controller{
         if ($session->get('logged_in')) {
             $this->setProfile($session);
             //perfiles permitidos
-            if (array_intersect(array('SuperAdmin','Director','COACH'), $this->_profile)) {
+            if (array_intersect(array('SuperAdmin','Director','COACH', 'Coordinador'), $this->_profile)) {
                 if (array_intersect(array('SuperAdmin','COACH'), $this->_profile)) {
                     #vista para SuperAdmin y COACH
                     $schoolListAPI = file_get_contents("$base/api/v0/catalog/schools", false);

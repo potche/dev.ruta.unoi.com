@@ -19,7 +19,9 @@
         "sensio/distribution-bundle": "~4.0",
         "sensio/framework-extra-bundle": "^3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
-        "aws/aws-sdk-php": "^3.18"
+        "aws/aws-sdk-php": "^3.18",
+        "knplabs/knp-snappy-bundle": "^1.4",
+        "h4cc/wkhtmltopdf-amd64": "0.12.x"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",

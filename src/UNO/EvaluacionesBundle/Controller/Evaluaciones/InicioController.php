@@ -39,6 +39,7 @@ class InicioController extends Controller{
         $personas = null;
         $coaches = null;
         $observationsByCoach = null;
+        $interactionsByCoach = null;
         $personal = json_decode(file_get_contents($this->generateUrl('APIStatsProgressByPerson',array('personid' => $this->_personId),true),false),true);
 
         if(in_array('SuperAdmin',$this->_profile)){
@@ -50,6 +51,7 @@ class InicioController extends Controller{
 
         if(in_array('COACH',$this->_profile)){
             $observationsByCoach = $this->observationsByCoachPV();
+            $interactionsByCoach = $this->interactionByCoachPV();
         }
 
         if (in_array('Director',$this->_profile)){
@@ -62,7 +64,8 @@ class InicioController extends Controller{
             'personas'=> $personas,
             'coaches' => $coaches,
             'personal' => $personal,
-            'observationsByCoach' => $observationsByCoach
+            'observationsByCoach' => $observationsByCoach,
+            'interactionsByCoach' => $interactionsByCoach
         ));
     }
 
@@ -154,4 +157,32 @@ class InicioController extends Controller{
         return $observationsByCoach;
     }
 
+    private function interactionByCoachPV(){
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $oByC = $qb->select("O.interactionId, CONCAT(TRIM(P.name), ' ', TRIM(P.surname)) AS name, S.school, O.gradeId, O.groupId, Cp.nameProgram, O.start, O.finish")
+            ->from('UNOEvaluacionesBundle:Interaction','O')
+            ->innerJoin('UNOEvaluacionesBundle:Person','P','WITH','O.personId = P.personid')
+            ->innerJoin('UNOEvaluacionesBundle:School','S','WITH','O.schoolId = S.schoolid')
+            ->innerJoin('UNOEvaluacionesBundle:Cprogram','Cp','WITH','O.programId = Cp.programId')
+            ->where('O.coachId = :coachId')
+            ->andWhere('O.finish is null')
+            ->setParameter('coachId', $this->_personId)
+            ->orderBy( 'O.interactionId')
+            ->setMaxResults(4)
+            ->getQuery()
+            ->getResult();
+
+        $nivel = array('K' => 'Kinder', 'P' => 'Primaria', 'S' => 'Secundaria', 'B' => 'Bachillerato');
+        $interactionsByCoach = array();
+        foreach ($oByC as $row){
+            $row['nivel'] = strtoupper($row['gradeId'][1]);
+            $row['nivelCompleto'] = $nivel[strtoupper($row['gradeId'][1])];
+            $row['grado'] = $row['gradeId'][0].'°';
+            array_push($interactionsByCoach, $row);
+        }
+        return $interactionsByCoach;
+    }
 }

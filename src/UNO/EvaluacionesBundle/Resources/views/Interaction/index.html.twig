@@ -2,134 +2,79 @@
 {% block body %}
 
     <div id="page-content">
-        {# app.session.get('profileS') | raw #}
+
         <div class="content-header">
             <div class="header-section">
-                <div class="row">
-                    <div class="col-sm-8">
-                        <h1>
-                            <b>Observaci&oacute;n del trabajo en el aula</b>
-                        </h1>
-                    </div>
-                    <div class="col-sm-4">
-                        <img class="pull-right" src="{{ asset('public/assets/images/icon/observacionHeader.svg') }}" style="width: 64px; height: 64px">
-                    </div>
-                </div>
-
-
+                <h1>
+                    <i class="fa fa-puzzle-piece" aria-hidden="true"></i><strong>Interacci&oacute;n Constructiva</strong><br><small>Formato para el seguimiento del proceso</small>
+                </h1>
             </div>
         </div>
+
 
         <div class="block full">
             <div class="block-title text-center">
                 <h2>Ver mis <strong>Listas</strong></h2>
             </div>
             <div class="block-content">
+                <div class="row">
+                    <p>
+                        <a href="javascript:void(0)" class="btn btn-md btn-info " onclick="$('#addObservation').modal();" style="margin-left: 6px;">Crear Nueva <i class="fa fa-plus"></i></a>
+                    </p>
 
-                {% if observationsByCoach is defined %}
-                    <div class="row">
-                        <p>
-                            <a href="javascript:void(0)" class="btn btn-md btn-info " onclick="$('#addObservation').modal();" style="margin-left: 6px;">Crear Nueva <i class="fa fa-plus"></i></a>
-                        </p>
-
-                        <div class="table-responsive">
-                            <table id="obList-datatable" class="table table-vcenter table-condensed table-bordered table-hover">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center">Docente</th>
-                                        <th class="text-center">Colegio</th>
-                                        <th class="text-center">Nivel</th>
-                                        <th class="text-center">Grado</th>
-                                        <th class="text-center">Grupo</th>
-                                        <th class="text-center">SE/BE</th>
-                                        <th class="text-center">Fecha de Creaci&oacute;n</th>
-                                        <th class="text-center">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-
-                                {% for listObservation in observationsByCoach %}
-                                    <tr>
-                                        <td class="text-center">{{ listObservation.name }}</td>
-                                        <td class="text-center">{{ listObservation.school | title}}</td>
-                                        <td class="text-center" data-toggle="tooltip" title="{{ listObservation.nivelCompleto }}">{{ listObservation.nivel }}</td>
-                                        <td class="text-center">{{ listObservation.grado }}</td>
-                                        <td class="text-center">{{ listObservation.groupId }}</td>
-                                        <td class="text-center">{{ listObservation.nameProgram }}</td>
-                                        {% set limitDate = listObservation.start.date | date_modify("+7 day") | date() %}
-                                        {% set difference = date( "now" | date() ).diff(date(limitDate)) %}
-                                        {% set leftDays = difference.days %}
-                                        {% set leftHours = difference.h %}
-
-                                        {% if listObservation.finish is null %}
-                                            <td class="text-center">{{ listObservation.start.date | date('j/M/Y \@ g:i a') }} <i class="fa fa-clock-o" aria-hidden="true" data-toggle="tooltip" title="pendiente"></i></td>
-
-                                        {% else %}
-                                            <td class="text-center">{{ listObservation.start.date | date('j/M/Y \@ g:i a') }} <i class="fa fa-check-circle" aria-hidden="true" data-toggle="tooltip" title="finalizada"></i></td>
-                                        {% endif %}
-                                        <td class="text-center">
-                                            <div class="btn-group">
-                                                {% if listObservation.finish is null %}
-                                                    <a href="javascript:void(0)" data-toggle="tooltip" title="view" class="btn btn-xs btn-default" disabled><i class="fa fa-eye" aria-hidden="true"></i></a>
-                                                    <a href="javascript:void(0)" onclick="window.location.href = uri+'/crear/{{ listObservation.observationId }}';" title="Edit" class="btn btn-xs btn-default"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                                                {% else %}
-                                                    <a href="javascript:void(0)" onclick="window.location.href = uri+'/view/{{ listObservation.observationId }}';" data-toggle="tooltip" title="view" class="btn btn-xs btn-default"><i class="fa fa-eye" aria-hidden="true"></i></a>
-                                                    <a href="javascript:void(0)" title="Edit" class="btn btn-xs btn-default" disabled><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                                                {% endif %}
-                                                <a href="javascript:void(0)" data-toggle="tooltip" title="Notification" class="btn btn-xs btn-default"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                {% else %}
-                    <div class="row">
-                        <div class="table-responsive">
-                            <table id="obList-datatable" class="table table-vcenter table-condensed table-bordered table-hover">
-                                <thead>
+                    <div class="table-responsive">
+                        <table id="obList-datatable" class="table table-vcenter table-condensed table-bordered table-hover">
+                            <thead>
                                 <tr>
+                                    <th class="text-center">Docente</th>
                                     <th class="text-center">Colegio</th>
                                     <th class="text-center">Nivel</th>
                                     <th class="text-center">Grado</th>
                                     <th class="text-center">Grupo</th>
                                     <th class="text-center">SE/BE</th>
-                                    <th class="text-center">Fecha de Inicio</th>
-                                    <th class="text-center">Fecha de Termino</th>
-                                    <th class="text-center">Ver</th>
+                                    <th class="text-center">Fecha de Creaci&oacute;n</th>
+                                    <th class="text-center">Acciones</th>
                                 </tr>
-                                </thead>
-                                <tbody>
+                            </thead>
+                            <tbody>
 
-                                {% for listObservation in observationsByProfessor %}
-                                    <tr>
-                                        <td class="text-center">{{ listObservation.school | title}}</td>
-                                        <td class="text-center" data-toggle="tooltip" title="{{ listObservation.nivelCompleto }}">{{ listObservation.nivel }}</td>
-                                        <td class="text-center">{{ listObservation.grado }}</td>
-                                        <td class="text-center">{{ listObservation.groupId }}</td>
-                                        <td class="text-center">{{ listObservation.nameProgram }}</td>
-                                        {% set limitDate = listObservation.start.date | date_modify("+7 day") | date() %}
-                                        {% set difference = date( "now" | date() ).diff(date(limitDate)) %}
-                                        {% set leftDays = difference.days %}
-                                        {% set leftHours = difference.h %}
+                            {% for listInteraction in interactionsByCoach %}
+                                <tr>
+                                    <td class="text-center">{{ listInteraction.name }}</td>
+                                    <td class="text-center">{{ listInteraction.school | title}}</td>
+                                    <td class="text-center" data-toggle="tooltip" title="{{ listInteraction.nivelCompleto }}">{{ listInteraction.nivel }}</td>
+                                    <td class="text-center">{{ listInteraction.grado }}</td>
+                                    <td class="text-center">{{ listInteraction.groupId }}</td>
+                                    <td class="text-center">{{ listInteraction.nameProgram }}</td>
+                                    {% set limitDate = listInteraction.start.date | date_modify("+7 day") | date() %}
+                                    {% set difference = date( "now" | date() ).diff(date(limitDate)) %}
+                                    {% set leftDays = difference.days %}
+                                    {% set leftHours = difference.h %}
 
-                                        <td class="text-center">{{ listObservation.start.date | date('j/M/Y \@ g:i a') }} <i class="fa fa-clock-o" aria-hidden="true" data-toggle="tooltip" title="pendiente"></i></td>
-                                        <td class="text-center">{{ listObservation.start.date | date('j/M/Y \@ g:i a') }} <i class="fa fa-check-circle" aria-hidden="true" data-toggle="tooltip" title="finalizada"></i></td>
-                                        <td class="text-center">
-                                            <div class="btn-group">
-                                                <a href="javascript:void(0)" onclick="window.location.href = uri+'/view/{{ listObservation.observationId }}';" data-toggle="tooltip" title="view" class="btn btn-xs btn-default"><i class="fa fa-eye" aria-hidden="true"></i></a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                                    {% if listInteraction.finish is null %}
+                                        <td class="text-center">{{ listInteraction.start.date | date('j/M/Y \@ g:i a') }} <i class="fa fa-clock-o" aria-hidden="true" data-toggle="tooltip" title="pendiente"></i></td>
+
+                                    {% else %}
+                                        <td class="text-center">{{ listInteraction.start.date | date('j/M/Y \@ g:i a') }} <i class="fa fa-check-circle" aria-hidden="true" data-toggle="tooltip" title="finalizada"></i></td>
+                                    {% endif %}
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            {% if listInteraction.finish is null %}
+                                                <a href="javascript:void(0)" data-toggle="tooltip" title="view" class="btn btn-xs btn-default" disabled><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                                <a href="javascript:void(0)" onclick="window.location.href = uri+'/crear/{{ listInteraction.interactionId }}';" title="Edit" class="btn btn-xs btn-default"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                            {% else %}
+                                                <a href="javascript:void(0)" onclick="window.location.href = uri+'/view/{{ listInteraction.interactionId }}';" data-toggle="tooltip" title="view" class="btn btn-xs btn-default"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                                <a href="javascript:void(0)" title="Edit" class="btn btn-xs btn-default" disabled><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                {% endif %}
 
+                </div>
             </div>
         </div>
 
@@ -333,7 +278,7 @@
         $('#addObCreate').click(function () {
             $.getJSON( HttpHost+baseUrl+"/api/v0/assigned/byId/"+$('#obAssigned').val(), function(data) {
                 if(data){
-                    $.post( HttpHost+baseUrl+"/api/v0/observation", { gradeId: data.gradeId, groupId: data.groupId, programId: data.programId, schoolId: $('#obSchool').val(), personId: $('#obDocente').val(), coachId: {{ app.session.get('personIdS')}} })
+                    $.post( HttpHost+baseUrl+"/api/v0/interaction", { gradeId: data.gradeId, groupId: data.groupId, programId: data.programId, schoolId: $('#obSchool').val(), personId: $('#obDocente').val(), coachId: {{ app.session.get('personIdS')}} })
                             .done(function(data) {
                                 if(data){
                                     window.location.href = uri+"/crear/"+ data.id;
@@ -384,7 +329,7 @@
 
                     /* Initialize Datatables */
                     $('#obList-datatable').dataTable({
-                        columnDefs: [ { orderable: true, targets: [ 0, 7 ] } ],
+                        columnDefs: [ { orderable: false, targets: [ 0, 7 ] } ],
                         pageLength: 10,
                         lengthMenu: [[10, 20, 30, -1], [10, 20, 30, 'All']]
                     });

@@ -3,7 +3,7 @@
  */
 
 
-function resetUser(id, name, surveyId, survey) {
+function resetUser(id, name, user, surveyId, survey, executioner) {
     var message;
 
     if(surveyId){
@@ -26,14 +26,14 @@ function resetUser(id, name, surveyId, survey) {
         "</div>"+
         "<div class='modal-footer'>"+
         "<button type='button' class='btn btn-info' data-dismiss='modal'>Cancelar</button>"+
-        "<button onclick='resetUserOk("+id+", "+surveyId+")' type='button' class='btn btn-success' >Aceptar</button>"+
+        "<button onclick='resetUserOk("+id+", \""+user+"\", \""+name+"\", "+schoolId+", \""+nameSchool+"\", "+surveyId+", \""+survey+"\","+executioner+")' type='button' class='btn btn-success' >Aceptar</button>"+
         "</div>"
     );
 
     $("#confirmModal").modal();
 }
 
-function resetUserOk(personId, surveyId) {
+function resetUserOk(personId, user, name, schoolId, school, surveyId, survey, executioner) {
     console.log(personId);
     console.log(surveyId);
     var urlApi;
@@ -42,11 +42,11 @@ function resetUserOk(personId, surveyId) {
 
     if(surveyId){
         urlApi = HttpHost+baseUrl+"/api/v0/admin/resetPersonSurvey";
-        parameters = {personId: personId, surveyId: surveyId};
+        parameters = {personId: personId, user: user, name: name, schoolId: schoolId, school: school, surveyId: surveyId, survey: survey, executioner: executioner};
         message = "<h1>El Instrumento  del usuario fue Reseteado Correctamente</h1>";
     }else {
         urlApi = HttpHost+baseUrl+"/api/v0/admin/resetPerson";
-        parameters = {personId: personId};
+        parameters = {personId: personId, user: user, name: name, schoolId: schoolId, school: school, executioner: executioner};
         message = "<h1>Los Instrumentos fueron Reseteado Correctamente</h1>";
     }
 
@@ -85,7 +85,7 @@ function resetUserOk(personId, surveyId) {
 
 }
 
-function resetSchoolOk(schoolId, surveyId) {
+function resetSchoolOk(schoolId, school, surveyId, survey, executioner) {
     console.log(schoolId);
     console.log(surveyId);
     var urlApi;
@@ -94,11 +94,11 @@ function resetSchoolOk(schoolId, surveyId) {
 
     if(surveyId){
         urlApi = HttpHost+baseUrl+"/api/v0/admin/resetSchoolSurvey";
-        parameters = {schoolId: schoolId, surveyId: surveyId};
+        parameters = {schoolId: schoolId, school: school, surveyId: surveyId, survey: survey, executioner: executioner};
         message = "<h1>El Instrumento  del Colegio fue Reseteado Correctamente</h1>";
     }else {
         urlApi = HttpHost+baseUrl+"/api/v0/admin/resetSchool";
-        parameters = {schoolId: schoolId};
+        parameters = {schoolId: schoolId, school: school, executioner: executioner};
         message = "<h1>Los Instrumentos fueron Reseteado Correctamente</h1>";
     }
 

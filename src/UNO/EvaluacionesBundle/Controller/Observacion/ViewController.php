@@ -23,6 +23,9 @@ use UNO\EvaluacionesBundle\Controller\Evaluaciones\Utils;
  */
 class ViewController extends Controller{
 
+    private $_profile = array();
+    private $status;
+    private $message;
     /**
      * @Route("/observacion/view/{observationId}")
      *
@@ -48,24 +51,44 @@ class ViewController extends Controller{
             ));
         }
 
-        $activity = json_decode(file_get_contents("$baseUrl/api/v0/observation/activity/".$observationId, false),true);
-        $disposition = json_decode(file_get_contents("$baseUrl/api/v0/observation/disposition/".$observationId, false),true);
-        $gallery = json_decode(file_get_contents("$baseUrl/api/v0/observation/gallery/".$observationId, false),true);
+        $this->setProfile($session->get('profileS'));
 
-        if($this->valObservationIdByCoach($observationId, $session->get('personIdS')) == 200){
+        if(in_array('COACH',$this->_profile)) {
+            $this->valObservationIdBy(array('observationId' => $observationId, 'coachId' => $session->get('personIdS')) );
+            $parameters['activities'] = json_decode(file_get_contents("$baseUrl/api/v0/observation/activity/".$observationId, false),true);
+        }else{
+            $this->valObservationIdBy(array('observationId' => $observationId, 'personId' => $session->get('personIdS')) );
+        }
+
+        if($this->status == 200){
             $result = $this->getResQueryOQ($observationId);
             $aspects = $this->getResultAspects($observationId);
 
-            return $this->render('UNOEvaluacionesBundle:Observacion:view.html.twig', array(
-                'questionByCategory' => $result,
-                'activities' => $activity,
-                'observationId' => $observationId,
-                'disposition' => $disposition,
-                'galleries' => $gallery,
-                'aspects' => $aspects
+            $parameters['questionByCategory'] = $result;
+            $parameters['observationId'] = $observationId;
+            $parameters['disposition'] = json_decode(file_get_contents("$baseUrl/api/v0/observation/disposition/".$observationId, false),true);
+            $parameters['galleries'] = json_decode(file_get_contents("$baseUrl/api/v0/observation/gallery/".$observationId, false),true);
+            $parameters['aspects'] = $aspects;
+
+            return $this->render('UNOEvaluacionesBundle:Observacion:view.html.twig', $parameters);
+
+        }else {
+            return $this->render('UNOEvaluacionesBundle:Error:error.html.twig', array(
+                'status' => $this->status,
+                'message' => $this->message
             ));
-        }else{
-            throw new AccessDeniedHttpException('No estás autorizado para ver este contenido');
+        }
+    }
+
+    /**
+     * @param $profileS
+     *
+     * inicializa el atributo $this->_profile con los perfiles del usuario de session
+     */
+    private function setProfile($profileS){
+        $profileJson = json_decode($profileS);
+        foreach($profileJson as $value){
+            array_push($this->_profile, $value->profile);
         }
     }
 
@@ -115,27 +138,27 @@ class ViewController extends Controller{
         return $questionByCategory;
     }
 
-    private function valObservationIdByCoach($observationId, $coachId){
+    private function valObservationIdBy($findParameters){
         $em = $this->getDoctrine()->getManager();
-        $observationAssigned = $em->getRepository('UNOEvaluacionesBundle:Observation')->findOneBy(array('observationId' => $observationId, 'coachId' => $coachId));
+        $observationAssigned = $em->getRepository('UNOEvaluacionesBundle:Observation')->findOneBy($findParameters);
         if ($observationAssigned) {
             if($observationAssigned->getFinish()){
                 #ya esta finalizada por lo cual la puede ver
-                $status = 200;
+                $this->status = 200;
             }else {
-                $status = 403;
+                $this->status = 403;
+                $this->message = "lo sentimos pero no puede acceder a esta página";
             }
         }else{
             #no le corresponde o no existe
-            $status = 404;
+            $this->status = 401;
+            $this->message = "lo sentimos pero no es autorizado para acceder a esta página";
         }
-        return $status;
     }
 
     private function getResultAspects($observationId){
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
-
 
         $obAspects = $qb->select("OA.observationAspectsId, OA.inicioRelevante, OA.desarrolloRelevante, OA.cierreRelevante, OA.inicioMejorar, OA.desarrolloMejorar, OA.cierreMejorar")
             ->from('UNOEvaluacionesBundle:Observation', 'O')
@@ -156,6 +179,185 @@ class ViewController extends Controller{
             'desarrolloMejorar' => $obAspects[0]['desarrolloMejorar'],
             'cierreMejorar' => $obAspects[0]['cierreMejorar']
         );
+    }
+
+    /**
+     * @Route("/observacion/pdf/{observationId}")
+     *
+     * visiualiza la observacion
+     */
+    public function pdfAction(Request $request, $observationId)
+    {
+        #http://
+        $scheme =  $this->container->get('router')->getContext()->getScheme().'://';
+        #dev.ruta.unoi.com
+        $host =  $this->container->get('router')->getContext()->getHost();
+        #/app_dev.php
+        $baseURL = $this->container->get('router')->getContext()->getBaseUrl();
+        $baseUrl = $scheme.$host.$baseURL;
+
+        $session = $request->getSession();
+        $session->start();
+
+        if(!Utils::isUserLoggedIn($session)){
+
+            return $this->redirectToRoute('login',array(
+                'redirect' => 'inicio',
+                'with' => 'none'
+            ));
+        }
+
+        $this->setProfile($session->get('profileS'));
+
+        if(in_array('COACH',$this->_profile)) {
+            $this->valObservationIdBy(array('observationId' => $observationId, 'coachId' => $session->get('personIdS')) );
+            $parameters['activities'] = json_decode(file_get_contents("$baseUrl/api/v0/observation/activity/".$observationId, false),true);
+            $parameters['info'] = $this->infoObservation("O.coachId = :coachId AND O.observationId = :observationId AND O.finish IS NOT NULL", array('coachId' => $session->get('personIdS'), 'observationId' => $observationId));
+        }else{
+            $this->valObservationIdBy(array('observationId' => $observationId, 'personId' => $session->get('personIdS')) );
+            $parameters['info'] = $this->infoObservation("O.personId = :personId AND O.observationId = :observationId AND O.finish IS NOT NULL ", array('personId' => $session->get('personIdS'), 'observationId' => $observationId));
+        }
+
+        if($this->status == 200){
+            $result = $this->getResQueryOQ($observationId);
+            $aspects = $this->getResultAspects($observationId);
+
+            $parameters['questionByCategory'] = $result;
+            $parameters['observationId'] = $observationId;
+            $parameters['disposition'] = json_decode(file_get_contents("$baseUrl/api/v0/observation/disposition/".$observationId, false),true);
+            $parameters['galleries'] = json_decode(file_get_contents("$baseUrl/api/v0/observation/gallery/".$observationId, false),true);
+            $parameters['aspects'] = $aspects;
+
+
+            $urlImage = $scheme.$host.'/public/assets/images/observation/footer.png';
+            $footer = '<!-- Footer -->
+                <footer>
+                    <div style="background-image: url('.$urlImage.'); background-size: 100% 100%; width: 100%; height: 94px;">
+                    </div>
+                </footer>
+                <!-- END Footer -->';
+
+            $snappy = $this->get('knp_snappy.pdf');
+            $snappy->setOption('no-outline', true);
+            $snappy->setOption('margin-top', 3);
+            $snappy->setOption('margin-bottom', 28);
+            $snappy->setOption('margin-right', 0);
+            $snappy->setOption('margin-left', 0);
+            //$snappy->setOption('footer-right', 'Pag. [page] de [toPage]');
+            $snappy->setOption('outline-depth', 8);
+            $snappy->setOption('orientation', 'Portrait');
+            $snappy->setOption('footer-html', $footer);
+	        $snappy->setOption('disable-javascript', true);
+            $snappy->setOption('cache-dir', $this->get('kernel')->getRootDir(). '/../web/bundles/framework/wkhtmltox');
+            
+            $filename = 'Observación PDF';
+
+            $html = $this->renderView('UNOEvaluacionesBundle:Observacion:pdf.html.twig', $parameters);
+
+            return new Response(
+                $snappy->getOutputFromHtml($html),
+                200,
+                array(
+                    'Content-Type'          => 'application/pdf',
+                    'Content-Disposition'   => 'inline; filename="'.$filename.'.pdf"'
+                )
+            );
+
+        }else {
+            return $this->render('UNOEvaluacionesBundle:Error:error.html.twig', array(
+                'status' => $this->status,
+                'message' => $this->message
+            ));
+        }
+
+
+    }
+
+    private function infoObservation($where, $setParameters){
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $oByC = $qb->select("O.observationId, CONCAT(TRIM(P.name), ' ', TRIM(P.surname)) AS person, S.school, O.gradeId, O.groupId, Cp.nameProgram, O.start, O.finish, CONCAT(TRIM(P1.name), ' ', TRIM(P1.surname)) AS coach")
+            ->from('UNOEvaluacionesBundle:Observation','O')
+            ->innerJoin('UNOEvaluacionesBundle:Person','P','WITH','O.personId = P.personid')
+            ->innerJoin('UNOEvaluacionesBundle:Person','P1','WITH','O.coachId = P1.personid')
+            ->innerJoin('UNOEvaluacionesBundle:School','S','WITH','O.schoolId = S.schoolid')
+            ->innerJoin('UNOEvaluacionesBundle:Cprogram','Cp','WITH','O.programId = Cp.programId')
+            ->where($where)
+            ->setParameters($setParameters)
+            ->orderBy( 'O.observationId')
+            ->getQuery()
+            ->getResult();
+
+        $nivel = array('K' => 'Kinder', 'P' => 'Primaria', 'S' => 'Secundaria', 'B' => 'Bachillerato');
+        $observationsByCoach = array();
+        foreach ($oByC as $row){
+            $row['nivelCompleto'] = $nivel[strtoupper($row['gradeId'][1])];
+            $row['grado'] = $row['gradeId'][0].'°';
+            array_push($observationsByCoach, $row);
+        }
+        return $observationsByCoach;
+    }
+    /**
+     * @Route("/observacion/pdfHtml/{observationId}")
+     *
+     * visiualiza la observacion
+     */
+    public function pdfHtmlAction(Request $request, $observationId)
+    {
+        #http://
+        $scheme =  $this->container->get('router')->getContext()->getScheme().'://';
+        #dev.ruta.unoi.com
+        $host =  $this->container->get('router')->getContext()->getHost();
+        #/app_dev.php
+        $baseURL = $this->container->get('router')->getContext()->getBaseUrl();
+        $baseUrl = $scheme.$host.$baseURL;
+
+        $session = $request->getSession();
+        $session->start();
+
+        if(!Utils::isUserLoggedIn($session)){
+
+            return $this->redirectToRoute('login',array(
+                'redirect' => 'inicio',
+                'with' => 'none'
+            ));
+        }
+
+        $this->setProfile($session->get('profileS'));
+
+        if(in_array('COACH',$this->_profile)) {
+            $this->valObservationIdBy(array('observationId' => $observationId, 'coachId' => $session->get('personIdS')) );
+            $parameters['activities'] = json_decode(file_get_contents("$baseUrl/api/v0/observation/activity/".$observationId, false),true);
+            $parameters['info'] = $this->infoObservation("O.coachId = :coachId AND O.finish IS NOT NULL", array('coachId' => $session->get('personIdS')));
+        }else{
+            $this->valObservationIdBy(array('observationId' => $observationId, 'personId' => $session->get('personIdS')) );
+            $parameters['info'] = $this->infoObservation("O.personId = :personId AND O.finish IS NOT NULL ", array('personId' => $session->get('personIdS')));
+        }
+
+        if($this->status == 200){
+            $result = $this->getResQueryOQ($observationId);
+            $aspects = $this->getResultAspects($observationId);
+
+            $parameters['questionByCategory'] = $result;
+            $parameters['observationId'] = $observationId;
+            $parameters['disposition'] = json_decode(file_get_contents("$baseUrl/api/v0/observation/disposition/".$observationId, false),true);
+            $parameters['galleries'] = json_decode(file_get_contents("$baseUrl/api/v0/observation/gallery/".$observationId, false),true);
+            $parameters['aspects'] = $aspects;
+
+            print_r($this->get('kernel')->getRootDir(). '/../web/bundles/framework/wkhtmltox');
+
+            $urlImage = $scheme . $host . '/public/assets/images/observation/footer.png';
+            $footer = '<!-- Footer -->
+                <footer>
+                    <div style="background-image: url(' . $urlImage . '); background-size: 100% 100%; width: 100%; height: 94px;">
+                    </div>
+                </footer>
+                <!-- END Footer -->';
+
+            return $this->render('UNOEvaluacionesBundle:Observacion:pdf.html.twig', $parameters);
+
+        }
     }
 
 }

@@ -67,12 +67,14 @@ class AltaController extends Controller{
         if ($request->getMethod() == 'GET') {
             $session = $request->getSession();
             $session->start();
+
             if (!$session->get('logged_in')) {
                 $this->_code = base64_decode($request->query->get('code'));
                 $this->_email = base64_decode($request->query->get('email'));
-
                 $this->getDatAlta();
+
                 if(!empty($this->_datPersonDB)){
+
                     if($this->run()){
                         $this->logIn($request);
                         $session->set('success', true);
@@ -202,6 +204,7 @@ class AltaController extends Controller{
     private function run(){
         if ($this->_datPersonDB) {
             $this->_datPerson = json_decode($this->_datPersonDB->getData());
+
             if($this->setPerson()){
                 $this->setSchools();
             }else{
@@ -225,12 +228,11 @@ class AltaController extends Controller{
      * @return bool
      */
     private function setPerson(){
-        if( empty($this->valPerson()) ){
+        if( $this->valPerson() ){
             $this->addPerson();
-            return true;
-        }else{
-            return false;
         }
+
+        return true;
     }
 
     /**
@@ -239,7 +241,16 @@ class AltaController extends Controller{
      */
     private function valPerson(){
         $em = $this->getDoctrine()->getManager();
-        return $em->getRepository(PERSONDB)->findOneBy(array('personid' => $this->_datPerson->personId));
+        $person = $em->getRepository(PERSONDB)->findOneBy(array('personid' => $this->_datPerson->personId));
+
+        if($person){
+            $person->setUser($this->_datPerson->user);
+            $person->setLastLogin(new \DateTime());
+            $em->flush();
+            return false;
+        }else{
+            return true;
+        }
     }
 
     /**

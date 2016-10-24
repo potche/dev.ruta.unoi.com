@@ -123,84 +123,84 @@
     </div>
     <!-- END Dashboard Header -->
     {% if colegios != null and coaches != null and personas != null%}
-    <!-- Simple Stats Widgets Row -->
-    <div class="row">
-        <div class="col-md-6">
-            <!-- Widget -->
-            <div class="widget">
-                <div class="widget-extra text-center themed-background-dark-night">
-                    <h3 class="widget-content-light"><i class="fa fa-arrow-up animation-floating"></i> Estadisticas <strong>Generales</strong></h3>
-                </div>
-                <div class="widget-simple">
-                    <div class="row text-center">
-                        <div class="col-xs-6">
-                            <a href="javascript:void(0)" class="widget-icon themed-background-spring">
-                                <i class="fa fa-university"></i>
-                            </a>
-                            <h3 class="remove-margin-bottom"> <strong>{{ colegios| raw }}</strong><br><small><b>Colegios</b> registrados</small></h3>
-                        </div>
-                        <div class="col-xs-6">
-                            <a href="javascript:void(0)" class="widget-icon themed-background-fire">
-                                <i class="fa fa-graduation-cap"></i>
-                            </a>
-                            <h3 class="remove-margin-bottom"> <strong>{{ coaches[0]['cuenta']| raw }}</strong><br><small><b>Coaches</b> registrados</small></h3>
+        <!-- Simple Stats Widgets Row -->
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Widget -->
+                <div class="widget">
+                    <div class="widget-extra text-center themed-background-dark-night">
+                        <h3 class="widget-content-light"><i class="fa fa-arrow-up animation-floating"></i> Estadisticas <strong>Generales</strong></h3>
+                    </div>
+                    <div class="widget-simple">
+                        <div class="row text-center">
+                            <div class="col-xs-6">
+                                <a href="javascript:void(0)" class="widget-icon themed-background-spring">
+                                    <i class="fa fa-university"></i>
+                                </a>
+                                <h3 class="remove-margin-bottom"> <strong>{{ colegios| raw }}</strong><br><small><b>Colegios</b> registrados</small></h3>
+                            </div>
+                            <div class="col-xs-6">
+                                <a href="javascript:void(0)" class="widget-icon themed-background-fire">
+                                    <i class="fa fa-graduation-cap"></i>
+                                </a>
+                                <h3 class="remove-margin-bottom"> <strong>{{ coaches[0]['cuenta']| raw }}</strong><br><small><b>Coaches</b> registrados</small></h3>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <!-- END Widget -->
             </div>
-            <!-- END Widget -->
-        </div>
-        <div class="col-md-6">
-            <!-- Widget -->
-            <div class="widget">
-                <div class="widget-extra text-center themed-background-dark-night">
-                    <h3 class="widget-content-light"><i class="fa fa-arrow-up animation-floating"></i> Estadisticas de <strong>Usuarios</strong></h3>
-                </div>
-                <div class="widget-simple">
-                    <div class="row text-center">
-                        <div class="col-xs-4">
-                            <a href="javascript:void(0)" class="widget-icon themed-background-fire">
-                                <i class="fa fa-users"></i>
-                            </a>
-                            <h3 class="remove-margin-bottom"> <strong>{{ personas['total']| raw }}</strong><br><small><b>Registrados</b></small></h3>
-                        </div>
-                        <div class="col-xs-4">
-                            <a href="javascript:void(0)" class="widget-icon themed-background-spring">
-                                <i class="fa fa-user-plus"></i>
-                            </a>
-                            <h3 class="remove-margin-bottom"> <strong>{{ personas['answered']| raw }}</strong><br><small><b>Han atendido</b> evaluaciones</small></h3>
-                        </div>
-                        <div class="col-xs-4">
-                            <a href="javascript:void(0)" class="widget-icon themed-background-spring">
-                                <i class="fa fa-user-times"></i>
-                            </a>
-                            <h3 class="remove-margin-bottom"> <strong>{{ personas['pending']| raw }}</strong><br><small><b>Sin atender</b> evaluaciones</small></h3>
+            <div class="col-md-6">
+                <!-- Widget -->
+                <div class="widget">
+                    <div class="widget-extra text-center themed-background-dark-night">
+                        <h3 class="widget-content-light"><i class="fa fa-arrow-up animation-floating"></i> Estadisticas de <strong>Usuarios</strong></h3>
+                    </div>
+                    <div class="widget-simple">
+                        <div class="row text-center">
+                            <div class="col-xs-4">
+                                <a href="javascript:void(0)" class="widget-icon themed-background-fire">
+                                    <i class="fa fa-users"></i>
+                                </a>
+                                <h3 class="remove-margin-bottom"> <strong>{{ personas['total']| raw }}</strong><br><small><b>Registrados</b></small></h3>
+                            </div>
+                            <div class="col-xs-4">
+                                <a href="javascript:void(0)" class="widget-icon themed-background-spring">
+                                    <i class="fa fa-user-plus"></i>
+                                </a>
+                                <h3 class="remove-margin-bottom"> <strong>{{ personas['answered']| raw }}</strong><br><small><b>Han atendido</b> evaluaciones</small></h3>
+                            </div>
+                            <div class="col-xs-4">
+                                <a href="javascript:void(0)" class="widget-icon themed-background-spring">
+                                    <i class="fa fa-user-times"></i>
+                                </a>
+                                <h3 class="remove-margin-bottom"> <strong>{{ personas['pending']| raw }}</strong><br><small><b>Sin atender</b> evaluaciones</small></h3>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <!-- END Widget -->
             </div>
-            <!-- END Widget -->
         </div>
-    </div>
-    <!-- END Simple Stats Widgets Row -->
+        <!-- END Simple Stats Widgets Row -->
     {% endif %}
 
     <!-- Form Example with Blocks in the Grid -->
     <div class="row">
         {% if colegio != null %}
-        <div class="col-sm-6">
-            <a href="javascript:void(0)" class="widget widget-hover-effect4">
-                <div class="widget-extra text-center themed-background-dark-autumn">
-                    <h3 class="widget-content-light">Nivel de avance en mi <strong>Colegio</strong></h3>
-                </div>
-                <div class="widget-extra-full text-center">
-                    <div class="pie-chart easyPieChart" data-percent="{{ colegio| raw }}" data-size="90" data-bar-color="#e67e22" style="width: 90px; height: 90px; line-height: 90px;">
-                        <span style="color: #0b0b0b">{{ colegio| raw }}%</span>
-                        <canvas width="90" height="90"></canvas>
+            <div class="col-sm-6">
+                <a href="javascript:void(0)" class="widget widget-hover-effect4">
+                    <div class="widget-extra text-center themed-background-dark-autumn">
+                        <h3 class="widget-content-light">Nivel de avance en mi <strong>Colegio</strong></h3>
                     </div>
-                </div>
-            </a>
-        </div>
+                    <div class="widget-extra-full text-center">
+                        <div class="pie-chart easyPieChart" data-percent="{{ colegio| raw }}" data-size="90" data-bar-color="#e67e22" style="width: 90px; height: 90px; line-height: 90px;">
+                            <span style="color: #0b0b0b">{{ colegio| raw }}%</span>
+                            <canvas width="90" height="90"></canvas>
+                        </div>
+                    </div>
+                </a>
+            </div>
         {% endif %}
 
         {% if personal != null %}
@@ -260,6 +260,60 @@
                                             <td class="text-center">
                                                 <div class="btn-group">
                                                     <a href="javascript:void(0)" onclick="window.location.href = uri+'/observacion/crear/{{ listObservation.observationId }}';" title="Edit" class="btn btn-xs btn-default"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if interactionsByCoach != null %}
+            <div class="col-sm-6">
+                <!-- Your Plan Widget -->
+                <div class="widget">
+                    <div class="widget-extra themed-background-dark">
+                        <h3 class="widget-content-light">
+                            Interacci&oacute;n <strong>Contructiva</strong>
+                        </h3>
+                    </div>
+                    <div class="block full">
+                        <div class="row">
+                            <div class="table-responsive">
+                                <table id="obList-datatable" class="table table-vcenter table-condensed table-bordered table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center">Docente</th>
+                                        <th class="text-center">Clase</th>
+                                        <th class="text-center">Fecha de Creaci&oacute;n</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    {% for listInteraction in interactionsByCoach %}
+                                        <tr>
+                                            <td class="text-center">{{ listInteraction.name }}</td>
+                                            <td class="text-center">{{ listInteraction.grado }} {{ listInteraction.groupId }} <strong>{{ listInteraction.nivelCompleto }}</strong> {{ listInteraction.nameProgram }} {{ listInteraction.school | title}}</td>
+                                            {% set limitDate = listInteraction.start.date | date_modify("+7 day") | date() %}
+                                            {% set difference = date( "now" | date() ).diff(date(limitDate)) %}
+                                            {% set leftDays = difference.days %}
+                                            {% set leftHours = difference.h %}
+
+                                            {% if listInteraction.finish is null %}
+                                                <td class="text-center">{{ listInteraction.start.date | date('j/M/Y \@ g:i a') }} <i class="fa fa-clock-o" aria-hidden="true" data-toggle="tooltip" title="pendiente"></i></td>
+
+                                            {% else %}
+                                                <td class="text-center">{{ listInteraction.start.date | date('j/M/Y \@ g:i a') }} <i class="fa fa-check-circle" aria-hidden="true" data-toggle="tooltip" title="finalizada"></i></td>
+                                            {% endif %}
+                                            <td class="text-center">
+                                                <div class="btn-group">
+                                                    <a href="javascript:void(0)" onclick="window.location.href = uri+'/interaction/crear/{{ listInteraction.interactionId }}';" title="Edit" class="btn btn-xs btn-default"><i class="fa fa-pencil" aria-hidden="true"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -352,7 +406,7 @@
         //si es /app_dev.php
         var baseUrl = '{{ app.request.baseurl }}';
 
-        var uri = HttpHost+baseUrl;
+        var uri = '{{ app.request.baseurl }}';
         var filter = '';
         var Admin = false;
         var profileArray = $.parseJSON('{{ app.session.get('profileS') | raw }}');
@@ -369,7 +423,7 @@
             if(Admin){
                 $('#Coaches').show();
                 getZone();
-                filter = "/api/v0/statsCoaches";
+                filter = "/api/v0/statsCoaches/";
                 getStatsCoaches(filter);
             }
 
@@ -395,24 +449,25 @@
         }
 
         function getStatsCoaches(filter) {
+
             $.getJSON(uri + filter)
                     .done(function (json) {
                         var row =
                                 '<table id="datatableC" class="table table-vcenter table-condensed table-bordered" style="width: 100%">'+
-                                    '<thead>'+
-                                        '<tr>'+
-                                            '<th></th>'+
-                                            '<th>Coach</th>'+
-                                            '<th>Zona</th>'+
-                                            '<th>Coordinador</th>'+
-                                            '<th>Ultimo Ingreso</th>'+
-                                            '<th>Plataforma</th>'+
-                                            '<th>Navegador</th>'+
-                                            '<th># de Sesiones</th>'+
-                                        '</tr>'+
-                                    '</thead>' +
-                                    '<tbody>'+
-                                        '<option>Todas</option>';
+                                '<thead>'+
+                                '<tr>'+
+                                '<th></th>'+
+                                '<th>Coach</th>'+
+                                '<th>Zona</th>'+
+                                '<th>Coordinador</th>'+
+                                '<th>Ultimo Ingreso</th>'+
+                                '<th>Plataforma</th>'+
+                                '<th>Navegador</th>'+
+                                '<th># de Sesiones</th>'+
+                                '</tr>'+
+                                '</thead>' +
+                                '<tbody>'+
+                                '<option>Todas</option>';
                         $.each(json, function (index, value) {
                             var d = value['lastLogin'].date.split(' ');
 
@@ -444,7 +499,7 @@
                         $('#coachesTable').html(row);
                     })
                     .fail(function (error) {
-                        console.log("error: " + error);
+                        console.log(error);
                     })
                     .always(function () {
                         TablesDatatables.init();
@@ -475,7 +530,7 @@
             var optionZone = $('#optionZone').val();
 
             if(optionZone === 'Todas'){
-                filter = "/api/v0/statsCoaches";
+                filter = "/api/v0/statsCoaches/";
             }else{
                 filter = "/api/v0/statsCoaches/zone/"+optionZone;
             }
