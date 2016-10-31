@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use UNO\EvaluacionesBundle\Controller\LMS\LMS;
 use UNO\EvaluacionesBundle\Controller\LMS\FilterAPI;
-use UNO\EvaluacionesBundle\Controller\Login\Encrypt;
+use UNO\EvaluacionesBundle\Controller\Login\Mcrypt;
 use UNO\EvaluacionesBundle\Entity\Personschool;
 use UNO\EvaluacionesBundle\Entity\Ccoach;
 
@@ -72,7 +72,7 @@ class APIProfileController extends Controller{
         $_personDB = $em->getRepository('UNOEvaluacionesBundle:Person')->findOneBy(array('personid' => $this->_id));
         if($_personDB){
             $this->_user = $_personDB->getUser();
-            $this->_pass = encrypt::decrypt($_personDB->getPassword());
+            $this->_pass = Mcrypt::decrypt($_personDB->getPassword());
             return true;
         }else{
             return false;
@@ -87,10 +87,12 @@ class APIProfileController extends Controller{
         //validar Permisos
         $FilterAPI = new FilterAPI($apiUser);
         $this->_datPerson = $FilterAPI->runFilter($this->_user, $this->_pass);
-        //borra los perfile de personSchool
-        $this->deleteProfile();
-        //arma e inserta elos perfiles en personSchool
-        $this->setSchools();
+        if($this->_datPerson) {
+            //borra los perfile de personSchool
+            $this->deleteProfile();
+            //arma e inserta elos perfiles en personSchool
+            $this->setSchools();
+        }
     }
 
     /**

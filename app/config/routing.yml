@@ -195,7 +195,7 @@ APIStatsGlobalBySchoolLevel:
     defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:globalbyschoollevel}
     requirements:
                 schoolid: \d+
-                levelid: \d+
+
 APIStatsGlobalBySchoolSurveyLevel:
     path: /api/v0/stats/global/survey/{surveyid}/school/{schoolid}/level/{levelid}
     defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:globalbyschoolsurveylevel}
@@ -216,7 +216,7 @@ APIStatsResultsBySchoolLevel:
     defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:statsbyschoollevel}
     requirements:
                 schoolid: \d+
-                levelid: \d+
+
 APIStatsResultsBySchoolProfile:
     path: /api/v0/stats/results/school/{schoolid}/profile/{profileid}
     defaults: {_controller: UNOEvaluacionesBundle:API/APIStatsresults:statsbyschoollevel}

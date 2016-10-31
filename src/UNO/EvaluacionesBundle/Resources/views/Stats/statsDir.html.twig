@@ -300,13 +300,15 @@
         var schoolId = schoolIdS[0].schoolid;
 
         var profileS = JSON.parse('{{ app.session.get('profileS') | raw}}');
-        var schoolLevelId = profileS[0].schoollevelid;
+        var schoolLevelS = '{{ app.session.get('schoolLevelS') | raw}}';
 
+        var schoolLevelId = getLevel(schoolLevelS);
         var schoolArrayG = [];
         var surveyListJS = {{ surveyList | raw }};
         var okSchool = true;
         var okSurvey = true;
         var nameSchool = '{{ nameSchool }}';
+
         var nameSchoolArray = nameSchool.split("-");
         var nameSurvey = 'Todas las Evaluaciones';
 
@@ -359,6 +361,15 @@
             });
         });
 
+        function getLevel() {
+            var schoolLevel = $.parseJSON(schoolLevelS);
+            var idsLevel = '';
+            $.each( schoolLevel, function( i, item ) {
+                idsLevel += schoolLevel[i].schoollevelid+',';
+            });
+
+            return idsLevel.replace(/(^,)|(,$)/g, "");
+        }
     </script>
 
 {% endblock %}

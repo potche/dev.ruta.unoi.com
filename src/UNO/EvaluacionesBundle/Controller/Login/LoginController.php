@@ -137,6 +137,7 @@ class LoginController extends Controller{
                 //user existente
                 $this->valUserExisting();
             }else if( !empty($this->existsUserInDB()) ){
+
                 if($this->valPassLMS()){
                     $this->existsUserPassInDB();
                     if(!empty($this->_personDB)) {
@@ -146,6 +147,14 @@ class LoginController extends Controller{
                 }else{
                     $this->_response = '105';
                 }
+            }else if ($this->valLMS()) {
+
+                $this->existsUserPassInDB();
+                if (!empty($this->_personDB)) {
+                    //user existente
+                    $this->valUserExisting();
+                }
+
             }else{
                 $this->preAddUser();
             }
@@ -299,18 +308,50 @@ class LoginController extends Controller{
         $apiUser = $LMS->getDataXUserPass($this->_user, $this->_pass, 'https://www.sistemauno.com/source/ws/uno_wsj_login.php');
 
         $datUser = json_decode($apiUser);
+
         if($datUser->person->personId){
             //update pass Local
             $pass = Mcrypt::encrypt($this->_pass);
 
             $em = $this->getDoctrine()->getManager();
-            $personDB = $em->getRepository(PersonDB_L)->findOneBy(array('user' => $this->_user));
+            $personDB = $em->getRepository(PersonDB_L)->findOneBy(array('personid' => $datUser->person->personId));
             if($personDB){
+                //$personDB->setUser($pass);
                 $personDB->setPassword($pass);
                 $em->flush();
-            }
 
-            return true;
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+
+    }
+
+    /**
+     * prepara los datos para la alta del usuario
+     */
+    private function valLMS(){
+        $LMS = new LMS();
+
+        $apiUser = $LMS->getDataXUserPass($this->_user, $this->_pass, 'https://www.sistemauno.com/source/ws/uno_wsj_login.php');
+        $datUser = json_decode($apiUser);
+
+        if($datUser->person->personId){
+            //update pass Local
+            $pass = Mcrypt::encrypt($this->_pass);
+            $em = $this->getDoctrine()->getManager();
+            $personDB = $em->getRepository(PersonDB_L)->findOneBy(array('personid' => $datUser->person->personId));
+            if($personDB){
+                $personDB->setUser($datUser->person->user);
+                $personDB->setPassword($pass);
+                $em->flush();
+                return true;
+            }else{
+                return false;
+            }
         }else{
             return false;
         }
@@ -327,6 +368,7 @@ class LoginController extends Controller{
         $encrypt = Mcrypt::encrypt($this->_pass);
         $em = $this->getDoctrine()->getManager();
         $this->_personDB = $em->getRepository(PersonDB_L)->findOneBy(array('user' => $this->_user, 'password' => $encrypt));
+
         if($this->_personDB){
             $this->_personDB->setLastLogin(new \DateTime());
             $em->flush();
@@ -359,21 +401,21 @@ class LoginController extends Controller{
 
     /**
      * @return string
-     * obtiene los perfiles del usuario logeado y lo envia como json
+     * obtiene los perfiles (director...) del usuario logeado y lo envia como json
      */
     private function getProfile(){
         $em = $this->getDoctrine()->getManager();
         $qb = $em->createQueryBuilder();
-        $q = $qb->select('P2.profileid, P2.profilecode, P2.profile, P1.schoollevelid, SL.schoollevel')
+        $q = $qb->select('P2.profileid, P2.profilecode, P2.profile')
             ->from(PersonDB_L, 'P')
             ->innerJoin('UNOEvaluacionesBundle:Personschool','P1','WITH', 'P.personid = P1.personid')
             ->innerJoin('UNOEvaluacionesBundle:Profile','P2','WITH', 'P1.profileid = P2.profileid')
-            ->innerJoin('UNOEvaluacionesBundle:Schoollevel','SL','WITH', 'P1.schoollevelid = SL.schoollevelid')
             ->where('P.personid = :personId')
             ->setParameter('personId', $this->_personDB->getPersonid())
             ->groupBy('P2.profileid')
             ->getQuery()
             ->getResult();
+
         return json_encode($q);
     }
 

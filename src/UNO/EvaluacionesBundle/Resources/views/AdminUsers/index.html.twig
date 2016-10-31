@@ -28,7 +28,7 @@
                             <select id="optionSchool" name="optionSchool" class="select-chosen" data-placeholder="Seleciona un Colegio" style="width: 250px;">
                                 <option></option>
                                 {% for school in schoolList%}
-                                    <option value="{{ school.schoolid }}-{{ school.school}}">{{ school.school}}</option>
+                                    <option value="{{ school.schoolid }}-{{ school.school}}">{{ school.schoolid }}-{{ school.school}}</option>
                                 {% endfor %}
                             </select>
                         </div>
