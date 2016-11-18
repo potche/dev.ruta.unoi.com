@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="UNO\EvaluacionesBundle\Entity\Proposal" table="Proposal">
+    <id name="proposalId" type="integer" column="proposalId">
+      <generator strategy="AUTO"/>
+    </id>
+    <field name="schoolId" type="integer" column="schoolId">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="school" type="string" column="school" length="65">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="cp" type="string" column="cp" length="5">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="colonia" type="string" column="colonia" length="65">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="calle" type="string" column="calle" length="65">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="numero" type="string" column="numero" length="5">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="aulaDigital" type="integer" column="aulaDigital">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="makerCart" type="integer" column="makerCart">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="aulaMaker" type="integer" column="aulaMaker">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="proyector" type="integer" column="proyector">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="telepresencia" type="integer" column="telepresencia">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="aceleracon" type="integer" column="aceleracon">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="certificacion" type="integer" column="certificacion">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="desarrollo" type="integer" column="desarrollo">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="puntosTotales" type="integer" column="puntosTotales">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="puntosUsados" type="integer" column="puntosUsados">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="puntosSaldo" type="integer" column="puntosSaldo">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="totalPesos" type="float" column="totalPesos">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="totalAños" type="integer" column="totalAños">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="totalAportacion" type="float" column="totalAportacion">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="totalAlumnos" type="integer" column="totalAlumnos">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="porcentajeParticipacion" type="integer" column="porcentajeParticipacion">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="precioVenta" type="float" column="precioVenta">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="dateregister" type="datetime" column="dateRegister" nullable="false"/>
+  </entity>
+</doctrine-mapping>

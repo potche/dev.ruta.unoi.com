@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="UNO\EvaluacionesBundle\Entity\CodigoPostal" table="CodigoPostal">
+    <id name="codigoPostalId" type="integer" column="codigoPostalId">
+      <generator strategy="AUTO"/>
+    </id>
+    <field name="d_codigo" type="string" column="d_codigo" length="5" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="d_asenta" type="string" column="d_asenta" length="65" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="d_tipo_asenta" type="string" column="d_tipo_asenta" length="45">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="D_mnpio" type="string" column="D_mnpio" length="65" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="d_estado" type="string" column="d_estado" length="45" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="d_ciudad" type="string" column="d_ciudad" length="45">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="d_CP" type="string" column="d_CP" length="5">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="c_estado" type="string" column="c_estado" length="2">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="c_oficina" type="string" column="c_oficina" length="5">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="c_CP" type="string" column="c_CP" length="5">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="c_tipo_asenta" type="string" column="c_tipo_asenta" length="2">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="c_mnpio" type="string" column="c_mnpio" length="3">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="id_asenta_cpcons" type="string" column="id_asenta_cpcons" length="5">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="d_zona" type="string" column="d_zona" length="45">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="c_cve_ciudad" type="string" column="c_cve_ciudad" length="2">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+  </entity>
+</doctrine-mapping>
