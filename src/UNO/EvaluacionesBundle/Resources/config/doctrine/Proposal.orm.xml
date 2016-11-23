@@ -34,6 +34,16 @@
         <option name="fixed"/>
       </options>
     </field>
+    <field name="nombreContacto" type="string" column="nombreContacto" length="65">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="emailContacto" type="string" column="emailContacto" length="255">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
     <field name="aulaDigital" type="integer" column="aulaDigital">
       <options>
         <option name="unsigned"/>
@@ -115,6 +125,11 @@
       </options>
     </field>
     <field name="precioVenta" type="float" column="precioVenta">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="vendedorId" type="integer" column="vendedorId">
       <options>
         <option name="unsigned"/>
       </options>

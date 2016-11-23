@@ -65,6 +65,20 @@ class Proposal
     private $numero;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="nombreContacto", type="string", length=65)
+     */
+    private $nombreContacto;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="emailContacto", type="string", length=255)
+     */
+    private $emailContacto;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="aulaDigital", type="integer")
@@ -182,6 +196,13 @@ class Proposal
      * @ORM\Column(name="precioVenta", type="float")
      */
     private $precioVenta;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="vendedorId", type="integer")
+     */
+    private $vendedorId;
 
     /**
      * @var \DateTime
@@ -342,6 +363,54 @@ class Proposal
     public function getNumero()
     {
         return $this->numero;
+    }
+
+    /**
+     * Set nombreContacto
+     *
+     * @param string $nombreContacto
+     *
+     * @return Proposal
+     */
+    public function setNombreContacto($nombreContacto)
+    {
+        $this->nombreContacto = $nombreContacto;
+
+        return $this;
+    }
+
+    /**
+     * Get nombreContacto
+     *
+     * @return string
+     */
+    public function getNombreContacto()
+    {
+        return $this->nombreContacto;
+    }
+
+    /**
+     * Set emailContacto
+     *
+     * @param string $emailContacto
+     *
+     * @return Proposal
+     */
+    public function setEmailContacto($emailContacto)
+    {
+        $this->emailContacto = $emailContacto;
+
+        return $this;
+    }
+
+    /**
+     * Get emailContacto
+     *
+     * @return string
+     */
+    public function getEmailContacto()
+    {
+        return $this->emailContacto;
     }
 
     /**
@@ -750,6 +819,30 @@ class Proposal
     public function getPrecioVenta()
     {
         return $this->precioVenta;
+    }
+
+    /**
+     * Set vendedorId
+     *
+     * @param integer $vendedorId
+     *
+     * @return Proposal
+     */
+    public function setVendedorId($vendedorId)
+    {
+        $this->vendedorId = $vendedorId;
+
+        return $this;
+    }
+
+    /**
+     * Get vendedorId
+     *
+     * @return integer
+     */
+    public function getVendedorId()
+    {
+        return $this->vendedorId;
     }
 
     /**

@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use UNO\EvaluacionesBundle\Controller\API_SimuladorCostos\APIUtils;
 use UNO\EvaluacionesBundle\Entity\Proposal;
+use UNO\EvaluacionesBundle\Controller\API_SimuladorCostos\BodyMail;
 
 /**
  * Created by PhpStorm.
@@ -33,6 +34,12 @@ class ProposalController extends Controller{
     private $_idEscuela;
     private $_nombreEscuela;
 
+    private $_schoolContact;
+    private $_datSchoolContact;
+    private $_datVendedor;
+
+    private $_name;
+    private $_to;
 
     /**
      * @Route("/proposal")
@@ -72,23 +79,24 @@ class ProposalController extends Controller{
                     "numero" => $params->direccion->numero
                 );
 
-
-
                 if ( is_null($params->escuela->idEscuela) && !$this->dir($dir) ) {
-
                     $this->_status = 400;
                     $this->_message = '¿Escuela nueva?, requiere dirección';
-
                 }elseif ( !is_null($params->escuela->idEscuela) && $this->dir($dir) ) {
-
                     $this->_status = 400;
                     $this->_message = 'Escuela existente, no requiere dirección';
-
+                }elseif (!filter_var($params->contacto->email, FILTER_VALIDATE_EMAIL)) {
+                    $this->_status = 400;
+                    $this->_message = 'El correo de Contacto no es valido';
+                }elseif (!$this->validateVendedorDB($params->vendedorId)) {
+                    $this->_status = 400;
+                    $this->_message = 'El campo vendedorId no es valido';
+                }elseif (!is_null($params->escuela->idEscuela) && !$this->validateSchoolDB($params->escuela->idEscuela)) {
+                    $this->_status = 400;
+                    $this->_message = 'El campo idEscuela no es valido';
                 }else{
-
                     $this->addProposal($params);
                     $this->_status = 200;
-
                 }
 
             }else{
@@ -120,6 +128,9 @@ class ProposalController extends Controller{
             $Proposal->setCalle( $this->stringEmpty($params->direccion->calle) );
             $Proposal->setNumero( $this->stringEmpty($params->direccion->numero) );
 
+            $Proposal->setNombreContacto( $this->stringEmpty($params->contacto->nombre) );
+            $Proposal->setEmailContacto( $this->stringEmpty($params->contacto->email) );
+
             $Proposal->setAulaDigital( $this->intEmpty($params->items->aulaDigital) );
             $Proposal->setMakerCart( $this->intEmpty($params->items->makerCart) );
             $Proposal->setAulaMaker( $this->intEmpty($params->items->aulaMaker) );
@@ -139,10 +150,15 @@ class ProposalController extends Controller{
             $Proposal->setPorcentajeParticipacion($params->porcentajeParticipacion);
             $Proposal->setPrecioVenta($params->precioVenta);
 
+            $Proposal->setVendedorId($params->vendedorId);
+
             $Proposal->setDateregister(new \DateTime());
 
             $em->persist($Proposal);
             $em->flush();
+
+            $this->sendMail($params);
+
             return true;
         } catch(\Exception $e){
             print_r($e->getMessage());
@@ -208,7 +224,6 @@ class ProposalController extends Controller{
     private function isStringAndNotNull($var){
 
         if(!is_null($var) && $var != ''){
-            print_r($var);
             return true;
         }else{
             return false;
@@ -238,4 +253,112 @@ class ProposalController extends Controller{
             return 0.00;
         }
     }
+
+    /**
+     * obtiene los nombres y correo de los directores del colegio
+     */
+    private function getSchoolContact($schoolId) {
+
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+
+        $this->_schoolContact = $qb->select("concat(P.name, ' ', P.surname) as nombre, P.email")
+            ->from('UNOEvaluacionesBundle:Person','P')
+            ->innerJoin('UNOEvaluacionesBundle:Personschool','PS', 'WITH', 'P.personid = PS.personid')
+            ->where('PS.schoolid = :schoolId')
+            ->andWhere('PS.profileid = 19')
+            ->setParameter('PS.schoolid', $schoolId)
+            ->getQuery()
+            ->getResult();
+
+    }
+
+    /**
+     * @return bool
+     * revisa que se encuentre el colegio
+     */
+    private function validateSchoolDB($schoolId){
+
+        $ok = true;
+        $em = $this->getDoctrine()->getManager();
+        $this->_datSchoolContact = $em->getRepository('UNOEvaluacionesBundle:Person')->findBy(array('schoolid' => $schoolId));
+
+        if(!$this->_datSchoolContact) {
+            //el usuario y password no se encuentran en la BD
+            $ok = false;
+        }
+
+        return $ok;
+    }
+
+    /**
+     * @return bool
+     * revisa que se encuentre el vendedor
+     */
+    private function validateVendedorDB($personId){
+
+        $ok = true;
+        $em = $this->getDoctrine()->getManager();
+        $this->_datVendedor = $em->getRepository('UNOEvaluacionesBundle:Person')->findOneBy(array('personid' => $personId));
+
+        if(!$this->_datVendedor) {
+            //el usuario y password no se encuentran en la BD
+            $ok = false;
+        }
+
+        return $ok;
+    }
+
+    private function parseContact(){
+        /*
+          $to  = 'aidan@example.com' . ', '; // note the comma
+          $to .= 'wez@example.com';
+        */
+        if($this->_datSchoolContact){
+            print_r($this->_datSchoolContact);
+        }else {
+            $this->_name = strtoupper($params->contacto->nombre);
+            $this->_to = $params->contacto->email;
+        }
+
+    }
+
+    /**
+     * envia el correo de la propuesta
+     */
+    private function sendMail($params) {
+        $BodyMail = new BodyMail();
+
+        $name = strtoupper($params->contacto->nombre);
+        $to = $params->contacto->email;
+
+        $parameters = array(
+            'aulaDigital' => $this->intEmpty($params->items->aulaDigital),
+            'makerCart' => $this->intEmpty($params->items->makerCart),
+            'aulaMaker' => $this->intEmpty($params->items->aulaMaker),
+            'proyector' => $this->intEmpty($params->items->proyector),
+            'telepresencia' => $this->intEmpty($params->items->telepresencia),
+            'aceleracon' => $this->intEmpty($params->items->aceleracon),
+            'certificacion' => $this->intEmpty($params->items->certificacion),
+            'desarrollo' => $this->intEmpty($params->items->desarrollo),
+            'puntosTotales' => $params->puntosTotales,
+            'puntosUsados' => $params->puntosUsados,
+            'puntosSaldo' => $params->puntosSaldo,
+            'totalPesos' => '$'.number_format($params->totalPesos, 2, '.', ','),
+            'totalAños' => $params->totalAños,
+            'totalAportacion' => $params->totalAportacion,
+            'porcentajeParticipacion' => $params->porcentajeParticipacion
+        );
+
+        $subject = "Propuesta UNOi";
+        $headers = 'MIME-Version: 1.0' . "\r\n";
+        $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
+        $headers .= 'From: Simulador Costos UNOi <noreplymx@unoi.com>'."\r\n";
+        $headers .= 'Reply-To: NoReply <noreplymx@unoi.com>' . "\r\n";
+        $headers .= 'Cc: '. $this->_datVendedor->getEmail() . "\r\n";
+        $headers .= 'Bcc: potcheunam@gmail.com' . "\r\n";
+        $message = $BodyMail->run($name, $parameters);
+        mail($to, $subject, $message, $headers, '-f noreplymx@unoi.com');
+    }
+
 }

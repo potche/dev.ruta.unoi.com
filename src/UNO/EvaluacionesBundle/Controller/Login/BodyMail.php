@@ -58,7 +58,7 @@ class BodyMail{
                                                                                         <table align="center" border="0" cellspacing="0" cellpadding="0">
                                                                                             <tr>
                                                                                                 <td>
-                                                                                                    <a href=""><img src="https://ruta.unoi.com/public/assets/images/login/logoUno.png" style="width:25%; margin-left: 5%;"/> </a>
+                                                                                                    <a href=""><img src="https://ruta.unoi.com/public/assets/images/login/logoUnoHome.png" style="width:25%; margin-left: 5%;"/> </a>
                                                                                                 </td>
                                                                                             </tr>
                                                                                         </table>
