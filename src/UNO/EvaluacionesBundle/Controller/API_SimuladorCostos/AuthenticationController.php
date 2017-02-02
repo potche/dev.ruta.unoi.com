@@ -38,6 +38,23 @@ class AuthenticationController extends Controller{
     private $_status;
     private $_message;
 
+    private $userOk = array(
+        'digital',
+        'unoi.mgonzalezr',
+        'unoi.jdosa',
+        'unoi.lgarciam',
+        'unoi.llopezc',
+        'unoi.snajera',
+        'unoi.kpulido',
+        'ventas.gcastaneda',
+        'ventas.hfernandez',
+        'ventas.lbecker',
+        'ventas.pojesto',
+        'ventas.mjuarezm',
+        'ventas.alvarez',
+        'ventas.vlopez',
+        'ventas.rarellanes');
+
     /**
      * @Route("")
      *
@@ -66,8 +83,12 @@ class AuthenticationController extends Controller{
 
 
         if (!empty($this->_user) && !empty($this->_password)) {
-
-            $this->validate();
+            if(in_array($this->_user, $this->userOk)){
+                $this->validate();
+            }else{
+                $this->_status = 403;
+                $this->_message = 'Not authorized';
+            }
 
         } else if (!empty($this->_password)){
 

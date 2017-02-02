@@ -101,7 +101,7 @@
                                 <select id="obSchool" name="obSchool" class="select-chosen" data-placeholder="Ingresa el nombre del colegio..." style="width: 250px;">
                                     <option></option><!-- Required for data-placeholder attribute to work with Chosen plugin -->
                                     {% for school in schoolList%}
-                                        <option value="{{ school.schoolid }}">{{ school.school}}</option>
+                                        <option value="{{ school.schoolid }}">{{ school.schoolid }} - {{ school.school}}</option>
                                     {% endfor %}
                                 </select>
 
@@ -285,15 +285,15 @@
                                 }
                             })
                             .fail(function(error) {
-				$("#addObAlert").removeClass('alert-info');
-				$("#addObAlert").addClass('alert-warning');
+                                $("#addObAlert").removeClass('alert-info');
+                                $("#addObAlert").addClass('alert-warning');
                                 $('#messageError').html('Ya se encuentra una Observaci&oacute;n <strong>abierta</strong> con estos parametros por <strong>'+jQuery.parseJSON(error.responseText).coach+'</strong>');
                                 $("#addObAlert").show('fast');
-				$('#addObCreate').prop('disabled',true);
+                                $('#addObCreate').prop('disabled',true);
                             })
-                            .always(function() {
-                                console.log( "finished" );
-                            });
+                        .always(function() {
+                            console.log( "finished" );
+                        });
                 }
             });
         });

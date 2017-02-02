@@ -307,25 +307,31 @@ class LoginController extends Controller{
 
         $apiUser = $LMS->getDataXUserPass($this->_user, $this->_pass, 'https://www.sistemauno.com/source/ws/uno_wsj_login.php');
 
-        $datUser = json_decode($apiUser);
+        if(is_numeric($apiUser)) {
+            return false;
+        }else {
 
-        if($datUser->person->personId){
-            //update pass Local
-            $pass = Mcrypt::encrypt($this->_pass);
+            $datUser = json_decode($apiUser);
 
-            $em = $this->getDoctrine()->getManager();
-            $personDB = $em->getRepository(PersonDB_L)->findOneBy(array('personid' => $datUser->person->personId));
-            if($personDB){
-                //$personDB->setUser($pass);
-                $personDB->setPassword($pass);
-                $em->flush();
 
-                return true;
-            }else{
+            if ($datUser->person) {
+                //update pass Local
+                $pass = Mcrypt::encrypt($this->_pass);
+
+                $em = $this->getDoctrine()->getManager();
+                $personDB = $em->getRepository(PersonDB_L)->findOneBy(array('personid' => $datUser->person->personId));
+                if ($personDB) {
+                    //$personDB->setUser($pass);
+                    $personDB->setPassword($pass);
+                    $em->flush();
+
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
                 return false;
             }
-        }else{
-            return false;
         }
 
     }
@@ -772,5 +778,10 @@ class LoginController extends Controller{
 
         return $response;
 
+    }
+
+    function validate_json($string,$return_data = false) {
+        $data = json_decode($string);
+        return (json_last_error() == JSON_ERROR_NONE) ? ($return_data ? $data : TRUE) : FALSE;
     }
 }

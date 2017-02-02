@@ -133,11 +133,20 @@ class APIInteractionController extends Controller{
      */
     public function interactionAction(Request $request){
 
-        $existNotFinish = $this->validInteractionExist('I.gradeId = :gradeId AND I.groupId = :groupId AND I.programId = :programId', array(
+        $requestAll = array(
             GRADEID_I => $request->get(GRADEID_I),
             GROUPID_I => $request->get(GROUPID_I),
-            PROGRAMID_I => (int)$request->get(PROGRAMID_I)
-        ));
+            PROGRAMID_I => (int)$request->get(PROGRAMID_I),
+            "schoolId" => $request->get("schoolId"),
+            "personId" => $request->get("personId")
+        );
+
+
+        $existNotFinish = $this->validInteractionExist('I.gradeId = :gradeId 
+        AND I.groupId = :groupId 
+        AND I.programId = :programId
+        AND I.schoolId = :schoolId
+        AND I.personId = :personId', $requestAll);
 
 	if(!$existNotFinish){
             $result = $this->addQuery(array(
