@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="UNO\EvaluacionesBundle\Entity\VPuntos" table="VPuntos">
+    <id name="colegioId" type="integer" column="colegioId">
+      <generator strategy="AUTO"/>
+    </id>
+    <field name="colegio" type="string" column="colegio">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="matricula" type="integer" column="matricula">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="renovacionK" type="integer" column="renovacionK">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="renovacionP" type="integer" column="renovacionP">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="renovacionS" type="integer" column="renovacionS">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="totalAlumnos" type="integer" column="totalAlumnos">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="totalAluas" type="integer" column="totalAluas">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="aulasDevengadas" type="float" column="aulasDevengadas">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="alumnosPorAula" type="float" column="alumnosPorAula">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="puntosPorAulaDevengada" type="integer" column="puntosPorAulaDevengada">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="puntosPorAlumno" type="integer" column="puntosPorAlumno">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="ciclos" type="integer" column="ciclos">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="puntosOfrecerOld" type="integer" column="puntosOfrecerOld">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="puntosOfrecer" type="integer" column="puntosOfrecer">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+  </entity>
+</doctrine-mapping>
